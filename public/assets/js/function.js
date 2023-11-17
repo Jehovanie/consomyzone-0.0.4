@@ -5206,9 +5206,15 @@ function getUserIdle() {
 }
 
 function resetTimer(idle=300) {
+<<<<<<< HEAD
   // console.log(idle)
     idle = idle / 60
     // console.log(idle)
+=======
+ // console.log(idle)
+    idle = idle / 60
+   // console.log(idle)
+>>>>>>> ichigo
     let timer = idle -2
     clearTimeout(idleTimer);
     clearTimeout(idleTimer2);
@@ -5263,15 +5269,16 @@ function prelogout() {
  * location function.js
  */
 function heartBeat() {
-
-  heartBeatTimer = setTimeout(() => {
-    fetch("/user/heartBeat").then((response, error) => {
-      if (response.status === 200 && response.ok) {
-      } else {
-        console.log(error);
-      }
-    });
-  }, 60000);
+  
+    heartBeatTimer = setTimeout(() => {
+        fetch("/user/heartBeat").then((response) => {
+          if (response.status === 200 && response.ok) {
+             
+          } else {
+              console.log(error);
+          }
+        });
+    }, 60000);
 }
 
 /**

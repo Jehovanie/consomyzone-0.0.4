@@ -12,8 +12,8 @@
 
     </div>
 
-    {% set linkParam = tribuT is defined ?  { 'user_id' : id, 'tribuT' : tribuT } : { 'user_id' : id } %}
-    <a href="{{path('app_message_perso', linkParam )}}" class="yd">
+    {% set linkParam = { 'name' : table, 'type' : type }%}
+    <a href="{{path('app_tribu_g_message', linkParam )}}" class="yd">
         <div class="row">
             <div class="col-8">
                 <h5 class="mn un zn gs">
@@ -27,7 +27,7 @@
                         <p class="mn text_message_jheo_js">(object)</p>
                     {% endif %}
                 {% else %}
-                    <p class="text_message_jheo_js">Vous n'avez pas encore de discussion</p>
+                    <p class="text_message_jheo_js">Discussion générale</p>
                 {% endif %}
             </div>
             <div class="col-4">

@@ -189,6 +189,232 @@ if (document.querySelector(".btn_send_message_jheo_js") && document.querySelecto
 }
 
 
+/**cette section est là pour envoyer le message par groupe */
+if(document.querySelector(".send_msg_grp_faniry_js")){
+
+    const  containerImagesToUpload=document.querySelector(".content_image_input_jheo_js")
+    const typeG= containerImagesToUpload.dataset.toggleType
+    const where =containerImagesToUpload.dataset.toggleUsertoId
+    const sender=containerImagesToUpload.dataset.userfromId
+    document.querySelector(".content_discussion_jheo_js").scrollTop = 9e9;
+    const message_input = document.querySelector(".input_message_jheo_js")
+
+  
+
+    ///btn send message
+    const btn_send_message = document.querySelector(".send_msg_grp_faniry_js")
+
+    ///input file
+    const icon_input_file_show = document.querySelector(".input_file_show_jheo_js");
+    const icon_input_file_hidden = document.querySelector(".input_file_hidden_jheo_js");
+   
+    icon_input_file_show.onclick = () => {
+        icon_input_file_hidden.click();
+    }
+
+    ///input file inside the file before
+    if (document.querySelector(".input_file_under_image_jheo_js")) {
+        document.querySelector(".input_file_under_image_jheo_js").onclick = () => {
+            icon_input_file_hidden.click();
+        }
+    }
+
+    //read images or file
+    let image_list = [];
+    icon_input_file_hidden.addEventListener("change", (e) => {
+        ////hide emojy picker
+        hideEmojyPicker()
+        
+        ///read file
+        const reader = new FileReader();
+
+        ////on load file
+        reader.addEventListener("load", () => {
+
+            const listExt= ['jpg', 'jpeg', 'png', 'csv', 'txt', 'json', 'pdf'];
+            const octetMax= 3145728; //3Mo
+
+            /// file as url
+            const uploaded_image = reader.result;
+
+            if( !checkFileExtension(listExt,uploaded_image)){
+
+                swal({
+                    title: "Le format de fichier n\'est pas pris en charge!",
+                    text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, .csv, .txt, .json, .pdf)",
+                    icon: "error",
+                    button: "OK",
+                  });
+
+            }else{
+                if(!checkTailleImage(octetMax, uploaded_image)){
+                    swal({
+                        title: "Le fichier est trop volumineux!",
+                        text: "La taille de l\'image doit être inférieure à 3Mo.",
+                        icon: "error",
+                        button: "OK",
+                      });
+                    
+                }else{
+                    ///let get multiple images (files)
+                    const type= checkFileExtension(imageType, reader.result ) ? "image" : "file";
+                    image_list.push({type :type, name: reader.result});
+
+                    // for the content image above the input message
+                    const img = document.createElement("img")
+                    img.className="image_input_item image_input_item_jheo_js";
+                    img.setAttribute("alt","Image upload")
+                    img.src = ( type === "image") ?  uploaded_image : fileDefaults;
+
+                    // const parentImage = document.querySelector(".content_image_input_jheo_js")
+                    containerImagesToUpload.style.display= "flex"
+
+                    
+                    //// add in the first the new image upload
+                    if(containerImagesToUpload.querySelector(".image_input_item_jheo_js")){
+                        containerImagesToUpload.insertBefore(img, containerImagesToUpload.querySelector("image_input_item_jheo_js"))
+                    }else{
+                        containerImagesToUpload.appendChild(img)
+                    }
+                }
+            }
+        });
+
+        reader.readAsDataURL(e.target.files[0]);
+    });
+
+    //send message by typing enter btn
+    message_input.addEventListener("keyup", (e) => {
+        hideEmojyPicker()
+        if (e.code === "Enter" || e.code === "NumpadEnter") {
+            hideEmojyPicker()
+            if (document.querySelector(".input_message_jheo_js").value.length > 1 || document.querySelectorAll(".content_image_input_js_jheo img").length > 0) {
+                
+                //// hide emoji picker
+                hideEmojyPicker()
+
+                ///send message---------------------------------------------------
+                //sendMessage(document.querySelector(".input_message_jheo_js").value, image_list)
+                sendMessageGrp(message_input.value,image_list,sender,where,typeG)
+                if (document.querySelectorAll(".image_input_item_jheo_js").length > 0) {
+                    image_list = []
+                }
+            }
+
+            ///delete focus
+            document.querySelector(".input_message_jheo_js").blur()
+
+            ///reset input
+            document.querySelector(".input_message_jheo_js").value = null
+
+            ///delete content image above ...
+            if (document.querySelectorAll(".image_input_item_jheo_js")) {
+
+                const image_sended = document.querySelectorAll(".image_input_item_jheo_js");
+                image_sended.forEach(element => element.remove())
+
+                document.querySelector(".content_image_input_jheo_js").style.display = "none"
+            }
+        }
+    })
+
+    //send message by clicking on send button
+    btn_send_message.addEventListener("click",(event) => {
+        hideEmojyPicker()
+        if (document.querySelector(".input_message_jheo_js").value.length > 1 || image_list.length > 0) {
+
+            ///send message---------------------------------------------------
+            //sendMessage(document.querySelector(".input_message_jheo_js").value, image_list)
+            sendMessageGrp(message_input.value,image_list,sender,where,typeG)
+            if (document.querySelectorAll(".image_input_item_jheo_js").length > 0) {
+                image_list = []
+            }
+
+        }
+
+        ///delete focus
+        document.querySelector(".input_message_jheo_js").blur()
+
+        ///reset input
+        document.querySelector(".input_message_jheo_js").value = null
+
+        if (document.querySelectorAll(".image_input_item_jheo_js")) {
+
+            const image_sended = document.querySelectorAll(".image_input_item_jheo_js");
+            image_sended.forEach(element => {
+                element.remove()
+            })
+            document.querySelector(".content_image_input_jheo_js").style.display = "none"
+        }
+    })
+}
+
+function sendMessageGrp(message,files,sender,where,type) {
+
+    let url=""
+    switch(type){
+        case 't':{
+            url="/user/pushMessage/T"
+            break;
+        }
+
+        case 'g':{
+            url="/user/pushMessage/G"
+            break;
+        }
+
+        default: {
+            swal({
+                title: "Ouups!!",
+                text: "erreur 500",
+                icon: "error",
+                button: "OK",
+              });
+        }
+    }
+    const parameters={
+        receiver:where,
+        message: message.replace("\n", ""),
+        files:files
+
+    }
+    const date = new Date().toLocaleDateString() + " " + new Date().toJSON().slice(11, 19);
+    handleMessageResponse(date, message, files, "#", false)
+    fetch(url, {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(parameters)
+    }).then(response => {
+        if(response.status===200 && response.ok){
+            response.json().then(r=>{
+                const content_loading = document.querySelector(".content_loading_jheo_js");
+                content_loading.innerHTML = "<i class='fa-solid fa-check'></i>";
+    
+                //// change the id the last message.
+                const message_sent = document.querySelector("#message_id_jheo_js");
+                message_sent.setAttribute("id", `message_${result.id}_jheo_js`);
+    
+                setTimeout(() => {
+                    content_loading.parentElement.removeChild(content_loading);
+                }, 2000);
+            })
+        }else{
+            swal({
+                title: "Ouups!!",
+                text: "erreur 500",
+                icon: "error",
+                button: "OK",
+              });
+        }
+    })
+
+}
+
+//fin section envoie message pour groupe
+
 /// THIS FUNCTION SHOW AND SEND MESSAGE TO THE SERVER ////////////////
 function sendMessage(message, file_list) {
 
@@ -340,7 +566,7 @@ imgs.forEach(img => {
 
 if (document.querySelector("#elie-btn-visio")) {
 
-    document.querySelector("#elie-btn-visio").addEventListener("click", function () {
+    document.querySelector("#elie-btn-visio").addEventListener("click",  (event)=> {
 
         // $("#visioMessageElie").modal("show")
         document.querySelector("#visioMessageElie").classList.remove("d-none")
@@ -355,7 +581,7 @@ if (document.querySelector("#elie-btn-visio")) {
         </div>
         `
 
-        let roomRandom_msg = "Meet" + generateUID() + document.querySelector(".my-profile-id-elie").getAttribute("data-my-id")
+        let roomRandom_msg = "Meet" + generateUID() +event.target.dataset.roof
 
         document.querySelector(".btn-minimize-elie").setAttribute('data-onclick', `joinMeet('${roomRandom_msg}', 'bodyVisioMessageElie', this,'old')`)
 
@@ -563,6 +789,8 @@ function fan(){
                         for (let value of data) {
                          
                             let li = document.createElement("li")
+                            li.setAttribute("class","fan_activ_faniry_js");
+                            li.dataset.toggleUserId=value.id
                             const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
                             const link = "/user/message/perso?user_id="+ value.id;
                             const fullName = value.firstname + " " + value.lastname
@@ -600,6 +828,8 @@ function fan(){
                         for (let value of data) {
                          
                             let li = document.createElement("li")
+                            li.setAttribute("class","fan_activ_faniry_js");
+                            li.dataset.toggleUserId=value.id
                             const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
                             const link = "/user/message/perso?user_id="+ value.id;
                             const fullName = value.firstname + " " + value.lastname
@@ -635,9 +865,27 @@ function fan(){
                 }
                 console.log(length)
                 if (length.tribuT === 0 && length.tribug === 0) {
-                    if (document.querySelector(".only"))
+                    if (document.querySelector(".only")){
                         document.querySelector(".only").textContent = ""
-                    ul.parentElement.innerHTML += "<span class=\"only\">Aucun fan n'est actif.</span>"
+                        document.querySelector(".only").textContent = "Aucun fan n'est actif."
+                    }else{
+                        ul.parentElement.innerHTML += "<span class=\"only\">Aucun fan n'est actif.</span>"
+                    }
+                        
+                   
+                }
+
+                const fans=document.querySelectorAll(`.fan_activ_faniry_js`)
+                let results=removeReplicatedFan(fans)
+                if(results.length >0 ){
+                    const  fanOnlineContainer=document.querySelector("ul.fan_actif_tom_js")
+                    fans.forEach(item=>{
+                        fanOnlineContainer.removeChild(item)
+                    })
+                    results.forEach(item=>{
+                       fanOnlineContainer.appendChild(item)
+                    }) 
+
                 }
                     
             })
@@ -646,12 +894,30 @@ function fan(){
     })
 }
 
+if(location.href.includes("/user/all/message") ||location.href.includes("/user/message/perso")){
+    const fanss=document.querySelectorAll(`.mpcm_faniry_js`)
+    let results =removeReplicatedFan(fanss)
+    if(results.length >0 ){
+        const fanOnlineContainer=document.querySelector("div.all_mpcmz_faniry_js ")
+        fanss.forEach(item=>{
+            fanOnlineContainer?.removeChild(item)
+        })
+        results.forEach(item=>{
+            fanOnlineContainer?.appendChild(item)
+        }) 
+
+    }
+}
+
+
+
 /** 
 *
 *
 */
 function lookupFan(event) {
     const target = event.target
+    clearTimeout(lookupFanDebounce)
     if (target != null && target instanceof HTMLElement) {
         let word = target.value
         if (word.length > 2)  {
@@ -691,4 +957,108 @@ function lookupFan(event) {
         
     }
     
+}
+
+/**
+ * @author Faniry 
+ * cette fonction enleve les donnée repété dans la liste  fan connecté
+ */
+function removeReplicatedFan(element){
+    
+    let userIds=[]
+    let result=[]
+    if(element.length > 0 ){
+        element.forEach(value=>{
+           let userId=parseInt(value.dataset.toggleUserId)
+            if(!userIds.includes(userId)){
+                result.push(value.cloneNode(true))
+                userIds.push(userId)
+            }
+
+        })
+    }
+
+    return result;
+}
+
+/**
+ * @author Faniry 
+ * cette fonction liste les messages groupé de tous les tribus
+ * localisation: message.js
+ */
+function showListTribus(){
+    fetch('/user/get/allTribu').then(response=>{
+        if(response.status === 200 && response.ok){
+            response.json().then(jsons=>{
+                const ul=document.querySelector(".msg_grp_faniry_js")
+                ul.innerHTML=""
+                for(let i=0; i<jsons.length; i++){
+                    if(i ===0){ //pour tribu G
+                        const json=jsons[i]
+                        const tribuGName=`tribu G ${json.commune} ${json.quartier}`
+                        const logoPath=""
+                        const link=`/user/tribu/msg?name=${json.tableTribuG}&type=g`
+                        const li = document.createElement("li")
+                        li.setAttribute("class","fan_activ_faniry_js");
+                        li.dataset.toggleTribuGId=json.tableTribuG
+                        li.innerHTML = `
+                                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${json.id}_jheo_js" data-toggle-user-id="${json.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                    <div class="h mb sc yd of th">
+                                        <img src="${logoPath}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                    </div>
+                                    <a href="${link}" class="yd">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h5 class="mn un zn gs">
+                                                    ${tribuGName}
+                                                </h5>
+    
+                                            </div>
+                                            <div class="col-4">
+                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            `
+                            ul.appendChild(li)
+                    }else{
+                        let tribuTs=jsons[i]
+                        for(let tribut of tribuTs){
+                        const tribuTimmuable=tribut.table_name
+                        const tribuTname=tribut.name_tribu_t_muable
+                        const logoPath =tribut.logo_path
+                        const link=`/user/tribu/msg?name=${tribut.table_name}&type=t`
+                        const li = document.createElement("li")
+                        li.setAttribute("class","fan_activ_faniry_js");
+                        li.dataset.toggleTribuGId=tribuTname
+                        li.innerHTML = `
+                                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${tribut.id}_jheo_js" data-toggle-user-id="${tribut.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                    <div class="h mb sc yd of th">
+                                        <img src="${logoPath}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                    </div>
+                                    <a href="${link}" class="yd">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h5 class="mn un zn gs">
+                                                    ${tribuTname}
+                                                </h5>
+    
+                                            </div>
+                                            <div class="col-4">
+                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            `
+                            ul.appendChild(li)
+                        }
+                    }
+                }
+            })
+        }
+    })
 }

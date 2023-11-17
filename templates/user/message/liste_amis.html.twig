@@ -48,19 +48,25 @@
             <div class="responsif-none sv en-lign-mobile en-lign-mobile-tomm-js list-amie-message">
                     <!-- ====== Chat List Start -->
                     <div class="vc xk">
-                        {# <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 creer-reunion" onclick="createVisioGroupFromMessage()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button> #}
+                         {# <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 creer-reunion" onclick="createVisoGroup()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button>  #}
                         
                         <div class="vd mh ip ch ib user_profile_list_elie">
                             <ul class="nav nav-tabs">
                                 <li class="nav-item" data-type="liste-message" onclick="toggleAmisMessage(this)">
-                                    <a class="nav-link linkToActive_tomm_js {{ isInTribut is same as(true) ? '' : 'active' }}" data-selector-list="content_list_message_tomm_js">Vos Messages.</a>
+                                    <a class="nav-link linkToActive_tomm_js active" data-selector-list="content_list_message_tomm_js">Vos Messages.</a>
                                 </li>
                                 <li class="nav-item" data-type="fanne-connecte"  onclick="toggleAmisMessage(this); fan()">
-                                    <a class="nav-link linkToActive_tomm_js {{ isInTribut is same as(true) ? 'active' : '' }}" data-selector-list="content_list_enligne_tomm_js" href="#">Fan en ligne</a>
+                                    <a class="nav-link linkToActive_tomm_js" data-selector-list="content_list_enligne_tomm_js" href="#">Fan en ligne</a>
                                 </li>
+                                 <li class="nav-item" data-type="groupe-message"  onclick="toggleAmisMessage(this); showListTribus()">
+                                    <a class="nav-link linkToActive_tomm_js" data-selector-list="content_list_grp_msg_faniry_js" href="#">Les Tribus</a>
+                                </li>
+                                {# <li class="nav-item" data-type="fanne-connecte"  onclick="toggleAmisMessage(this); fan()">
+                                    <a class="nav-link linkToActive_tomm_js {{ isInTribut is same as(true) ? 'active' : '' }}" data-selector-list="content_list_enligne_tomm_js" href="#">Message des Tribus</a>
+                                </li> #}
                             </ul>
 
-                            <div class="content_list_message_tomm_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
+                            <div class="all_mpcmz_faniry_js content_list_message_tomm_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
                                 {% if amisTributG|length > 0 %}
                                     <!-- Chat List Item -->
                                     {% set isZeroMessage = {'noMessage': 'oui', 'haveMessage':'non'} %}
@@ -103,9 +109,14 @@
                                 
                             </div>
 
-                            <div class="content_list_enligne_tomm_js">
+                            <div class="content_list_enligne_tomm_js d-none">
                                 <ul class="list-group list-group-flush fan_actif_tom_js">
                                     
+                                </ul>
+                            </div>
+                            <div class="content_list_grp_msg_faniry_js d-none">
+                                <ul class="list-group list-group-flush msg_grp_faniry_js">
+                                   
                                 </ul>
                             </div>
                         </div>

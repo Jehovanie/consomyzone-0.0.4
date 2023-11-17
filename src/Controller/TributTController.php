@@ -2319,7 +2319,7 @@ class TributTController extends AbstractController
                         $tribut->createTableComment($tableTribu, "golf_commentaire");
 
                     }
-
+                    $tribut->creaTableTeamMessage($tableTribu);
                     return true;
 
                 } else {

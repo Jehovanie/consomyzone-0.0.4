@@ -49,7 +49,7 @@
                         </a>
                         <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 d-inline" onclick="createVisoGroup()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button>
                         <div class="vd mh ip ch ib user_profile_list_elie">
-                            <h3>Vos Messages.</h3>
+                            <h3>tribus.</h3>
                             {# <div class="container-bar-recherche-message">
                                 <input type="text" class="search_input_message_perso" placeholder="Recherche...">                
                             </div> #}
@@ -62,60 +62,35 @@
                                 </li>
                             </ul> #}
 
-                            <div class="all_mpcmz_faniry_js content_list_tribuG_jheo_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
-                                {% if amisTributG|length > 0 %}
+                            <div class="all_mpcmz_faniry_js content_list_tribuG_jheo_js">
+                                {# {% if amisTributG|length > 0 %} #}
                                     <!-- Chat List Item -->
                                     {% set isZeroMessage = {'noMessage': 'oui', 'haveMessage':'non'} %}
-                                    {% for item in amisTributG %}
-                                         {% if item.last_message == false %}
+                                    {% if tribusG is defined %}
+                                        
+                                        {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
+                                        {% include 'card/card_item_message_grp_left.html.twig' with {'id':tribusG.id , 
+                                        'photo': tribusG.photo_profil, 'firstname': tribusG.name, 'lastname': '', 'is_online': 1, 'last_message': "text" ,"table":tribusG.tableTribuG, "type":"g" } %} 
                                             
-                                         {% else %}
-                                             {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
-                                            {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
-                                         {% endif %}
-                                    {% endfor %}
-                                    <!-- end List Chat -->
-                                    {% for jtem in allTribuT %}
-                                            {# <li class="list-group-item"> #}
-                                                {# <div class="text-primary d-flex justify-content-between align-items-center">
-                                                    <div>
-                                                        {{jtem.name_tribu_t_muable}}
-                                                    </div>
-                                                    <div>
-                                                        {% if jtem.amis|length > 0 %}
-                                                            <span class="badge bg-info text-dark">{{jtem.amis|length}} en ligne.</span>
-                                                        {% endif %}
-                                                        <i class="fas fa-plus-circle {{jtem.table_name ~ '_jheo_js'}}" data-bs-toggle="collapse" data-bs-target="{{'#ID_' ~ jtem.table_name}}" aria-expanded="false" aria-controls="collapseExample" onclick="toggleClick(this)"></i>
-                                                    </div>
-                                                </div> #}
-                                                {# <div class="collapse" id="{{'ID_' ~ jtem.table_name}}"> #}
-                                                    {# <ul class="list-group"> #}
-                                                        {% if jtem.amis|length > 0 %}
-                                                            <!-- Chat List Item -->
-                                                            {% for ktem in jtem.amis %}
-                                                                {% if ktem.last_message == false %}
-
-                                                                {% else %}
-                                                                    {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
-                                                                    {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
-                                                                 {% endif %}
-                                                            {% endfor %}
-                                                            <!-- end List Chat -->
-                                                        {% endif %}
-                                                    {# </ul> #}
-                                                {# </div> #}
-                                            {# </li> #}
+                                    {% endif %}
+                                    {% if tribuT|length > 0%}
+                                        {% for item in tribuT %}
+                                            {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
+                                            {% include 'card/card_item_message_grp_left.html.twig' with {'id':0 , 'photo': item.logo_path, 
+                                            'firstname': item.name_tribu_t_muable, 'lastname': '', 'is_online': 1, 'last_message': "text","table":item.table_name, "type":"t" } %} 
                                         {% endfor %}
+                                        
+                                    {% endif %}
                                     {% if isZeroMessage.noMessage is same as('oui') and isZeroMessage.haveMessage is same as('non') %}
                                          <div>Vous n'avez aucun message. Rechercher d'autres fan en ligne est envoyés leur des messages. </div>
                                     {% endif %}
-                                {% else %}
-                                    <div class="cg lc mg sh ol rl tq is">
+                                {# {% else %} #}
+                                    {# <div class="cg lc mg sh ol rl tq is">
                                         <div class="bg-light bg-gradient p-3">
                                             <p class="text-center text-danger">Actuellement, vous êtes seul partisan en ligne dans votre tribu G.</p>
                                         </div>
-                                    </div>
-                                {% endif %}
+                                    </div> #}
+                                {# {% endif %} #}
                             </div>
 
                             {# <div class="content_list_tribuT_jheo_js ">
@@ -140,133 +115,132 @@
 
                 {# ===== chat content ===================== #}
                 <div class="vc lc hg xi yi bj wr w-100">
-                    <!-- ====== Chat Box Start -->
                     <div class="lc mg qg vi bj wr ql vl">
-                        <div class="lc mg content_entete_msg_jheo_js" data-userToFirstname={{userToProfil.firstname}} data-userToLastname={{userToProfil.lastname}}  data-toggle-id-user-to={{userToProfil.id}}>
-                            <div class="ob xc yd pf nh th">
-                                <img src="{{(userToProfil.photo_profile) ? "/public" ~ userToProfil.photo_profile  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userToProfil.firstname}}" class="vc yd qk rk"/>
-                            </div>
-                            <div>
-                                <p class="mn">
-                                    Répondez au message de
-                                    <h5 class="un zn gs">
-                                        {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
-                                    </h5>
-                                </p>
-                            </div>
-                        </div>
-                        <div>
-                            <div class="h d-flex">
-                                <button class="lc yc zd mg pg sh bj wr wj yr me-1" id="elie-btn-visio" data.roof="{{app.user.id}}">
-                                    <i class="fas fa-video-camera" style="font-size:28px;color:#0d6efd;"></i>
-                                </button>
-                                <div x-show="openDropDown" @click.outside="openDropDown = false" class="g m n na de eh sh so nj xr ni bj wr vk">
-                                    <button class="yd sh ol ll gn mn tq js">
-                                        Modifiez.
-                                    </button>
-                                    <button class="yd sh ol ll gn mn tq js">
-                                        Supprimez.
-                                    </button>
+                        {% if isT == 1 %}
+                            <div class="lc mg content_entete_msg_grp_jheo_js" data-roof={{app.user.id}} data-userToFirstname="" data-userToLastname=""  data-toggle-id-user-to={{group_send_to}} data-toggle-type="t">
+                                <div class="ob xc yd pf nh th">
+                                    <img src="{{(tribuTSelected.logo_path) ? "/public" ~ tribuTSelected.logo_path  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{tribuTSelected.name_tribu_t_muable}}" class="vc yd qk rk"/>
                                 </div>
-                            </div>
-                        </div>
+                                <div>
+                                    <p class="mn">
+                                    Discussion générale
+                                        <h5 class="un zn gs">
+                                            {{tribuTSelected.name_tribu_t_muable}}
+                                        </h5>
+                                    </p>
+                                </div>
+                            </div> 
+                        {% else %}
+                            <div class="lc mg content_entete_msg_grp_jheo_js" data-roof={{app.user.id}} data-userToFirstname="" data-userToLastname=""  data-toggle-id-user-to={{group_send_to}} data-toggle-type="g">
+                                <div class="ob xc yd pf nh th">
+                                    <img src="{{(tribusG.photo_profil) ? "/public" ~ tribusG.photo_profil  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{tribusG.name}}" class="vc yd qk rk"/>
+                                </div>
+                                <div>
+                                    <p class="mn">
+                                    Discussion générale
+                                        <h5 class="un zn gs">
+                                            {{tribusG.name}}
+                                        </h5>
+                                    </p>
+                                </div>
+                            </div> 
+                        {% endif %}
                     </div>
-
                     {# ================== CONTENCT DISCUSSION ================== #}
                     <div class="vd mh ip fh ql wl content_discussion_jheo_js" id="content_discussion_elie">
-                        {% if userToProfil.messages|length > 0  %}
+                        {% if allMessage|length > 0 %}
+                          {% set defaultFile = "/public/assets/image/type_file.png" %}
+                            {% for message in allMessage %}
+                                {% if message.id_expediteur == app.user.id %} {# my message#}
+                                    <div class="qf rb" id="{{'message_' ~ message.id_msg ~ '_jheo_js'}}">
+                                            <div class="qb vh ii oj el yl">
+                                                {% if message.msg != null %}
+                                                    <p class="eo">{{message.msg| raw}}</p>
+                                                {% endif %}
+                                                {% if  message.images != null %}
+                                                    <div class="content_image_msg">
+                                                        {% if message.images|length > 0 %}
+                                                            {% for image in message.images %}
+                                                                <div class="file_item">
+                                                                    <img class="message_image_item" src="{{image}}" alt="image">
+                                                                    <a class="icon_download_file" href="{{image}}" download>
+                                                                        <i class="fa-solid fa-download"  style="color:black"></i>
+                                                                    </a>
+                                                                </div>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    
 
-                            {% set defaultFile = "/assets/image/type_file.png" %}
-
-                            {% for message in userToProfil.messages %}
-                                {% if message.isForMe|number_format is same as("1") %}
-                                    <div class="qf" id="{{'message_' ~ message.id ~ '_jheo_js'}}">
-                                        <p class="qb mn un">
-                                            {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
-                                        </p>
-                                        <div class="qb vh hi vj yr el yl">
-                                            
-                                            {% if message.message_type is same as('text') %}
-                                                <p>{{message.content.text | raw}}</p>
-                                            {% else  %}
-                                                <p>{{message.content.text | raw}}</p>
-                                                <div class="content_image_msg">
-                                                    {% if message.content.images|length > 0 %}
-                                                        {% for image in message.content.images %}
-                                                            <div class="file_item">
-                                                                <img class="message_image_item" src="{{image}}" alt="image">
-                                                                <a class="icon_download_file" href="{{image}}" download>
-                                                                    <i class="fa-solid fa-download"></i>
-                                                                </a>
-                                                            </div>
-                                                        {% endfor %}
-                                                    {% endif %}
-
-                                                    {% if message.content.files is defined and  message.content.files|length > 0 %}
-                                                        {% for file in message.content.files %}
-                                                            <div class="file_item">
-                                                                <img class="message_image_item" src="{{defaultFile}}" alt="File">
-                                                                <a class="icon_download_file" href="{{file}}" download>
-                                                                    <i class="fa-solid fa-download"></i>
-                                                                </a>
-                                                            </div>
-                                                        {% endfor %}
-                                                    {% endif %}
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                        <p class="nn">{{message.datetime}}</p>
+                                                    </div>
+                                                {% endif %}
+                                                {% if message.files is defined and  message.files|length > 0 %}
+                                                        <div class="content_image_msg">    
+                                                            {% for file in message.files %}
+                                                                <div class="file_item">
+                                                                    <img class="message_image_item" src="{{defaultFile}}" alt="File">
+                                                                    <a class="icon_download_file" href="{{file}}" download>
+                                                                        <i class="fa-solid fa-download"  style="color:black"></i>
+                                                                    </a>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                {% endif %}
+                                            </div>
+                                            <p class="in nn">{{message.date_message_created}}</p>
                                     </div>
 
-                                {% else %}
-                                    
-                                    <div class="qf rb" id="{{'message_' ~ message.id ~ '_jheo_js'}}">
-                                        <div class="qb vh ii oj el yl">
-                                            {% if message.message_type is same as('text') %}
-                                                <p class="eo">{{message.content.text | raw}}</p>
-                                            {% else %}
-                                                <p class="eo">{{message.content.text | raw}}</p>
-                                                <div class="content_image_msg">
-                                                    {% if message.content.images|length > 0 %}
-                                                        {% for image in message.content.images %}
-                                                            <div class="file_item">
-                                                                <img class="message_image_item" src="{{image}}" alt="image">
-                                                                <a class="icon_download_file" href="{{image}}" download>
-                                                                    <i class="fa-solid fa-download"></i>
-                                                                </a>
-                                                            </div>
-                                                        {% endfor %}
-                                                    {% endif %}
-                                                    {% if message.content.files is defined and  message.content.files|length > 0 %}
-                                                        {% for file in message.content.files %}
-                                                            <div class="file_item">
-                                                                <img class="message_image_item" src="{{defaultFile}}" alt="File">
-                                                                <a class="icon_download_file" href="{{file}}" download>
-                                                                    <i class="fa-solid fa-download"></i>
-                                                                </a>
-                                                            </div>
-                                                        {% endfor %}
-                                                    {% endif %}
+                                {% else %} {# other message#}
+                                    <div class="qf" id="{{'message_' ~ message.id_msg ~ '_jheo_js'}}" style="color:black">
+                                            <p class="qb mn un">
+                                                {{message.firstname ~ " " ~ message.lastname }}
+                                            </p>
+                                            <div class="qb vh hi vj yr el yl">
+                                                
+                                                {% if message.msg != null %}
+                                                    <p class="eo" style="color:black">{{message.msg| raw}}</p>
+                                                {% endif %}
+                                                {% if  message.images != null %}
+                                                    <div class="content_image_msg">
+                                                        {% if message.images|length > 0 %}
+                                                            {% for image in message.images %}
+                                                                <div class="file_item">
+                                                                    <img class="message_image_item" src="{{image}}" alt="image">
+                                                                    <a class="icon_download_file" href="{{image}}" download>
+                                                                        <i class="fa-solid fa-download" style="color:black"></i>
+                                                                    </a>
+                                                                </div>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    
 
-                                                </div>
-                                            {% endif %}
-                                        </div>
-                                        <p class="in nn">{{message.datetime}}</p>
+                                                    </div>
+                                                {% endif %}
+                                                {% if message.files is defined and  message.files|length > 0 %}
+                                                        <div class="content_image_msg">    
+                                                            {% for file in message.files %}
+                                                                <div class="file_item">
+                                                                    <img class="message_image_item" src="{{defaultFile}}" alt="File">
+                                                                    <a class="icon_download_file" href="{{file}}" download>
+                                                                        <i class="fa-solid fa-download"  style="color:black"></i>
+                                                                    </a>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                {% endif %}
+                                            </div>
+                                            <p class="nn">{{message.date_message_created}}</p>
                                     </div>
 
                                 {% endif %}
                             {% endfor %}
-
                         {% else %}
-                            <p class="text-center start_discussion_jheo_js"> Envoyer lui Hello!!!</p>
+                             <p class="text-center start_discussion_jheo_js"> Envoyer un Hello!!!</p>
                         {% endif %}
-                    </div>
-                    {# ================== END CONTENCT DISCUSSION =============== #}
-
-                    {# ================== FORM MESSAGE ================== #}
+                        
+                    </div >
                     <div class=" nj xr ti bj wr sl ql content_form_message_jheo_js">
 
-                        <div class="content_image_input content_image_input_jheo_js"  data-toggle-userfrom-id={{app.user.id}} data-toggle-userto-id= {{userToProfil.id}} >
+                        <div class="content_image_input content_image_input_jheo_js"  data-toggle-type={{type}} data-toggle-userfrom-id={{app.user.id}} data-toggle-userto-id= {{group_send_to}} >
                             <i class="fa-solid fa-file-import fa-xl ms-3 input_file_under_image_jheo_js"></i>
                             {# <img class="image_input_item" src="{{asset('/uploads/users/photos/default_pdp.png')}}" alt="Image_msg">#}
                         </div>
@@ -283,7 +257,7 @@
                                     </div>
 
                                     {# <input class="hidden input_file_hidden_jheo_js"  type="file" class="first-input" multiple aria-disabled  accept="image/png, image/jpeg, image/gif">  #}
-                                    <input class="hidden input_file_hidden_jheo_js" accept=".jpeg, .png, .jpg, .csv, .txt, .json, .doc, .pdf"  type="file" class="first-input" multiple aria-disabled> 
+                                    <input class="hidden input_file_hidden_jheo_js send_msg_in_grp_faniry_js" accept=".jpeg, .png, .jpg, .csv, .txt, .json, .doc, .pdf"  type="file" class="first-input" multiple aria-disabled> 
                                     
                                     <div class="zq show_emojy_picker_jheo_js">
                                         <svg width="19" height="18" viewbox="0 0 19 18" class="hk">
@@ -298,7 +272,7 @@
 
                             {{include('card/card_emojy_pickert.html.twig')}}
 
-                            <button class="xc yd pf lc mg pg qh oj eo wq btn_send_message_jheo_js">
+                            <button class="xc yd pf lc mg pg qh oj eo wq btn_send_message_jheo_j send_msg_grp_faniry_js">
                                 <svg width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                     <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -306,9 +280,6 @@
                             </button>
                         </div>
                     </div>
-                    {# ================== END FORM MESSAGE ================== #}
-
-                    <!-- ====== Chat Box End -->
                 </div>
 
 
@@ -349,7 +320,7 @@
         </div>
     </main>
 </div>
-{{include('user/message/visio_message_modal.html.twig')}}
+{# {{include('user/message/visio_message_modal.html.twig')}}
 
 
 <div class="modal fade" id="visioGroupModalForMessage" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -368,7 +339,7 @@
       </div>
     </div>
   </div>
-</div>
+</div> #}
 {# {{include('user/message/visio_message_modal.html.twig')}} #}
 {# {{include('user/message/amis_mobile.html.twig')}} #}
 
