@@ -1276,7 +1276,8 @@ function showResto(table_rst_pastilled, id_c_u) {
                         // text = `<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
                         action = "update"
     
-                        text1 = "Modifiez votre avis"
+                        // text1 = "Modifiez votre avis"
+                        text1 = "Ajouter une autre avis"
                     } else {
                         // console.log("crt " + denominationsF)
                         // text = `<button type="button" class="btn btn-primary" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,${id_c_u},${id},${id_resto_comment[key]})">Notez</button>`

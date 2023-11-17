@@ -1503,11 +1503,32 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
     public function getRestoPastilles($tableResto, $tableComment){
-    
-        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, isPastilled, id_resto_comment,id_restaurant,id_user,note,commentaire ,
-								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
-								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
-				as tb1 INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";
+        /// old sql request, this use the talbe <tribu_t_ ...>_restaurant_commentaire to get the avis.
+        // $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, isPastilled, id_resto_comment,id_restaurant,id_user,note,commentaire ,
+		// 						GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+		// 						GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
+		// 		as tb1 INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";
+
+        //// NEW : This use the global table avisresaturant in tribu T
+        $sql= "SELECT * FROM ( 
+                    SELECT  t1.id, 
+                            t1.id_resto,
+                            t1.denomination_f, 
+                            t1.isPastilled, 
+                            t2.id as id_resto_comment, 
+                            t2.id_resto as id_resto_pastilled, 
+                            t2.id_user, 
+                            t2.note, 
+                            t2.avis as commentaire,
+                            GROUP_CONCAT(t2.id_user) as All_user, 
+                            GROUP_CONCAT(t2.avis) as All_com, 
+                            FORMAT(AVG(t2.note),2) as globalNote, 
+                            COUNT(t2.id_resto) as nbrAvis,
+                            GROUP_CONCAT(t2.id) as All_id_r_com 
+                    FROM $tableResto  as t1 
+                    LEFT JOIN avisrestaurant  as t2 ON t1.id_resto = t2.id_resto 
+                GROUP BY t1.id ) as tb1 
+                INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";
 
         $stmt = $this->getPDO()->prepare($sql);
          
