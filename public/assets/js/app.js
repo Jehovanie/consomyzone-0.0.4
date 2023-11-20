@@ -416,18 +416,43 @@ window.addEventListener('load', () => {
     const link_now= new URL(window.location.href)
     const linkPathname= link_now.pathname;
     if(!linkPathname.includes("/actualite-non-active")){
-    console.log(isValueInCookie("isCanUseCookie"))
-        
-        if(!isValueInCookie("isCanUseCookie")){
-            askClientToUseCookie();
-        }else{
-            if(isValueInCookie("isCanUseCookie") ){
+    const useCookieOrNot=isValueInCookie("isCanUseCookie")
+       
+        if(useCookieOrNot == "true"){
+            console.log(useCookieOrNot)
                 getToastMessage()
-            }
+            
         }
+        //else{
+                //    getToastMessage()
+                    
+                // }
 
     }
 })
+
+// set section est utiliser dans les parametre du site
+if(document.querySelector("#cookies_faniry_js")){
+    const cookieAccepted=document.querySelector("#acceptCookies_faniry_js")
+    const coookieDecline=document.querySelector("#declineCookies_faniry_js")
+    window.addEventListener("load", ()=>{
+        const useCookieOrNot=isValueInCookie("isCanUseCookie")
+        if(useCookieOrNot == "true"){
+            cookieAccepted.checked=true
+        }else{
+            coookieDecline.checked=true
+        }
+    })
+    cookieAccepted.addEventListener("change",()=>{
+        Cookies2.set(`isCanUseCookie`,true,{ expires: 30, secure: true })
+        coookieDecline.checked=false
+    })
+
+    coookieDecline.addEventListener("change",()=>{
+        Cookies2.set(`isCanUseCookie`,false,{ expires: 30, secure: true })
+        cookieAccepted.checked=false
+    })
+}
 /// --------------- end of this rtesponsive for mobile ---------
 
 

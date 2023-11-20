@@ -61,11 +61,16 @@ if(document.querySelector(".content_entete_msg_grp_jheo_js")){
     evtSource.onmessage = function(event) {
 
         //// get data
+        
         const all_messages = JSON.parse(event.data);
         console.log(all_messages)
 
         all_messages.forEach(message => {
-            if(!document.querySelector(`#message_${message.id_msg}_jheo_js`)){
+            console.log(message)
+            const idExpediteur=parseInt(message.id_expediteur);
+            const currentuser=parseInt(document.querySelector(".spid_js_faniry").classList[1])
+            
+            if((idExpediteur != currentuser) && (document.querySelector(`#message_${message.id_msg}_jheo_js`) == null)){
                 const msg=message.msg
                 const images=message.images
                 const isForMe=dataRoof === message.id_expediteur ? 0 : 1
@@ -127,8 +132,8 @@ function createDivMessageGroup(id,isForMe,date, message,images,userToFirstname,u
     card_msg.setAttribute("id", `message_${id}_jheo_js`);
 
     let image_html_list= "";
-    if( images.length > 0 ){
-        images.forEach(image=> {
+    if( images?.length > 0 ){
+        images?.forEach(image=> {
             image_html_list += `<img class="message_image_item" src="${image}" alt="image">`
         });
     }

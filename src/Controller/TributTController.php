@@ -1521,7 +1521,7 @@ class TributTController extends AbstractController
 
         if($has_restaurant == true){
             $restos = $tribu_t->getRestoPastilles($table_resto, $tableComment);
-			// $restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
+			$restos=mb_convert_encoding($restos, 'UTF-8', 'UTF-8');
         }
 		
 		$r=$serialize->serialize($restos,'json');
@@ -1546,7 +1546,7 @@ class TributTController extends AbstractController
 
         if($has_golf == true){
             $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
-			// $golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+			$golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
         }
 		$r=$serialize->serialize($golfs,'json');
 		
@@ -2452,7 +2452,7 @@ class TributTController extends AbstractController
         $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
 
         if($checkIdResto > 0){
-            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, false);
+            $tribu_T_Service->depastilleOrPastilleTribuT($tribu_t."_restaurant", $resto_id, false);
         }
 
         // $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";

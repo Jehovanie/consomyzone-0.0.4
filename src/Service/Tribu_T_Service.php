@@ -1543,7 +1543,7 @@ class Tribu_T_Service extends PDOConnexionService
                             COUNT(t2.id_resto) as nbrAvis,
                             GROUP_CONCAT(t2.id) as All_id_r_com 
                     FROM $tableResto  as t1 
-                    LEFT JOIN avisrestaurant  as t2 ON t1.id_resto = t2.id_resto 
+                    LEFT JOIN avisrestaurant  as t2 ON t1.id_resto = t2.id_resto WHERE t1.isPastilled IS TRUE
                 GROUP BY t1.id ) as tb1 
                 INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";
 
@@ -1578,7 +1578,7 @@ class Tribu_T_Service extends PDOConnexionService
                             GROUP_CONCAT(t2.id) as All_id_r_com 
                             FROM $tableGolf as t1 
                                 LEFT JOIN avisgolf  as t2
-                                ON t2.id_golf =t1.id_resto 
+                                ON t2.id_golf =t1.id_resto WHERE t1.isPastilled IS TRUE
                     GROUP BY t1.id ) as tb1 
                 INNER JOIN golffrance
                 ON tb1.id_resto =golffrance.id;";
@@ -2055,12 +2055,21 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
      public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
-        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE extensionId = :resto_id";
+        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->bindParam(":isPastilled", $isPastilled);
         $stmt->bindParam(":resto_id", $resto_id);
         $stmt->execute();
 
+    }
+
+    public function depastilleOrPastilleTribuT($table_resto, $resto_id, $isPastilled)
+    {
+        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->bindParam(":isPastilled", $isPastilled);
+        $stmt->bindParam(":resto_id", $resto_id);
+        $stmt->execute();
     }
 
 
@@ -2192,6 +2201,8 @@ class Tribu_T_Service extends PDOConnexionService
         "isPrivate tinyint NOT NULL DEFAULT 0,".
         "isPublic tinyint NOT NULL DEFAULT 1,".
         "isRead tinyint NOT NULL DEFAULT 0,".
+        "isRemoved tinyint,".
+        "isEpingler tinyint,".
         "date_message_created datetime NOT NULL DEFAULT current_timestamp()".
         " )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
@@ -2235,12 +2246,18 @@ class Tribu_T_Service extends PDOConnexionService
         $statement->bindParam(':isRead',$isRead,PDO::PARAM_INT);
 
         $statement->execute();
+
+                
+        $max_id = $this->getPDO()->prepare("SELECT max(id_msg) as last_id_message FROM  ". $tableMessageName );
+        $max_id->execute();
+
+        return $max_id->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getMessageGRP($tribu_T){
         $tableMessageName=$tribu_T."_msg_grp";
 
-        $sql="SELECT * FROM " . $tableMessageName . " as t1 LEFT JOIN CONSUMER as t2 ON t1.id_expediteur=t2.user_id ORDER BY t1.date_message_created ASC ";
+        $sql="SELECT * FROM " . $tableMessageName . " as t1 LEFT JOIN consumer as t2 ON t1.id_expediteur=t2.user_id ORDER BY t1.date_message_created ASC ";
         $statement = $this->getPDO()->prepare($sql);
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_ASSOC);

@@ -125,7 +125,7 @@ if (document.querySelector("#fetch_golf_tribug_jheo_js")) {
                                         ${note}
                                     </td>
                                     <td>
-                                        <a class="text-secondary data-avis-${golf.id}" style="cursor: pointer;text-decoration:none;"  onclick="openAvisGolfG(${golf.nbrAvis}, ${golf.id})"> ${golf.nbrAvis} Avis</a>
+                                        <a class="btn btn-sm bg_orange data-avis-${golf.id}" style="cursor: pointer;text-decoration:none;"  onclick="openAvisGolfG(${golf.nbrAvis}, ${golf.id})"> ${golf.nbrAvis} Avis</a>
                                     </td>
                                     <td>
                                         <button class="btn btn-primary elie-plus-${golf.id}" style="" onclick='openPopupActionGolfG(${golf.id_golf_comment}, ${golf.id_golf_extension})'><i class="fas fa-plus"></i> Plus</button>
@@ -200,7 +200,8 @@ function openAvisGolfG(nb_avis, id_golf) {
         fetch('/avis/golf/global/' + id_golf)
             // fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_golf)
             .then(response => response.json())
-            .then(avis => {
+            .then(response => {
+                const avis= response.data;
                 for (let avi of avis) {
 
                     console.log(avi);
@@ -248,7 +249,7 @@ function openAvisGolfG(nb_avis, id_golf) {
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <div class="content_profil_image me-2">
-                                                <img class="profil_image" src="${avi.user.photo ? avi.user.photo : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
+                                                <img class="profil_image" src="${avi.user.photo ? "/public" +  avi.user.photo : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
                                             </div>
                                             <div class="content_info">
                                                 <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.user.fullname}</small></h3>

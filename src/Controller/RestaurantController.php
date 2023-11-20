@@ -1019,9 +1019,9 @@ class RestaurantController extends AbstractController
                 $tableExtension = $tableTribu . "_restaurant";
                 if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
                     if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $details["id"], true)){
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => false]);
                     }else{
-                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable , "isPastilled" => true]);
                     }
                 }
             }
@@ -1035,12 +1035,15 @@ class RestaurantController extends AbstractController
                 $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
                 if($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0){
                     if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"], true)){
-                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => true]);
+                    }else{
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable, "isPastilled" => false]);
                     }
                 }
             }
 
         }
+
         return $this->render("restaurant/detail_resto.html.twig", [
             "id_restaurant"=>$id_restaurant,
             "details" => $details,
@@ -1199,7 +1202,7 @@ class RestaurantController extends AbstractController
         $note = $requestJson["note"];
         
         //dd($user,$resto);
-        $avisResto->setAvis($avis)
+        $avisResto->setAvis(json_encode($avis))
             ->setnote($note)
             ->setUser($user)
             ->setDatetime(new \DateTimeImmutable())

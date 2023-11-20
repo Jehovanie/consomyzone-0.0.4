@@ -53,10 +53,16 @@ class Status {
         $userType = $user->getType();
         $userId = $user->getId();
         $profil = "";
+        $tribuAvatar="";
         if ($userType == "consumer") {
             $profil = $this->entityManager->getRepository(Consumer::class)->findOneBy(['userId' => intval($userId)]);
         } else {
             $profil = $this->entityManager->getRepository(Supplier::class)->findOneBy(['userId' => intval($userId)]);
+        }
+        $currentTribug=$profil ? $profil->getTributG() : "";
+        if($currentTribug!=""){
+            
+            $tribuAvatar=$this->tributGService->getAvatar($currentTribug)[0]["avatar"];
         }
         return [
             "id" => $user->getId(),
@@ -71,9 +77,10 @@ class Status {
             "tableNotification" => $user->getTablenotification(),
             "tableMessage" => $user->getTablemessage(),
             "isSuperAdmin" => in_array("ROLE_GODMODE",$user->getRoles()),
-            "commune"=> $profil->getCommune(),
-            "quartier"=> $profil->getQuartier(),
-            "code_postal" => $profil->getCodePostal()
+            "commune"=>  $profil ? $profil->getCommune():"",
+            "quartier"=>$profil ? $profil->getQuartier() :"",
+            "code_postal" =>$profil ?  $profil->getCodePostal() :"",
+            "tribugAvatar"=> $tribuAvatar !=null ? "/uploads/tribus/photos/".$tribuAvatar :"/uploads/tribus/avatar_tribu.jpg"
         ];
     }
 

@@ -272,7 +272,6 @@ class UserController extends AbstractController
         UserRepository $userRepository
 
     ): Response {
-
         $userConnected= $status->userProfilService($this->getUser());
         
         $user = $this->getUser();
@@ -829,7 +828,7 @@ class UserController extends AbstractController
         
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
-        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
+        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user_id));
 
         //Editing by Elie for a tribu g and t partisans
         
@@ -2040,15 +2039,17 @@ class UserController extends AbstractController
             
             $tributName  = $balise;
 
-            $tribut->setTribuT($tribu_t_joined_info->name, $tribu_t_joined_info->description, $tribu_t_joined_info->logo_path, $tribu_t_joined_info->extension, $userPosterId,"tribu_t_joined", $tributName);
+            $nameMuable = $tribu_t_joined_info->name_tribu_t_muable;
+
+            $tribut->setTribuT($tribu_t_joined_info->name, $tribu_t_joined_info->description, $tribu_t_joined_info->logo_path, $tribu_t_joined_info->extension, $userPosterId,"tribu_t_joined", $nameMuable);
 
             $tribut->updateMember($balise, $userPosterId, 1);
 
             $userFullname = $tribut->getFullName($userPosterId);
 
-            $content = $userFullname . " a accepté l'invitation de rejoindre la tribu " . $tributName;
+            $content = $userFullname . " a accepté l'invitation de rejoindre la tribu " . $nameMuable;
 
-            $type = "Invitation pour rejoindre la tribu " . $tributName;
+            $type = "Invitation pour rejoindre la tribu " . $nameMuable;
 
             $requesting->setIsAccepted($tableRequestingName, $balise, intval($idR), $userPosterId);
 

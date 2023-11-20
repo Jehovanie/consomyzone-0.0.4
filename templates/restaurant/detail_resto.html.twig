@@ -18,7 +18,7 @@
                                 <div class="mainContainerLogoTribu">
                                     {% if tribu_t_resto_pastille|length > 0 %}
                                         {% for item in tribu_t_resto_pastille %}
-                                            {% if item["isPastilled"] %}
+                                            {% if item["isPastilled"]%}
                                                 {% if item["logo_path"] != "" %}
                                                     {# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt=""> #}
                                                     <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}"><img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>

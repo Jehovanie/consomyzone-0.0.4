@@ -51,7 +51,7 @@ class AvisGolfRepository extends ServiceEntityRepository
                 ->andWhere("a.user = :iduser")
                 ->andWhere("a.id = :id")
                 ->setParameter("note", $note)
-                ->setParameter("comment", $comment)
+                ->setParameter("comment", json_encode($comment))
                 ->setParameter("idGolf",$idGolf)
                 ->setParameter("iduser", $iduser)
                 ->setParameter("id", $avisID)
@@ -90,7 +90,8 @@ class AvisGolfRepository extends ServiceEntityRepository
             $data = [
                 "id" => $avis->getId(),
                 "note" => $avis->getNote(),
-                "avis" => $avis->getAvis(),
+                // "avis" => $avis->getAvis(),
+                "avis" => json_decode($avis->getAvis(), true),
                 "datetime" => $avis->getDatetime(),
                 "resto" => [
                     "id" => $resto_id

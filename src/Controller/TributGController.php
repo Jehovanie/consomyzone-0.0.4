@@ -875,8 +875,11 @@ class TributGController extends AbstractController
 
         // dd($tributGService->getAllRestoTribuG($table_tributG_name));
         // getAllRestoTribuG($table_name)
+        
+        $results= $tributGService->getGolfPastillesTribuGV2($table_tributG_name);
+        $results=mb_convert_encoding($results, 'UTF-8', 'UTF-8');
 
-
-        return $this->json($tributGService->getGolfPastillesTribuGV2($table_tributG_name));
+        return $this->json($results);
     }
+
 }

@@ -111,7 +111,7 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
 
                         if (resto.isPastilled) {
 
-                            // console.log(resto);
+                            console.log(resto);
 
                             let id = resto.id
                             let id_resto = resto.id_resto
@@ -142,7 +142,7 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                                     </td>
                                     <td class="data-note-${resto.id}">${note}/4</td>
                                     <td>
-                                        <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvisRestoG(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
+                                        <a class="btn btn-sm bg_orange data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvisRestoG(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
                                     </td>
                                     <td>
                                         <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupActionRestoG('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
@@ -186,10 +186,13 @@ function openPopupActionRestoG(id_pastille, denomination_f, adresse, latitude, l
 
     document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote(" + id_pastille + ",\'" + action + "\')")
     document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent(" + id_pastille + ",\'" + denomination_f + "\',\'" + adresse + "\',\'" + action + "\')")
-    let btn = document.querySelector("#data-depastille-nanta-js")
-    btn.dataset.id = id_pastille
-    btn.dataset.name = denomination_f
-    btn.dataset.tbname = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")
+    // let btn = document.querySelector("#data-depastille-nanta-js")
+    // btn.setAttribute("onclick", `pastilleForTribuG(this, false,${id_pastille},'${denomination_f}')`)
+
+    document.querySelector("#data-depastille-nanta-js").setAttribute("onclick", "depastillerResto(" + id_pastille + ",\'" + id_pastille + "\')")
+    // btn.dataset.id = id_pastille
+    // btn.dataset.name = denomination_f
+    // btn.dataset.tbname = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")
 
 }
 
@@ -215,7 +218,9 @@ function openAvisRestoG(nb_avis, id_resto) {
         fetch('/avis/restaurant/global/'+ id_resto)
         // fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_resto)
             .then(response => response.json())
-            .then(avis => {
+            .then(response => {
+                console.log(response)
+                const avis= response.data; 
                 for (let avi of avis) {
 
                     console.log(avi);
@@ -263,7 +268,7 @@ function openAvisRestoG(nb_avis, id_resto) {
                                     <div class="d-flex justify-content-between align-items-start">
                                         <div class="d-flex justify-content-between align-items-start">
                                             <div class="content_profil_image me-2">
-                                                <img class="profil_image" src="${avi.user.photo ? avi.user.photo : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
+                                                <img class="profil_image" src="${avi.user.photo ? "/public" +  avi.user.photo : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
                                             </div>
                                             <div class="content_info">
                                                 <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.user.fullname}</small></h3>
@@ -494,4 +499,40 @@ function updateNoteTribuG(id_resto, id_bdd_resto) {
     })
     */
 
+}
+
+/**
+ * @author Elie
+ * @constructor depastiller un golf
+ * @param {*} id_pastille 
+ * @param {*} id_golf 
+ */
+function depastillerResto(id_pastille, id_resto){
+    let data = {
+        tbl : document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table"),
+        name : "Resto id : "+id_resto,
+        id : id_resto
+    }
+
+    fetch("/user/tribu_g/depastille/resto",{
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }).then(resp=>{
+            if(resp.ok && resp.status==200){
+    
+                swal({
+                    title: "Dépastillé!",
+                    text: "Restaurant dépastillé avec success",
+                    icon: "success",
+                    button: "Ok",
+                }).then(e=>{
+                    $("#detailOptionResto").modal("hide")
+                    document.querySelector("#fetch_resto_tribug_jheo_js").click()
+                });
+            }
+        })
 }

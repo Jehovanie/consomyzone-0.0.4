@@ -11,8 +11,6 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
     const object = form_parent.querySelector(".object_js_jheo");
     const description = editor.getData()
 
-<<<<<<< HEAD
-=======
     /*console.log(input_cc);
 
     document.querySelectorAll(".invitation_email_js_jheo").forEach((item) => {
@@ -25,7 +23,6 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
     let agenda = JSON.parse(sessionStorage.getItem("agenda"))
     object.value = agenda.title
 
->>>>>>> nantenaina_old
     input_principal.addEventListener("input", () => {
         input_principal.style.border = "1px solid black";
     })

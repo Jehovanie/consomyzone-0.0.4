@@ -1680,6 +1680,12 @@ class TributGService extends PDOConnexionService{
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
+
+        $result=mb_convert_encoding($result, 'UTF-8', 'UTF-8');
+
+		//$result=$serialize->serialize($result,'json');
+		
+		// return new JsonResponse($result, Response::HTTP_OK, [], true);
         return $result;
 
     }
@@ -1716,13 +1722,13 @@ class TributGService extends PDOConnexionService{
                               FROM  $tableResto as t1 left join $tableComment  as t2 on t1.extensionId=t2.id_golf where  t1.isPastilled IS TRUE GROUP BY t1.id ) as tableRestCom  
               INNER JOIN golffrance ON tableRestCom.id_golf_extension=golffrance.id";
     
-              $sql2 = "SELECT * FROM $tableResto";
+            // $sql2 = "SELECT * FROM $tableResto";
             $stmt = $this->getPDO()->prepare($sql);
             
             $stmt->execute();
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
-   
+
         return $result;
     }
 
@@ -1744,6 +1750,8 @@ class TributGService extends PDOConnexionService{
         "isPrivate tinyint NOT NULL DEFAULT 0,".
         "isPublic tinyint NOT NULL DEFAULT 1,".
         "isRead tinyint NOT NULL DEFAULT 0,".
+        "isRemoved tinyint,".
+        "isEpingler tinyint,".
         "date_message_created datetime NOT NULL DEFAULT current_timestamp()".
         " )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
@@ -1786,12 +1794,17 @@ class TributGService extends PDOConnexionService{
             $statement->bindParam(':isRead',$isRead,PDO::PARAM_INT);
 
             $statement->execute();
+
+            $max_id = $this->getPDO()->prepare("SELECT max(id_msg) as last_id_message FROM  ". $tableMessageName );
+            $max_id->execute();
+
+            return $max_id->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getMessageGRP($tribu_g){
         $tableMessageName=$tribu_g."_msg_grp";
         $sql="SELECT * FROM ".$tableMessageName.
-        " as t1 LEFT JOIN CONSUMER as t2 ON t1.id_expediteur=t2.user_id ORDER BY t1.date_message_created ASC ";
+        " as t1 LEFT JOIN consumer as t2 ON t1.id_expediteur=t2.user_id ORDER BY t1.date_message_created ASC ";
         $statement = $this->getPDO()->prepare($sql);
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -1799,4 +1812,13 @@ class TributGService extends PDOConnexionService{
         return $results;
         
     }
+
+    public function getAvatar($tribug){
+        $sql="SELECT avatar FROM ".$tribug." limit 1";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    }
+
 }

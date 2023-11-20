@@ -490,7 +490,6 @@ function sendPublication(formData) {
  * @param {*} tribu_t_name 
  */
 function showdDataContent(data, type, tribu_t_name, id_c_u) {
-
     let detailsTribuT = null
 
     if (type === "owned")
@@ -552,7 +551,6 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                 <a style="cursor:pointer;" id="settingTribuT" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
                             </li>` : "";
 
-    console.log(data)
     document.querySelector("#content-pub-js").innerHTML = `
             <div class="card-couverture-pub-tribu-t ">
                 <div class="content-couverture mt-3">
@@ -1302,7 +1300,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                                     <i class="fa-solid fa-star" data-rank="4"> </i>-->
                                     <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
                                     <!--<a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a> -->
-                                    <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListInTribuT('${resto.id}', 'resto')"> ${nbrAvis} Avis</a>
+                                    <a class="btn btn-sm bg_orange data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListInTribuT('${resto.id}', 'resto')"> ${nbrAvis} Avis</a>
                                 <!--</div>-->
                             </td>
                             <td>
@@ -1564,6 +1562,8 @@ function findResto(val, localisation = "") {
 
         let body_table = "";
 
+        let tribut_table_name = document.querySelector("#tribu_t_name_main_head").dataset.tribu;
+
         if (jsons.length > 0) {
 
 
@@ -1609,7 +1609,8 @@ function findResto(val, localisation = "") {
                                     <td>${adresse}</td>
                                     <td class="d-flex bd-highlight">
                                         <button class="btn btn-info" onclick="openDetail('${name}', '${adresse}', '${depName}','${dep}','${json.id}')"><!--<i class="fas fa-plus"></i>--> Détail</button>
-                                        <button class="btn btn-primary ms-1" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
+                                        <!--<button class="btn btn-primary ms-1" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>-->
+                                        <button type="button" class="btn btn-warning ms-1" onclick="pastilleRestoForTribuTDashboard(this,true)" data-id="${json.id}" data-name="${name}" data-tbname="${tribut_table_name}">Pastillez</button>
                                     </td>
                                 </tr>
                             `
@@ -1808,17 +1809,21 @@ function showPhotos() {
 
 
 function loadFile(event) {
-    let new_photo = document.createElement("img")
+    const div=document.createElement("div")
+    div.setAttribute("class","col-lg-4 col-md-12 mb-4 mb-lg-0")
+    const  new_photo = document.createElement("img")
+    new_photo.setAttribute("class","w-100 shadow-1-strong  mb-4")
     new_photo.setAttribute("data-bs-toggle", "modal")
     new_photo.setAttribute("data-bs-target", "#modal_show_photo")
     new_photo.setAttribute("onclick", "setPhotoTribu(this)")
     new_photo.src = URL.createObjectURL(event.target.files[0]);
+    div.appendChild(new_photo)
     var div_photo = document.querySelector('#gallery');
 
-    let first_photo = document.querySelector("#gallery > img:nth-child(1)")
+    let first_photo = document.querySelector("#gallery >div> div:nth-child(1)")
 
     if (first_photo) {
-        div_photo.insertBefore(new_photo, first_photo)
+        first_photo.parentElement.insertBefore(div, first_photo)
     } else {
         div_photo.innerHTML = ""
         div_photo.appendChild(new_photo);
@@ -1844,10 +1849,15 @@ function loadFile(event) {
             },
             body: JSON.stringify(data)
         })).then(x => x.json()).then(response => {
-            document.querySelector("#success_upload").style = "display:block;"
-            setTimeout(function () {
-                document.querySelector("#success_upload").style = "display:none;"
-            }, 5000);
+            // document.querySelector("#success_upload").style = "display:block;"
+            if(response.status===200 && response.ok){
+                swal("Merci de votre partage.", "Votre photo a bien été partagée.", "success", {
+                    button: "Ok",
+                  });
+            }
+            // setTimeout(function () {
+            //     document.querySelector("#success_upload").style = "display:none;"
+            // }, 5000);
             // console.log(response)
         }
         ).catch(error => {
@@ -2226,7 +2236,7 @@ function setActiveTab(elem, param) {
             document.querySelector("#blockSendEmailInvitation").classList.remove("d-none")
             document.querySelector("#table-tribuG-member").classList.add("d-none")
             document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
-        
+            document.querySelector(".object_js_jheo").value= "Invitation rejoindre ma tribu Thématique sur Consomyzone";
             break;
         }
         case "historique" :{
@@ -2678,9 +2688,13 @@ function openOnEvent(id, nom, adresse, action) {
  * @param {*} text1 : icon action
  * @param {*} action : type d'action
  */
-function openPopupAction(id_pastille, denomination_f, adresse, text1, action, rubrique_type="resto") {
-
-    $("#detailOptionResto").modal("show")
+function openPopupAction(id_pastille, denomination_f, adresse, text1, action, rubrique_type = "resto") {
+    
+    if (rubrique_type == "resto") {
+        $("#detailOptionResto").modal("show")
+    } else {
+        $("#detailOptionGolf").modal("show")
+    }
 
     document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> ` + text1
 

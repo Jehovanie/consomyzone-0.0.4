@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class MessageController extends AbstractController
 {
@@ -182,12 +183,17 @@ class MessageController extends AbstractController
 
         }
         
-        $tributTService->sendMessageGroupe($message,  
+        $result= $tributTService->sendMessageGroupe($message,  
         $file_list , 
         $image_list, 
         $userId, 0, 1, 0,$receiver);
 
-        return $this->json(array("ok"=>"ok"));
+        // return $this->json(array("ok"=>"ok"));
+
+        
+        return $this->json([
+            "id" => $result[0]["last_id_message"]
+        ]);
     }
     #[Route("/user/pushMessage/G", name:"app_user_push_message_grp", methods:["POST","GET"])]
     public function pushMessageGrp(
@@ -244,13 +250,17 @@ class MessageController extends AbstractController
             }
 
         }
-        
-        $tributGService->sendMessageGroupe($message,  
+
+        $result= $tributGService->sendMessageGroupe($message,  
         $file_list , 
         $image_list, 
         $userId, 0, 1, 0,$receiver);
 
-        return $this->json(array("ok"=>"ok"));
+        // return $this->json(array("ok"=>"ok"));
+
+        return $this->json([
+            "id" => $result[0]["last_id_message"]
+         ]);
     }
 
     #[Route("/user/get/allTribu", name:"app_user_get_all_tribu")]
@@ -1334,6 +1344,7 @@ class MessageController extends AbstractController
         Request $request,
         Tribu_T_Service $tributTService,
         TributGService $tributGService
+    
     ){
         $type=$request->query->get('type');
         $tableName="";
@@ -1343,21 +1354,32 @@ class MessageController extends AbstractController
 
                 $tableName=$request->query->get('name');
                 $allMessage=$tributTService->getMessageGRP($tableName);
+                $allMessage=mb_convert_encoding( $allMessage, 'UTF-8', 'UTF-8');
                 foreach($allMessage as &$message){
                     $message["msg"]=json_decode($message["msg"],true);
                     $message["images"]=json_decode($message["images"],true);
                     $message["files"]=json_decode($message["files"],true);
+                    // $message["firstname"]=utf8_encode($message["firstname"]);
+                    // $message["lastname"]=utf8_encode($message["lastname"]);
+                    // $message["num_rue"]=utf8_encode($message["num_rue"]);
                 }
+                //dd( $allMessage);
                 break;
+                
             }
 
             case 'g':{
                 $tableName=$request->query->get('name');
                 $allMessage=$tributGService->getMessageGRP($tableName);
+                $allMessage=mb_convert_encoding( $allMessage, 'UTF-8', 'UTF-8');
                 foreach($allMessage as &$message){
                     $message["msg"]=json_decode($message["msg"],true);
                     $message["images"]=json_decode($message["images"],true);
                     $message["files"]=json_decode($message["files"],true);
+                    // $message["firstname"]=utf8_encode($message["firstname"]);
+                    // $message["lastname"]=utf8_encode($message["lastname"]);
+                    // $message["num_rue"]=utf8_encode($message["num_rue"]);
+                   
                 }
                 break;
             }
@@ -1366,6 +1388,8 @@ class MessageController extends AbstractController
 
             }
         }
+        //dump($allMessage);
+        //dd($allMessage);
         $response = new StreamedResponse();
         $response->setCallback(function () use (&$allMessage) {
 

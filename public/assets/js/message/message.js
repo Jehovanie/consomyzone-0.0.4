@@ -389,8 +389,8 @@ function sendMessageGrp(message,files,sender,where,type) {
         body: JSON.stringify(parameters)
     }).then(response => {
         if(response.status===200 && response.ok){
-            response.json().then(r=>{
-                const content_loading = document.querySelector(".content_loading_jheo_js");
+            response.json().then(result=>{
+                                const content_loading = document.querySelector(".content_loading_jheo_js");
                 content_loading.innerHTML = "<i class='fa-solid fa-check'></i>";
     
                 //// change the id the last message.
@@ -789,7 +789,7 @@ function fan(){
                         for (let value of data) {
                          
                             let li = document.createElement("li")
-                            li.setAttribute("class","fan_activ_faniry_js");
+                            li.setAttribute("class","fan_activ_i_faniry_js");
                             li.dataset.toggleUserId=value.id
                             const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
                             const link = "/user/message/perso?user_id="+ value.id;
@@ -828,7 +828,7 @@ function fan(){
                         for (let value of data) {
                          
                             let li = document.createElement("li")
-                            li.setAttribute("class","fan_activ_faniry_js");
+                            li.setAttribute("class","fan_activ_i_faniry_js");
                             li.dataset.toggleUserId=value.id
                             const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
                             const link = "/user/message/perso?user_id="+ value.id;
@@ -875,12 +875,18 @@ function fan(){
                    
                 }
 
-                const fans=document.querySelectorAll(`.fan_activ_faniry_js`)
+                const fans=document.querySelectorAll(`.fan_activ_i_faniry_js`)
                 let results=removeReplicatedFan(fans)
                 if(results.length >0 ){
                     const  fanOnlineContainer=document.querySelector("ul.fan_actif_tom_js")
                     fans.forEach(item=>{
-                        fanOnlineContainer.removeChild(item)
+                        try{
+                            //console.log(item);
+                            fanOnlineContainer.removeChild(item)
+                        }catch(error){
+                            console.log(error)
+                        }
+                     
                     })
                     results.forEach(item=>{
                        fanOnlineContainer.appendChild(item)
@@ -996,7 +1002,7 @@ function showListTribus(){
                     if(i ===0){ //pour tribu G
                         const json=jsons[i]
                         const tribuGName=`tribu G ${json.commune} ${json.quartier}`
-                        const logoPath=""
+                        const logoPath=json.tribugAvatar
                         const link=`/user/tribu/msg?name=${json.tableTribuG}&type=g`
                         const li = document.createElement("li")
                         li.setAttribute("class","fan_activ_faniry_js");
@@ -1004,7 +1010,7 @@ function showListTribus(){
                         li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${json.id}_jheo_js" data-toggle-user-id="${json.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
-                                        <img src="${logoPath}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif"/>
                                         <span class="g l m jc wc ce th pi ij xj"></span>
                                     </div>
                                     <a href="${link}" class="yd">
@@ -1028,7 +1034,7 @@ function showListTribus(){
                         for(let tribut of tribuTs){
                         const tribuTimmuable=tribut.table_name
                         const tribuTname=tribut.name_tribu_t_muable
-                        const logoPath =tribut.logo_path
+                        const logoPath =tribut.logo_path !="" ? tribut.logo_path : "/uploads/tribus/avatar_tribu.jpg"
                         const link=`/user/tribu/msg?name=${tribut.table_name}&type=t`
                         const li = document.createElement("li")
                         li.setAttribute("class","fan_activ_faniry_js");
@@ -1036,7 +1042,7 @@ function showListTribus(){
                         li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${tribut.id}_jheo_js" data-toggle-user-id="${tribut.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
-                                        <img src="${logoPath}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif"/>
                                         <span class="g l m jc wc ce th pi ij xj"></span>
                                     </div>
                                     <a href="${link}" class="yd">

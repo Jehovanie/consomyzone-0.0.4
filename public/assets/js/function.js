@@ -1891,6 +1891,153 @@ function scrollBottom(element) {
 
 function bindDataUpdatePub(table, id) {
   const publication = document.querySelector(`.pub_${table}_${id}_jheo_js`);
+
+  if (!publication) {
+      console.log(`Selector not found: pub_${table}_${id}_jheo_js`);
+      return false;
+  }
+
+const update_desc= document.querySelector(".desc_update_jheo_js") ? document.querySelector(".desc_update_jheo_js") : document.querySelector("#message-text_modif")
+  update_desc.value = publication.querySelector(".pub_description_jheo_js").innerText;
+
+
+const tribu_Name = publication.querySelector(".tribu_name_jheo_js").innerText;
+const content_input_tribuT_name = document.querySelector(".content_input_name_tribuT_jheo_js");
+
+  let tribuType = "";
+  if (tribu_Name.includes("Tribu T")) {
+  if (content_input_tribuT_name && content_input_tribuT_name.classList.contains("d-none")) {
+    content_input_tribuT_name.classList.remove("d-none");
+  }
+
+  tribuType = "Tribu T";
+  document.querySelector(".input_name_tribuT_jheo_js").value = tribu_Name;
+
+} else {
+  if ( content_input_tribuT_name && !content_input_tribuT_name.classList.contains("d-none")) {
+    content_input_tribuT_name.classList.add("d-none");
+  }
+
+  tribuType = "Tribu G";
+}
+
+if(document.querySelector(".input_disable_tribu_jheo_js")){
+  document.querySelector(".input_disable_tribu_jheo_js").value = tribuType;
+}
+
+const config_pub = publication.querySelector(".config_jheo_js").getAttribute("data-confid");
+document.querySelectorAll(".config_update_jheo_js").forEach((item) => {
+  if (parseInt(item.getAttribute("value")) === parseInt(config_pub)) {
+    item.setAttribute("selected", "");
+  }
+});
+
+
+let hiddenElement = document.querySelector("#hiddenElementUpdate")
+hiddenElement.value= id;
+  hiddenElement.dataset.id= id
+  hiddenElement.dataset.name= table;
+
+  // if (publication.querySelector(".pub_image_jheo_js")) {
+// 	const link_image = publication.querySelector(".pub_image_jheo_js").getAttribute("src");
+// 	document.querySelector(".image_upload_update_jheo_js").setAttribute("src", link_image);
+
+// 	if (document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
+// 		document.querySelector(".content_image_upload_jheo_js").classList.remove("d-none");
+// 	}
+
+  // } else {
+// 	if (!document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
+// 		document.querySelector(".content_image_upload_jheo_js").classList.add("d-none");
+// 		document.querySelector(".image_upload_update_jheo_js").setAttribute("src", "#");
+// 	}
+  // }
+}
+
+
+function updatePublicationInHome() {
+
+  let hiddenElement = document.querySelector("#hiddenElementUpdate")
+  let id = hiddenElement.value;
+  let dataId = hiddenElement.dataset.id;
+  let dataName = hiddenElement.dataset.name;
+
+  let confidentiality = document.querySelector("#option_modif").value;
+  let message =  document.querySelector("#message-text_modif") ? document.querySelector("#message-text_modif").value :  document.querySelector(".desc_update_jheo_js").value;
+
+  // document.querySelector("#" + dataId).querySelector(".text-pub").innerHTML = message
+
+  // let publicVisibilityElement = document.querySelector("#" + dataId).querySelector("[aria-labelledby=btnGroupDrop1]").children[0];
+  // let privateVisibilityElement = document.querySelector("#" + dataId).querySelector("[aria-labelledby=btnGroupDrop1]").children[1];
+  // let btnGroupDropElement = document.querySelector("#" + dataId).querySelector("#btnGroupDrop1")
+  // let publicIcone = `<i class="fa-solid fa-earth-oceania"></i>`
+  // let privateIcone = `<i class="bi bi-lock-fill"></i>`
+
+  // if (parseInt(confidentiality) == 1) {
+  //     if (!publicVisibilityElement.classList.contains("active")) {
+  //         btnGroupDropElement.innerHTML = publicIcone
+  //         privateVisibilityElement.classList.remove("active")
+  //         publicVisibilityElement.classList.add("active")
+  //     }
+  // } else if (parseInt(confidentiality) == 2) {
+  //     if (!privateVisibilityElement.classList.contains("active")) {
+  //         btnGroupDropElement.innerHTML = privateIcone
+  //         publicVisibilityElement.classList.remove("active")
+  //         privateVisibilityElement.classList.add("active")
+  //     }
+  // }
+
+
+
+
+  //document.querySelector("#modal_publication_modif img.image-upload-image")
+let publication= document.querySelector(`#ID_${dataName}_${dataId}_jheo_js`)
+
+if( publication.querySelector(".pub_description_jheo_js")){
+  publication.querySelector(".pub_description_jheo_js").innerText= message;
+}
+
+  let imgSrc = null
+  let oldSrc = ""
+  if (document.querySelector(".image-upload-content").style.display == "block") {
+      imgSrc = document.querySelector(".image_upload_image_jheo_js").src
+
+      if (publication.querySelector(".pub_image_jheo_js")) {
+    publication.querySelector(".pub_image_jheo_js").src = imgSrc
+
+      } else {
+    publication.querySelector(".card_pub_actu_jheo_js").innerHTML += `
+            <img class="image_publication pub_image_jheo_js"  src="${imgSrc}" alt="image publication" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+    `
+  }
+  }
+
+  let data = {
+      "oldSrc": oldSrc,
+      "base64": imgSrc,
+      "pub_id": id,
+      "confidentiality": confidentiality,
+      "message": message,
+  "table": dataName
+  }
+
+  console.log(data);
+
+  fetch(new Request("/user/acount/tributG/publication/update", {
+      method: "POST",
+      headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(data)
+  })).then(response => response.json())
+      .then(message => console.log(message));
+}
+
+
+
+function bindDataUpdatePub(table, id) {
+  const publication = document.querySelector(`.pub_${table}_${id}_jheo_js`);
   if (!publication) {
     console.log(`Selector not found: pub_${table}_${id}_jheo_js`);
     return false;
@@ -1971,7 +2118,7 @@ function pastilleRestoForTribuTDashboard(element, isPastilled) {
   };
 
   let request = "";
-  if (isPastilled) {
+  if (isPastilled == true) {
     request = new Request("/user/tribu_t/pastille/resto", {
       method: "POST",
       headers: {
@@ -1994,6 +2141,7 @@ function pastilleRestoForTribuTDashboard(element, isPastilled) {
   fetch(request)
     .then((response) => response.json())
     .then((message) => {
+
       let tribuName = element.dataset.tribu;
       let html = "";
       if (!isPastilled) {
@@ -2036,11 +2184,17 @@ function pastilleRestoForTribuTDashboard(element, isPastilled) {
         new swal("Succès !", "Restaurant pastillé avec succès", "success").then(
           (value) => {
             updateBtnStatus(element, html);
-            document.querySelector(".mainContainerLogoTribu").appendChild(div);
+            // document.querySelector(".mainContainerLogoTribu").appendChild(div);
             reorganisePastille();
+
+            if(document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide")){
+              document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide").click();
+            }
+
           }
         );
       }
+
     })
     .catch((error) => console.log(error));
 }
@@ -2513,7 +2667,7 @@ function showPastillTable(e, id) {
  * @action get list tribu T pastiller avec golf
  * @ou dans detail.js
  */
-function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
+/*function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
   fetch(`/golf/pastilled/checking/${id_golf}`)
     .then(response => response.json())
     .then(datas => {
@@ -2552,6 +2706,7 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
       })
 
       let tribu_g_name = document.querySelector("#my_tribu_g").textContent.trim()
+
 
       fetch(`/user/tribu_g/isPastilled/${tribu_g_name + '_golf'}/${id_golf}`)
         .then(s => s.json())
@@ -2603,7 +2758,7 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
               </div>
           `
 
-          /*let modalPastillGolf = `
+          let modalPastillGolf = `
       <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
           <div class="modal-pastille-golf">
               <div class="modal-dialog">
@@ -2652,7 +2807,7 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
               </div>
           </div>
       </div>
-      `*/
+      `
 
           if (document.querySelector("#pastilleForGolfBody")) {
             $("#pastilleForGolf").modal("show")
@@ -2663,7 +2818,7 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
 
     })
 
-}
+}*/
 
 /**
 * @author Tomm
@@ -5660,10 +5815,13 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
         .then(datas => {
             let listTibuTPast = ""
             let monGolf = ""
-            if (datas.length == 0) {
-                listTibuTPast = `<h1 class="text-danger">Tribu T pastiller vide</h1>`
-            }
-            datas.forEach(data => {
+            let strVide = datas.length;
+            // if (datas.length) {
+            //   // strVide = `<h1 class="text-danger">Tribu T pastiller vide</h1>`
+            //   strVide = datas.length
+            // }
+            
+              datas.forEach(data => {
 
                 if (data['logo_path'] != "") { 
                     logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`
@@ -5681,7 +5839,17 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                                 </tr>
                             `
 
-                } else {
+                }else if(strVide ==0){
+                  listTibuTPast += `
+                                <tr>
+                                    <td></td>
+                                    <td><h1 class="text-danger">Tribu T pastiller vide</h1></td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            `
+                }
+                else {
                     listTibuTPast += `
                                 <tr>
                                     <td>${logoPath}</td>
@@ -5693,9 +5861,65 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                             `
                 }
 
-
             })
-            let modalPastillGolf = `
+          
+
+            // console.log(datas);
+           
+      
+      let tribu_g_name = document.querySelector("#my_tribu_g").textContent.trim()
+
+
+      fetch(`/user/tribu_g/isPastilled/${tribu_g_name + '_golf'}/${id_golf}`)
+        .then(s => s.json())
+        .then(isOk => {
+          let txt = ""
+          let isPastilled = false;
+          let classe = ''
+          if (isOk) {
+            txt = 'Dépastiller'
+            isPastilled = false;
+            classe = 'info'
+          } else {
+            txt = 'Pastiller'
+            isPastilled = true;
+            classe = 'success'
+          }
+
+          let modalPastillGolf = `
+              <ul class="nav nav-tabs">
+                  <li class="nav-item">
+                      <a class="nav-link active elie-tribu-t" aria-current="page" href="#" onclick="setViewTribu('g','t')">Tribu T</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link elie-tribu-g" href="#" onclick="setViewTribu('t','g')">Tribu G</a>
+                  </li>
+              </ul>
+
+              <table class="table table-striped content_list_resto_js">
+                  <thead>
+                      <tr>
+                          <th scope="col">Logo</th>
+                          <th scope="col">Tribu T</th>
+                          <th scope="col">Action</th>
+                      </tr>
+                  </thead>
+                  <tbody>
+                      ${listTibuTPast}
+                  </tbody>
+              </table>
+
+              <div class="m-2 content_list_resto_js_g d-none">
+                  <div class="d-flex justify-content-between">
+                          <span>${tribu_g_name}</span>
+                          <button class="btn btn-${classe} btn-sm" id="btn-pastille-elie-tbg" data-tbname ="${tribu_g_name}" onclick="pastilleGolfForTribuG(this, ${isPastilled}, ${id_golf}, '${name_golf}')">
+                              ${txt}
+                          </button>
+              
+                  </div>
+              </div>
+          `
+            /*let modalPastillGolf = `
                     <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
                         <div class="modal-pastille-golf">
                             <div class="modal-dialog">
@@ -5724,11 +5948,14 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                             </div>
                         </div>
                     </div>
-                    `
+                    `*/
 
-            if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
-                document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
-            }
+              if (document.querySelector("#pastilleForGolfBody")) {
+                $("#pastilleForGolf").modal("show")
+                document.querySelector("#pastilleForGolfBody").innerHTML = modalPastillGolf
+              }
+
+          })
     })
 }
 
@@ -5773,39 +6000,22 @@ function isPastilledList(id_golf, name_golf) {
           }
         }
   
-        let modalPastillGolf = `
-                          <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
-                              <div class="modal-pastille-golf">
-                                  <div class="modal-dialog">
-                                      <div class="modal-content">
-                                          <div class="modal-header mb-4">
-                                              <h5 class="modal-title">les listes de mon golf</h5>
-                                              <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
-                                          </div>
-                                          <hr>
-                                          <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
-                                              <table class="table table-striped">
-                                                  <thead>
-                                                      <tr>
-                                                          <th scope="col">Logo</th>
-                                                          <th scope="col">Tribu T</th>
-                                                          <th scope="col">Action</th>
-                                                      </tr>
-                                                  </thead>
-                                                  <tbody>
-                                                      ${listTibuTPast}
-                                                  </tbody>
-                                              </table>
-                                          </div>
-                                          
-                                      </div>
-                                  </div>
-                              </div>
-                          </div>
-                          `
+        let modalPastillGolf = `<table class="table table-striped">
+                                  <thead>
+                                      <tr>
+                                          <th scope="col">Logo</th>
+                                          <th scope="col">Tribu T</th>
+                                          <th scope="col">Action</th>
+                                      </tr>
+                                  </thead>
+                                  <tbody>
+                                      ${listTibuTPast}
+                                  </tbody>
+                              </table> `
   
-        if (document.querySelector(".content-modal-pastille-golf-tomm-js")) {
-          document.querySelector(".content-modal-pastille-golf-tomm-js").innerHTML = modalPastillGolf
+        if (document.querySelector("#pastilleForGolfBody")) {
+          $("#pastilleForGolf").modal("show")
+          document.querySelector("#pastilleForGolfBody").innerHTML = modalPastillGolf
         }
       })
   }
@@ -5849,6 +6059,11 @@ function fecthGolfAction(goldID, action, selectElement) {
         }
   
         const request = new Request(url, {
+            method: "POST",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 golfID: goldID,
             })
@@ -6061,6 +6276,8 @@ function pastilleGolfForTribuG(e, type, id, name) {
             title: "Bravo!",
             text: "Golf pastillé avec succès dans votre tribu G.",
             icon: "success",
+          }).then(() => {
+             document.querySelector("#fetch_golf_tribug_jheo_js").click();
           });
 
           e.classList = "btn btn-success ms-1"

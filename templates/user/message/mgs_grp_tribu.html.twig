@@ -47,7 +47,7 @@
                         <a href="{{ path('app_all_message') }}" class="me-5">
                             <i class="fa-solid fa-arrow-left"></i>
                         </a>
-                        <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 d-inline" onclick="createVisoGroup()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button>
+                        {# <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 d-inline" onclick="createVisoGroup()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button> #}
                         <div class="vd mh ip ch ib user_profile_list_elie">
                             <h3>tribus.</h3>
                             {# <div class="container-bar-recherche-message">
@@ -70,7 +70,7 @@
                                         
                                         {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
                                         {% include 'card/card_item_message_grp_left.html.twig' with {'id':tribusG.id , 
-                                        'photo': tribusG.photo_profil, 'firstname': tribusG.name, 'lastname': '', 'is_online': 1, 'last_message': "text" ,"table":tribusG.tableTribuG, "type":"g" } %} 
+                                        'photo': tribusG.tribugAvatar, 'firstname': tribusG.name, 'lastname': '', 'is_online': 1, 'last_message': "text" ,"table":tribusG.tableTribuG, "type":"g" } %} 
                                             
                                     {% endif %}
                                     {% if tribuT|length > 0%}
@@ -119,7 +119,7 @@
                         {% if isT == 1 %}
                             <div class="lc mg content_entete_msg_grp_jheo_js" data-roof={{app.user.id}} data-userToFirstname="" data-userToLastname=""  data-toggle-id-user-to={{group_send_to}} data-toggle-type="t">
                                 <div class="ob xc yd pf nh th">
-                                    <img src="{{(tribuTSelected.logo_path) ? "/public" ~ tribuTSelected.logo_path  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{tribuTSelected.name_tribu_t_muable}}" class="vc yd qk rk"/>
+                                    <img src="{{(tribuTSelected.logo_path) ? "/public" ~ tribuTSelected.logo_path  : '/public/uploads/tribus/avatar_tribu.jpg' }}" alt="{{tribuTSelected.name_tribu_t_muable}}" class="vc yd qk rk"/>
                                 </div>
                                 <div>
                                     <p class="mn">
@@ -133,7 +133,7 @@
                         {% else %}
                             <div class="lc mg content_entete_msg_grp_jheo_js" data-roof={{app.user.id}} data-userToFirstname="" data-userToLastname=""  data-toggle-id-user-to={{group_send_to}} data-toggle-type="g">
                                 <div class="ob xc yd pf nh th">
-                                    <img src="{{(tribusG.photo_profil) ? "/public" ~ tribusG.photo_profil  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{tribusG.name}}" class="vc yd qk rk"/>
+                                    <img src="{{(tribusG.tribugAvatar) ? "/public" ~ tribusG.tribugAvatar  :'/public/uploads/tribus/avatar_tribu.jpg' }}" alt="{{tribusG.name}}" class="vc yd qk rk"/>
                                 </div>
                                 <div>
                                     <p class="mn">
@@ -320,6 +320,7 @@
         </div>
     </main>
 </div>
+<div class="spid_js_faniry {{app.user.id}}" ></div>
 {# {{include('user/message/visio_message_modal.html.twig')}}
 
 

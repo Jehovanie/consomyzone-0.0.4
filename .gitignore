@@ -7,15 +7,7 @@
 .env.local
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
-/public/uploads/users/photos/
-/public/uploads/messages/
-/public/uploads/tribu_g/photos/
-/public/uploads/tribu_t/photos/
-/public/uploads/tribus/photos/
-/public/uploads/tribus/
-/public/users/agenda/
-/public/users/photos/
-/public/uploads/users/piece_joint/
+/public/uploads/
 /public/assets/publications/photos/
 /var/
 /vendor/
