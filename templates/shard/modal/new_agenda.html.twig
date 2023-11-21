@@ -370,7 +370,7 @@
                 <tbody>
                     <tr style="vertical-align: middle;">
                       <td class="col-logo">
-                        <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{tribuG.photoProfil ? asset(tribuG.photoProfil) : asset('uploads/tribu_t/photo/avatar_tribu.jpg')}}">
+                        <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{tribuG.photoProfil ? '/public' ~ tribuG.photoProfil : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}">
                       </td>
                       <td class="col-tribuT"><a href="#" data-tribu="{{tribuG.tributG}}" onclick="setDirForImage(event)">Tribu G {{tribuG.tributG|split('_', 3)|last|replace({'_':' '})|capitalize}}</a></td>
                       <td class="col-action">

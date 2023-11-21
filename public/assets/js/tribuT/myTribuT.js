@@ -2226,7 +2226,7 @@ function setActiveTab(elem, param) {
             document.querySelector("#blockSendEmailInvitation").classList.remove("d-none")
             document.querySelector("#table-tribuG-member").classList.add("d-none")
             document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
-        
+            document.querySelector(".object_js_jheo").value= "Invitation rejoindre ma tribu Thématique sur Consomyzone";
             break;
         }
         case "historique" :{
@@ -3089,7 +3089,7 @@ function showEtabDetail(event,nom_dep, id_dep, id_etab) {
 //             .catch(error=>console.log(error))
 // }
 
-function openPopupActionGolf(id_pastille=null, denomination_f=null, adresse=null) {
+function openPopupActionGolf(id_pastille=null, denomination_f=null, adresse=null, text=null, action=null, rubrique_type="golf" ) {
 
     let tableTribu = document.querySelector("#activeTribu").dataset.tableName
 
@@ -3105,7 +3105,11 @@ function openPopupActionGolf(id_pastille=null, denomination_f=null, adresse=null
     btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
-    btn.dataset.tbname = tableTribu
+    btn.dataset.tbname = tableTribu;
+
+    if( document.querySelector(".send_avis_jheo_js")){ //// reset function add avis resto
+        document.querySelector(".send_avis_jheo_js").setAttribute("onclick", `addAvisInTribuT("${id_pastille}","${rubrique_type}")`);
+    }
 }
 
 // function depastilleGolf(selector){

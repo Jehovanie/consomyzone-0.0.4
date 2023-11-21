@@ -189,7 +189,9 @@ class TributGService extends PDOConnexionService{
 
                     /** 
                      * @author Elie
-                     * Create a table for pastille restaurant */
+                     * Create a table for pastille restaurant 
+                     * 
+                     */
 
                      $sql_restaurant = "CREATE TABLE ".$name_table_tribuG."_restaurant(
 
@@ -1294,7 +1296,7 @@ class TributGService extends PDOConnexionService{
         return $image;
     }
 
-    public function updatePublication($user_id , $publication_id , $publication , $confidentiality){
+    public function updatePublication($user_id , $publication_id , $publication , $confidentiality, $image= null ){
 
         //table tribu G
         $table_name = $this->getTableNameTributG($user_id);
@@ -1316,9 +1318,35 @@ class TributGService extends PDOConnexionService{
         }
 
         /// WE CAN UPDATE IT
-        $statement = $this->getPDO()->prepare('UPDATE '.$table_pub.' SET publication="'. $publication . '", confidentiality="' . $confidentiality . '" WHERE id ="'.$publication_id .'"');
-        $result = $statement->execute();
+        // $statement = $this->getPDO()->prepare( "UPDATE $table_pub (publication, confidentiality) values ( :publication, :confidentiality) ");
+        // $statement->bindParam(':publication', $publication);
+        // $statement->bindParam(':confidentiality', $confid);
+        // $result = $statement->execute();
 
+
+        // $sql = "UPDATE $table set publication = ?, confidentiality = ?, photo = ?  WHERE id = ?";
+        // $stmt = $this->getPDO()->prepare($sql);
+        // $stmt->execute([$publication, $confidentiality, $photo, $id]);
+
+        $publication = $this->convertUtf8ToUnicode($publication);
+        $publication=str_replace("\u","\\u",$publication);
+
+        if( $image != null ){
+            $sql = "UPDATE $table_pub set publication = ?, confidentiality = ?, photo = ?  WHERE id = ?";
+            $stmt = $this->getPDO()->prepare($sql);
+            $result = $stmt->execute([$publication, $confidentiality, $image, $publication_id ]);
+        }else{
+            $sql = "UPDATE $table_pub set publication = ?, confidentiality = ?  WHERE id = ?";
+            $stmt = $this->getPDO()->prepare($sql);
+            $result = $stmt->execute([$publication, $confidentiality, $publication_id]);
+        }
+        
+        
+        
+
+
+
+        
         return $result;
     }
 
@@ -1716,7 +1744,101 @@ class TributGService extends PDOConnexionService{
                               FROM  $tableResto as t1 left join $tableComment  as t2 on t1.extensionId=t2.id_golf where  t1.isPastilled IS TRUE GROUP BY t1.id ) as tableRestCom  
               INNER JOIN golffrance ON tableRestCom.id_golf_extension=golffrance.id";
     
-              $sql2 = "SELECT * FROM $tableResto";
+            $stmt = $this->getPDO()->prepare($sql);
+            
+            $stmt->execute();
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }else{
+            $name_table_tribuG = $table_name;
+            
+            /** 
+             * @author Elie
+             * Create a table for pastille restaurant 
+             * 
+             */
+
+                $sql_restaurant = "CREATE TABLE ".$name_table_tribuG."_restaurant(
+
+                id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+                extensionId int(11) NOT NULL,
+
+                denomination_f varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+
+                isPastilled TINYINT(1) DEFAULT 1,
+
+                datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+            )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+            $this->getPDO()->exec($sql_restaurant);
+
+            $sql_restaurant_comment = "CREATE TABLE ".$name_table_tribuG."_restaurant_commentaire(
+
+                id int(11)  NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                extensionId varchar(250) NOT NULL,
+
+                userId varchar(250) NOT NULL,
+
+                note decimal(3,2) DEFAULT NULL,
+
+                commentaire text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+
+                datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+
+            $this->getPDO()->exec($sql_restaurant_comment);
+
+            $sql_golf = "CREATE TABLE ".$name_table_tribuG."_golf(
+
+                id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+
+                extensionId int(11) NOT NULL,
+
+                denomination_f varchar(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+
+                isPastilled TINYINT(1) DEFAULT 1,
+
+                datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+            )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+            $this->getPDO()->exec($sql_golf);
+
+            $sql_golf_comment = "CREATE TABLE ".$name_table_tribuG."_golf_commentaire(
+
+                id int(11)  NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                extensionId int(11) NOT NULL,
+
+                userId int(11) NOT NULL,
+
+                note decimal(3,2) DEFAULT NULL,
+
+                commentaire text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+
+                datetime timestamp NOT NULL DEFAULT current_timestamp()
+
+                ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci";
+
+
+            $this->getPDO()->exec($sql_golf_comment);
+
+
+
+            $tableComment = "avisgolf";
+
+            $sql="SELECT * FROM (SELECT t1.id , t2.id as id_golf_comment, t1.extensionId as id_golf_extension,t1.denomination_f, 
+                                t1.isPastilled, t2.id_golf as id_golf, t2.id_user as id_user,t2.note,t2.avis,
+                                GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.avis) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_golf) as nbrAvis ,
+                                GROUP_CONCAT(t2.id) as All_id_r_com
+                                FROM  $tableResto as t1 left join $tableComment  as t2 on t1.extensionId=t2.id_golf where  t1.isPastilled IS TRUE GROUP BY t1.id ) as tableRestCom  
+                INNER JOIN golffrance ON tableRestCom.id_golf_extension=golffrance.id";
+    
+                $sql2 = "SELECT * FROM $tableResto";
             $stmt = $this->getPDO()->prepare($sql);
             
             $stmt->execute();
@@ -1786,6 +1908,10 @@ class TributGService extends PDOConnexionService{
             $statement->bindParam(':isRead',$isRead,PDO::PARAM_INT);
 
             $statement->execute();
+
+            $max_id = $this->getPDO()->prepare("SELECT max(id) as last_id_message FROM  ". $tableMessageName );
+            $max_id->execute();
+            return $max_id->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getMessageGRP($tribu_g){

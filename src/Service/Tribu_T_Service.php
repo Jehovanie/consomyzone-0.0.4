@@ -2233,8 +2233,12 @@ class Tribu_T_Service extends PDOConnexionService
         $statement->bindParam(':isPrivate',$isPrivate,PDO::PARAM_INT);
         $statement->bindParam(':isPublic',$isPublic,PDO::PARAM_INT);
         $statement->bindParam(':isRead',$isRead,PDO::PARAM_INT);
-
         $statement->execute();
+        
+        $max_id = $this->getPDO()->prepare("SELECT max(id) as last_id_message FROM  ". $tableMessageName );
+        $max_id->execute();
+
+        return $max_id->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getMessageGRP($tribu_T){

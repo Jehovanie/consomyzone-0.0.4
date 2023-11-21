@@ -545,7 +545,7 @@ class GolfFranceController extends AbstractController
         $note = $requestJson["note"];
         
         //dd($user,$resto);
-        $avisGolf->setAvis($avis)
+        $avisGolf->setAvis(json_encode($avis))
             ->setnote($note)
             ->setUser($user)
             ->setDatetime(new \DateTimeImmutable())

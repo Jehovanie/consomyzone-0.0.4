@@ -189,6 +189,8 @@ class MessageController extends AbstractController
 
         return $this->json(array("ok"=>"ok"));
     }
+
+
     #[Route("/user/pushMessage/G", name:"app_user_push_message_grp", methods:["POST","GET"])]
     public function pushMessageGrp(
         Request $request,
@@ -245,12 +247,16 @@ class MessageController extends AbstractController
 
         }
         
-        $tributGService->sendMessageGroupe($message,  
+        $result= $tributGService->sendMessageGroupe($message,  
         $file_list , 
         $image_list, 
         $userId, 0, 1, 0,$receiver);
 
-        return $this->json(array("ok"=>"ok"));
+        // return $this->json(array("ok"=>"ok"));
+
+        return $this->json([
+            "id" => $result[0]["last_id_message"]
+         ]);
     }
 
     #[Route("/user/get/allTribu", name:"app_user_get_all_tribu")]

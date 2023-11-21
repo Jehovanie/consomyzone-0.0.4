@@ -200,7 +200,8 @@ function openAvisGolfG(nb_avis, id_golf) {
         fetch('/avis/golf/global/' + id_golf)
             // fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_golf)
             .then(response => response.json())
-            .then(avis => {
+            .then(response => {
+                const avis= response.data;
                 for (let avi of avis) {
 
                     console.log(avi);

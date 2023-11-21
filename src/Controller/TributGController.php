@@ -486,21 +486,41 @@ class TributGController extends AbstractController
         ], 204);
     }
 
-    #[Route("/user/acount/tributG/publication/update", name: "app_update_pub_tributG", methods: "PUT")]
+    #[Route("/user/acount/tributG/publication/update", name: "app_update_pub_tributG", methods: "POST")]
     public function updatePublicationAction(
         Request $request,
-        TributGService $tributGService
-
+        TributGService $tributGService,
+        Filesystem $filesyst
     ) {
         if (!$this->getUser()) {
             return $this->json(["result" => "unauthorized"], 401);
         }
         $data = json_decode($request->getContent(), true);
-        extract($data); /// $pub_id, $confidentiality, $message
+        extract($data); /// $pub_id, $confidentiality, $message, $table, $base64, $oldSrc
 
         $user = $this->getUser();
 
-        $result = $tributGService->updatePublication($user->getId(), $pub_id, $message, $confidentiality);
+        
+        if( $base64 ){
+            $path = '/uploads/tribu_g/photos/' . $table;
+            
+            if (!($filesyst->exists($this->getParameter('kernel.project_dir') . "/public" . $path))){
+                $filesyst->mkdir($this->getParameter('kernel.project_dir') . "/public" . $path, 0777);
+            }
+
+            $temp = explode(";", $base64 );
+            $extension = explode("/", $temp[0])[1];
+
+            $imageName = time(). '-' . uniqid() . "." . $extension;
+
+            $projectDir = $this->getParameter('kernel.project_dir') . "/public" . $path;
+            file_put_contents($projectDir . $imageName, file_get_contents($base64)); //
+
+            $result = $tributGService->updatePublication($user->getId(), $pub_id, $message, $confidentiality , "/public" . $path . $imageName);
+        }else{
+            $result = $tributGService->updatePublication($user->getId(), $pub_id, $message, $confidentiality);
+        }
+
 
         if (!$result) {
             return $this->json(["result" => "Service Not Found"], 503);
@@ -872,8 +892,6 @@ class TributGController extends AbstractController
     ){
         // $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
         $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
-
-        // dd($tributGService->getAllRestoTribuG($table_tributG_name));
         // getAllRestoTribuG($table_name)
 
 

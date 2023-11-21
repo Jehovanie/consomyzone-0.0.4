@@ -50,10 +50,10 @@
                         <i class="bi bi-three-dots" style="cursor:pointer"></i>
                     </span>
                     <ul class="dropdown-menu">
-                        {# <li data-bs-toggle="modal" data-bs-target="#modal_publication_modif" onclick="bindDataUpdatePub('{{tribu.table}}','{{publication.id}}')"> #}
-                        <li class="non_active" onclick="openSwalNonActif()">
-                            {# <button class="text-primary dropdown-item"> #}
-                            <button class="text-secondary dropdown-item">
+                        <li data-bs-toggle="modal" data-bs-target="#modal_publication_modif" onclick="bindDataUpdatePub('{{tribu.table}}','{{publication.id}}')">
+                        {# <li class="non_active" onclick="openSwalNonActif()"> #}
+                            <button class="text-primary dropdown-item">
+                            {# <button class="text-secondary dropdown-item"> #}
                                 <i class="fas fa-edit"></i>
                                 Modifier
                             </button>
@@ -70,7 +70,7 @@
         {% endif %}
     </div>
         
-    <div class="card-pub-actu">
+    <div class="card-pub-actu card_pub_actu_jheo_js">
         <p class="text-pub mb-3 pub_description_jheo_js">{{publication.description}}</p>
         {% if publication.image is defined and publication.image is not same as("") %}
             <img class="image_publication pub_image_jheo_js"  src="{{publication.image}}" alt="image publication" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">

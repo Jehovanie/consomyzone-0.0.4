@@ -1890,74 +1890,148 @@ function scrollBottom(element) {
 }
 
 function bindDataUpdatePub(table, id) {
-  const publication = document.querySelector(`.pub_${table}_${id}_jheo_js`);
-  if (!publication) {
-    console.log(`Selector not found: pub_${table}_${id}_jheo_js`);
-    return false;
-  }
+    const publication = document.querySelector(`.pub_${table}_${id}_jheo_js`);
 
-  document.querySelector(".desc_update_jheo_js").value =
-    publication.querySelector(".pub_description_jheo_js").innerText;
+    if (!publication) {
+        console.log(`Selector not found: pub_${table}_${id}_jheo_js`);
+        return false;
+    }
 
-  const tribu_Name = publication.querySelector(".tribu_name_jheo_js").innerText;
-  const content_input_tribuT_name = document.querySelector(
-    ".content_input_name_tribuT_jheo_js"
-  );
-  let tribuType = "";
-  if (tribu_Name.includes("Tribu T")) {
-    if (content_input_tribuT_name.classList.contains("d-none")) {
-      content_input_tribuT_name.classList.remove("d-none");
-    }
-    tribuType = "Tribu T";
-    document.querySelector(".input_name_tribuT_jheo_js").value = tribu_Name;
-  } else {
-    if (!content_input_tribuT_name.classList.contains("d-none")) {
-      content_input_tribuT_name.classList.add("d-none");
-    }
-    tribuType = "Tribu G";
-  }
-  document.querySelector(".input_disable_tribu_jheo_js").value = tribuType;
+	const update_desc= document.querySelector(".desc_update_jheo_js") ? document.querySelector(".desc_update_jheo_js") : document.querySelector("#message-text_modif")
+  	update_desc.value = publication.querySelector(".pub_description_jheo_js").innerText;
 
-  const config_pub = publication
-    .querySelector(".config_jheo_js")
-    .getAttribute("data-confid");
-  document.querySelectorAll(".config_update_jheo_js").forEach((item) => {
-    if (parseInt(item.getAttribute("value")) === parseInt(config_pub)) {
-      item.setAttribute("selected", "");
-    }
-  });
 
-  if (publication.querySelector(".pub_image_jheo_js")) {
-    const link_image = publication
-      .querySelector(".pub_image_jheo_js")
-      .getAttribute("src");
-    document
-      .querySelector(".image_upload_update_jheo_js")
-      .setAttribute("src", link_image);
+	const tribu_Name = publication.querySelector(".tribu_name_jheo_js").innerText;
+	const content_input_tribuT_name = document.querySelector(".content_input_name_tribuT_jheo_js");
 
-    if (
-      document
-        .querySelector(".content_image_upload_jheo_js")
-        .classList.contains("d-none")
-    ) {
-      document
-        .querySelector(".content_image_upload_jheo_js")
-        .classList.remove("d-none");
+  	let tribuType = "";
+  	if (tribu_Name.includes("Tribu T")) {
+		if (content_input_tribuT_name && content_input_tribuT_name.classList.contains("d-none")) {
+			content_input_tribuT_name.classList.remove("d-none");
+		}
+
+		tribuType = "Tribu T";
+		document.querySelector(".input_name_tribuT_jheo_js").value = tribu_Name;
+
+	} else {
+		if ( content_input_tribuT_name && !content_input_tribuT_name.classList.contains("d-none")) {
+			content_input_tribuT_name.classList.add("d-none");
+		}
+
+		tribuType = "Tribu G";
+	}
+	
+	if(document.querySelector(".input_disable_tribu_jheo_js")){
+		document.querySelector(".input_disable_tribu_jheo_js").value = tribuType;
+	}
+
+	const config_pub = publication.querySelector(".config_jheo_js").getAttribute("data-confid");
+	document.querySelectorAll(".config_update_jheo_js").forEach((item) => {
+		if (parseInt(item.getAttribute("value")) === parseInt(config_pub)) {
+			item.setAttribute("selected", "");
+		}
+	});
+
+
+	let hiddenElement = document.querySelector("#hiddenElementUpdate")
+	hiddenElement.value= id;
+    hiddenElement.dataset.id= id
+    hiddenElement.dataset.name= table;
+
+    // if (publication.querySelector(".pub_image_jheo_js")) {
+	// 	const link_image = publication.querySelector(".pub_image_jheo_js").getAttribute("src");
+	// 	document.querySelector(".image_upload_update_jheo_js").setAttribute("src", link_image);
+
+	// 	if (document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
+	// 		document.querySelector(".content_image_upload_jheo_js").classList.remove("d-none");
+	// 	}
+
+    // } else {
+	// 	if (!document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
+	// 		document.querySelector(".content_image_upload_jheo_js").classList.add("d-none");
+	// 		document.querySelector(".image_upload_update_jheo_js").setAttribute("src", "#");
+	// 	}
+    // }
+}
+
+
+function updatePublicationInHome() {
+
+    let hiddenElement = document.querySelector("#hiddenElementUpdate")
+    let id = hiddenElement.value;
+    let dataId = hiddenElement.dataset.id;
+    let dataName = hiddenElement.dataset.name;
+
+    let confidentiality = document.querySelector("#option_modif").value;
+    let message =  document.querySelector("#message-text_modif") ? document.querySelector("#message-text_modif").value :  document.querySelector(".desc_update_jheo_js").value;
+
+    // document.querySelector("#" + dataId).querySelector(".text-pub").innerHTML = message
+
+    // let publicVisibilityElement = document.querySelector("#" + dataId).querySelector("[aria-labelledby=btnGroupDrop1]").children[0];
+    // let privateVisibilityElement = document.querySelector("#" + dataId).querySelector("[aria-labelledby=btnGroupDrop1]").children[1];
+    // let btnGroupDropElement = document.querySelector("#" + dataId).querySelector("#btnGroupDrop1")
+    // let publicIcone = `<i class="fa-solid fa-earth-oceania"></i>`
+    // let privateIcone = `<i class="bi bi-lock-fill"></i>`
+
+    // if (parseInt(confidentiality) == 1) {
+    //     if (!publicVisibilityElement.classList.contains("active")) {
+    //         btnGroupDropElement.innerHTML = publicIcone
+    //         privateVisibilityElement.classList.remove("active")
+    //         publicVisibilityElement.classList.add("active")
+    //     }
+    // } else if (parseInt(confidentiality) == 2) {
+    //     if (!privateVisibilityElement.classList.contains("active")) {
+    //         btnGroupDropElement.innerHTML = privateIcone
+    //         publicVisibilityElement.classList.remove("active")
+    //         privateVisibilityElement.classList.add("active")
+    //     }
+    // }
+
+
+
+
+    //document.querySelector("#modal_publication_modif img.image-upload-image")
+	let publication= document.querySelector(`#ID_${dataName}_${dataId}_jheo_js`)
+
+	if( publication.querySelector(".pub_description_jheo_js")){
+		publication.querySelector(".pub_description_jheo_js").innerText= message;
+	}
+
+    let imgSrc = null
+    let oldSrc = ""
+    if (document.querySelector(".image-upload-content").style.display == "block") {
+        imgSrc = document.querySelector(".image_upload_image_jheo_js").src
+
+        if (publication.querySelector(".pub_image_jheo_js")) {
+			publication.querySelector(".pub_image_jheo_js").src = imgSrc
+
+        } else {
+			publication.querySelector(".card_pub_actu_jheo_js").innerHTML += `
+            	<img class="image_publication pub_image_jheo_js"  src="${imgSrc}" alt="image publication" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+			`
+		}
     }
-  } else {
-    if (
-      !document
-        .querySelector(".content_image_upload_jheo_js")
-        .classList.contains("d-none")
-    ) {
-      document
-        .querySelector(".content_image_upload_jheo_js")
-        .classList.add("d-none");
-      document
-        .querySelector(".image_upload_update_jheo_js")
-        .setAttribute("src", "#");
+
+    let data = {
+        "oldSrc": oldSrc,
+        "base64": imgSrc,
+        "pub_id": id,
+        "confidentiality": confidentiality,
+        "message": message,
+		"table": dataName
     }
-  }
+
+    console.log(data);
+
+    fetch(new Request("/user/acount/tributG/publication/update", {
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })).then(response => response.json())
+        .then(message => console.log(message));
 }
 
 function pastilleRestoForTribuTDashboard(element, isPastilled) {
@@ -5849,6 +5923,11 @@ function fecthGolfAction(goldID, action, selectElement) {
         }
   
         const request = new Request(url, {
+            method: "POST",
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
                 golfID: goldID,
             })
@@ -5948,12 +6027,10 @@ function fecthGolfAction(goldID, action, selectElement) {
                 //                       Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
                 //                   `
                 //       }
-
                 //       if (document.querySelector(".golf_status_jheo_js")) {
                 //         document.querySelector(".golf_status_jheo_js").innerText = "MON GOLF"
                 //       }
                 //     });
-
                 // } 
             }
         })

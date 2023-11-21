@@ -269,7 +269,9 @@ class UserController extends AbstractController
 
         TributGService $tributGService,
 
-        UserRepository $userRepository
+        UserRepository $userRepository,
+
+        ConsumerRepository $consumerRepository
 
     ): Response {
 
@@ -816,7 +818,6 @@ class UserController extends AbstractController
             $type = "Partenaire";
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id);
         }
-
         $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
         $images = glob($path . "*.*");
         $images_trie = [];
@@ -829,7 +830,7 @@ class UserController extends AbstractController
         
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
-        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
+        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user_id));
 
         //Editing by Elie for a tribu g and t partisans
         

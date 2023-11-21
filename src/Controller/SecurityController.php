@@ -627,7 +627,10 @@ class SecurityController extends AbstractController
         UserAuthenticatorInterface $authenticator,
         UserAuthenticator $loginAuth,
         VerifyEmailHelperInterface $verifyEmailHelper,
-        Filesystem $filesyst
+        Filesystem $filesyst,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository
+        
     ) {
         ///to get info
         ///id de l'utilisateur.
@@ -669,6 +672,11 @@ class SecurityController extends AbstractController
         if ($form->isSubmitted()) {
             ///get the data
             extract($form->getData());
+
+
+            if( $consumerRepository->findOneBy(["userId" => $this->getUser() ]) ||  $supplierRepository->findOneBy(["userId" => $this->getUser() ]) ){
+                return $authenticator->authenticateUser( $userToVerifie, $loginAuth, $request );
+            }
 
             /// if the user is consumer
             if ($Consommateur && !$Fournisseur) {

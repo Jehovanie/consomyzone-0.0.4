@@ -1199,7 +1199,7 @@ class RestaurantController extends AbstractController
         $note = $requestJson["note"];
         
         //dd($user,$resto);
-        $avisResto->setAvis($avis)
+        $avisResto->setAvis(json_encode($avis))
             ->setnote($note)
             ->setUser($user)
             ->setDatetime(new \DateTimeImmutable())
