@@ -1848,19 +1848,14 @@ function loadFile(event) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-        })).then(x => x.json()).then(response => {
-            // document.querySelector("#success_upload").style = "display:block;"
-            if(response.status===200 && response.ok){
+        })).then(x => {
+            if(x.status===200 && x.ok){
                 swal("Merci de votre partage.", "Votre photo a bien été partagée.", "success", {
                     button: "Ok",
                   });
             }
-            // setTimeout(function () {
-            //     document.querySelector("#success_upload").style = "display:none;"
-            // }, 5000);
-            // console.log(response)
-        }
-        ).catch(error => {
+
+        }).catch(error => {
             console.log(error)
         });
     };

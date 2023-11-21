@@ -5569,6 +5569,7 @@ function showGolf(tableGolfPastilled) {
               let nbrAvis = item.nbrAvis
               let note = item.globalNote ? item.globalNote : 0
               let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
+              let denomination=item.denomination_f.replaceAll("'","\\'")
               tr += `<tr id="golf_${item.id_golf}">
                         <td class="d-flex bd-highlight align-items-center" >
                             <div class="elie-img-pastilled"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
@@ -5583,7 +5584,7 @@ function showGolf(tableGolfPastilled) {
                             </span>
                             </td>
                             <td>
-                            <button class="btn btn-primary"  onclick="openPopupAction('${item.id}','${item.denomination_f}', '${adresse}','${text1}', '${action}', 'golf')"><i class="fas fa-plus"></i> Plus</button>
+                            <button class="btn btn-primary"  onclick="openPopupActionGolf('${item.id}','${denomination}', '${adresse}','${text1}', '${action}', 'golf')"><i class="fas fa-plus"></i> Plus</button>
                             </td>
                     </tr>`
                     // <a  style="font-size:smaller" class="btn btn-sm bg_orange data-avis-${item.id}" onclick="openAvis(${nbrAvis}, ${item.id})">${nbrAvis} avis</a>
@@ -5792,7 +5793,7 @@ function depastilleGolf(selector) {
               
             })
         }
-  
+        showGolf(tbl);
       })
       .catch(error => console.log(error))
     // fecthGolfAction(id, "cancel")
