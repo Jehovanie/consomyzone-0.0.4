@@ -10,6 +10,7 @@ use App\Repository\TabacRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
@@ -82,13 +83,28 @@ class TabacContoller extends AbstractController
 
     #[Route('/api/tabac', name: 'api_tabac_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
+        Request $request,
         TabacRepository $tabacRepository,
     ){
 
         $tabac= [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
 
-        $tabac= $tabacRepository->getSomeDataShuffle();
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas= $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+
+            return $this->json([
+                "data" => $datas
+            ]);
+        }
+
+        $tabac= $tabacRepository->getSomeDataShuffle(2000);
 
         return $this->json([
             "success" => true,
@@ -238,10 +254,28 @@ class TabacContoller extends AbstractController
     #[Route('/api/tabac/departement/{nom_dep}/{id_dep}', name: 'api_tabac_dep', methods: ["GET", "POST"])]
     public function api_specifiqueDepartement(
         $nom_dep, $id_dep,
+        Request $request,
         TabacRepository $tabacRepository,
         TributGService $tributGService,
     ){
         $golfs= [];
+
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas= $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+
+            return $this->json([
+                "data" => $datas
+            ]);
+        }
+
+
+
         $golfs= $tabacRepository->getGolfByDep($nom_dep, $id_dep);
 
         return $this->json([

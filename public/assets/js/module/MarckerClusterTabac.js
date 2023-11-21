@@ -27,7 +27,7 @@ class MarckerClusterTabac extends MapModule {
     bindAction(){
         this.addMarker(this.data);
         // this.setNumberOfMarker();
-        // this.addEventOnMap(this.map);
+        this.addEventOnMap(this.map);
     }
 
     
@@ -51,112 +51,157 @@ class MarckerClusterTabac extends MapModule {
     }
 
     createMarkersCluster(){
-        const that= this;
+
         this.markers = L.markerClusterGroup({ 
             chunkedLoading: true,
-            iconCreateFunction: function (cluster) {
-                if(that.marker_last_selected){
-                    let sepcMarmerIsExist = false;
-                    for (let g of  cluster.getAllChildMarkers()){
-                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
-                            sepcMarmerIsExist = true;
-                            break;
-                        }
-                    }
-
-                    if(sepcMarmerIsExist){
-                        return L.divIcon({
-                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
-                            className: "spec_cluster",
-                            iconSize:L.point(35,35)
-                        });
-                    }else{
-                        return L.divIcon({
-                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                            className: "mycluster",
-                            iconSize:L.point(35,35)
-                        });
-                    }
-                }else{
-                    return L.divIcon({
-                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                        className: "mycluster",
-                        iconSize:L.point(35,35)
-                    });
-                }
-            },
+            animate: true,
+            disableClusteringAtZoom: true,
+            animateAddingMarkers:true,
+            chunkedLoading: true,
+            chunkInterval: 500, 
+            chunkDelay: 100,
         });
+
+        // const that= this;
+        // this.markers = L.markerClusterGroup({ 
+        //     chunkedLoading: true,
+        //     iconCreateFunction: function (cluster) {
+        //         if(that.marker_last_selected){
+        //             let sepcMarmerIsExist = false;
+        //             for (let g of  cluster.getAllChildMarkers()){
+        //                 if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+        //                     sepcMarmerIsExist = true;
+        //                     break;
+        //                 }
+        //             }
+
+        //             if(sepcMarmerIsExist){
+        //                 return L.divIcon({
+        //                     html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+        //                     className: "spec_cluster",
+        //                     iconSize:L.point(35,35)
+        //                 });
+        //             }else{
+        //                 return L.divIcon({
+        //                     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+        //                     className: "mycluster",
+        //                     iconSize:L.point(35,35)
+        //                 });
+        //             }
+        //         }else{
+        //             return L.divIcon({
+        //                 html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+        //                 className: "mycluster",
+        //                 iconSize:L.point(35,35)
+        //             });
+        //         }
+        //     },
+        // });
     }
 
     addMarker(newData){
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
 
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+        
         newData.forEach(item => {
-            const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
-            let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
-            
-            let pathIcon="assets/icon/NewIcons/tabac_black0.png";
-            let taille= 0 /// 0: min, 1: moyenne, 2 : grand
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
 
-            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
-            
-            marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
 
-            marker.on('click', (e) => {
-                ////close right if this open
-                this.closeRightSide();
+                this.settingSingleMarker(item, false);
 
-                // hideRightSide();
-
-                this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
-
-                pathIcon='/assets/icon/NewIcons/tabac_red0.png';
-               
-                const icon_R = L.Icon.extend({
-                    options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
-                        iconSize: [35,55],
-                        iconAnchor: [11, 30],
-                        popupAnchor: [0, -20],
-                        shadowSize: [68, 95],
-                        shadowAnchor: [22, 94]
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
                     }
                 })
-                marker.setIcon(new icon_R);
-
-                if (this.marker_last_selected && this.marker_last_selected != marker ) {
-
-                    let pathIcon='/assets/icon/NewIcons/tabac_map.png';
-
-                    const icon_B = L.Icon.extend({
-                        options: {
-                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + pathIcon : this.currentUrl.origin + "/public" + pathIcon ,
-                            iconSize: [32,50],
-                            iconAnchor: [11, 30],
-                            popupAnchor: [0, -20],
-                            //shadowUrl: 'my-icon-shadow.png',
-                            shadowSize: [68, 95],
-                            shadowAnchor: [22, 94]
-                        }
-                    })
-                    this.marker_last_selected.setIcon(new icon_B)
-                }
-                this.marker_last_selected = marker;
-
-                this.markers.refreshClusters();
-
-                
-                if (screen.width < 991) {
-                    getDetailTabac(item.dep, item.nom_dep, item.id)
-                } else {
-                    getDetailTabac(item.dep, item.nom_dep, item.id)
-                }
-
-            })
-
-            this.markers.addLayer(marker);
-
+            }
         })
         this.map.addLayer(this.markers);
+    }
+
+    /**
+     * Goals object about markers icon.
+     * @param {*} item  this rubric item.
+     * @param {*} isSelected : true or false
+     * @returns object : { path: ..., size: }
+     */
+    getIcon(item, isSelected){
+        const icon_path= isSelected ? "/assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
+        const icon_size= isSelected ? 3 : 0; /// 0: normal, 3: selected
+
+        return { 'path': icon_path, 'size': icon_size };
+    }
+
+    settingSingleMarker(item, isSelected=false ){
+        const zoom = this.map._zoom;
+        const icon = this.getIcon(item, isSelected);
+
+        let marker = L.marker( 
+            L.latLng( parseFloat( item.lat ), parseFloat( item.long ) ), 
+            {
+                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                id: item.id
+            }
+        );
+
+        const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
+        const title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
+
+        marker.bindTooltip(title, { direction: "top", offset: L.point( 0, -30 )}).openTooltip();
+
+        this.bindEventClick( marker, item );
+
+        this.markers.addLayer(marker);
+    }
+
+
+    bindEventClick( marker, item ){
+        marker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+
+            ///set in the center
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+
+            const icon= this.getIcon(item, true );
+            marker.setIcon( setIconn( icon.path, "", icon.size, 9 ));
+
+            this.updateLastMarkerSelected( marker, item );
+
+            this.markers.refreshClusters();
+
+            this.renderFicheDetails(item);
+        })
+    }
+
+    updateLastMarkerSelected(marker, item){
+
+        if (this.marker_last_selected && this.marker_last_selected != marker ) {
+            const icon= this.getIcon(item, false );
+            this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, 9 ));
+        }
+
+        this.marker_last_selected = marker;
+    }
+
+    renderFicheDetails(item){
+        if (screen.width < 991) {
+            getDetailTabac(item.dep, item.nom_dep, item.id)
+        } else {
+            getDetailTabac(item.dep, item.nom_dep, item.id)
+        }
     }
 
     addEventOnMap(map) {
@@ -166,7 +211,8 @@ class MarckerClusterTabac extends MapModule {
 
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
-            this.addPeripheriqueMarker(new_size)
+            this.updateMarkersDisplay(new_size);
+            this.addPeripheriqueMarker(new_size);
         })
     }
 
@@ -199,7 +245,25 @@ class MarckerClusterTabac extends MapModule {
     }
 
     async addPeripheriqueMarker(new_size) {
-       console.log(new_size)
+        try {
+            const { minx, miny, maxx, maxy }= new_size;
+            const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
+
+            const link =( this.nom_dep && this.id_dep) ? `/api/tabac/departement/${this.nom_dep}/${this.id_dep}` : `/api/tabac`;
+            const response= await fetch(`${link}${param}`);
+            const results = await response.json();
+            // console.log(results)
+            
+            let new_data= results.data;
+            this.addMarkerNewPeripherique(new_data, new_size);
+
+            // console.log(new_data);
+            new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
+         
+            this.default_data= this.default_data.concat(new_data);
+        } catch (e) {
+            console.log(e)
+        }
     }
 
     

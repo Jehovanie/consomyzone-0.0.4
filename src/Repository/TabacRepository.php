@@ -79,6 +79,7 @@ class TabacRepository extends ServiceEntityRepository
                     'r.clenum',
                     'r.denomination_f',
                     'r.denomination_f as name',
+                    'r.denomination_f as nameFilter',
                     'r.numvoie',
                     'r.typevoie',
                     'r.nomvoie',
@@ -137,6 +138,7 @@ class TabacRepository extends ServiceEntityRepository
                     'r.clenum',
                     'r.denomination_f',
                     'r.denomination_f as name',
+                    'r.denomination_f as nameFilter',
                     'r.numvoie',
                     'r.typevoie',
                     'r.nomvoie',
@@ -172,14 +174,14 @@ class TabacRepository extends ServiceEntityRepository
                     'r.poi_x as long',
                     'r.poi_y as lat',
                 )
-                ->where("ABS(r.poi_x) >=ABS(:minx) ")
-                ->andWhere("ABS(r.poi_x) <= ABS(:maxx)")
-                ->andWhere("ABS(r.poi_y) >=ABS(:miny)")
-                ->andWhere("ABS(r.poi_y) <=ABS(:maxy)")
-                ->setParameter("minx", $minx)
-                ->setParameter("maxx", $maxx)
-                ->setParameter("miny", $miny)
-                ->setParameter("maxy", $maxy)
+                ->where( "r.poi_x >= :minx" )
+                ->andWhere( "r.poi_x <= :maxx" )
+                ->andWhere( "r.poi_y >= :miny" )
+                ->andWhere( "r.poi_y <= :maxy" )
+                ->setParameter( "minx", $minx )
+                ->setParameter( "maxx", $maxx )
+                ->setParameter( "miny", $miny )
+                ->setParameter( "maxy", $maxy )
                 ->orderBy('RAND()')
                 ->getQuery()
                 ->getResult();
@@ -199,6 +201,7 @@ class TabacRepository extends ServiceEntityRepository
                 r.denomination_f,
                 r.denomination_f as nom,
                 r.denomination_f as name,
+                r.denomination_f as nameFilter,   
                 r.numvoie,
                 r.typevoie,
                 r.nomvoie,
@@ -252,6 +255,7 @@ class TabacRepository extends ServiceEntityRepository
                 r.denomination_f,
                 r.denomination_f as nom,
                 r.denomination_f as name,
+                r.denomination_f as nameFilter,
                 r.numvoie,
                 r.typevoie,
                 r.nomvoie,
@@ -308,6 +312,7 @@ class TabacRepository extends ServiceEntityRepository
                 r.denomination_f,
                 r.denomination_f as nom,
                 r.denomination_f as name,
+                r.denomination_f as nameFilter,
                 r.numvoie,
                 r.typevoie,
                 r.nomvoie,
@@ -360,6 +365,7 @@ class TabacRepository extends ServiceEntityRepository
                 'r.clenum',
                 'r.denomination_f',
                 'r.denomination_f as nom',
+                'r.denomination_f as nameFilter',
                 'r.numvoie',
                 'r.typevoie',
                 'r.nomvoie',
@@ -447,6 +453,7 @@ class TabacRepository extends ServiceEntityRepository
                         p.nomvoie,
                         p.compvoie,
                         p.denomination_f as name,
+                        p.denomination_f as nameFilter,
                         p.dep as id_dep,
                         p.dep_name as departement,
                         CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as adresse,
@@ -561,6 +568,7 @@ class TabacRepository extends ServiceEntityRepository
                         p.nomvoie,
                         p.compvoie,
                         p.denomination_f as name,
+                        p.denomination_f as nameFilter,
                         p.dep as id_dep,
                         p.dep_name as departement,
                         CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as adresse,
