@@ -10,11 +10,11 @@ class MarckerClusterHome extends MapModule  {
 
         ///override because for each rubric
         this.objectRatioAndDataMax= [
-            { zoomMin: 18, dataMax: 4, ratio: 3 },
-            { zoomMin: 16, dataMax: 3, ratio: 3 },
+            { zoomMin: 18, dataMax: 3, ratio: 3 },
+            { zoomMin: 16, dataMax: 2, ratio: 3 },
             { zoomMin: 14, dataMax: 2, ratio: 3 },
             { zoomMin: 13, dataMax: 2, ratio: 2 },
-            { zoomMin:  9, dataMax: 2, ratio: 2 },
+            { zoomMin:  9, dataMax: 1, ratio: 2 },
             { zoomMin:  6, dataMax: 1, ratio: 1 },
             { zoomMin:  4, dataMax: 1, ratio: 0 },
             { zoomMin:  1, dataMax: 1, ratio: 0 }

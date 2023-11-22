@@ -1837,13 +1837,14 @@ class MapModule{
         ///REMOVE THE OUTSIDE THE BOX
         this.removeMarkerOutSideTheBox(newSize);
 
-        // console.log(this.default_dataMax)
-
         const zoom = this.map._zoom;
         const { minx, maxx, miny, maxy } = newSize;
 
         const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
         const { dataMax, ratio }= current_object_dataMax;
+
+        ///get default data to array
+        let default_data= this.transformDataStructure();
 
         /// add same data must be show
         if( zoom > 6 ){
@@ -1862,9 +1863,8 @@ class MapModule{
             //// COMPLETE DATA FILTER FOR ALL DATA ( lat min to lat max ( with current ration ))
             dataFilteredDerive= this.completeSpecificRelatedOnRatio( dataFilteredDerive, miny, maxy, ratio )
             
-
             ///inject data in dataFilteredDerive related on the lat with the ratio and add it to the cart map
-            this.default_data.forEach(item => {
+            default_data.forEach(item => {
                 ////check if this item is in the current bounding box map.
                 const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
                 const isRelatedWithRatio= dataFilteredDerive.some((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === parseFloat(jtem.lat) )
@@ -1910,7 +1910,7 @@ class MapModule{
             /** objectif: [ { lat: 47.2 (si ratio === 1 ), data: [ {item }, ... ] } ] */
             const dataFiltered= [ ];
 
-            this.default_data.forEach(item => {
+            default_data.forEach(item => {
                 ////check if there is filter by carractère appear
                 if( this.filterLetter === "" || (  this.filterLetter !== ""  && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
                     if( !dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === jtem.lat )){
@@ -1932,7 +1932,7 @@ class MapModule{
 
                 if( !dateFilteredPrime.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio)) === jtem.lat )){
 
-                    const data_temp= this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
+                    const data_temp= default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
 
                     ////check if there is filter by carractère appear
                     if(  this.filterLetter === "" || (  this.filterLetter !== ""  && data_temp.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
@@ -1943,11 +1943,11 @@ class MapModule{
                     dateFilteredPrime.forEach(ktem => {
                         if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === ktem.lat){
                             if( ktem.data.length < dataMax ){
-                                const data_temp= this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
+                                const data_temp= default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
 
                                 ////check if there is filter by carractère appear
                                 if(  this.filterLetter === "" || (  this.filterLetter !== ""  && data_temp.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
-                                    ktem.data.push( this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)))
+                                    ktem.data.push(default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)))
                                 }
                             }else{
                                 this.markers.removeLayer(marker);
@@ -1990,7 +1990,29 @@ class MapModule{
         this.markers.eachLayer((marker) => {  countMarkerst++; });
         console.log("Total marker afficher: " + countMarkerst);
 
-        console.log("Total default data: " + this.default_data.length)
+        console.log("Total default data: " + default_data.length)
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * The goal of this function to transform object data { ferme :[ ], ... } in to one array.
+     * 
+     * @returns [ { item }, ...]
+     */
+    transformDataStructure(){
+        let default_data= [];
+
+        if( Array.isArray(this.default_data)){
+            default_data= this.default_data;
+        }else{
+            default_data= default_data.concat(this.default_data.ferme);
+            default_data= default_data.concat(this.default_data.station);
+            default_data= default_data.concat(this.default_data.resto);
+            default_data= default_data.concat(this.default_data.golf);
+            default_data= default_data.concat(this.default_data.tabac);
+        }
+
+        return default_data;
     }
 
     /**
@@ -2004,16 +2026,20 @@ class MapModule{
      * @returns array :  [ { lat: ... , data: [ { ... }, ... ] }, ... ]
      */
     getSpecificRelatedOnRatio(marker, ratio, dataMax, dataFilteredDerive= [] ){
+        
+        ///get default data to array
+        let default_data= this.transformDataStructure();
+
         const temp= marker.getLatLng();
         if( !dataFilteredDerive.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
             ////check if there is filter by carractère appear
             if( this.filterLetter !== ""){
                 dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
-                    this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id) && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
+                    default_data.find(item => parseInt(item.id) === parseInt(marker.options.id) && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
                 ] })
             }else{
                 dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
-                    this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                    default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
                 ] })
             }
 
@@ -2024,11 +2050,11 @@ class MapModule{
                         
                         if( this.filterLetter !== "" ){
                             ktem.data.push(
-                                this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)  && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )
+                                default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)  && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )
                             )
                         }else{
                             ktem.data.push(
-                                this.default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
+                                default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
                             )
                         }
                     }
@@ -2078,11 +2104,9 @@ class MapModule{
      */
     addMarkerNewPeripherique(new_data, newSize){
         const { minx, maxx, miny, maxy } = newSize;
+        
         let countMarkers= 0;
         this.markers.eachLayer((marker) => {  countMarkers++; });
-
-        console.log(countMarkers)
-        console.log(new_data.length)
 
         if( countMarkers < 20 && new_data.length > 0 ){
             new_data.forEach(item => {
