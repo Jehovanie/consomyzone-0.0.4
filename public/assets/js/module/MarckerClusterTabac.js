@@ -187,9 +187,10 @@ class MarckerClusterTabac extends MapModule {
     }
 
     updateLastMarkerSelected(marker, item){
-
         if (this.marker_last_selected && this.marker_last_selected != marker ) {
-            const icon= this.getIcon(item, false );
+            const last_marker= this.data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
+
+            const icon= this.getIcon(last_marker, false );
             this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, 9 ));
         }
 
@@ -223,7 +224,7 @@ class MarckerClusterTabac extends MapModule {
 
 
     generateAllCard(){
-      
+      console.log("Generating all cards...")
     }
 
 
@@ -244,6 +245,10 @@ class MarckerClusterTabac extends MapModule {
         });
     }
 
+    /**
+     * Fetch all related data from the boundaries...
+     * @param {*} new_size  { minx, miny, maxx, maxy }
+     */
     async addPeripheriqueMarker(new_size) {
         try {
             const { minx, miny, maxx, maxy }= new_size;
@@ -265,7 +270,6 @@ class MarckerClusterTabac extends MapModule {
             console.log(e)
         }
     }
-
     
     checkeFilterType(data) {
         return data;
