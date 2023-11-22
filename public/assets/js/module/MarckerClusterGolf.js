@@ -196,8 +196,9 @@ class MarckerClusterGolf extends MapModule {
 
             this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);
             
-            const icon = this.getIcon(item, true);
-            marker.setIcon( setIconn( icon.path, "", icon.size, 9 ));
+            const zoom = this.map._zoom;
+            const icon = this.getIcon(item, isSelected);
+            marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
 
             this.updateLastMarkerSelected( marker, item );
 

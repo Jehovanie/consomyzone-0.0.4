@@ -138,7 +138,7 @@ class MarckerClusterTabac extends MapModule {
      * @returns object : { path: ..., size: }
      */
     getIcon(item, isSelected){
-        const icon_path= isSelected ? "/assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
+        const icon_path= isSelected ? "assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
         const icon_size= isSelected ? 3 : 0; /// 0: normal, 3: selected
 
         return { 'path': icon_path, 'size': icon_size };
@@ -175,8 +175,10 @@ class MarckerClusterTabac extends MapModule {
             ///set in the center
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
+            const zoom = this.map._zoom;
             const icon= this.getIcon(item, true );
-            marker.setIcon( setIconn( icon.path, "", icon.size, 9 ));
+
+            marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
 
             this.updateLastMarkerSelected( marker, item );
 
@@ -189,9 +191,10 @@ class MarckerClusterTabac extends MapModule {
     updateLastMarkerSelected(marker, item){
         if (this.marker_last_selected && this.marker_last_selected != marker ) {
             const last_marker= this.data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
-
+            const zoom = this.map._zoom;
             const icon= this.getIcon(last_marker, false );
-            this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, 9 ));
+            
+            this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, zoom ));
         }
 
         this.marker_last_selected = marker;

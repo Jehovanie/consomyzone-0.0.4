@@ -63,6 +63,7 @@ class GolfFranceRepository extends ServiceEntityRepository
                         'r.web',
                         'r.nom_golf as name',
                         'r.nom_golf as nameFilter',
+                        'r.nom_golf as golf',
                         'r.dep',
                         'r.nom_dep',
                         'r.adr1 as adress',
@@ -107,7 +108,7 @@ class GolfFranceRepository extends ServiceEntityRepository
         return $data;
     }
 
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy, $nom_dep=null, $id_dep=null, $limit= 200){
+    public function getDataBetweenAnd($minx, $miny, $maxx, $maxy, $nom_dep=null, $id_dep=null, $limit= 200){
 
         $id_dep= strlen($id_dep) === 1  ? "0" . $id_dep : $id_dep;
 
@@ -117,6 +118,7 @@ class GolfFranceRepository extends ServiceEntityRepository
                         'r.web',
                         'r.nom_golf as name',
                         'r.nom_golf as nameFilter',
+                        'r.nom_golf as golf',
                         'r.dep',
                         'r.nom_dep',
                         'r.adr1 as adress',

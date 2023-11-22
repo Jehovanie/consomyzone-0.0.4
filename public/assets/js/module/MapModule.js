@@ -77,6 +77,8 @@ class MapModule{
         ];
 
     }
+
+    
     initTales(){
         this.tiles = L.tileLayer(this.listTales[0].link, {
             // attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
@@ -1624,12 +1626,14 @@ class MapModule{
      * je veux: faire apparaitre la note en haut à gauche du poi resto
      * si une POI a une note, la note se montre en haut à gauche du POI 
      */
-    setSpecialMarkerToShowNote(latLng,item,isSelected=false, poi_icon, poi_icon_Selected, taille){
+    setSpecialMarkerToShowNote(latLng, item, isSelected=false, poi_icon, poi_icon_Selected, taille){
         // isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille)
         // const iconUrlNanta="/assets/icon/NewIcons/icon-resto-new-B.png"; ///on dev
         // const taille=0
         let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
         let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
+
+        const path_icon= IS_DEV_MODE ? `/public/${isSelected ? poi_icon_Selected : poi_icon}` : `/${isSelected ? poi_icon_Selected : poi_icon}`
         return new L.Marker(latLng, {
             icon: new L.DivIcon({
                 className: 'my-div-icon',
@@ -1637,7 +1641,7 @@ class MapModule{
                         <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
                         background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
                         border-radius: 50%;">${noteMoyenne}</span>
-                      <img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                      <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
                        `,
                 //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
                 iconAnchor: [11, 30],
@@ -1651,6 +1655,34 @@ class MapModule{
         });
     }
 
+    setSpecialMarkerToShowNoteRefactor(latLng, item, poi_icon, taille ){
+        let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
+        let [w,h]= (taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
+
+        const path_icon= IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`
+        return new L.Marker(
+            latLng, 
+            {
+                icon: new L.DivIcon({
+                    className: 'my-div-icon',
+                    html: ` 
+                            <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
+                            background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
+                            border-radius: 50%;">${noteMoyenne}</span>
+                        <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
+                        `,
+                    //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
+                    iconAnchor: [11, 30],
+                    popupAnchor: [0, -20],
+                    shadowSize: [68, 95],
+                    shadowAnchor: [22, 94],
+                }),
+                cleNom:item.denominationF,
+                id:item.id,
+                type:"resto"
+            });
+    }
+
     /**
      * @Author Nantenaina
      * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz, 
@@ -1659,8 +1691,9 @@ class MapModule{
      * si une POI a une note, la note se montre en haut à gauche du POI 
      */
     setSpecialIcon(item, isSelected=false, poi_icon, poi_icon_Selected, taille){
-        let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
+        let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0;
         let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
+        
         return new L.DivIcon({
             className: 'my-div-icon',
             html: noteMoyenne > 0 ? ` 
@@ -1671,6 +1704,27 @@ class MapModule{
                    `:`<img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
                    `,
             //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
+            iconAnchor: [11, 30],
+            popupAnchor: [0, -20],
+            shadowSize: [68, 95],
+            shadowAnchor: [22, 94],
+        })
+    }
+
+    setSpecialIconRefactor(item, poi_icon, taille){
+        let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0;
+        let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
+        
+        const path_icon= IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`
+        return new L.DivIcon({
+            className: 'my-div-icon',
+            html: noteMoyenne > 0 ? ` 
+                    <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
+                    background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
+                    border-radius: 50%;">${noteMoyenne}</span>
+                  <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
+                   `:`<img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
+                   `,
             iconAnchor: [11, 30],
             popupAnchor: [0, -20],
             shadowSize: [68, 95],
@@ -1783,6 +1837,7 @@ class MapModule{
         ///REMOVE THE OUTSIDE THE BOX
         this.removeMarkerOutSideTheBox(newSize);
 
+        // console.log(this.default_dataMax)
 
         const zoom = this.map._zoom;
         const { minx, maxx, miny, maxy } = newSize;
@@ -2023,9 +2078,11 @@ class MapModule{
      */
     addMarkerNewPeripherique(new_data, newSize){
         const { minx, maxx, miny, maxy } = newSize;
-        
         let countMarkers= 0;
         this.markers.eachLayer((marker) => {  countMarkers++; });
+
+        console.log(countMarkers)
+        console.log(new_data.length)
 
         if( countMarkers < 20 && new_data.length > 0 ){
             new_data.forEach(item => {

@@ -80,6 +80,7 @@ class TabacRepository extends ServiceEntityRepository
                     'r.denomination_f',
                     'r.denomination_f as name',
                     'r.denomination_f as nameFilter',
+                    'r.denomination_f as tabac',
                     'r.numvoie',
                     'r.typevoie',
                     'r.nomvoie',
@@ -130,7 +131,7 @@ class TabacRepository extends ServiceEntityRepository
      * 
      * @return array Tabac
     */
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null){
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null, $taille= 200){
         $results=[];
         $data=  $this->createQueryBuilder("r")
                 ->select(
@@ -139,6 +140,7 @@ class TabacRepository extends ServiceEntityRepository
                     'r.denomination_f',
                     'r.denomination_f as name',
                     'r.denomination_f as nameFilter',
+                    'r.denomination_f as tabac',
                     'r.numvoie',
                     'r.typevoie',
                     'r.nomvoie',
@@ -184,6 +186,7 @@ class TabacRepository extends ServiceEntityRepository
                 ->setParameter( "maxy", $maxy )
                 ->orderBy('RAND()')
                 ->getQuery()
+                ->setMaxResults($taille)
                 ->getResult();
        
         return $data;

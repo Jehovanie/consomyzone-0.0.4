@@ -341,16 +341,15 @@ class ToutsController extends AbstractController
             $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
             
             return $this->json([
-                "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
-                "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
-                // "resto" => $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, "", "", 100),
+                "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, 100),
                 "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
-                "golf" => $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
-                "tabac" => $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy),
+                "golf" => $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy ,null ,null, 100),
+                "tabac" => $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, 100),
             ]);
         }
 
-        $taille= 1000;
+        $taille= 500;
         $userID= $this->getUser() ? $this->getUser()->getId(): null;
 
         $restos = $bddRestoRepository->appendRestoPastille($bddRestoRepository->getSomeDataShuffle($taille),$arrayIdResto);
@@ -362,7 +361,6 @@ class ToutsController extends AbstractController
         return $this->json([
             "station" => $stationServiceFrGeomRepository->getSomeDataShuffle($taille),
             "ferme" => $fermeGeomRepository->getSomeDataShuffle($taille),
-            // "resto" => $bddRestoRepository->appendRestoPastille($bddRestoRepository->getSomeDataShuffle($taille),$arrayIdResto),
             "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
             "golf" => $golfFranceRepository->getSomeDataShuffle($userID, $taille),
             "tabac" => $tabacRepository->getSomeDataShuffle($taille),

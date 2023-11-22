@@ -1053,6 +1053,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.villenorm,
                         r.commune,
                         r.restaurant,
+                        r.restaurant as resto,
                         r.brasserie,
                         r.creperie,
                         r.fastFood,
@@ -1168,7 +1169,7 @@ class BddRestoRepository extends ServiceEntityRepository
     }
 
 
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null, $codinsee= null){
+    public function getDataBetweenAnd($minx, $miny, $maxx, $maxy, $idDep= null, $codinsee= null, $taille= 200){
         $query =  $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
@@ -1181,6 +1182,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.villenorm,
                         r.commune,
                         r.restaurant,
+                        r.restaurant as resto,
                         r.brasserie,
                         r.creperie,
                         r.fastFood,
@@ -1230,7 +1232,7 @@ class BddRestoRepository extends ServiceEntityRepository
         }
 
         return $query->orderBy('RAND()')
-                    ->setMaxResults(200)
+                    ->setMaxResults($taille)
                     ->getQuery()
                     ->getResult();
     }

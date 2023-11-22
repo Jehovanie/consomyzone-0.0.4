@@ -944,6 +944,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'r.prixSp95E10',
                         'r.prixSp98',
                         'r.prixGasoil',
+                        'r.prixGasoil as station',
                         'r.nom',
                         'r.latitude as lat',
                         'r.longitude as long'
@@ -972,6 +973,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'r.prixSp95E10',
                         'r.prixSp98',
                         'r.prixGasoil',
+                        'r.prixGasoil as station',
                         'r.nom',
                         'r.latitude as lat',
                         'r.longitude as long'

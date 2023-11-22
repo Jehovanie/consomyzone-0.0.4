@@ -245,7 +245,7 @@ class MarckerClusterSearch extends MapModule  {
                 }else if (item.golf !== undefined){
                     this.settingSingleMarkerGolf(item);
                 }else if( item.tabac !== undefined){
-                    this.setingSingleMarkerTabac(item);
+                    this.settingSingleMarkerTabac(item);
                 }
             })
 
@@ -520,7 +520,7 @@ class MarckerClusterSearch extends MapModule  {
         this.markers.addLayer(marker);
     }
 
-    setingSingleMarkerTabac(item){
+    settingSingleMarkerTabac(item){
         const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
         let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
         

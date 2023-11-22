@@ -866,7 +866,7 @@ class FermeGeomRepository extends ServiceEntityRepository
     }
 
     
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy, $taille= 200){
 
         $query =  $this->createQueryBuilder("r")
                     ->select(
@@ -880,7 +880,6 @@ class FermeGeomRepository extends ServiceEntityRepository
                         'r.departement as dep',
                         'r.departementName',
                         'r.departementName as depName',
-                        'r.produitFerme',
                         'r.email',
                         'r.engagementProd',
                         'r.fax',
@@ -922,7 +921,7 @@ class FermeGeomRepository extends ServiceEntityRepository
                     ->setParameter("maxx", floatval($maxy))
                     ->setParameter("miny", floatval($minx))
                     ->setParameter("maxy", floatval($maxx))
-                    ->setMaxResults(200)
+                    ->setMaxResults($taille)
                     ->orderBy('RAND()')
                     ->getQuery();
 
