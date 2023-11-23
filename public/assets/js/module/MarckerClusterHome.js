@@ -161,6 +161,9 @@ class MarckerClusterHome extends MapModule  {
             }
 
             this.map.addLayer(this.markers);
+
+            ////count marker in map
+            this.countMarkerInCart()
         } else {
             console.log("ERREUR : L'erreur se produit par votre réseaux.")
         }
@@ -532,7 +535,6 @@ class MarckerClusterHome extends MapModule  {
                 );
             }
             
-            // restoMarker.setIcon(this.setSpecialIcon(dataResto, true, poi_icon_Selected, poi_icon_Selected, isPastille));
             this.updateLastMarkerSelected(restoMarker, "resto")
             
             if (screen.width < 991) {
@@ -572,11 +574,7 @@ class MarckerClusterHome extends MapModule  {
         golfMarker.on('click', (e) => {
             ////close right if this open
             this.closeRightSide();
-
-            const itemID= item.id
-            const golfUpdate = this.data.golf.find(jtem =>parseInt(jtem.id) === itemID);
-            
-            this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
             const zoom = this.map._zoom;
             const icon = this.getIcon(item, true);
@@ -586,9 +584,9 @@ class MarckerClusterHome extends MapModule  {
             this.updateLastMarkerSelected(golfMarker, "golf")
             
             if (screen.width < 991) {
-                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
+                getDetailGolf(item.dep, item.nom_dep, item.id, true)
             } else {
-                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
+                getDetailGolf(item.dep, item.nom_dep, item.id, true)
             }
 
         })

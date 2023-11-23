@@ -197,7 +197,8 @@ class MarckerClusterGolf extends MapModule {
             this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);
             
             const zoom = this.map._zoom;
-            const icon = this.getIcon(item, isSelected);
+            const icon = this.getIcon(item, true);
+
             marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
 
             this.updateLastMarkerSelected( marker, item );
@@ -232,9 +233,9 @@ class MarckerClusterGolf extends MapModule {
      */
     renderFicheDetails(item){
         if (screen.width < 991) {
-            getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id)
+            getDetailGolf(item.dep, item.nom_dep, item.id)
         } else {
-            getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id)
+            getDetailGolf(item.dep, item.nom_dep, item.id)
         }
     }
 

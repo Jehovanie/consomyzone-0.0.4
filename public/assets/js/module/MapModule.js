@@ -1986,11 +1986,8 @@ class MapModule{
 
         // this.markers.refreshClusters();
 
-        let countMarkerst= 0;
-        this.markers.eachLayer((marker) => {  countMarkerst++; });
-        console.log("Total marker afficher: " + countMarkerst);
-
-        console.log("Total default data: " + default_data.length)
+        ////count marker in map
+        this.countMarkerInCart()
     }
 
     /**
@@ -2001,15 +1998,16 @@ class MapModule{
      */
     transformDataStructure(){
         let default_data= [];
-
         if( Array.isArray(this.default_data)){
             default_data= this.default_data;
-        }else{
+        }else if ( this.default_data.hasOwnProperty("ferme") && this.default_data.hasOwnProperty("resto") ){
             default_data= default_data.concat(this.default_data.ferme);
             default_data= default_data.concat(this.default_data.station);
             default_data= default_data.concat(this.default_data.resto);
             default_data= default_data.concat(this.default_data.golf);
             default_data= default_data.concat(this.default_data.tabac);
+        }else if( this.default_data.hasOwnProperty("results") && this.default_data.hasOwnProperty("cles0") && this.default_data.hasOwnProperty("cles1")){
+            default_data= this.default_data.results[0];
         }
 
         return default_data;
@@ -2128,5 +2126,14 @@ class MapModule{
                 }
             })
         }
+    }
+
+    countMarkerInCart(){
+        let countMarkerst= 0;
+        this.markers.eachLayer((marker) => {  countMarkerst++; });
+        console.log("Total marker afficher: " + countMarkerst);
+
+        const default_data= this.transformDataStructure();
+        console.log("Total default data: " + default_data.length)
     }
 }
