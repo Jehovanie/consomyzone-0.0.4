@@ -215,7 +215,7 @@ class RestaurantController extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
-            $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep, $codinsee);
+            $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep, $codinsee, 50);
 
             $ids=array_map('self::getIdAvisResto',$datas);
 
@@ -228,7 +228,7 @@ class RestaurantController extends AbstractController
         }
 
         //// $data resto specific in $dep and $codinsee
-        $datas = $bddResto->getCoordinateAndRestoIdForSpecific($dep, $codinsee);
+        $datas = $bddResto->getCoordinateAndRestoIdForSpecific($dep, $codinsee, 1000);
 
         //// update data result to add all resto pastille in the Tribu T
         $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);

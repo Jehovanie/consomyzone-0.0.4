@@ -306,14 +306,6 @@ class MarckerClusterFerme extends MapModule {
         this.addMarker(this.default_data)
     }
 
-    clickOnMarker(id){
-        this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(id) ) {
-                marker.fireEvent('click');  
-            }
-        });
-    }
-
     async addPeripheriqueMarker(new_size) {
         try {
             const { minx, miny, maxx, maxy }= new_size;

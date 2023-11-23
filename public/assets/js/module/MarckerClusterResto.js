@@ -33,7 +33,9 @@ class MarckerClusterResto extends MapModule  {
             
             this.listRestoPastille= responseJson.allIdRestoPastille;
 
-            this.initMap(null, null, null, isAddControl);
+            const zoom = this.codinsee ? 13 : null;
+            this.initMap(null, null, zoom, isAddControl);
+            
             this.bindAction();
 
             if(getDataInSessionStorage("lastSearchPosition")){
@@ -296,19 +298,6 @@ class MarckerClusterResto extends MapModule  {
         }
     }
 
-    checkIsExist(idToCheck){
-        return this.default_data.some(({id}) => parseInt(id) === parseInt(idToCheck))
-    }
-
-    clickOnMarker(id){
-        this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(id) ) {
-                marker.fireEvent('click'); 
-            }
-        });
-    }
-
-  
 
     async fetchOneData(id){
         try {

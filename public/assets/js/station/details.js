@@ -1,5 +1,5 @@
 function getDetailFromListLeft(depart_name, depart_code, id) { 
-    if(OBJECT_MARKERS_STATION.clickOnMarker(id)){
+    if(OBJECT_MARKERS_STATION.checkIsExist(id)){
         OBJECT_MARKERS_STATION.clickOnMarker(id)
     }else{
         if (screen.width < 991) {
@@ -13,7 +13,7 @@ function getDetailFromListLeft(depart_name, depart_code, id) {
         }
 
         /// update card and the markers new
-        OBJECT_MARKERS_RESTO.fetchOneData(id)
+        // OBJECT_MARKERS_RESTO.fetchOneData(id)
     }
     
 }

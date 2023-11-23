@@ -68,8 +68,8 @@ class MapModule{
         this.objectRatioAndDataMax= [
             { zoomMin: 18, dataMax: 20, ratio: 3 },
             { zoomMin: 16, dataMax: 15, ratio: 3 },
-            { zoomMin: 14, dataMax: 10, ratio: 3 },
-            { zoomMin:  13, dataMax:  5, ratio: 2 },
+            { zoomMin: 14, dataMax:  8, ratio: 3 },
+            { zoomMin: 13, dataMax:  5, ratio: 2 },
             { zoomMin:  9, dataMax:  3, ratio: 2 },
             { zoomMin:  6, dataMax:  2, ratio: 1 },
             { zoomMin:  4, dataMax:  1, ratio: 0 },
@@ -2138,5 +2138,44 @@ class MapModule{
 
         const default_data= this.transformDataStructure();
         console.log("Total default data: " + default_data.length)
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehoavaneirama@gmail.com>
+     * 
+     * Check if the item related with this ID is in the marker or in the data
+     * 
+     * @param {*} idToCheck 
+     * 
+     * @returns true if exists, false if not 
+     */
+    checkIsExist(idToCheck){
+        if(this.default_data.some(({id}) => parseInt(id) === parseInt(idToCheck))){
+            let isAlreadyExist= false;
+            this.markers.eachLayer(( marker ) => {
+                if (parseInt(marker.options.id) === parseInt(idToCheck) ) {
+                    isAlreadyExist= true;
+                }
+            })
+
+            if( !isAlreadyExist ){
+                const data= this.default_data.find(({id}) => parseInt(id) === parseInt(idToCheck));
+                this.settingSingleMarker(data, false)
+            }
+        }
+        return this.default_data.some(({id}) => parseInt(id) === parseInt(idToCheck))
+    }
+
+    /**
+     * 
+     * fire event click on marker
+     * @param {*} id 
+     */
+    clickOnMarker(id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id) ) {
+                marker.fireEvent('click');  
+            }
+        });
     }
 }

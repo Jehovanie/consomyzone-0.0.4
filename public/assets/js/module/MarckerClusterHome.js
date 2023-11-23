@@ -1050,10 +1050,28 @@ class MarckerClusterHome extends MapModule  {
         injectListMarker(restoPastilleTab);
     }
 
+    /**
+     * @override for the MapModule
+     * 
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * 
+     * @param {*} idToCheck 
+     * 
+     * @returns 
+     */
     checkIsExist(idToCheck){
         return this.default_data.resto.some(({id}) => parseInt(id) === parseInt(idToCheck))
     }
-
+    
+    /**
+     * @override for the MapModule
+     * 
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * 
+     * @param {*} idToCheck 
+     * 
+     * @returns 
+     */
     clickOnMarker(id){
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === "resto" ) {

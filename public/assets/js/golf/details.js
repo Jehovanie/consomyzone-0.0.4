@@ -1,5 +1,8 @@
 function getDetailFromListLeft(depart_name, depart_code, id) { 
+    
+    if(OBJECT_MARKERS_GOLF.checkIsExist(id)){
         OBJECT_MARKERS_GOLF.clickOnMarker(id)
+    }
     
     // if (screen.width < 991) {
     //     var pathDetails = `/golf-mobile/departement/${depart_name}/${depart_code}/details/${id}`;

@@ -280,18 +280,6 @@ class MarckerClusterGolf extends MapModule {
         this.addMarker(this.default_data)
     }
 
-    /**
-     * 
-     * fire event click on marker
-     * @param {*} id 
-     */
-    clickOnMarker(id){
-        this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(id) ) {
-                marker.fireEvent('click');  
-            }
-        });
-    }
 
     updateStateGolf(status, id){
         let user_status = { "a_faire" : false, "fait" : false, "mon_golf" : false,"refaire":false }

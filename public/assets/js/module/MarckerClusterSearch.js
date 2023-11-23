@@ -1082,7 +1082,7 @@ class MarckerClusterSearch extends MapModule  {
      * si un utilisateur veut modifier une ou des informations
      * @param {} id 
      */
-      makeMarkerDraggable(id){
+    makeMarkerDraggable(id){
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id)  && marker.options.type === "resto" ) {
                 let initialPos=marker.getLatLng();
@@ -1111,6 +1111,52 @@ class MarckerClusterSearch extends MapModule  {
                 })
 
                 console.log(marker)
+            }
+        });
+    }
+
+
+    /**
+     * @override for the MapModule
+     * 
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * 
+     * @param {*} idToCheck 
+     * 
+     * @returns 
+     */
+    checkIsExist(idToCheck, type){
+        const default_data= this.transformDataStructure();
+
+        if(default_data.some((item) => parseInt(item.id) === parseInt(idToCheck) && item.hasOwnProperty(type))){
+            let isAlreadyExist= false;
+            this.markers.eachLayer(( marker ) => {
+                if (parseInt(marker.options.id) === parseInt(idToCheck) && marker.options.type === type  ) {
+                    isAlreadyExist= true;
+                }
+            })
+
+            if( !isAlreadyExist ){
+                const data= default_data.find((item) => parseInt(item.id) === parseInt(idToCheck) && item.hasOwnProperty(type));
+                this.settingSingleMarker(data, false)
+            }
+        }
+        return default_data.some(({id}) => parseInt(id) === parseInt(idToCheck))
+    }
+        
+    /**
+     * @override for the MapModule
+     * 
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * 
+     * @param {*} idToCheck 
+     * 
+     * @returns 
+     */
+    clickOnMarker(id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === "resto" ) {
+                marker.fireEvent('click'); 
             }
         });
     }
