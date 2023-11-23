@@ -1492,7 +1492,6 @@ class MapModule{
                                 this.updateGeoJson(COUCHE, -1 ) //// if -1 all seen, other single
                             }
 
-                            console.log(this.objectGeoJson)
                         })
                         .catch(error => {
                             hideChargementRightSide()
@@ -1519,7 +1518,7 @@ class MapModule{
 
     updateGeoJson(couche,indexInJson){
         // this.geoJSONLayer.clearLayers();
-        console.log(this.objectGeoJson)
+
         const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === couche);
         const styles={
             color: data_spec.color[0],
@@ -1900,9 +1899,6 @@ class MapModule{
                 }
             })
 
-            // console.log("dataFilteredDerive");
-            // console.log(dataFilteredDerive);
-
         }else{
             
             /** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
@@ -2102,12 +2098,18 @@ class MapModule{
      */
     addMarkerNewPeripherique(new_data, newSize){
         const { minx, maxx, miny, maxy } = newSize;
+        // console.log("new_data: " + new_data.length)
         
         let countMarkers= 0;
         this.markers.eachLayer((marker) => {  countMarkers++; });
 
-        if( countMarkers < 20 && new_data.length > 0 ){
-            new_data.forEach(item => {
+        if( countMarkers < 50 && new_data.length > 0 ){
+            let data= [];
+            data= ( new_data.length > 50 ) ?  shuffle(new_data) : new_data;
+            data= data.filter((item , index ) => index < 50 )
+
+
+            data.forEach(item => {
                 const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
                 
                 if( isCanDisplay ){
@@ -2121,10 +2123,11 @@ class MapModule{
                     if( !isAlreadyDisplay ){
                         const isSelected= this.marker_last_selected && this.marker_last_selected.options.id === item.id;
                         this.settingSingleMarker(item, isSelected)
-                        console.log("new add : "+ item.id)
+                        // console.log("new add : "+ item.id)
                     }
                 }
             })
+
         }
     }
 
