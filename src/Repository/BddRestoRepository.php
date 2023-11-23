@@ -99,6 +99,7 @@ class BddRestoRepository extends ServiceEntityRepository
         return $this->createQueryBuilder("r")
             ->select("r.id,
                 r.denominationF as nom,
+                r.denominationF as nameFilter,
                 r.denominationF,
                 r.numvoie,
                 r.typevoie,
@@ -147,6 +148,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->select(
                 "r.id,
                 r.denominationF as nom,
+                r.denominationF as nameFilter,
                 r.denominationF,
                 r.numvoie,
                 r.typevoie,
@@ -198,6 +200,7 @@ class BddRestoRepository extends ServiceEntityRepository
         $query= $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
+                        r.denominationF as nameFilter,
                         r.denominationF as nom,
                         r.numvoie,
                         r.typevoie,
@@ -261,6 +264,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         "r.id,
                         r.denominationF,
                         r.denominationF as nom,
+                        r.denominationF as nameFilter,
                         r.numvoie,
                         r.typevoie,
                         r.nomvoie,
@@ -323,6 +327,7 @@ class BddRestoRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder("r")
             ->select("r.id,r.denominationF,
+                r.denominationF as nameFilter,
                 r.numvoie,r.typevoie,
                 r.nomvoie,r.compvoie,
                 r.codpost,r.villenorm,
@@ -787,6 +792,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->select("r.id,
                 r.denominationF,
                 r.denominationF as nom,
+                r.denominationF as nameFilter,
                 r.numvoie,
                 r.typevoie,
                 r.nomvoie,
@@ -841,6 +847,7 @@ class BddRestoRepository extends ServiceEntityRepository
         $resto =  $this->createQueryBuilder("r")
                 ->select("r.id,
                     r.denominationF,
+                    r.denominationF as nameFilter,
                     r.numvoie,
                     r.typevoie,
                     r.nomvoie,
@@ -889,6 +896,7 @@ class BddRestoRepository extends ServiceEntityRepository
     {
         return $this->createQueryBuilder("r")
             ->select("r.id,r.denominationF,
+                r.denominationF as nameFilter,
                 r.numvoie,r.typevoie,
                 r.nomvoie,r.compvoie,
                 r.codpost,r.villenorm,
@@ -915,6 +923,7 @@ class BddRestoRepository extends ServiceEntityRepository
         return $this->createQueryBuilder("r")
             ->select("r.id,
                     r.denominationF,
+                    r.denominationF as nameFilter,
                     r.numvoie,
                     r.typevoie,
                     r.nomvoie,
@@ -962,6 +971,7 @@ class BddRestoRepository extends ServiceEntityRepository
         $qb= $this->createQueryBuilder("r")
             ->select("r.id,
                     r.denominationF,
+                    r.denominationF as nameFilter,
                     r.numvoie,
                     r.typevoie,
                     r.nomvoie,
@@ -1034,6 +1044,7 @@ class BddRestoRepository extends ServiceEntityRepository
         return $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
+                        r.denominationF as nameFilter,
                         r.numvoie,
                         r.typevoie,
                         r.nomvoie,
@@ -1085,6 +1096,7 @@ class BddRestoRepository extends ServiceEntityRepository
                 ->select(
                     "r.id,
                     r.denominationF,
+                    r.denominationF as nameFilter,
                     r.numvoie,
                     r.typevoie,
                     r.nomvoie,
@@ -1160,6 +1172,7 @@ class BddRestoRepository extends ServiceEntityRepository
         $query =  $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
+                        r.denominationF as nameFilter,
                         r.numvoie,
                         r.typevoie,
                         r.nomvoie,
@@ -1193,8 +1206,8 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.poiX as long,
                         r.poiY as lat"
                     )
-                    ->where("ABS(r.poiX) >=ABS(:minx) ")
-                    ->andWhere("ABS(r.poiX) <= ABS(:maxx)")
+                    ->where(" r.poiX >= :minx")
+                    ->andWhere("r.poiX <= :maxx")
                     ->andWhere("ABS(r.poiY) >=ABS(:miny)")
                     ->andWhere("ABS(r.poiY) <=ABS(:maxy)")
                     ->setParameter("minx", $minx)
@@ -1249,6 +1262,7 @@ class BddRestoRepository extends ServiceEntityRepository
         return $this->createQueryBuilder("r")
             ->select("r.id,
                     r.denominationF,
+                    r.denominationF as nameFilter,
                     r.numvoie,
                     r.typevoie,
                     r.nomvoie,
@@ -1291,6 +1305,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->select("r.id,
                 r.id as id_etab,
                 r.denominationF as name,
+                r.denominationF as nameFilter,
                 r.denominationF,
                 r.numvoie,
                 r.typevoie,
@@ -1323,6 +1338,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->select("r.id,
                 r.id as id_etab,
                 r.denominationF as name,
+                r.denominationF as nameFilter,
                 r.denominationF,
                 r.numvoie,
                 r.typevoie,
@@ -1357,6 +1373,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->select("r.id,
                 r.id as id_etab,
                 r.denominationF as name,
+                r.denominationF as nameFilter,
                 r.denominationF,
                 r.numvoie,
                 r.typevoie,

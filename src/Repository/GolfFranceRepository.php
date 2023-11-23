@@ -62,6 +62,7 @@ class GolfFranceRepository extends ServiceEntityRepository
                         'r.id',
                         'r.web',
                         'r.nom_golf as name',
+                        'r.nom_golf as nameFilter',
                         'r.dep',
                         'r.nom_dep',
                         'r.adr1 as adress',
@@ -106,13 +107,16 @@ class GolfFranceRepository extends ServiceEntityRepository
         return $data;
     }
 
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy, $nom_dep=null, $id_dep=null, $limit= 200){
 
-        $query =  $this->createQueryBuilder("r")
+        $id_dep= strlen($id_dep) === 1  ? "0" . $id_dep : $id_dep;
+
+        $query= $this->createQueryBuilder("r")
                     ->select(
                         'r.id',
                         'r.web',
                         'r.nom_golf as name',
+                        'r.nom_golf as nameFilter',
                         'r.dep',
                         'r.nom_dep',
                         'r.adr1 as adress',
@@ -127,24 +131,30 @@ class GolfFranceRepository extends ServiceEntityRepository
                         'r.latitude as lat',
                         'r.longitude as long',
                     )
-                    ->where("ABS(r.latitude) >= ABS(:minx) ")
-                    ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
+                    ->where("r.latitude >= :minx")
+                    ->andWhere("r.latitude <= :maxx")
                     ->andWhere("ABS(r.longitude) >= ABS(:miny)")
                     ->andWhere("ABS(r.longitude) <= ABS(:maxy)")
                     ->setParameter("minx", floatval($miny))
                     ->setParameter("maxx", floatval($maxy))
                     ->setParameter("miny", floatval($minx))
-                    ->setParameter("maxy", floatval($maxx))
-                    ->setMaxResults(200)
-                    ->orderBy('RAND()')
-                    ->getQuery();
+                    ->setParameter("maxy", floatval($maxx));
+                   
 
-        return $query->getResult();
+        if( $id_dep != null ){
+            $query= $query->andWhere('r.dep = :k')
+                    ->setParameter('k',  $id_dep);
+        }
+
+        return $query->orderBy('RAND()')
+                     ->getQuery()
+                     ->setMaxResults($limit)
+                     ->getResult();
     }
 
 
     ///jheo : prendre tous les fermes qui appartients dans un departement specifique
-    public function getGolfByDep($nom_dep="", $id_dep,$userID=null)
+    public function getGolfByDep($nom_dep="", $id_dep="" , $userID=null)
     {
         $id_dep= strlen($id_dep) === 1  ? "0" . $id_dep : $id_dep;
         ///lancement de requette
@@ -154,6 +164,7 @@ class GolfFranceRepository extends ServiceEntityRepository
                 'p.id as id_etab',
                 'p.nom_golf as name',
                 'p.nom_golf as nom',
+                'p.nom_golf as nameFilter',
                 'p.adr1',
                 'p.adr1 as adress',
                 'CONCAT(p.adr1, \' \', p.cp, \' \', p.nom_commune) as adresse',
@@ -211,6 +222,7 @@ class GolfFranceRepository extends ServiceEntityRepository
             'p.id as id_etab',
             'p.nom_golf as name',
             'p.nom_golf as nom',
+            'p.nom_golf as nameFilter',
             'p.adr1',
             'p.adr1 as adress',
             'CONCAT(p.adr1, \' \', p.cp, \' \', p.nom_commune) as adresse',
@@ -263,6 +275,7 @@ class GolfFranceRepository extends ServiceEntityRepository
                 'p.id as id_etab',
                 'p.nom_golf as name',
                 'p.nom_golf as nom',
+                'p.nom_golf as nameFilter',
                 'p.adr1',
                 'p.adr1 as adress',
                 'CONCAT(p.adr1, \' \', p.cp, \' \', p.nom_commune) as adresse',

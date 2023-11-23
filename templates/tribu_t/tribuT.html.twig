@@ -25,8 +25,11 @@
 	<script src="{{ asset('assets/js/agenda/agenda.js') }}" defer></script>
 	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
+	{# <script src="{{asset('assets/js/golf/avis_golf_depart.js')}}" defer></script> #}
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
+
+	<script type="text/javascript" src="{{ asset('assets/js/module/avis_rubrique.js') }}" defer></script>
 
 {% endblock %}
 
@@ -46,10 +49,8 @@
 			</button>
 		</div>
 
-		
-
 		<!-- ===== Main Content Start ===== -->
-		<main class="gv hm hv content-actualite-connected">
+		<main class="gv hm hv content-actualite-connected content_body_details_jheo_js" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
 			<div
 				class="sk bu 2xl:ud-p-11 width-content-t">
 
@@ -214,7 +215,7 @@
 	</div>
 
 	{% include 'shard/modal/alert_flash.html.twig' %}
-	{% include 'shard/restaurant/modal_avis_resto.html.twig' %}
+	{# {% include 'shard/restaurant/modal_avis_resto.html.twig' %} #}
 	{% include 'shard/modal/new_agenda_from_tribu_t.html.twig' %}
 	<!-- End Modal -->
 
@@ -265,9 +266,10 @@
 							<button type="button" id="data-note-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
 							<button type="button" id="data-event-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
 							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button> #}
-						<p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
+						<p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>depastilleRestoTribuT
 						<div class="container mb-4 mt-5 content_btns_nanta_js">
-							<button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
+							<button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" ><i class="fas fa-edit"></i> Notez</button>
+							{# <button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button> #}
 							<button type="button" id="data-event-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
 							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning mt-1" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button>
 						</div>
@@ -291,8 +293,8 @@
 						<p class="questionAction">Quelle action voulez-vous pour ce golf?</p>
 						<div class="container mb-4 mt-5 content_btns_nanta_js">
 							{# <button type="button" id="data-note-nanta-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button> #}
-							<button type="button" id="data-note-nanta-js" class="btn btn-secondary" disabled><i class="fas fa-edit"></i> Notez</button>
-							<button type="button" id="data-event-nanta-js" class="btn btn-secondary" disabled><i class="fas fa-calendar"></i> Créer un évènement</button>
+							<button type="button" id="data-note-nanta-js" class="btn btn-primary mt-1" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis"></i> Notez</button>
+							<button type="button" id="data-event-nanta-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"></i> Créer un évènement</button>
 							<button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)">Dépastiller</button>
 						</div>
 					</div>
@@ -309,13 +311,13 @@
 				{# <h5 class="modal-title">Détail</h5> #}
 				<div class="content_etab_detail">
 				</div>
-				<button type="button" class="btn-close" data-bs-target="#modalForExtension" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+				<button type="button" class="btn-close" data-bs-target="#modalForExtension0" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
 			</div>
 			<div class="modal-body">
 				
 			</div>
 			<div class="modal-footer">
-				<button class="btn btn-danger" data-bs-target="#modalForExtension" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
+				<button class="btn btn-danger" data-bs-target="#modalForExtension0" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
 			</div>
 			</div>
 		</div>
@@ -338,5 +340,9 @@
 		{% import 'shard/input/textEditor.twig' as editor %}
 		{{ editor.textEditor(3)}}
 	</div>
+
+
+	{% include 'shard/modal/list_avis.html.twig' %}
+    {% include 'shard/modal/modal_avis.html.twig' %}
 
 {% endblock %}

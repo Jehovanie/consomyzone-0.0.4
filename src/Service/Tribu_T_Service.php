@@ -427,7 +427,8 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
     public function getIdRestoOnTableExtension($table, $idResto){
-
+        
+        // $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE extensionId = $idResto");
         $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE id_resto = $idResto");
 
         $statement->execute();
@@ -1403,19 +1404,35 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
     }
 
-    public function sendCommentRestoPastilled($tableName,$idResto,$idUser,$note,$commentaire){
-        $values=array(":id_restaurant"=>$idResto,
-            ":id_user"=>$idUser,
-            ":note"=>$note,
-            ":commentaire"=>$commentaire
-        );
-        $sql= "INSERT INTO " .$tableName. "(id_restaurant,id_user,note,commentaire)". 
-                  "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
-        $stmt = $this->getPDO()->prepare($sql);
+    // public function sendCommentRestoPastilled($tableName,$idResto,$idUser,$note,$commentaire){
+    //     $values=array(":id_restaurant"=>$idResto,
+    //         ":id_user"=>$idUser,
+    //         ":note"=>$note,
+    //         ":commentaire"=>$commentaire
+    //     );
+    //     $sql= "INSERT INTO " .$tableName. "(id_restaurant,id_user,note,commentaire)". 
+    //               "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
+    //     $stmt = $this->getPDO()->prepare($sql);
 
-        return $stmt->execute($values);
+    //     return $stmt->execute($values);
             
-    }
+    // }
+
+    public function sendCommentRestoPastilled($tableName, $idResto, $idUser, $note, $commentaire)
+  {
+    $values = array(
+      ":id_restaurant" => $idResto,
+      ":id_user" => $idUser,
+      ":note" => $note,
+      ":commentaire" => $commentaire
+    );
+    $sql = "INSERT INTO " . $tableName . "(extensionId,userId,note,commentaire)" .
+      "VALUES (:id_restaurant, :id_user,:note,:commentaire)";
+    $stmt = $this->getPDO()->prepare($sql);
+
+    return $stmt->execute($values);
+  }
+    
 
     public function upCommentRestoPastilled($tableName,  $note, $commentaire,$idRestoComment, $my_id)
     {
@@ -1425,7 +1442,7 @@ class Tribu_T_Service extends PDOConnexionService
             ":idRestoComment"=> $idRestoComment,
             ":my_id" => $my_id
         );
-        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id_resto_comment=:idRestoComment and id_user=:my_id";
+        $sql = "UPDATE " . $tableName . " SET note = :note, commentaire = :commentaire WHERE id=:idRestoComment and userId=:my_id";
         $stmt = $this->getPDO()->prepare($sql);
 
         return $stmt->execute($values);
@@ -1501,11 +1518,32 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
     public function getRestoPastilles($tableResto, $tableComment){
-    
-        $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, isPastilled, id_resto_comment,id_restaurant,id_user,note,commentaire ,
-								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
-								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
-				as tb1 INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";
+        /// old sql request, this use the talbe <tribu_t_ ...>_restaurant_commentaire to get the avis.
+        // $sql = "SELECT * FROM (SELECT  id, id_resto,denomination_f, isPastilled, id_resto_comment,id_restaurant,id_user,note,commentaire ,
+		// 						GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+		// 						GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableResto  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
+		// 		as tb1 INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";
+
+        //// NEW : This use the global table avisresaturant in tribu T
+        $sql= "SELECT * FROM ( 
+                    SELECT  t1.id, 
+                            t1.id_resto,
+                            t1.denomination_f, 
+                            t1.isPastilled, 
+                            t2.id as id_resto_comment, 
+                            t2.id_resto as id_resto_pastilled, 
+                            t2.id_user, 
+                            t2.note, 
+                            t2.avis as commentaire,
+                            GROUP_CONCAT(t2.id_user) as All_user, 
+                            GROUP_CONCAT(t2.avis) as All_com, 
+                            FORMAT(AVG(t2.note),2) as globalNote, 
+                            COUNT(t2.id_resto) as nbrAvis,
+                            GROUP_CONCAT(t2.id) as All_id_r_com 
+                    FROM $tableResto  as t1 
+                    LEFT JOIN avisrestaurant  as t2 ON t1.id_resto = t2.id_resto WHERE t1.isPastilled IS TRUE
+                GROUP BY t1.id ) as tb1 
+                INNER JOIN bdd_resto ON tb1.id_resto=bdd_resto.id";
 
         $stmt = $this->getPDO()->prepare($sql);
          
@@ -1517,10 +1555,31 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function getGolfPastilles($tableGolf, $tableComment){
     
-        $sql = "SELECT * FROM (SELECT  id, id_resto as id_golf,denomination_f as nom_golf, isPastilled, id_resto_comment as id_golf_comment,id_restaurant  as id_extension,id_user,note,commentaire ,
-								GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
-								GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableGolf  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
-				as tb1 INNER JOIN golffrance ON tb1.id_golf=golffrance.id";
+        // $sql = "SELECT * FROM (SELECT  id, id_resto as id_golf,denomination_f as nom_golf, isPastilled, id_resto_comment as id_golf_comment,id_restaurant  as id_extension,id_user,note,commentaire ,
+		// 						GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.commentaire) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_restaurant) as nbrAvis ,
+		// 						GROUP_CONCAT(t2.id_resto_comment) as All_id_r_com FROM $tableGolf  as t1 LEFT JOIN $tableComment  as t2  ON t2.id_restaurant =t1.id_resto GROUP BY t1.id ) 
+		// 		as tb1 INNER JOIN golffrance ON tb1.id_golf=golffrance.id";
+        $sql = "SELECT * FROM (
+                    SELECT  t1.id, 
+                            t1.id_resto,
+                            t1.denomination_f, 
+                            t1.isPastilled, 
+                            t2.id as id_golf_comment, 
+                            t2.id_golf, 
+                            t2.id_user, 
+                            t2.note, 
+                            t2.avis as commentaire ,
+                            GROUP_CONCAT(t2.id_user) as All_user ,
+                            GROUP_CONCAT(t2.avis) as All_com, 
+                            FORMAT(AVG(t2.note),2) as globalNote, 
+                            COUNT(t2.id) as nbrAvis,
+                            GROUP_CONCAT(t2.id) as All_id_r_com 
+                            FROM $tableGolf as t1 
+                                LEFT JOIN avisgolf  as t2
+                                ON t2.id_golf =t1.id_resto WHERE t1.isPastilled IS TRUE
+                    GROUP BY t1.id ) as tb1 
+                INNER JOIN golffrance
+                ON tb1.id_resto =golffrance.id;";
 
         $stmt = $this->getPDO()->prepare($sql);
          
@@ -1971,6 +2030,28 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
 
+    /**
+     * @author Tomm 
+     * @action get list tribu t pastille
+     * @ou golfControlleur
+     */
+    public function checkIfCurrentGolfPastilled($tableNameExtension, int $golf, $isPastilled)
+    {
+
+
+        $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $golf AND isPastilled = $isPastilled");
+
+        $statement->execute();
+
+        $result = $statement->fetch();
+
+        if (is_array($result)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
      public function depastilleOrPastilleRestaurant($table_resto, $resto_id, $isPastilled){
         $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
         $stmt = $this->getPDO()->prepare($sql);
@@ -1978,6 +2059,15 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->bindParam(":resto_id", $resto_id);
         $stmt->execute();
 
+    }
+
+    public function depastilleOrPastilleTribuT($table_resto, $resto_id, $isPastilled)
+    {
+        $sql = "UPDATE $table_resto SET isPastilled = :isPastilled WHERE id_resto = :resto_id";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->bindParam(":isPastilled", $isPastilled);
+        $stmt->bindParam(":resto_id", $resto_id);
+        $stmt->execute();
     }
 
 
@@ -2092,6 +2182,113 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt->execute();
 
     }
+    /**
+     * @author Faniry
+     * @use cette fonction créee la table message pour le message groupé des fan dans les tribu T
+     */
+    public function creaTableTeamMessage($tribu_t){
+
+        $tableMessageName=$tribu_t."_msg_grp";
+
+        $sql="CREATE TABLE IF NOT EXISTS ".$tableMessageName. " ( ".
+        "id_msg int NOT NULL PRIMARY KEY AUTO_INCREMENT,".
+        "id_expediteur int NOT NULL,".
+        "msg longtext  CHARACTER SET utf8 COLLATE utf8_unicode_ci,".
+        "files longtext CHARACTER SET utf8 COLLATE utf8_unicode_ci,".
+        "images longtext CHARACTER SET utf8 COLLATE utf8_unicode_ci,".
+        "isPrivate tinyint NOT NULL DEFAULT 0,".
+        "isPublic tinyint NOT NULL DEFAULT 1,".
+        "isRead tinyint NOT NULL DEFAULT 0,".
+        "isRemoved tinyint,".
+        "isEpingler tinyint,".
+        "date_message_created datetime NOT NULL DEFAULT current_timestamp()".
+        " )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+        $stmt = $this->getPDO()->prepare($sql);
+        
+        $stmt->execute();
+    }
+
+
+    public function sendMessageGroupe(
+        $message,  
+        $files , 
+        $images, 
+        $id, 
+        $isPrivate, 
+        $isPublic,
+        $isRead,
+        $tribu_t)
+    {
+
+        $tableMessageName=$tribu_t."_msg_grp";
+        // $encryptionMethod=$_ENV["ENCRYPTIONMETHOD"];
+        // $secretKey=$_ENV["SECRET"];
+        // $iv = \openssl_random_pseudo_bytes(openssl_cipher_iv_length($encryptionMethod));
+        // $encryptedMesage = \openssl_encrypt($message, $encryptionMethod, $secretKey, 0, $iv,);
+        // $encryptedImages=\openssl_encrypt($images, $encryptionMethod, $secretKey, 0, $iv,);
+        // $encryptedFiles=\openssl_encrypt($files, $encryptionMethod, $secretKey, 0, $iv,);
+
+        $sql='INSERT INTO '. $tableMessageName.
+        '(id_expediteur, msg , files, images, isPrivate, isPublic, isRead)'. 
+        'VALUES(:id_expediteur, :msg, :files, :images, :isPrivate, :isPublic, :isRead )';
+        $message=json_encode($message);
+        $images=json_encode($images);
+        $files=json_encode($files);
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->bindParam(':id_expediteur',$id,PDO::PARAM_STR);
+        $statement->bindParam(':msg',$message,PDO::PARAM_STR);
+        $statement->bindParam(':files',$files,PDO::PARAM_STR);
+        $statement->bindParam(':images',$images,PDO::PARAM_STR);
+        $statement->bindParam(':isPrivate',$isPrivate,PDO::PARAM_INT);
+        $statement->bindParam(':isPublic',$isPublic,PDO::PARAM_INT);
+        $statement->bindParam(':isRead',$isRead,PDO::PARAM_INT);
+
+        $statement->execute();
+
+                
+        $max_id = $this->getPDO()->prepare("SELECT max(id_msg) as last_id_message FROM  ". $tableMessageName );
+        $max_id->execute();
+
+        return $max_id->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function getMessageGRP($tribu_T){
+        $tableMessageName=$tribu_T."_msg_grp";
+
+        $sql="SELECT * FROM " . $tableMessageName . " as t1 LEFT JOIN consumer as t2 ON t1.id_expediteur=t2.user_id ORDER BY t1.date_message_created ASC ";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
+        
+    }
+
+    // /**
+    //  * @author Tomm
+    //  * 
+    //  * @param string $tableNameExtension: le nom de la table extension
+    //  * 
+    //  * @param int $idResto: l'extension
+    //  * @return number $result: 0 or if(not exists) else positive number
+    //  */
+    // public function checkIfCurrentGolfPastilled($tableNameExtension, int $idGolf, $isPastilled)
+    // {
+
+
+    //     $statement = $this->getPDO()->prepare("SELECT id FROM $tableNameExtension WHERE id_resto = $idGolf AND isPastilled = $isPastilled");
+
+    //     $statement->execute();
+
+    //     $result = $statement->fetch();
+
+    //     if (is_array($result)) {
+    //         return true;
+    //     } else {
+    //         return false;
+    //     }
+    // }
+
 
 }
 

@@ -272,7 +272,6 @@ class UserController extends AbstractController
         UserRepository $userRepository
 
     ): Response {
-
         $userConnected= $status->userProfilService($this->getUser());
         
         $user = $this->getUser();
@@ -829,7 +828,7 @@ class UserController extends AbstractController
         
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
-        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user->getId()));
+        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user_id));
 
         //Editing by Elie for a tribu g and t partisans
         

@@ -1019,9 +1019,9 @@ class RestaurantController extends AbstractController
                 $tableExtension = $tableTribu . "_restaurant";
                 if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
                     if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $details["id"], true)){
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => false]);
                     }else{
-                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable , "isPastilled" => true]);
                     }
                 }
             }
@@ -1035,12 +1035,15 @@ class RestaurantController extends AbstractController
                 $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
                 if($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0){
                     if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"], true)){
-                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable]);
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => true]);
+                    }else{
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable, "isPastilled" => false]);
                     }
                 }
             }
 
         }
+
         return $this->render("restaurant/detail_resto.html.twig", [
             "id_restaurant"=>$id_restaurant,
             "details" => $details,
@@ -1199,13 +1202,19 @@ class RestaurantController extends AbstractController
         $note = $requestJson["note"];
         
         //dd($user,$resto);
-        $avisResto->setAvis($avis)
+        $avisResto->setAvis(json_encode($avis))
             ->setnote($note)
             ->setUser($user)
             ->setDatetime(new \DateTimeImmutable())
             ->setRestaurant($resto);
 
-        return $this->json($avisRestoRep->add($avisResto, true));
+        $avisRestoRep->add($avisResto, true);
+        
+        $state= $avisRestoRep->getState($idRestaurant);
+
+        return $this->json([
+            "state" => $state
+        ]);
     }
 
     #[Route("/avis/restaurant/{idRestaurant}", name: "get_avis_restaurant", methods: ["GET"])]
@@ -1216,6 +1225,7 @@ class RestaurantController extends AbstractController
     ) {
         $userId = $this->getUser()->getId();
         $response = $avisRestaurantRepository->getNote($idRestaurant, $userId);
+        //dd($response);
         $response = $serializer->serialize($response, 'json');
         return new JsonResponse($response, 200, [], true);
     }
@@ -1226,10 +1236,23 @@ class RestaurantController extends AbstractController
         $idRestaurant,
         SerializerInterface $serializer
     ) {
+        $user= $this->getUser();
+        if( !$user ){
+            return $this->json([ "message" => "User no connected."]);
+        }
+        $currentUser= [
+            "id" => $user->getId(),
+            "email" => $user->getEmail(),
+            "pseudo" => $user->getPseudo()
+        ];
+
         $response = $avisRestaurantRepository->getNoteGlobale($idRestaurant);
-        $response = $serializer->serialize($response, 'json');
-        return new JsonResponse($response, 200, [], true);
+
+
+        return $this->json([ "data" => $response, "currentUser" => $currentUser ]);
     }
+
+
     #[Route("/change/restaurant/{idRestaurant}", name: "change_avis_restaurant", methods: ["POST"])]
     public function changeAvisRestaurant(
         AvisRestaurantRepository $avisRestaurantRepository,
@@ -1248,7 +1271,15 @@ class RestaurantController extends AbstractController
             $rJson["avis"],
         );
         $response = $serializer->serialize($response, 'json');
-        return new JsonResponse($response, 200, [], true);
+        
+        $state= $avisRestaurantRepository->getState($idRestaurant);
+
+        return $this->json([
+            "state" => $state,
+            "data" => $response
+        ]);
+
+        // return new JsonResponse($response, 200, [], true);
     }
 
     #[Route("/nombre/avis/restaurant/{idRestaurant}", name: "get_nombre_avis_restaurant", methods: ["GET"])]

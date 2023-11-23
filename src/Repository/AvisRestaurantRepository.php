@@ -51,7 +51,7 @@ class AvisRestaurantRepository extends ServiceEntityRepository
                 ->andWhere("a.user = :iduser")
                 ->andWhere("a.id = :id")
                 ->setParameter("note", $note)
-                ->setParameter("comment", $comment)
+                ->setParameter("comment", json_encode($comment))
                 ->setParameter("idResto",$idrestaurant)
                 ->setParameter("iduser", $iduser)
                 ->setParameter("id", $avisID)
@@ -89,7 +89,7 @@ class AvisRestaurantRepository extends ServiceEntityRepository
             $data = [
                 "id" => $avis->getId(),
                 "note" => $avis->getNote(),
-                "avis" => $avis->getAvis(),
+                "avis" => json_decode($avis->getAvis(), true),
                 "datetime" => $avis->getDatetime(),
                 "resto" => [
                     "id" => $resto_id
@@ -143,6 +143,21 @@ class AvisRestaurantRepository extends ServiceEntityRepository
                     ->groupBy("r.restaurant")
                     ->getQuery()
                     ->getResult();
+    }
+
+
+    public function getState($idrestaurant){
+        $results = $this->createQueryBuilder("r")
+            ->select("
+                r.id,
+                r.avis,
+                r.note")
+            ->where("r.restaurant = :idResto ")
+            ->setParameter("idResto",$idrestaurant)
+            ->getQuery()
+            ->getResult();
+            
+        return $results; 
     }
 
 }

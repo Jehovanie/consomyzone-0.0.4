@@ -51,7 +51,7 @@ class AvisGolfRepository extends ServiceEntityRepository
                 ->andWhere("a.user = :iduser")
                 ->andWhere("a.id = :id")
                 ->setParameter("note", $note)
-                ->setParameter("comment", $comment)
+                ->setParameter("comment", json_encode($comment))
                 ->setParameter("idGolf",$idGolf)
                 ->setParameter("iduser", $iduser)
                 ->setParameter("id", $avisID)
@@ -90,7 +90,8 @@ class AvisGolfRepository extends ServiceEntityRepository
             $data = [
                 "id" => $avis->getId(),
                 "note" => $avis->getNote(),
-                "avis" => $avis->getAvis(),
+                // "avis" => $avis->getAvis(),
+                "avis" => json_decode($avis->getAvis(), true),
                 "datetime" => $avis->getDatetime(),
                 "resto" => [
                     "id" => $resto_id
@@ -145,6 +146,21 @@ class AvisGolfRepository extends ServiceEntityRepository
                     ->groupBy("r.golf")
                     ->getQuery()
                     ->getResult();
+    }
+
+    
+    public function getState($idGolf){
+        $results = $this->createQueryBuilder("r")
+            ->select("
+                r.id,
+                r.avis,
+                r.note")
+            ->where("r.golf = :idGolf ")
+            ->setParameter("idGolf",$idGolf)
+            ->getQuery()
+            ->getResult();
+            
+        return $results; 
     }
 
 }

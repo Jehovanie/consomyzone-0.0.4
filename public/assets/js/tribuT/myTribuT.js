@@ -11,6 +11,12 @@ var workerGetCommentaireTribuT = IS_DEV_MODE ? new Worker('/assets/js/tribuT/wor
 
 var image_tribu_t
 var descriptionTribuT = ""
+
+///Jehovanie: this variable is use for the list of the piece joint
+/// in the send email on the invitation tribu T
+let email_piece_joint_list= [];
+
+
 /**
  * create tribu_t section
  */
@@ -484,7 +490,6 @@ function sendPublication(formData) {
  * @param {*} tribu_t_name 
  */
 function showdDataContent(data, type, tribu_t_name, id_c_u) {
-
     let detailsTribuT = null
 
     if (type === "owned")
@@ -515,7 +520,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
         }
         if (tribu_t[0].extension != null && tribu_t[0].extension.golf == 1) {
             golfExtension = ` <li class="listNavBarTribu golfNotHide">
-                                <a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()" data-value="golf">Mon Golf</a>
+                                <a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="showGolf('${tribu_t_name_0}')" data-value="golf">Mon Golf</a>
                             </li>`
         }
     }
@@ -546,7 +551,6 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                 <a style="cursor:pointer;" id="settingTribuT" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
                             </li>` : "";
 
-    console.log(data)
     document.querySelector("#content-pub-js").innerHTML = `
             <div class="card-couverture-pub-tribu-t ">
                 <div class="content-couverture mt-3">
@@ -1227,8 +1231,8 @@ function showResto(table_rst_pastilled, id_c_u) {
 
     workerRestoPastilled.onmessage = (e => {
         let restos = e.data
-        // console.log("workerresto :::::");
-        // console.log(restos);
+        console.log("workerresto :::::");
+        console.log(restos);
         let imgSrc = "";
         let avatar = "" //"{{avatar}}"
         if (avatar != null) {
@@ -1270,7 +1274,8 @@ function showResto(table_rst_pastilled, id_c_u) {
                         // text = `<button type="button" class="btn btn-primary disabled-link" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="updateNote(event,${id_resto_comment[key]})">Modifiez votre avis</button>`
                         action = "update"
     
-                        text1 = "Modifiez votre avis"
+                        // text1 = "Modifiez votre avis"
+                        text1 = "Ajouter une autre avis"
                     } else {
                         // console.log("crt " + denominationsF)
                         // text = `<button type="button" class="btn btn-primary" id="Submit-Avis-resto-tribu-t-tom-js" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}" onclick="sendNote(event,${id_c_u},${id},${id_resto_comment[key]})">Notez</button>`
@@ -1294,11 +1299,12 @@ function showResto(table_rst_pastilled, id_c_u) {
                                     <i class="fa-solid fa-star" data-rank="3"></i>
                                     <i class="fa-solid fa-star" data-rank="4"> </i>-->
                                     <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
-                                    <a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
+                                    <!--<a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a> -->
+                                    <a class="btn btn-sm bg_orange data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListInTribuT('${resto.id}', 'resto')"> ${nbrAvis} Avis</a>
                                 <!--</div>-->
                             </td>
                             <td>
-                                <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
+                                <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
                                 <!--<button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
                                 
                                 <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>-->
@@ -1307,7 +1313,7 @@ function showResto(table_rst_pastilled, id_c_u) {
                     `
                 }
             }
-
+            // staticBackdrop
             restoContainer.innerHTML += head_table + body_table + foot_table
 
             $('#table_resto_pastilled').DataTable({
@@ -1556,6 +1562,8 @@ function findResto(val, localisation = "") {
 
         let body_table = "";
 
+        let tribut_table_name = document.querySelector("#tribu_t_name_main_head").dataset.tribu;
+
         if (jsons.length > 0) {
 
 
@@ -1601,7 +1609,8 @@ function findResto(val, localisation = "") {
                                     <td>${adresse}</td>
                                     <td class="d-flex bd-highlight">
                                         <button class="btn btn-info" onclick="openDetail('${name}', '${adresse}', '${depName}','${dep}','${json.id}')"><!--<i class="fas fa-plus"></i>--> Détail</button>
-                                        <button class="btn btn-primary ms-1" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>
+                                        <!--<button class="btn btn-primary ms-1" onclick="pastillerPast(this, ${json.id},'${name}')">Pastillez</button>-->
+                                        <button type="button" class="btn btn-warning ms-1" onclick="pastilleRestoForTribuTDashboard(this,true)" data-id="${json.id}" data-name="${name}" data-tbname="${tribut_table_name}">Pastillez</button>
                                     </td>
                                 </tr>
                             `
@@ -1800,17 +1809,21 @@ function showPhotos() {
 
 
 function loadFile(event) {
-    let new_photo = document.createElement("img")
+    const div=document.createElement("div")
+    div.setAttribute("class","col-lg-4 col-md-12 mb-4 mb-lg-0")
+    const  new_photo = document.createElement("img")
+    new_photo.setAttribute("class","w-100 shadow-1-strong  mb-4")
     new_photo.setAttribute("data-bs-toggle", "modal")
     new_photo.setAttribute("data-bs-target", "#modal_show_photo")
     new_photo.setAttribute("onclick", "setPhotoTribu(this)")
     new_photo.src = URL.createObjectURL(event.target.files[0]);
+    div.appendChild(new_photo)
     var div_photo = document.querySelector('#gallery');
 
     let first_photo = document.querySelector("#gallery >div> div:nth-child(1)")
 
     if (first_photo) {
-        div_photo.insertBefore(new_photo, first_photo)
+        first_photo.parentElement.insertBefore(div, first_photo)
     } else {
         div_photo.innerHTML = ""
         div_photo.appendChild(new_photo);
@@ -1835,19 +1848,14 @@ function loadFile(event) {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify(data)
-        })).then(x => x.json()).then(response => {
-            // document.querySelector("#success_upload").style = "display:block;"
-            if(response.status===200 && response.ok){
+        })).then(x => {
+            if(x.status===200 && x.ok){
                 swal("Merci de votre partage.", "Votre photo a bien été partagée.", "success", {
                     button: "Ok",
                   });
             }
-            // setTimeout(function () {
-            //     document.querySelector("#success_upload").style = "display:none;"
-            // }, 5000);
-            // console.log(response)
-        }
-        ).catch(error => {
+
+        }).catch(error => {
             console.log(error)
         });
     };
@@ -1934,7 +1942,19 @@ function showInvitations() {
                                 </div>
                                 <!--<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>-->
                             </div>
-                            <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
+
+                            <ul class="list-group content_list_piece_joint_jheo_js d-none"></ul>
+
+                            <div class="d-flex justify-content-start align-items-center">
+                                <div class="p-2 bd-highlight">
+                                    <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
+                                </div>
+                                <div class="p-2 bd-highlight content_input_piece_joint content_input_piece_joint_jheo_js">
+                                    <div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajout des pièce jointe.</div>
+                                    <label class="label_piece_joint_jheo_js" for="piece_joint"><i class="label_piece_joint_jheo_js fa-solid fa-paperclip"></i></label>
+                                    <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint" name="piece_joint" onchange="addPieceJoint(this);" />
+                                </div>
+                            </div>
                         </form>
                     </div>
                     <div id="table-tribuG-member" class="mt-2">
@@ -2020,6 +2040,19 @@ function showInvitations() {
     //     }
     // })
 
+    if( document.querySelector(".message_tooltip_piece_joint_jheo_js")){
+
+        const content_input_piece= document.querySelector(`.content_input_piece_joint_jheo_js`);
+        
+        content_input_piece.addEventListener('mouseover',() => {
+            content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.remove('d-none')
+        })
+    
+        content_input_piece.addEventListener('mouseout',() => {
+            content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.add('d-none')
+        })
+    }
+
     form_parent.querySelector(".btn_send_invitation_js_jheo").addEventListener("click", (e) => {
         e.preventDefault();
         form_parent.querySelector(".btn_send_invitation_js_jheo").setAttribute("disabled", true)
@@ -2035,44 +2068,70 @@ function showInvitations() {
             cc_destinataire.push(input_cc.value)
         }
 
-        let data = { "table": document.querySelector("#blockSendEmailInvitation").getAttribute("data-table"), "principal": "", "cc": cc_destinataire, "object": "", "description": "" }
-
-        // console.log(data);
-
-        let status = false;
+        let data = { 
+            "table": document.querySelector("#blockSendEmailInvitation").getAttribute("data-table"), 
+            "principal": "", 
+            "cc": cc_destinataire, 
+            "object": "", 
+            "description": "" 
+        }
+        let status = true;
 
         if (input_principal.value === "") {
             console.log("Entre au moin une destination.")
             input_principal.style.border = "1px solid red";
+            status = false;
         }
 
         if (verifieEmailValid(input_principal.value)) {
             data = { ...data, "principal": input_principal.value }
-            status = true;
         } else {
             input_principal.style.border = "1px solid red";
+            status = false;
         }
 
         ///object
         if (object.value === "") {
             console.log("Veillez entre un Object.")
             object.style.border = "1px solid red";
+            status= false;
         } else {
             data = { ...data, "object": object.value }
-            status = true;
         }
-
-        // if (description.value != "") {
-        //     data = { ...data, "description": description.value }
-        // }
 
         //Changing description check editor by Elie
         data = { ...data, "description": editor.getData() }
 
-        // console.log("data sending...")
-        // console.log(data)
+
+        if( email_piece_joint_list.length > 0 ){
+            data = { ...data, "piece_joint": email_piece_joint_list }
+        }else{
+            data = { ...data, "piece_joint": [] }
+        }
+
 
         if (status) {
+
+            if( email_piece_joint_list.length > 0 ){
+                email_piece_joint_list.forEach(item => {
+                    const id= item.id;
+                    const btn_item = document.querySelector(`.fa_solid_${id}_jheo_js`);
+                    if( btn_item.classList.contains("btn-outline-danger")){
+                        btn_item.classList.remove("btn-outline-danger")
+                    }
+
+                    if( !btn_item.classList.contains("btn-outline-primary")){
+                        btn_item.classList.add("btn-outline-primary")
+                    }
+
+                    btn_item.innerHTML= `<i class="fas fa-spinner fa-spin"></i>`
+
+                    btn_item.setAttribute("onclick", "");
+                });
+            }
+
+
+
             //////fetch data
             fetch("/user/tribu/email/invitation", {
                 method: "POST",
@@ -2088,7 +2147,7 @@ function showInvitations() {
                 return response.json()
             }).then(result => {
                 // input_principal.value = null;
-                                // description.value = null;
+                // description.value = null;
                 object.value = null;
                 
                 //init Ckeditor for description by Elie
@@ -2104,6 +2163,8 @@ function showInvitations() {
 
                 input_principal.value = null;
                 input_cc.value = null;
+                email_piece_joint_list= [];
+
 
                 document.querySelectorAll(".chip").forEach(item => {
                     item.parentElement.removeChild(item);
@@ -2111,19 +2172,29 @@ function showInvitations() {
 
                 form_parent.querySelector(".btn_send_invitation_js_jheo").removeAttribute("disabled")
                 form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "Envoyer l'invitation"
+
+
+                if( document.querySelector(".content_list_piece_joint_jheo_js")){
+                    document.querySelector(".content_list_piece_joint_jheo_js").innerHTML = "";
+
+                    if( !content_list_piece_joint.classList.contains("d-none")){
+                        content_list_piece_joint.classList.add("d-none")
+                    }
+                }
+
+
                 document.querySelector("#successSendingMail").style.display = "block"
 
                 // swal({
-                    //     text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
-                    //     icon: "info",
+                //         text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
+                //         icon: "info",
                 // });
 
                 setTimeout(() => {
                     document.querySelector("#successSendingMail").style.display = "none"
-                }, 5000)
+                }, 5000 )
 
             }).catch((e) => { console.log(e); });
-
         }
     })
 
@@ -2160,7 +2231,7 @@ function setActiveTab(elem, param) {
             document.querySelector("#blockSendEmailInvitation").classList.remove("d-none")
             document.querySelector("#table-tribuG-member").classList.add("d-none")
             document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";
-        
+            document.querySelector(".object_js_jheo").value= "Invitation rejoindre ma tribu Thématique sur Consomyzone";
             break;
         }
         case "historique" :{
@@ -2609,27 +2680,35 @@ function openOnEvent(id, nom, adresse, action) {
  * @param {*} id_pastille : id resto
  * @param {*} denomination_f : nom resto
  * @param {*} adresse 
- * @param {*} latitude 
- * @param {*} longitude 
  * @param {*} text1 : icon action
  * @param {*} action : type d'action
  */
-function openPopupAction(id_pastille, denomination_f, adresse, latitude, longitude, text1, action) {
-
-    $("#detailOptionResto").modal("show")
+function openPopupAction(id_pastille, denomination_f, adresse, text1, action, rubrique_type = "resto") {
+    
+    if (rubrique_type == "resto") {
+        $("#detailOptionResto").modal("show")
+    } else {
+        $("#detailOptionGolf").modal("show")
+    }
 
     document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> ` + text1
 
-    document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
+    // document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
+
     document.querySelector("#data-event-elie-js").setAttribute("onclick", "openOnEvent("+id_pastille+",\'"+denomination_f+"\',\'"+adresse+"\',\'"+ action+"\')")
+    
     let btn = document.querySelector("#data-depastille-nanta-js")
     btn.dataset.id = id_pastille
     btn.dataset.name = denomination_f
     btn.dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
+
     // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
     // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
     // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-
+    
+    if( document.querySelector(".send_avis_jheo_js")){ //// reset function add avis resto
+        document.querySelector(".send_avis_jheo_js").setAttribute("onclick", `addAvisInTribuT("${id_pastille}","${rubrique_type}")`);
+    }
 }
 
 /**
@@ -2692,7 +2771,7 @@ function settingTribuT(e, tribuTName) {
 
         document.querySelector("#updateTribuTName").value = currentTribuT.name_tribu_t_muable ? currentTribuT.name_tribu_t_muable : currentTribuT.name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ") //currentTribuT.name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
         document.querySelector("#update_description").value = currentTribuT.description
-        document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ? currentTribuT.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
+        document.querySelector(".img-update-tribu-t").src = currentTribuT.logo_path != "" ?  "/public" + currentTribuT.logo_path : "/public/uploads/tribu_t/photo/avatar_tribu.jpg"
 
         // extension 'on' correspond à extension 
         //restaurant dans les anciens version
@@ -2771,104 +2850,103 @@ function updateTribuTInfos(e) {
 
 }
 
-function showGolf(){
+// function showGolf(tableGolfPastilled){
+//     // let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
 
-    let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
+//     if (document.querySelector("li.listNavBarTribu > a.active")) {
+//         document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
+//     }
+//     document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
 
-    if (document.querySelector("li.listNavBarTribu > a.active")) {
-        document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-    }
-    document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
+//     let golfContainer = document.querySelector("#tribu_t_conteuneur")
 
-    let golfContainer = document.querySelector("#tribu_t_conteuneur")
+//     golfContainer.innerHTML = `
+//                                 <div class="row mt-3 p-3">
+//                                     <div class="col-12">
+//                                         <div id="form_past"></div>
+//                                         <div class="g-3">
+//                                             <div class="input-group mb-3">
+//                                                 <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
+//                                                 <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
+//                                                 <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
+//                                             </div>
+//                                             <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
+//                                             </div>
+//                                         </div>
+//                                     </div>
+//                                 `
 
-    golfContainer.innerHTML = `
-                                <div class="row mt-3 p-3">
-                                    <div class="col-12">
-                                        <div id="form_past"></div>
-                                        <div class="g-3">
-                                            <div class="input-group mb-3">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Quoi ?" id="resto-rech">
-                                                <input type="text" class="form-control  rounded elie-resto-rech" placeholder="Où ?" id="resto-rech-ou">
-                                                <button class="btn btn-light" type="button" id="button-addon2"  onclick="listResto()"><i class="fas fa-search"></i></button>
-                                            </div>
-                                            <div class="list-group" style="z-index:9; position:relative;height:120px;display:none;" id="result_resto_past">
-                                            </div>
-                                        </div>
-                                    </div>
-                                `
+//     fetch("/user/tribu/golfs-pastilles/"+tableGolfPastilled)
+//     .then(response =>  response.json())
+//     .then(data => {
+//         if(data.length > 0){
+//             let tr = ""
+//             let i = 0
+//             for (const item of data) {
+//                     if(item.isPastilled){
+//                         i++
+//                         let nbrAvis = item.nbrAvis
+//                         let note = item.globalNote ? item.globalNote : 0
+//                         let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
+//                         tr += `<tr id="golf_${item.id_golf}">
+//                             <td class="d-flex bd-highlight align-items-center">
+//                                 <div class="elie-img-pastilled">
+//                                 ${image_tribu_t}
+//                                 </div>
+//                                 <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
+//                             </td>
+//                             <td class="data-note-${item.id}">${note}/4</td>
+//                             <td>
+//                                 <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
+//                             </td>
+//                             <td>
+//                                 <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id_golf}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
+//                             </td>
+//                         </tr>`
 
-    fetch("/user/tribu/golfs-pastilles/"+tableGolfPastilled)
-    .then(response =>  response.json())
-    .then(data => {
-        if(data.length > 0){
-            let tr = ""
-            let i = 0
-            for (const item of data) {
-                    if(item.isPastilled){
-                        i++
-                        let nbrAvis = item.nbrAvis
-                        let note = item.globalNote ? item.globalNote : 0
-                        let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
-                        tr += `<tr id="golf_${item.id_golf}">
-                            <td class="d-flex bd-highlight align-items-center">
-                                <div class="elie-img-pastilled">
-                                ${image_tribu_t}
-                                </div>
-                                <span class="ms-3" style="font-size:12pt;">${item.nom_golf}</span>
-                            </td>
-                            <td class="data-note-${item.id}">${note}/4</td>
-                            <td>
-                                <a class="text-secondary data-avis-${item.id}" style="cursor: pointer;text-decoration:none;">${nbrAvis} Avis</a>
-                            </td>
-                            <td>
-                                <button class="btn btn-primary" onclick="openPopupActionGolf(${item.id_golf}, '${item.nom_golf}', '${adresse}')"><i class="fas fa-plus"></i> Plus</button>
-                            </td>
-                        </tr>`
+//                     }
+//             }
 
-                    }
-            }
+//             if(i>0){
 
-            if(i>0){
+//                 golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
+//                                     <table id="table_golf_pastilled" class="ta" style="width:100%">
+//                                         <thead>
+//                                             <tr>
+//                                                 <th>Nom de golf</th>
+//                                                 <th>Note</th>
+//                                                 <th>Avis</th>
+//                                                 <th>Action</th>
+//                                             </tr>
+//                                         </thead>
+//                                         <tbody>
+//                                             ${tr}
+//                                         </tbody>
+//                                     </table>`
 
-                golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
-                                    <table id="table_golf_pastilled" class="ta" style="width:100%">
-                                        <thead>
-                                            <tr>
-                                                <th>Nom de golf</th>
-                                                <th>Note</th>
-                                                <th>Avis</th>
-                                                <th>Action</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            ${tr}
-                                        </tbody>
-                                    </table>`
-
-                $('#table_golf_pastilled').DataTable({
-                    "language": {
-                        url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-                    }
-                });
-            }else{
-                golfContainer.style.textAlign = "center"
-                golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
-            }
+//                 $('#table_golf_pastilled').DataTable({
+//                     "language": {
+//                         url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+//                     }
+//                 });
+//             }else{
+//                 golfContainer.style.textAlign = "center"
+//                 golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+//             }
 
 
-        }else{
-            golfContainer.style.textAlign = "center"
-            golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
-        }
+//         }else{
+//             golfContainer.style.textAlign = "center"
+//             golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+//         }
 
-        golfContainer.classList.add("bg-white");
-        golfContainer.classList.add("p-2");
-        golfContainer.style.display = "block"
+//         golfContainer.classList.add("bg-white");
+//         golfContainer.classList.add("p-2");
+//         golfContainer.style.display = "block"
 
-    })
+//     })
 
-}
+// }
 
 function findGolf(val, localisation = "") {
 
@@ -2882,9 +2960,9 @@ function findGolf(val, localisation = "") {
     document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
     document.querySelector("#elie-restou").innerHTML =
         `<div class="d-flex justify-content-center">
-        <div class="spinner-border" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
+            <div class="spinner-border" role="status">
+                <span class="sr-only">Loading...</span>
+            </div>
         </div>`
 
 
@@ -2984,41 +3062,41 @@ function showEtabDetail(event,nom_dep, id_dep, id_etab) {
     
 }
 
-function pastilleGolf(element){
-    let id = element.dataset.id
-    let name = element.dataset.name
-    let tbl = element.dataset.tbname
-    let data = {
-        id : id,
-        name : name,
-        tbl : tbl
-    }
+// function pastilleGolf(element){
+//     let id = element.dataset.id
+//     let name = element.dataset.name
+//     let tbl = element.dataset.tbname
+//     let data = {
+//         id : id,
+//         name : name,
+//         tbl : tbl
+//     }
 
-    console.log(data);
+//     console.log(data);
 
-    let request = new Request("/user/tribu_t/pastille/golf", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'  
-        },
-        body: JSON.stringify(data)
-    })
+//     let request = new Request("/user/tribu_t/pastille/golf", {
+//         method: "POST",
+//         headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json'  
+//         },
+//         body: JSON.stringify(data)
+//     })
 
-    fetch(request)
-            .then(response=>response.json())
-            .then(message=>{
-                new swal("Succès !", "Golf pastillé avec succès", "success")
-                    .then((value) => {
-                        element.classList = "btn btn-secondary ms-1"
-                        element.textContent = "Pastillé"
-                        element.setAttribute("disabled", true)
-                        showGolf()
-                        document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
-                    });          
-            })
-            .catch(error=>console.log(error))
-}
+//     fetch(request)
+//             .then(response=>response.json())
+//             .then(message=>{
+//                 new swal("Succès !", "Golf pastillé avec succès", "success")
+//                     .then((value) => {
+//                         element.classList = "btn btn-secondary ms-1"
+//                         element.textContent = "Pastillé"
+//                         element.setAttribute("disabled", true)
+//                         showGolf()
+//                         document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
+//                     });          
+//             })
+//             .catch(error=>console.log(error))
+// }
 
 function openPopupActionGolf(id_pastille=null, denomination_f=null, adresse=null) {
 
@@ -3039,36 +3117,36 @@ function openPopupActionGolf(id_pastille=null, denomination_f=null, adresse=null
     btn.dataset.tbname = tableTribu
 }
 
-function depastilleGolf(selector){
-    let id = selector.dataset.id
-    let name = selector.dataset.name
-    let tbl = selector.dataset.tbname
-    let data = {
-        id : id,
-        name : name,
-        tbl : tbl
-    }
+// function depastilleGolf(selector){
+//     let id = selector.dataset.id
+//     let name = selector.dataset.name
+//     let tbl = selector.dataset.tbname
+//     let data = {
+//         id : id,
+//         name : name,
+//         tbl : tbl
+//     }
 
-    let request = new Request("/user/tribu_t/depastille/golf", {
-        method: "POST",
-        headers: {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json'  
-        },
-        body: JSON.stringify(data)
-    })
+//     let request = new Request("/user/tribu_t/depastille/golf", {
+//         method: "POST",
+//         headers: {
+//             'Accept': 'application/json',
+//             'Content-Type': 'application/json'  
+//         },
+//         body: JSON.stringify(data)
+//     })
 
-    fetch(request)
-            .then(response=>response.json())
-            .then(message=>{
-                    new swal("Succès !", "Golf dépastillé avec succès", "success")
-                    .then((value) => {
-                            $("#detailOptionGolf").modal("hide")
-                            document.querySelector("#golf_"+id).remove()
-                    });
-            })
-            .catch(error=>console.log(error))
-}
+//     fetch(request)
+//             .then(response=>response.json())
+//             .then(message=>{
+//                     new swal("Succès !", "Golf dépastillé avec succès", "success")
+//                     .then((value) => {
+//                             $("#detailOptionGolf").modal("hide")
+//                             document.querySelector("#golf_"+id).remove()
+//                     });
+//             })
+//             .catch(error=>console.log(error))
+// }
 
 /**
  * @constructor
@@ -3112,4 +3190,112 @@ function fetchAllInvitationStory() {
 
         })
         .catch(error => console.log(error))
+}
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ * 
+ * This function is use listen the input file event onchange
+ * on the input piece joint in mail invitation 
+ * 
+ * All add input image
+ * @parm inputImage.html.twig
+ */
+function addPieceJoint(input) {
+
+    if (input.files && input.files[0]){
+
+        /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants : 
+        /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+        const listNotAccepted = ["zip", "css", "html", "sql", "xml", "gz", "bz2", "tgz",'ade', 'adp', 'apk', 'appx', 'appxbundle', 'bat', 'cab', 'chm', 'cmd', 'com', 'cpl', 'diagcab', 'diagcfg', 'diagpack', 'dll', 'dmg', 'ex', 'ex_', 'exe', 'hta', 'img', 'ins', 'iso', 'isp', 'jar', 'jnlp', 'js', 'jse', 'lib', 'lnk', 'mde', 'msc', 'msi', 'msix', 'msixbundle', 'msp', 'mst', 'nsh', 'pif', 'ps1', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vhd', 'vxd', 'wsc', 'wsf', 'wsh', 'xll'];
+        
+        /// input value to get the original name of the file ( with the fake path )
+        const value= input.value;
+
+        //// to get the extension file
+        const  temp= value.split(".");
+        const extensions = temp[temp.length-1]; /// extension
+
+        ///if the current extension is in the list not accepted.
+        if( !listNotAccepted.some( item => item.toLowerCase() === extensions.toLowerCase() ) && extensions !== value ){
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+
+                /// get name the originila name of the file
+                const input_value= value.split("\\")
+                const name= input_value[input_value.length-1]; /// original name
+    
+                ///unique  to identify the file item
+                /// this not save in the database.
+                const id_unique= new Date().getTime();
+
+                ////create item piece joint.
+                createListItemPiece(name, id_unique);
+                
+                //// save the item in variable global list piece jointe.
+                email_piece_joint_list.push({id: id_unique,  name, base64File: e.target.result })
+            };
+    
+            reader.readAsDataURL(input.files[0]);
+        }else{ /// if the extension is not supported.
+            swal({
+                title: "Le format de fichier n'est pas pris en charge!",
+                icon: "error",
+                button: "OK",
+            });
+        }
+    }
+}
+
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ * 
+ * This function create single elemment html like to piece joint
+ * on the send email invitation on the tribu T
+ * 
+ * @param {*} name : file name
+ * @param {*} id : unique id to identifie the element in the object.
+ * 
+ * @return void
+ */
+function createListItemPiece(name, id){
+    
+    ////content block the list item piece joint.
+    const content_list_piece_joint= document.querySelector(".content_list_piece_joint_jheo_js");
+
+    //// display the block when it's hidden.
+    if( content_list_piece_joint.classList.contains("d-none")){
+        content_list_piece_joint.classList.remove("d-none")
+    }
+
+    /// structure html the single element
+    const list_item= `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <p>${name}</p>
+            <button type="button" class="btn btn-outline-danger fa_solid_${id}_jheo_js" onclick="removeListeItem(this, '${id}')"><i class="fa-solid fa-trash-can"></i></button>
+        </li>
+    `
+    /// insert the single element.
+    content_list_piece_joint.innerHTML += list_item;
+}
+
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *  
+ * This function remove the item on the list piece jointe 
+ * and update variable global `email_piece_joint_list` list of the piece joint 
+ * 
+ * @param {*} e : event html object: item list piece jointe
+ * @param {*} id : unique id in to identify the item piece joint in the list `email_piece_joint_list`
+ * 
+ * @return void
+ */
+function removeListeItem(e, id){
+    ///remove html element
+    e.parentElement.remove()
+    ///remove one element in the piece global
+    email_piece_joint_list= email_piece_joint_list.filter(item => item.id  != id )
 }

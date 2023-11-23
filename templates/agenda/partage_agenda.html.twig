@@ -233,7 +233,19 @@
                                                     </div>
                                                     <!--<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>-->
                                                 </div>
-                                                <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
+
+                                                <ul class="list-group content_list_piece_joint_jheo_js d-none"></ul>
+
+                                                <div class="d-flex justify-content-start align-items-center">
+                                                    <div class="p-2 bd-highlight">
+                                                        <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
+                                                    </div>
+                                                    <div class="p-2 bd-highlight content_input_piece_joint content_input_piece_joint_jheo_js">
+                                                        <div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajout des pièce jointe.</div>
+                                                        <label class="label_piece_joint_jheo_js" for="piece_joint"><i class="label_piece_joint_jheo_js fa-solid fa-paperclip"></i></label>
+                                                        <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint" name="piece_joint" onchange="addPieceJoint(this);" />
+                                                    </div>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>  

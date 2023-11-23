@@ -51,6 +51,115 @@ if(document.querySelector(".content_entete_msg_jheo_js")){
 }
 
 
+if(document.querySelector(".content_entete_msg_grp_jheo_js")){
+    const infContainer=document.querySelector(".content_entete_msg_grp_jheo_js")
+    const tablename=infContainer.dataset.toggleIdUserTo
+    const typeGroup=infContainer.dataset.toggleType
+    const dataRoof=infContainer.dataset.roof
+    const evtSource = new EventSource(`/user/realTimeMessage/grp?name=${tablename}&type=${typeGroup}`);
+
+    evtSource.onmessage = function(event) {
+
+        //// get data
+        
+        const all_messages = JSON.parse(event.data);
+        console.log(all_messages)
+
+        all_messages.forEach(message => {
+            console.log(message)
+            const idExpediteur=parseInt(message.id_expediteur);
+            const currentuser=parseInt(document.querySelector(".spid_js_faniry").classList[1])
+            
+            if((idExpediteur != currentuser) && (document.querySelector(`#message_${message.id_msg}_jheo_js`) == null)){
+                const msg=message.msg
+                const images=message.images
+                const isForMe=dataRoof === message.id_expediteur ? 0 : 1
+                const datetime=message.date_message_created
+                const userToFirstname=message.firstname
+                const userToLastname=message.lastname
+                createDivMessageGroup(message.id_msg, isForMe, datetime, 
+                    msg, images,userToFirstname,userToLastname);
+            }
+
+        })
+
+        //     if(!document.querySelector(`#message_${message.id}_jheo_js`)){
+                
+        //         ///create new div mesage show
+        //         const { text, images } = JSON.parse(message.msg);
+        //         const isForMe=dataRoof === message.id_expediteur ? 0 : 1
+        //         createDivMessage(message.id_msg, message.isForMe, message.datetime,text, images);
+
+        //         if( document.querySelector(".image_temp_js_jheo")){
+
+        //             document.querySelector(".image_temp_js_jheo").parentElement.removeChild(
+        //                 document.querySelector(".image_temp_js_jheo")
+        //             )
+        //         }
+
+        //         ///fetch set show and read
+        //         fetch("/user/show-read/message", {
+
+        //             "method": "POST",
+        //             "headers": {
+        //                 'Accept': 'application/json',
+        //                 "Content-Type": "application/json"
+        //             },
+        //             body: JSON.stringify({
+        //                 "other_id": message.user_post
+        //             })
+
+        //         })
+        //         .then(res => res.json())
+        //         .then((res) => {
+        //             console.log("Message show and read")
+        //             console.log(res)
+        //         })
+        //     }
+        // })
+    }
+}
+function createDivMessageGroup(id,isForMe,date, message,images,userToFirstname,userToLastname) {
+
+    const card_msg= document.createElement("div");
+    // if(isForMe== "1"){
+    //     card_msg.classList= "qf rb";
+    // }else{
+    //     card_msg.className= "qf";
+    // }
+    card_msg.className= "qf";
+    
+    card_msg.setAttribute("id", `message_${id}_jheo_js`);
+
+    let image_html_list= "";
+    if( images?.length > 0 ){
+        images?.forEach(image=> {
+            image_html_list += `<img class="message_image_item" src="${image}" alt="image">`
+        });
+    }
+
+
+    card_msg.innerHTML= `
+        <p class="qb mn un">
+            ${userToFirstname} ${userToLastname}
+        </p>
+        <div class="qb vh hi vj yr el yl">
+            <p style="color:black">${message}</p>
+            <div class="content_image_msg">
+                ${image_html_list}
+            </div>
+        </div>
+        <p class="nn">${date}</p>
+    `
+    ////insert into block message
+    if(document.querySelector(".content_form_message_jheo_js")){
+        if( document.querySelector(".start_discussion_jheo_js")){
+            document.querySelector(".start_discussion_jheo_js").remove();
+        }
+        document.querySelector(".content_discussion_jheo_js").appendChild(card_msg);
+        document.querySelector(".content_discussion_jheo_js").scrollTop= 9e9;
+    }
+}
 //// SHOW MESSAGE ABOVE THE INPUT MESSAGE FROM THE SSE
 function createDivMessage(id,isForMe,date, message,images){
     

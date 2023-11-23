@@ -304,6 +304,7 @@ class FermeGeomRepository extends ServiceEntityRepository
             ->select(
                 'p.id',
                 'p.nomFerme',
+                'p.nomFerme as nameFilter',
                 'p.adresseFerme',
                 'p.departement',
                 'p.departementName',
@@ -822,6 +823,7 @@ class FermeGeomRepository extends ServiceEntityRepository
                     ->select(
                         'r.id',
                         'r.nomFerme',
+                        'r.nomFerme as nameFilter',
                         'r.adresseFerme',
                         'r.departement',
                         'r.departementName',
@@ -870,6 +872,7 @@ class FermeGeomRepository extends ServiceEntityRepository
                     ->select(
                         'r.id',
                         'r.nomFerme',
+                        'r.nomFerme as nameFilter',
                         'r.nomFerme as nom',
                         'r.adresseFerme',
                         'r.adresseFerme as add',
@@ -911,8 +914,8 @@ class FermeGeomRepository extends ServiceEntityRepository
                         'r.longitude',
                         'r.longitude as long',
                     )
-                    ->where("ABS(r.latitude) >= ABS(:minx) ")
-                    ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
+                    ->where("r.latitude >= :minx ")
+                    ->andWhere("r.latitude <= :maxx")
                     ->andWhere("ABS(r.longitude) >= ABS(:miny)")
                     ->andWhere("ABS(r.longitude) <= ABS(:maxy)")
                     ->setParameter("minx", floatval($miny))

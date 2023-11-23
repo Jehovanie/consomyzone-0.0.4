@@ -24,10 +24,451 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class MessageController extends AbstractController
 {
 
+    private function decryptData($encryptedData){
+        $decryptionMethod ="AES-256-CBC";
+        $encryptionMethod="AES-256-CBC";
+        $secretKey="ThisIsASecretKey123";
+        $iv = \openssl_random_pseudo_bytes(openssl_cipher_iv_length($encryptionMethod));
+        $decryptedData = openssl_decrypt($encryptedData, $decryptionMethod, $secretKey, 0, $iv);
+        return $decryptedData;
+    }
+
+    #[Route("/user/tribu/msg", name:"app_tribu_g_message",methods:['GET'])]
+    public function renderMessageTribu(
+        Request $request,
+        TributGservice $tributGService,
+        Tribu_T_Service $tributTService,
+        UserRepository $userRepository,
+        MessageService $messageService,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository,
+        Status $status,
+        UserService $userService
+
+    ){
+        ///check the user connected
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+        $userConnected = $status->userProfilService($this->getUser());
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+         
+       
+        $all_tribuT = $userRepository->getListTableTribuT();
+
+        $tribuG=$userConnected;
+        $tribuG["name"]= "tribu G ".$tribuG["commune"]." ". $tribuG["quartier"];
+        
+        $tribuTSelected=[];
+       
+        $type=$request->query->get('type');
+        $isT=1;
+        $groupSendTo="";
+        switch($type){
+            case ('t'):{
+                //TODO get All message of tribu T concerned
+                $tableName=$request->query->get('name');
+                $groupSendTo=$tableName;
+                $allMessage=$tributTService->getMessageGRP($tableName);
+                foreach($allMessage as &$message){
+                    $message["msg"]=json_decode($message["msg"],true);
+                    $message["images"]=json_decode($message["images"],true);
+                    $message["files"]=json_decode($message["files"],true);
+                }
+                foreach($all_tribuT as $tribut){
+                     if($tribut["table_name"] ==$tableName)
+                        $tribuTSelected=$tribut;
+                }
+                $isT=1;
+                break;
+            }
+            case ('g'):{
+                //TODO get All message of tribu g concerned
+                $groupSendTo=$tribuG["tableTribuG"];
+                $isT=0;
+                $tableName=$request->query->get('name');
+                $allMessage=$tributGService->getMessageGRP($tableName);
+                if(count($allMessage)>0)
+                    $tribuG["last_message"]=$allMessage[0];
+                else
+                $tribuG["last_message"]=[];
+                foreach($allMessage as &$message){
+                    $message["msg"]=json_decode($message["msg"],true);
+                    $message["images"]=json_decode($message["images"],true);
+                    $message["files"]=json_decode($message["files"],true);
+                }
+                break;
+            }
+            default:{
+
+            }
+        } 
+
+        //dd($tribuG);
+        // $tribuG["last_message"]=$allMessage[0];
+        return $this->render("user/message/mgs_grp_tribu.html.twig",[
+            "group_send_to"=>$groupSendTo,
+            "isT"=> $isT,
+            "userConnected" => $userConnected,
+            "tribusG" => $tribuG,
+            "tribuT" => $all_tribuT,
+            "tribuTSelected"=>$tribuTSelected,
+            "allMessage"=>$allMessage,
+            "type"=>$type
+        ]);
+        
+
+    }
+
+    #[Route("/user/pushMessage/T", name:"app_user_push_message_grp_T", methods:["POST","GET"])]
+    public function pushMessageGrpT(
+        Request $request,
+        Tribu_T_Service $tributTService,
+        Filesystem $filesyst
+    ){
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+        
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+
+        $content=json_decode($request->getContent(),true);
+        extract($content);
+
+        $file_list = [];
+        $image_list = [];
+
+        if(count($files) > 0 ){
+            $path_image = $this->getParameter('kernel.project_dir') . "/public/uploads/messages_grp_".$receiver."/";
+            $path_files = $this->getParameter('kernel.project_dir') . "/public/uploads/messages_grp_".$receiver."/files/";
+            
+            $dir_image_exist = $filesyst->exists($path_image);
+            $dir_files_exist = $filesyst->exists($path_files);
+
+            if ($dir_image_exist == false) {
+                $filesyst->mkdir($path_image, 0777);
+            }
+
+            if ($dir_files_exist == false) {
+                $filesyst->mkdir($path_files, 0777);
+            }
+
+            foreach( $files as $file ){
+                extract($file); /// $type, $name
+
+                // Function to write image into file
+                $temp = explode(";", $name );
+                $extension = explode("/", $temp[0])[1];
+                $file_name =  str_replace("." , "_" , uniqid("image_", true)). "_from_". $userId . "_to_" . $receiver . "." . $extension;
+
+                if( $file['type'] === 'image'){
+                    file_put_contents($path_image . $file_name, file_get_contents($name));
+                    array_push($image_list,"/public/uploads/messages_grp_".$receiver."/". $file_name);
+
+                }else if( $file['type'] === 'file'){
+                    file_put_contents($path_files . $file_name, file_get_contents($name));
+                    array_push($file_list, "/public/uploads/messages_grp_".$receiver."/files/". $file_name);
+                }
+                ///save image in public/uploader folder
+            }
+
+        }
+        
+        $result= $tributTService->sendMessageGroupe($message,  
+        $file_list , 
+        $image_list, 
+        $userId, 0, 1, 0,$receiver);
+
+        // return $this->json(array("ok"=>"ok"));
+
+        
+        return $this->json([
+            "id" => $result[0]["last_id_message"]
+        ]);
+    }
+    #[Route("/user/pushMessage/G", name:"app_user_push_message_grp", methods:["POST","GET"])]
+    public function pushMessageGrp(
+        Request $request,
+        TributGService $tributGService,
+        Filesystem $filesyst
+    ){
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+        
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+
+        $content=json_decode($request->getContent(),true);
+        extract($content);
+
+        $file_list = [];
+        $image_list = [];
+
+        if(count($files) > 0 ){
+            $path_image = $this->getParameter('kernel.project_dir') . "/public/uploads/messages_grp_".$receiver."/";
+            $path_files = $this->getParameter('kernel.project_dir') . "/public/uploads/messages_grp_".$receiver."/files/";
+            
+            $dir_image_exist = $filesyst->exists($path_image);
+            $dir_files_exist = $filesyst->exists($path_files);
+
+            if ($dir_image_exist == false) {
+                $filesyst->mkdir($path_image, 0777);
+            }
+
+            if ($dir_files_exist == false) {
+                $filesyst->mkdir($path_files, 0777);
+            }
+
+            foreach( $files as $file ){
+                extract($file); /// $type, $name
+
+                // Function to write image into file
+                $temp = explode(";", $name );
+                $extension = explode("/", $temp[0])[1];
+                $file_name =  str_replace("." , "_" , uniqid("image_", true)). "_from_". $userId . "_to_" . $receiver . "." . $extension;
+
+                if( $file['type'] === 'image'){
+                    file_put_contents($path_image . $file_name, file_get_contents($name));
+                    array_push($image_list,"/public/uploads/messages_grp_".$receiver."/". $file_name);
+
+                }else if( $file['type'] === 'file'){
+                    file_put_contents($path_files . $file_name, file_get_contents($name));
+                    array_push($file_list, "/public/uploads/messages_grp_".$receiver."/files/". $file_name);
+                }
+                ///save image in public/uploader folder
+            }
+
+        }
+
+        $result= $tributGService->sendMessageGroupe($message,  
+        $file_list , 
+        $image_list, 
+        $userId, 0, 1, 0,$receiver);
+
+        // return $this->json(array("ok"=>"ok"));
+
+        return $this->json([
+            "id" => $result[0]["last_id_message"]
+         ]);
+    }
+
+    #[Route("/user/get/allTribu", name:"app_user_get_all_tribu")]
+    public function getMyAllTribu(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        Tribu_T_Service $tributTService,
+        UserRepository $userRepository,
+        MessageService $messageService,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository,
+        Status $status,
+        UserService $userService
+    ){
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+
+         ////status user connected --- status on navBar -------------
+         $userConnected = $status->userProfilService($this->getUser());
+         // dd($userConnected);
+ 
+         ///current user connected
+         $user = $this->getUser();
+         $userType = $user->getType();
+         $userId = $user->getId();
+         
+         $myTribuG=$userConnected;
+
+         $all_tribuT = $userRepository->getListTableTribuT();
+
+         $response=array(0=>$myTribuG,1=> $all_tribuT) ;
+         return $this->json($response);
+ 
+    }
+    #[Route('/user/get/allfans', name:"app_user_get_all_friend_fan")]
+    public function getAllFriendFan(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        Tribu_T_Service $tributTService,
+        UserRepository $userRepository,
+        MessageService $messageService,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository,
+        Status $status,
+        UserService $userService
+    ){
+       
+        ///check the user connected
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        ////status user connected --- status on navBar -------------
+        $userConnected = $status->userProfilService($this->getUser());
+        // dd($userConnected);
+
+        ///current user connected
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+
+        // ////profil user connected
+        $profil = $tributGService->getProfil($user, $entityManager);
+
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+
+        ///get all id the user in the same tribut G for me
+        $id_amis_tributG = $tributGService->getAllTributG($userConnected['tableTribuG']);  /// [ ["user_id" => ...], ... ]
+
+
+        ///to contains profil user information
+        $amis_in_tributG = [];
+        foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+            if (intval($id_amis["user_id"]) !== intval($userId)) {
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
+                // if( $user_amis && boolval($isActive)){
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "my_id" => $userId,
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
+                        "is_online" => $isActive
+                    ];
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                // }
+            }
+        }
+        ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
+
+        $all_tribuT_user = [];
+        $all_tribuT = $userRepository->getListTableTribuT();
+        foreach ($all_tribuT as $tribuT) {
+            $tribuT['amis'] = [];
+            $results = $tributTService->getAllPartisanProfil($tribuT['table_name']);
+            foreach ($results as $result) {
+                if (intval($result["user_id"]) !== intval($userId)) {
+                    $user_amis = $userRepository->find(intval($result["user_id"]));
+                    $isActive = intval(($userService->getLastActivity($result["user_id"]))["@status"]);
+                    //dd($result["user_id"]);
+                    // if( $user_amis && boolval($isActive)){
+                        $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $amis = [
+                            "my_id" => $userId,
+                            "id" => $result["user_id"],
+                            "photo" => $profil_amis->getPhotoProfil(),
+                            "email" => $user_amis->getEmail(),
+                            "firstname" => $profil_amis->getFirstname(),
+                            "lastname" => $profil_amis->getLastname(),
+                            "image_profil" => $profil_amis->getPhotoProfil(),
+                            "last_message" => $messageService->getLastMessage($user->getTablemessage(), $result["user_id"]),
+                            "is_online" => $isActive,
+                        ];
+                        ///get it
+                        array_push($tribuT['amis'], $amis);
+                    // }
+                }
+            }
+            array_push($all_tribuT_user, $tribuT);
+        }
+        //// CHECKS USER TO CHAT //////////////////////////////////
+
+        ///if the is id user from the url 
+        if ($request->query->get("user_id")) { /// "1" ...
+            $id_user_to_chat = intval($request->query->get("user_id")); /// 1 ...
+
+        } else { /// the user not specified id user  in the url, just to chat box
+
+            if (count($id_amis_tributG) !== 1) {
+                ////get random user in the tributG
+                $id_user_to_chat = 0; /// random id user
+                while ($id_user_to_chat === 0 || $id_user_to_chat === $user->getId()) {
+                    $temp = rand(0, count($id_amis_tributG));
+                    $i = 0;
+                    foreach ($id_amis_tributG as $id_amis) {
+                        if ($i === $temp) {
+                            $id_user_to_chat = intval($id_amis["user_id"]);
+                            break;
+                        }
+                        $i++;
+                    }
+                }
+            } else {
+                $id_user_to_chat = $user->getId();
+            }
+        }
+        // $id_user_to_chat= 20;
+
+
+        ///user to chat
+        $user_to = $userRepository->find($id_user_to_chat);
+        $user_to = $user_to === null ? $user : $user_to;
+        //// set show and read all last messages.
+
+        ///befor set show and read all last messages
+        $result = $messageService->setShowAndReadMessages($user_to->getId(), $user->getTablemessage());
+
+        ///get the all last messages
+        $old_message = $messageService->getAllOldMessage(
+            $user_to->getId(),
+            $user->getTableMessage()
+        );
+
+        foreach ($old_message as &$message) {
+            $message["content"] = json_decode($message["content"], true);
+        }
+
+        ///profile the user to chat
+        $profil_user_to = $tributGService->getProfil($user_to, $entityManager)[0];
+
+        $user_to_profil = [
+            "id" => $user_to->getId(),
+            "email" => $user_to->getEmail(),
+            "photo_profile" => $profil_user_to->getPhotoProfil(),
+            "firstname" => $profil_user_to->getFirstname(),
+            "lastname" => $profil_user_to->getLastname(),
+            "image_profil" => $profil_user_to->getPhotoProfil(),
+            "messages" => $old_message,
+            "status" => strtoupper($user_to->getType())
+        ];
+
+        // return $this->render('user/message/liste_amis_connected.html.twig', [
+        //     "userConnected" => $userConnected,
+        //     "profil" => $profil,
+        //     "statusTribut" => $tributGService->getStatusAndIfValid(
+        //         $profil[0]->getTributg(),
+        //         $profil[0]->getIsVerifiedTributGAdmin(),
+        //         $userId
+        //     ),
+        //     "userToProfil" => $user_to_profil,
+        //     "amisTributG" => $amis_in_tributG,
+        //     "allTribuT" => $all_tribuT_user,
+        //     //"isInTribut" => $request->query->get("tribuT") ? true : false
+        // ]);
+        $response=array(0=>$all_tribuT_user,1=> $amis_in_tributG) ;
+        return $this->json($response);
+    }
     #[Route('/user/get/fan/online', name:"app_user_get_online")]
     public function getFanOnline(
         Request $request,
@@ -41,7 +482,7 @@ class MessageController extends AbstractController
         Status $status,
         UserService $userService
     ){
-
+       
         ///check the user connected
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_home');
@@ -100,7 +541,8 @@ class MessageController extends AbstractController
             foreach ($results as $result) {
                 if (intval($result["user_id"]) !== intval($userId)) {
                     $user_amis = $userRepository->find(intval($result["user_id"]));
-                    $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
+                    $isActive = intval(($userService->getLastActivity($result["user_id"]))["@status"]);
+                    //dd($result["user_id"]);
                     if( $user_amis && boolval($isActive)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                         $amis = [
@@ -270,7 +712,7 @@ class MessageController extends AbstractController
             foreach($results as $result){
                 if( intval($result["user_id"]) !== intval($userId) ){
                     $user_amis = $userRepository->find(intval($result["user_id"]));
-                    $isActive=intval(($userService->getLastActivity( $id_amis["user_id"]))["@status"]);
+                    $isActive=intval(($userService->getLastActivity( $result["user_id"]))["@status"]);
                     //if( $user_amis && $user_amis->getIsConnected()){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                         $amis = [
@@ -553,7 +995,7 @@ class MessageController extends AbstractController
             foreach ($results as $result) {
                 if (intval($result["user_id"]) !== intval($userId)) {
                     $user_amis = $userRepository->find(intval($result["user_id"]));
-                    $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
+                    $isActive = intval(($userService->getLastActivity($result["user_id"]))["@status"]);
                     // if ($user_amis && $user_amis->getIsConnected()) {
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                         $amis = [
@@ -582,6 +1024,7 @@ class MessageController extends AbstractController
         } else { /// the user not specified id user  in the url, just to chat box
 
             if (count($id_amis_tributG) !== 1) {
+
                 ////get random user in the tributG
                 $id_user_to_chat = 0; /// random id user
                 while ($id_user_to_chat === 0 || $id_user_to_chat === $user->getId()) {
@@ -896,6 +1339,73 @@ class MessageController extends AbstractController
 
     }
 
+    #[Route("/user/realTimeMessage/grp", name:"app_real_time_message_grp")]
+    public function showMessageInRealTime(
+        Request $request,
+        Tribu_T_Service $tributTService,
+        TributGService $tributGService
+    
+    ){
+        $type=$request->query->get('type');
+        $tableName="";
+        $allMessage=[];
+        switch($type){
+            case 't':{
+
+                $tableName=$request->query->get('name');
+                $allMessage=$tributTService->getMessageGRP($tableName);
+                $allMessage=mb_convert_encoding( $allMessage, 'UTF-8', 'UTF-8');
+                foreach($allMessage as &$message){
+                    $message["msg"]=json_decode($message["msg"],true);
+                    $message["images"]=json_decode($message["images"],true);
+                    $message["files"]=json_decode($message["files"],true);
+                    // $message["firstname"]=utf8_encode($message["firstname"]);
+                    // $message["lastname"]=utf8_encode($message["lastname"]);
+                    // $message["num_rue"]=utf8_encode($message["num_rue"]);
+                }
+                //dd( $allMessage);
+                break;
+                
+            }
+
+            case 'g':{
+                $tableName=$request->query->get('name');
+                $allMessage=$tributGService->getMessageGRP($tableName);
+                $allMessage=mb_convert_encoding( $allMessage, 'UTF-8', 'UTF-8');
+                foreach($allMessage as &$message){
+                    $message["msg"]=json_decode($message["msg"],true);
+                    $message["images"]=json_decode($message["images"],true);
+                    $message["files"]=json_decode($message["files"],true);
+                    // $message["firstname"]=utf8_encode($message["firstname"]);
+                    // $message["lastname"]=utf8_encode($message["lastname"]);
+                    // $message["num_rue"]=utf8_encode($message["num_rue"]);
+                   
+                }
+                break;
+            }
+
+            default:{
+
+            }
+        }
+        //dump($allMessage);
+        //dd($allMessage);
+        $response = new StreamedResponse();
+        $response->setCallback(function () use (&$allMessage) {
+
+            echo "data:" . json_encode($allMessage) .  "\n\n";
+            ob_end_flush();
+            flush();
+        });
+        
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Headers', 'origin, content-type, accept');
+        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, PATCH, OPTIONS');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('Content-Type', 'text/event-stream');
+
+        return $response;
+    }
 
     #[Route("/user/show-read/message", name: 'app_message_show_read_ajax', methods: ["POST"])]
     public function setShowAndReadMessages(

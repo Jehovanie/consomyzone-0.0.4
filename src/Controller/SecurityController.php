@@ -401,14 +401,14 @@ class SecurityController extends AbstractController
             $oldUser = null;
             ///check the email if already exist
         if ($userRepository->findOneBy(['email' => $data['email']])) {
-$userExist = $userRepository->findOneBy(['email' => $data['email']]);
-                if($userExist->getType() == "Type"){
-                    $oldUser = $userExist;
-                }else{
-            $result = false;
-            $type = "email-ae"; /// email already exist
-            goto quit;
-}
+            $userExist = $userRepository->findOneBy(['email' => $data['email']]);
+            if($userExist->getType() == "Type"){
+                $oldUser = $userExist;
+            }else{
+                $result = false;
+                $type = "email-ae"; /// email already exist
+                goto quit;
+            }
         }
 
 
@@ -432,12 +432,13 @@ $userExist = $userRepository->findOneBy(['email' => $data['email']]);
 
 
         /// new instance for user.
-if($oldUser){
+        if($oldUser){
             $user = $oldUser;
         }else{
             /// new instance for user.
-        $user = new User();
-}
+            $user = new User();
+        }
+
         $user->setPseudo(trim($data['pseudo']));
         $user->setEmail(trim($data['email']));
         $user->setPassword($data['password']);
@@ -626,7 +627,9 @@ if($oldUser){
         UserAuthenticatorInterface $authenticator,
         UserAuthenticator $loginAuth,
         VerifyEmailHelperInterface $verifyEmailHelper,
-        Filesystem $filesyst
+        Filesystem $filesyst,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository
     ) {
         ///to get info
         ///id de l'utilisateur.
@@ -669,6 +672,11 @@ if($oldUser){
             ///get the data
             extract($form->getData());
 
+
+            if( $consumerRepository->findOneBy(["userId" => $this->getUser() ]) ||  $supplierRepository->findOneBy(["userId" => $this->getUser() ]) ){
+                return $authenticator->authenticateUser( $userToVerifie, $loginAuth, $request );
+            }
+
             /// if the user is consumer
             if ($Consommateur && !$Fournisseur) {
 
@@ -688,26 +696,45 @@ if($oldUser){
 
             }
 
-
-
             $user_profil->setFirstname($nom);
             $user_profil->setLastname($prenom);
             $user_profil->setNumRue($num_rue);
             $user_profil->setTelephone($telephone);
-
-            // $user_profil->setVille($ville);
-
             $user_profil->setCodePostal($code_postal);
             $user_profil->setCommune($nom_commune);
+            $user_profil->setPays($pays);
+            // $user_profil->setVille($ville);
+
+            if( $telephone ){
+                $user_profil->setTelFixe($telephone);
+            }else{
+                $user_profil->setTelFixe("");
+            }
+
+            // $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
+            $test_length = "tribug_" . $departement . "_" . implode("_", explode(" ", $quartier));
+            if( strlen($test_length) > 40 ){
+                $data=  explode(" ", $quartier);
+
+                $resolve_name= [ ];
+                for( $i=0; $i< (count($data) - 1 ) / 2; $i++ ){
+                    array_push($resolve_name, $data[$i]);
+                }
+
+                $quartier = implode("_", $resolve_name);
+            }
 
             $user_profil->setQuartier($quartier);
 
-            $user_profil->setPays($pays);
+            $departement = strlen($departement) === 1 ? "0". $departement : $departement;
 
-            $user_profil->setTelFixe($telephone);
+            $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
+            $name_tributG = strlen($name_tributG) > 40 ? substr($name_tributG,0,30) : $name_tributG;
+            $user_profil->setTributg($name_tributG);
+
 
             ////set profil
-            if( $profil){
+            if( $profil ){
                 ///path file folder
                 $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $userToVerifie->getId() . "/";
                 $dir_exist = $filesyst->exists($path);
@@ -737,9 +764,9 @@ if($oldUser){
             // $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
             $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
             $name_tributG = strlen($name_tributG) > 40 ? substr($name_tributG,0,30) : $name_tributG;
+
+
             $user_profil->setTributg($name_tributG);
-
-
 
             ///attribution des tribut.
             $resultat = $tributGService->createTableTributG($name_tributG, $userToVerifie->getId());
@@ -873,7 +900,7 @@ if($oldUser){
 
             $mailService->valid_email($data['email']);
 
-///check the email if already exist
+            ///check the email if already exist
             // if ($userRepository->findOneBy(['email' => $data['email']])) {
             //     // dd("Email already exist.");
 
@@ -916,18 +943,21 @@ if($oldUser){
                 goto quit;
             }
 
-/// new instance for user.
+            /// new instance for user.
             if($oldUser){
                 $user = $oldUser;
             }else{
-            /// new instance for user.
-            $user = new User();
-}
+                /// new instance for user.
+                $user = new User();
+            }
+
             $user->setPseudo(trim($data['pseudo']));
             $user->setEmail(trim($data['email']));
             $user->setPassword($data['password']);
             $user->setVerifiedMail(true);
             $user->setRoles(["ROLE_USER"]);
+            $user->setIsConnected(true);
+            $user->setIdle(300);
 
             ///property temp
             $user->setType("Type");

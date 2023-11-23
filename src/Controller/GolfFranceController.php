@@ -15,6 +15,7 @@ use App\Repository\GolfFranceRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\GolfFinishedRepository;
+use App\Service\Tribu_T_Service;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -203,6 +204,32 @@ class GolfFranceController extends AbstractController
         ]);
     }
 
+
+    /**
+     * @Route("/golf_in_peripherique", name="golf_in_peripherique", methods={"GET"})
+     */
+    public function getPeripheriqueData(
+        Request $request, 
+        GolfFranceRepository $golfFranceRepository)
+    {
+        if($request->query->has("minx") && $request->query->has("miny") ){
+            
+            $dep = ( $request->query->get("dep")) ?  $request->query->get("dep") : null;
+            $nom_dep = ( $request->query->get("nom_dep")) ?  $request->query->get("nom_dep") : null;
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $data= $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $nom_dep, $dep, 200);
+
+            return $this->json(["data" => $data]);
+        }
+
+        return $this->json([]);
+    }
+
     #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}/{limit}/{offset}', name: 'golf_dep_france_mobile', methods: ["GET", "POST"])]
     public function specifiqueDepartementMobile(
         $nom_dep,
@@ -282,6 +309,8 @@ class GolfFranceController extends AbstractController
             "userConnected" => $userConnected,
         ]);
     }
+
+
     #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}/{id_golf}', name: 'golf_dep_france_search_mobile', methods: ["GET", "POST"])]
     public function specifiqueDepartementSearchMobile(
         $nom_dep,
@@ -392,7 +421,8 @@ class GolfFranceController extends AbstractController
         GolfFranceRepository $golfFranceRepository,
         AvisGolfRepository $avisGolfRepository,
         UserRepository $userRepository,
-        Status $status, 
+        Status $status,
+        Tribu_T_Service $tribu_T_Service,
     ){
         ///current user connected
         $user = $this->getUser();
@@ -406,6 +436,9 @@ class GolfFranceController extends AbstractController
         
         $isAlreadyCommented= false;
         $avis= ["note" => null, "text" => null  ];
+
+        $arrayTribu = [];
+        $isPastilled = false;
         
         $note_temp=0;
         foreach ($global_note as $note ) {
@@ -423,11 +456,33 @@ class GolfFranceController extends AbstractController
             "avisPerso" => $avis
         ];
 
+        if ($this->getUser()) {
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            foreach ($tribu_t_owned as $key) {
+                // dd($key);
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+                $tableExtension = $tableTribu . "_golf";
+
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $golfID, true)) {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                    } else {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                        $isPastilled = true;
+                    }
+                }
+            }
+        }
+
 
         return $this->render("golf/details_golf.html.twig", [
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "details" => $details,
+            "tribu_t_pastilleds" => $arrayTribu
         ]);
     }
 
@@ -458,9 +513,19 @@ class GolfFranceController extends AbstractController
         $idGolf,
         SerializerInterface $serializer
     ) {
+        $user= $this->getUser();
+        if( !$user ){
+            return $this->json([ "message" => "User no connected."]);
+        }
+        $currentUser= [
+            "id" => $user->getId(),
+            "email" => $user->getEmail(),
+            "pseudo" => $user->getPseudo()
+        ];
+
         $response = $avisGolfRepository->getNoteGlobale($idGolf);
-        $response = $serializer->serialize($response, 'json');
-        return new JsonResponse($response, 200, [], true);
+
+        return $this->json([ "data" => $response, "currentUser" => $currentUser ]);
     }
 
     #[Route("/avis/golf/{idGolf}", name: "avis_golf", methods: ["POST"])]
@@ -480,13 +545,20 @@ class GolfFranceController extends AbstractController
         $note = $requestJson["note"];
         
         //dd($user,$resto);
-        $avisGolf->setAvis($avis)
+        // $avisGolf->setAvis($avis)
+        $avisGolf->setAvis(json_encode($avis))
             ->setnote($note)
             ->setUser($user)
             ->setDatetime(new \DateTimeImmutable())
             ->setGolf($golf);
 
-        return $this->json($avisGolfRepository->add($avisGolf, true));
+        $avisGolfRepository->add($avisGolf, true);
+
+        $state= $avisGolfRepository->getState($idGolf);
+
+        return $this->json([
+            "state" => $state
+        ]);
     }
 
     #[Route("/nombre/avis/golf/{idGolf}", name: "get_nombre_avis_golf", methods: ["GET"])]
@@ -519,7 +591,13 @@ class GolfFranceController extends AbstractController
             $rJson["avis"],
         );
         $response = $serializer->serialize($response, 'json');
-        return new JsonResponse($response, 200, [], true);
+
+        $state= $avisGolfRepository->getState($idGolf);
+
+        return $this->json([
+            "state" => $state,
+            "data" => $response
+        ]);
     }
 
 

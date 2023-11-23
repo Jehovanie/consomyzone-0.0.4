@@ -1108,6 +1108,7 @@ function createVisioGroup() {
 /**
  * Function creating a group visio
  * @constructor
+ * @deprecated
  */
 function createVisioGroupFromMessage() {
 
@@ -1274,6 +1275,170 @@ function createVisioGroupFromMessage() {
 
 }
 
+/**
+ * @author faniry
+ * lance le visio de groupe
+ */
+async function createVisoGroup(){
+    const fans=await generateListFanConnected()
+    console.log(fans)
+    const ul=document.createElement("ul")
+    const modalContainer= document.querySelector("#visioGroupContentForMessage")
+    modalContainer.innerHTML=""
+    let myid=0
+    for(let fan of fans){
+        myid=parseInt(fan.myid)
+        const li = document.createElement("li")
+        const fullName = fan.fullName
+        const photoProfil = fan.photo_fan != null ? "/public" + fan.photo_fan : '/public/uploads/users/photos/default_pdp.png'
+        const user_id=fan.id_fan
+        const status=!!parseInt(fan.isActive)
+        const statusHtml= status  ? "<span class=\"g l m jc wc ce th pi ij xj\"></span>" :
+        "<span class=\"g l m jc wc ce th pi ij\" style=\"background-color:gray\"></span>"
+        li.innerHTML= `
+                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${user_id}_jheo_js" data-toggle-user-id="${user_id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                    <div class="h mb sc yd of th">
+                        <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif"/>
+                        ${statusHtml}
+                    </div>
+                    <a href="javascript:void(0)" class="yd">
+                        <div class="row">
+                            <div class="col-8">
+                                <h5 class="mn un zn gs">
+                                    ${fullName}
+                                </h5>
+
+                            </div>
+                            <div class="col-4">
+                            <input class="fan_who_selected_faniry_js" type="checkbox" data-roof=${user_id} id="user_${user_id}" name="user_${user_id}"/>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+        `
+        ul.appendChild(li)
+    }
+    modalContainer.appendChild(ul)
+    $("#visioGroupModalForMessage").modal("show")
+    document.querySelector("#confirmVisioGroupForMessage").addEventListener("click",(event)=>{
+        const fansId=[]
+        document.querySelectorAll(".fan_who_selected_faniry_js").forEach(item=>{
+            if(item.checked){
+                fansId.push(item.dataset.roof)
+            }
+        })
+        if(fans.length>0 && myid!=0){
+            let roomGroup = "Meet" + generateUID() + myid
+            let msg_txt = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+                    <p class="text-info mb-2">
+                        <i class="fas fa-video-camera me-2 ms-1"></i>
+                        Appel en attente...
+                        <span onclick="joinMeet('${roomGroup}', 'bodyVisioMessageElie', this)" class="float-end badge text-bg-primary text-white cursor-pointer p-2">Joindre</span>
+                    </p> 
+                    </div>`
+            for (let user_id of fansId) {
+                fetch("/user/push/message", {
+                    method: "POST",
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+
+                        /// current connecter
+                        from: myid,
+
+                        /// user to talk
+                        to: user_id,
+
+                        ///message content
+                        message: msg_txt.replace("\n", ""),
+                        files: []
+                    })
+                }).then(response => response.json())
+                    .then(res => console.log(res))
+
+                document.querySelector("#bodyVisioMessageElie").innerHTML = ""
+
+                runVisio(roomGroup, user_id, 'bodyVisioMessageElie')
+            }   
+        }else{
+            swal({
+                title: "Oops...",
+                text: "Aucun utilisateur n'a été sélectionné!",
+                icon: "info",
+                button: "OK",
+              });
+        }
+    })
+}
+/**
+ * @author faniry
+ * cette fonction liste les fans en ligne 
+ * le fichier se trouve dans chatHome.js
+ */
+function generateListFanConnected() {
+    return new Promise((resolve, reject) => {
+        fetch("/user/get/allfans").then(r=>{
+            if(r.status === 200 && r.ok){
+                r.json().then(datas=>{
+                    let length = {
+                        tribuT: 1,
+                        tribug:1
+                    }
+                    let fans=[]
+                    let result=[]
+                    for(let j=0, l=datas.length ; j< l ;j++){
+                        if(j ===0){ //index 0 correpond au tribu t
+                            let data=datas[j][0].amis
+                            length.tribuT = data === undefined ? 0 : data.length
+                            for(let value of data){
+                                const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
+                                fans.push({
+                                    id_fan: parseInt(value.id),
+                                    photo_fan:photoProfil,
+                                    fullName: value.firstname + " " + value.lastname,
+                                    isactive: value.is_online,
+                                    myid: value.my_id
+                                });
+                            }
+                        }else{
+                            let data=datas[j]
+                            length.tribug = data.length  
+                            for (let value of data) {
+                                const photoProfil = value.image_profil != null ? "/public" + value.image_profil : '/public/uploads/users/photos/default_pdp.png'
+                                fans.push({
+                                    id_fan: parseInt(value.id),
+                                    photo_fan:photoProfil,
+                                    fullName: value.firstname + " " + value.lastname,
+                                    isactive: value.is_online,
+                                    myid: value.my_id
+                                });
+                            }
+                        }
+                    }
+                    const ids=[]
+                    
+                    if (length.tribuT === 0 && length.tribug === 0) {
+                        result=[]
+                    }else{
+                        for(let fan of fans){
+    
+                            if(!ids.includes(fan.id_fan)){
+                                result.push(fan)
+                                ids.push(fan.id_fan)
+                            }
+                        }
+                    }
+                    resolve(result)
+                });
+            }else{
+                reject("error")
+            }
+        })
+    }) 
+    
+}
 /**
  * Function selecting one or more user to meeting
  * @constructor
@@ -1495,82 +1660,83 @@ if (document.querySelector("#closevisio")) {
 if (document.querySelector("#openMessage")) {
 
     document.querySelector("#openMessage").addEventListener("click", function () {
+        window.location.href="/user/all/message"
 
-        openChat()
+        // openChat()
 
-        document.querySelector("#assist_virt").style = "display:none;"
-        document.querySelector(".btn-input-file").style = "display:;cursor:pointer;"
-        document.querySelector('#visio').style = "display:none"
+        // document.querySelector("#assist_virt").style = "display:none;"
+        // document.querySelector(".btn-input-file").style = "display:;cursor:pointer;"
+        // document.querySelector('#visio').style = "display:none"
 
-        document.querySelector("#amis_list").style = "display:block;"
+        // document.querySelector("#amis_list").style = "display:block;"
 
-        document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat > div.nj-chat.xr-chat.ti-chat.bj-chat.wr-chat.sl-chat.ql-chat").style = "display:block;"
+        // document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat > div.nj-chat.xr-chat.ti-chat.bj-chat.wr-chat.sl-chat.ql-chat").style = "display:block;"
 
-        document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px;"
+        // document.querySelector("#chat_container").style = "width: 58vw; height: 82vh; position: fixed; bottom: 0px; z-index: 1003; right: -260px;"
 
-        document.querySelectorAll("div.user_friends").forEach(user => {
-            user.style = "display:";
-        })
+        // document.querySelectorAll("div.user_friends").forEach(user => {
+        //     user.style = "display:";
+        // })
 
-        let first_user = document.querySelectorAll("#amis_list > div > div > div.cg-chat.lc-chat.mg-chat.sh-chat.ol-chat.rl-chat.tq-chat.is-chat.user_friends")[0]
+        // let first_user = document.querySelectorAll("#amis_list > div > div > div.cg-chat.lc-chat.mg-chat.sh-chat.ol-chat.rl-chat.tq-chat.is-chat.user_friends")[0]
 
-        // let user_id = first_user.getAttribute("data-toggle-user-id")?first_user.getAttribute("data-toggle-user-id") : 0
-        let user_id = 0;
+        // // let user_id = first_user.getAttribute("data-toggle-user-id")?first_user.getAttribute("data-toggle-user-id") : 0
+        // let user_id = 0;
 
-        if (first_user) {
-            user_id = first_user.getAttribute("data-toggle-user-id")
-        }
-        // else {
-        //     user_id = 0;
-        //     runSpinner()
+        // if (first_user) {
+        //     user_id = first_user.getAttribute("data-toggle-user-id")
+        // }
+        // // else {
+        // //     user_id = 0;
+        // //     runSpinner()
 
-        //     writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
+        // //     writeResponse("👋 Bonjour! Je suis l'assistant virtuel de ConsoMyZone.")
 
-        //     runSuggestion()
+        // //     runSuggestion()
+        // // }
+
+        // let user_name = (first_user === undefined) ? "" : first_user.querySelector("div:nth-child(2) > h5").textContent.trim()
+
+        // let user_photo = (first_user === undefined) ? "" : first_user.querySelector("div.h-chat.mb-chat.sc-chat.yd-chat.of-chat.th-chat > img").src
+
+        // document.querySelector("div#user_head").innerHTML = `
+        //                     <div class="ob-chat xc-chat yd-chat pf-chat nh-chat">
+        //                         <div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">
+        //                             <img src="${user_photo}" alt="profile" id="profile-user" class="vc-chat yd-chat qk-chat rk-chat"/>
+        //                             <span class="g-chat l-chat m-chat jc-chat wc-chat ce-chat th-chat pi-chat ij-chat xj-chat"></span>
+        //                         </div>
+        //                     </div>
+        //                     <div class="user-chat-display" data-user-id="${user_id}">
+        //                         <h5 class="un-chat zn-chat gs-chat fw-bold" id="user_name_chat">
+        //                             ${user_name}
+        //                         </h5>
+        //                     </div>
+        //                     `
+        // if (document.querySelector("div.user-chat-display").getAttribute("data-user-id") != 0) {
+
+        //     getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
+
+        // } else {
+        //     document.querySelector("#footer_chat").classList.add("non_active")
         // }
 
-        let user_name = (first_user === undefined) ? "" : first_user.querySelector("div:nth-child(2) > h5").textContent.trim()
+        // /** Adding active message for user */
 
-        let user_photo = (first_user === undefined) ? "" : first_user.querySelector("div.h-chat.mb-chat.sc-chat.yd-chat.of-chat.th-chat > img").src
+        // document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i => {
+        //     i.classList.remove("message-active")
+        // })
 
-        document.querySelector("div#user_head").innerHTML = `
-                            <div class="ob-chat xc-chat yd-chat pf-chat nh-chat">
-                                <div class="h-chat mb-chat sc-chat yd-chat of-chat th-chat">
-                                    <img src="${user_photo}" alt="profile" id="profile-user" class="vc-chat yd-chat qk-chat rk-chat"/>
-                                    <span class="g-chat l-chat m-chat jc-chat wc-chat ce-chat th-chat pi-chat ij-chat xj-chat"></span>
-                                </div>
-                            </div>
-                            <div class="user-chat-display" data-user-id="${user_id}">
-                                <h5 class="un-chat zn-chat gs-chat fw-bold" id="user_name_chat">
-                                    ${user_name}
-                                </h5>
-                            </div>
-                            `
-        if (document.querySelector("div.user-chat-display").getAttribute("data-user-id") != 0) {
-
-            getChat(document.querySelector("div.user-chat-display").getAttribute("data-user-id"))
-
-        } else {
-            document.querySelector("#footer_chat").classList.add("non_active")
-        }
-
-        /** Adding active message for user */
-
-        document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i => {
-            i.classList.remove("message-active")
-        })
-
-        document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(user => {
-            if (user.getAttribute("data-toggle-user-id") == document.querySelector("div.user-chat-display").getAttribute("data-user-id")) {
-                user.classList.add("message-active")
-            }
-            user.addEventListener("click", function () {
-                document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i => {
-                    i.classList.remove("message-active")
-                })
-                user.classList.add("message-active")
-            })
-        })
+        // document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(user => {
+        //     if (user.getAttribute("data-toggle-user-id") == document.querySelector("div.user-chat-display").getAttribute("data-user-id")) {
+        //         user.classList.add("message-active")
+        //     }
+        //     user.addEventListener("click", function () {
+        //         document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i => {
+        //             i.classList.remove("message-active")
+        //         })
+        //         user.classList.add("message-active")
+        //     })
+        // })
 
     })
 }
@@ -1629,131 +1795,131 @@ if (document.querySelector("#openVisio")) {
 
 
     document.querySelector("#openVisio").addEventListener("click", function () {
+        window.location.href="/user/all/message"
+        // openChat()
 
-        openChat()
+        // document.querySelector("#chat_container").classList.add("chat_container_visio")
+        // document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat").classList.add("content_chat_visio")
+        // document.querySelector("#amis_list > div").classList.add("chat_friend_visio")
 
-        document.querySelector("#chat_container").classList.add("chat_container_visio")
-        document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat").classList.add("content_chat_visio")
-        document.querySelector("#amis_list > div").classList.add("chat_friend_visio")
+        // document.querySelector("#visio_group_btn").style = "display:;"
 
-        document.querySelector("#visio_group_btn").style = "display:;"
+        // document.querySelector("#assist_virt").style = "display:none;"
+        // document.querySelector(".btn-input-file").style = "display:;cursor:pointer;"
 
-        document.querySelector("#assist_virt").style = "display:none;"
-        document.querySelector(".btn-input-file").style = "display:;cursor:pointer;"
+        // document.querySelector('#conversation').style = "display:none"
 
-        document.querySelector('#conversation').style = "display:none"
+        // document.querySelector('#closeChat').style = "display:none"
+        // document.querySelector('#closevisio').style = "display:"
 
-        document.querySelector('#closeChat').style = "display:none"
-        document.querySelector('#closevisio').style = "display:"
+        // document.querySelector("#chat_container").setAttribute("data-type", "visio")
 
-        document.querySelector("#chat_container").setAttribute("data-type", "visio")
+        // document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat > div.nj-chat.xr-chat.ti-chat.bj-chat.wr-chat.sl-chat.ql-chat").style = "display:none;"
 
-        document.querySelector("#chat_container > div.content-chat.vc-chat.lc-chat.hg-chat.vv-chat.xi-chat.yi-chat.bj-chat.wr-chat > div.nj-chat.xr-chat.ti-chat.bj-chat.wr-chat.sl-chat.ql-chat").style = "display:none;"
+        // document.querySelectorAll("div.user_friends").forEach(user => {
+        //     user.style = "display:";
+        // })
 
-        document.querySelectorAll("div.user_friends").forEach(user => {
-            user.style = "display:";
-        })
+        // document.querySelector("div#user_head").innerHTML = `
+        //                     <div class="d-flex p-1 ps-0">
+        //                         <div">
+        //                             <i class="fas fa-video-camera" style="margin-top: 15%;font-size:27px;color:red;"></i>
+        //                         </div>
+        //                     </div>
+        //                     <div class="user-chat-display p-2" data-user-id="">
+        //                         <h5 class="un-chat zn-chat gs-chat fw-bold" id="user_name_chat">
+        //                         VisioConférence
+        //                         </h5>
+        //                     </div>
+        //                     `;
+        // // document.querySelector('#conversation').innerHTML = ""
 
-        document.querySelector("div#user_head").innerHTML = `
-                            <div class="d-flex p-1 ps-0">
-                                <div">
-                                    <i class="fas fa-video-camera" style="margin-top: 15%;font-size:27px;color:red;"></i>
-                                </div>
-                            </div>
-                            <div class="user-chat-display p-2" data-user-id="">
-                                <h5 class="un-chat zn-chat gs-chat fw-bold" id="user_name_chat">
-                                VisioConférence
-                                </h5>
-                            </div>
-                            `;
-        // document.querySelector('#conversation').innerHTML = ""
+        // document.querySelector('#visio').style = "display:block"
 
-        document.querySelector('#visio').style = "display:block"
+        // let my_id = document.querySelector("#amis_list").getAttribute("data-my-id")
 
-        let my_id = document.querySelector("#amis_list").getAttribute("data-my-id")
+        // const evtSource_meet = new EventSource("/get/myvisio");
 
-        const evtSource_meet = new EventSource("/get/myvisio");
+        // //// event onmessage
+        // evtSource_meet.onmessage = function (event) {
 
-        //// event onmessage
-        evtSource_meet.onmessage = function (event) {
+        //     const all_meet = JSON.parse(event.data);
 
-            const all_meet = JSON.parse(event.data);
+        //     const last_meet = all_meet[all_meet.length - 1]
 
-            const last_meet = all_meet[all_meet.length - 1]
+        //     if (all_meet.length > 0) {
 
-            if (all_meet.length > 0) {
+        //         all_meet.forEach(meet => {
 
-                all_meet.forEach(meet => {
+        //             if (!document.querySelector('.meet_' + meet.id)) {
 
-                    if (!document.querySelector('.meet_' + meet.id)) {
+        //                 let stat = "manqué"
+        //                 let color = ""
+        //                 let btn_join = ""
+        //                 switch (meet.status) {
+        //                     case 'wait':
+        //                         stat = `en attente...`
+        //                         color = 'info'
+        //                         btn_join = `<span onclick="joinMeet('${meet.nom}', 'visio')" class='float-end badge text-bg-primary text-white cursor-pointer p-2'>Joindre</span>`
+        //                         break;
+        //                     case 'progress':
+        //                         stat = `en cours`
+        //                         color = 'warning'
+        //                         btn_join = `<span onclick="joinMeet('${meet.nom}', 'visio')" class='float-end badge text-bg-info text-white cursor-pointer p-2'>Ouvrir</span>`
+        //                         break;
+        //                     case 'finished':
+        //                         stat = `términé`
+        //                         color = 'success'
+        //                         break;
+        //                     case 'missed':
+        //                         stat = `manqué`
+        //                         color = 'danger'
+        //                         break;
+        //                     default:
+        //                         stat = "manqué"
+        //                 }
 
-                        let stat = "manqué"
-                        let color = ""
-                        let btn_join = ""
-                        switch (meet.status) {
-                            case 'wait':
-                                stat = `en attente...`
-                                color = 'info'
-                                btn_join = `<span onclick="joinMeet('${meet.nom}', 'visio')" class='float-end badge text-bg-primary text-white cursor-pointer p-2'>Joindre</span>`
-                                break;
-                            case 'progress':
-                                stat = `en cours`
-                                color = 'warning'
-                                btn_join = `<span onclick="joinMeet('${meet.nom}', 'visio')" class='float-end badge text-bg-info text-white cursor-pointer p-2'>Ouvrir</span>`
-                                break;
-                            case 'finished':
-                                stat = `términé`
-                                color = 'success'
-                                break;
-                            case 'missed':
-                                stat = `manqué`
-                                color = 'danger'
-                                break;
-                            default:
-                                stat = "manqué"
-                        }
+        //                 if (!document.querySelector("#visio > iframe")) {
 
-                        if (!document.querySelector("#visio > iframe")) {
+        //                     document.querySelector("#visio").innerHTML += `<div class="qf m-2 meet_${meet.id}">
+        //                         <p class="qb-chat mn un mt-4">
+        //                             ${my_id == meet.from ? meet.username + "(vous)" : meet.username}
+        //                         </p>
+        //                         <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
+        //                         <p class="text-${color} mb-2">
+        //                             <i class="fas fa-video-camera me-2 ms-1"></i>
+        //                             ${meet.users_number > 1 ? "Réunion" : "Appel"} ${stat}
+        //                             ${btn_join}
+        //                         </p> 
+        //                         </div>
+        //                         <p class="nn-chat float-end">${meet.date}</p>
+        //                     </div>`
+        //                 }
 
-                            document.querySelector("#visio").innerHTML += `<div class="qf m-2 meet_${meet.id}">
-                                <p class="qb-chat mn un mt-4">
-                                    ${my_id == meet.from ? meet.username + "(vous)" : meet.username}
-                                </p>
-                                <div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
-                                <p class="text-${color} mb-2">
-                                    <i class="fas fa-video-camera me-2 ms-1"></i>
-                                    ${meet.users_number > 1 ? "Réunion" : "Appel"} ${stat}
-                                    ${btn_join}
-                                </p> 
-                                </div>
-                                <p class="nn-chat float-end">${meet.date}</p>
-                            </div>`
-                        }
+        //             }
 
-                    }
+        //         })
 
-                })
+        //         if (last_meet && !document.querySelector("#visio > iframe")) {
+        //             document.querySelector(".meet_" + last_meet.id).scrollIntoView();
+        //         }
+        //     } else {
+        //         document.querySelector("#visio").innerHTML = "<div class='m-4'><p class='text-center'>Aucune visioconférence a été notée.</p></div>";
+        //     }
 
-                if (last_meet && !document.querySelector("#visio > iframe")) {
-                    document.querySelector(".meet_" + last_meet.id).scrollIntoView();
-                }
-            } else {
-                document.querySelector("#visio").innerHTML = "<div class='m-4'><p class='text-center'>Aucune visioconférence a été notée.</p></div>";
-            }
+        //     /** Adding active visio for user */
 
-            /** Adding active visio for user */
+        //     document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(user => {
 
-            document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(user => {
+        //         user.addEventListener("click", function () {
+        //             document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i => {
+        //                 i.classList.remove("message-active")
+        //             })
+        //             user.classList.add("message-active")
+        //         })
+        //     })
 
-                user.addEventListener("click", function () {
-                    document.querySelectorAll("#amis_list > div > div > div.user_friends").forEach(i => {
-                        i.classList.remove("message-active")
-                    })
-                    user.classList.add("message-active")
-                })
-            })
-
-        }
+        // }
 
     })
 }

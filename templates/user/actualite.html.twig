@@ -67,6 +67,20 @@
 
 </div>
 
+<!-- Modal show photo-->
+<div class="modal fade" id="modal_show_photo" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered modal-lg">
+		<div class="modal-content">
+			<div class="modal-body">
+				<button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+				<img id="img_modal_actu" style="width:100%">
+			</div>
+
+		</div>
+	</div>
+</div>
+
+
 {% include 'shard/modal/new_publication.html.twig' with {'formPub' : formPub, 'modalId' : 'newPublication', 'parent': 'allTribut' } %}
 {% include 'shard/modal/update_publication.html.twig' %}
 {% include 'shard/modal/delete.html.twig' %}

@@ -105,6 +105,25 @@
     
     </div>
     
+    {# <div class="content-modal-pastille-golf-tomm-js"></div> #}
+
+
+    <div class="modal fade" id="pastilleForGolf" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-scrollable">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="pastilleForGolfLabel">Pastiller un golf</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body content-modal-pastille-golf-tomm-js" id="pastilleForGolfBody">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+            </div>
+            </div>
+        </div>
+    </div>
     
     {% include 'shard/chatBot.html.twig' %}
     {% include 'shard/golf/detail_golf_navleft.twig' %}

@@ -120,18 +120,31 @@ class MailService extends AbstractController {
                 ->to(new Address($email_to, $fullName_to ))
                 ->subject($context["object_mail"]);
 
+        if(isset($context["piece_joint"])){
+            $all_pieces_joint= $context["piece_joint"];
+
+            if( count($all_pieces_joint) > 0 ){
+                foreach ($all_pieces_joint as $item) {
+                    $file= $item["path"];
+                    
+                    if(file_exists($file)){
+                        $email= $email->attach(fopen($file, 'r'), $item["name"] );
+                    }
+                }
+            }
+        }
+
         $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
         $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
 
         //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
         $email =  $email->html($this->renderView($context["template_path"],[
-                'email' => new WrappedTemplatedEmail($this->twig, $email),
-                'today' => $date_fr,
-                'fullNameTo' => $fullName_to,
-                'link' => $context["link_confirm"],
-                'content' => $context["content_mail"],
-                
-            ]));
+            'email' => new WrappedTemplatedEmail($this->twig, $email),
+            'today' => $date_fr,
+            'fullNameTo' => $fullName_to,
+            'link' => $context["link_confirm"],
+            'content' => $context["content_mail"],
+        ]));
 
         $customMailer->send($email);
     }

@@ -1,4 +1,4 @@
-const IS_DEV_MODE=true;
+const IS_DEV_MODE=false;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -416,18 +416,43 @@ window.addEventListener('load', () => {
     const link_now= new URL(window.location.href)
     const linkPathname= link_now.pathname;
     if(!linkPathname.includes("/actualite-non-active")){
-    console.log(isValueInCookie("isCanUseCookie"))
-        
-        if(!isValueInCookie("isCanUseCookie")){
-            askClientToUseCookie();
-        }else{
-            if(isValueInCookie("isCanUseCookie") ){
+    const useCookieOrNot=isValueInCookie("isCanUseCookie")
+       
+        if(useCookieOrNot == "true"){
+            console.log(useCookieOrNot)
                 getToastMessage()
-            }
+            
         }
+        //else{
+                //    getToastMessage()
+                    
+                // }
 
     }
 })
+
+// set section est utiliser dans les parametre du site
+if(document.querySelector("#cookies_faniry_js")){
+    const cookieAccepted=document.querySelector("#acceptCookies_faniry_js")
+    const coookieDecline=document.querySelector("#declineCookies_faniry_js")
+    window.addEventListener("load", ()=>{
+        const useCookieOrNot=isValueInCookie("isCanUseCookie")
+        if(useCookieOrNot == "true"){
+            cookieAccepted.checked=true
+        }else{
+            coookieDecline.checked=true
+        }
+    })
+    cookieAccepted.addEventListener("change",()=>{
+        Cookies2.set(`isCanUseCookie`,true,{ expires: 30, secure: true })
+        coookieDecline.checked=false
+    })
+
+    coookieDecline.addEventListener("change",()=>{
+        Cookies2.set(`isCanUseCookie`,false,{ expires: 30, secure: true })
+        cookieAccepted.checked=false
+    })
+}
 /// --------------- end of this rtesponsive for mobile ---------
 
 
@@ -724,19 +749,16 @@ function initCKEditor(idElement,callback){
             // https://ckeditor.com/docs/ckeditor5/latest/features/toolbar/toolbar.html#extended-toolbar-configuration-format
             toolbar: {
                 items: [
-                    
                     'selectAll', '|',
-                   
                     'bold', 'italic', 'strikethrough', 'underline', 'code', 'subscript', 'superscript', 'removeFormat', '|',
                     'bulletedList', 'numberedList', 'todoList', '|',
                     'outdent', 'indent', '|','undo', 'redo',
                     '-',
                     'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
                     'alignment', '|',
-                    'link',  'blockQuote','|',
+                    'link', 'blockQuote','|',
                      'horizontalLine', 'pageBreak', '|',
-                    'textPartLanguage'
-                    
+                    'textPartLanguage',
                 ],
                 shouldNotGroupWhenFull: true
             },
@@ -837,7 +859,7 @@ function initCKEditor(idElement,callback){
                 // 'ExportWord',
                 'CKBox',
                 'CKFinder',
-                'EasyImage',
+                // 'EasyImage',
                 // This sample uses the Base64UploadAdapter to handle image uploads as it requires no configuration.
                 // https://ckeditor.com/docs/ckeditor5/latest/features/images/image-upload/base64-upload-adapter.html
                 // Storing images as Base64 is usually a very bad idea.
@@ -2207,3 +2229,34 @@ if (document.querySelector("#change_idle_param_tom_js"))
     document.querySelector("#change_idle_param_tom_js").addEventListener("change", (event) => {
         updateLocation(event);
 })
+
+
+/**
+ * @author Elie
+ * @Setting view message for partage agenda
+ */
+document.querySelectorAll("div.qf > div > div.bloc-text-message").forEach(div_mess=>{
+    if(!div_mess.parentElement.parentElement.classList.contains("rb")){
+        div_mess.classList.remove("text-white")
+    }
+})
+
+/**
+ * Set active tab for pastille resto or golf tribu T or G
+ * @author Elie
+ * @constructor
+ * @param {*} a 
+ * @param {*} b 
+ */
+function setViewTribu(a , b){
+    document.querySelector('.elie-tribu-'+b).classList.add('active');
+    document.querySelector('.elie-tribu-'+a).classList.remove('active');
+
+    if(a == 'g'){
+        document.querySelector(".content_list_resto_js").classList.remove("d-none")
+        document.querySelector(".content_list_resto_js_g").classList.add("d-none")
+    }else{
+        document.querySelector(".content_list_resto_js").classList.add("d-none")
+        document.querySelector(".content_list_resto_js_g").classList.remove("d-none")
+    }
+}

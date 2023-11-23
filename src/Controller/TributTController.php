@@ -24,8 +24,8 @@ use App\Form\FileUplaodType;
 use App\Service\MailService;
 
 use App\Service\UserService;
-use App\Service\StringTraitementService;
 use App\Form\PublicationType;
+use App\Service\AgendaService;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
@@ -34,17 +34,18 @@ use App\Repository\UserRepository;
 
 use App\Service\RequestingService;
 use App\Service\NotificationService;
+use App\Service\PDOConnexionService;
 use App\Repository\BddRestoRepository;
-use App\Repository\DepartementRepository;
-use App\Service\AgendaService;
+use App\Service\StringTraitementService;
 use Doctrine\ORM\EntityManagerInterface;
+
+use App\Repository\DepartementRepository;
 
 use function PHPUnit\Framework\assertFalse;
 
 use Symfony\Component\Filesystem\Filesystem;
 
 use Symfony\Component\HttpFoundation\Request;
-
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -58,8 +59,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -222,6 +223,39 @@ class TributTController extends AbstractController
             $response=new Response();
             return $response->setStatusCode(500);
         }
+    }
+
+    #[Route("/golf/pastilled/checking/{id_golf}", name: "app_tribut_pastilled_golf", methods: ["GET"])]
+    public function checkedIfRestaurantIsPastilled(
+        $id_golf,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service,
+        SerializerInterface $serializerInterface
+    ) {
+        $arrayTribu = [];
+        if ($this->getUser()) {
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            // $pdoService = new PDOConnexionService();
+
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+                $tableExtension = $tableTribu . "_golf";
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
+                        
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                    } else {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                    }
+                    
+                }
+            }
+        }
+        $datas = $serializerInterface->serialize($arrayTribu, 'json');
+        return new JsonResponse($datas, 200, [], true);
     }
 
     #[Route('/user/tribu/set/pdp',name:'update_pdp_tribu_t')]
@@ -1460,7 +1494,7 @@ class TributTController extends AbstractController
         // $tribu_t = new Tribu_T_Service();
         // $photos = $tribu_t->showAllphotosTribut($table);
         // return $this->json($photos);
-        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photos/".$table."/";
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photos/".str_replace("_publication","",$table) ."/";
         $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
 
         $tabPhoto = [];
@@ -1514,7 +1548,6 @@ class TributTController extends AbstractController
             $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
 			$golfs=mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
         }
-		
 		$r=$serialize->serialize($golfs,'json');
 		
 		return new JsonResponse($r, Response::HTTP_OK, [], true);
@@ -1752,7 +1785,8 @@ class TributTController extends AbstractController
         UserService $userService,
         RouterInterface $router,
         Tribu_T_Service $tribuTService,
-        NotificationService $notification
+        NotificationService $notification,
+        Filesystem $filesyst
     )
     {
         if(!$this->getUser()){
@@ -1765,7 +1799,7 @@ class TributTController extends AbstractController
 
         $data = json_decode($request->getContent(), true);
 
-        extract($data); ///$table, $principal, $cc ,$object, $description
+        extract($data); ///$table, $principal, $cc, $object, $description, $piece_joint        
 
         $from_fullname = $userService->getUserFirstName($userId) . " " . $userService->getUserLastName($userId);
 
@@ -1774,9 +1808,32 @@ class TributTController extends AbstractController
         $type = "invitation";
 
         $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
-    
         
-         
+        $piece_with_path= [];
+        if( count($piece_joint) > 0 ){
+            // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/piece_joint/user_' . $userId . "/";
+            $dir_exist = $filesyst->exists($path);
+            if ($dir_exist === false) {
+                $filesyst->mkdir($path, 0777);
+            }
+            
+            foreach ($piece_joint as $item ){
+                $name= $item["name"];
+
+                $char_spec= ["-", " "];
+                $name= str_replace($char_spec, "_", $name);
+                $path_name= $path . $name;
+                ///name file, file base64
+                file_put_contents($path_name, file_get_contents($item["base64File"]));
+
+
+                $item["path"]= $path . $name;
+
+                array_push($piece_with_path, $item);
+            }
+        }
+        
         if($userRepository->findOneBy(["email" => $principal])){
 
             /** URL FOR MEMBER
@@ -1800,6 +1857,9 @@ class TributTController extends AbstractController
             $context["content_mail"] = $description . 
             " <a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>". 
             " <p> de ". $from_fullname."</p>";
+
+            $context["piece_joint"] = $piece_with_path;
+
 
             $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
 
@@ -1834,6 +1894,8 @@ class TributTController extends AbstractController
             $context["content_mail"] = $description .
             " <a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"
             ." <p> de ". $from_fullname."</p>";
+
+            $context["piece_joint"] = $piece_with_path;
 
             $mailService->sendLinkOnEmailAboutAgendaSharing($principal, $from_fullname, $context);
         }
@@ -2257,7 +2319,7 @@ class TributTController extends AbstractController
                         $tribut->createTableComment($tableTribu, "golf_commentaire");
 
                     }
-
+                    $tribut->creaTableTeamMessage($tableTribu);
                     return true;
 
                 } else {
@@ -2390,7 +2452,7 @@ class TributTController extends AbstractController
         $checkIdResto = $tribu_T_Service->getIdRestoOnTableExtension($tribu_t."_restaurant", $resto_id);
 
         if($checkIdResto > 0){
-            $tribu_T_Service->depastilleOrPastilleRestaurant($tribu_t."_restaurant", $resto_id, false);
+            $tribu_T_Service->depastilleOrPastilleTribuT($tribu_t."_restaurant", $resto_id, false);
         }
 
         // $message = "Le restaurant " . $resto_name . " a été dépastillé avec succès !";
@@ -2705,4 +2767,3 @@ class TributTController extends AbstractController
     }
 
 }
-

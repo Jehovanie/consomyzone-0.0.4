@@ -39,7 +39,6 @@ function showAvis(currentUserId, idGolf) {
         methode:"GET"
     }).then(r => r.json())
     .then(jsons => {
-
         ////delete chargement ... 
         document.querySelector(".all_avis_jheo_js").innerHTML = "";
 
