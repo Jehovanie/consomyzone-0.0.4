@@ -1807,7 +1807,7 @@ function loadFile(event) {
     new_photo.src = URL.createObjectURL(event.target.files[0]);
     var div_photo = document.querySelector('#gallery');
 
-    let first_photo = document.querySelector("#gallery > img:nth-child(1)")
+    let first_photo = document.querySelector("#gallery >div> div:nth-child(1)")
 
     if (first_photo) {
         div_photo.insertBefore(new_photo, first_photo)
@@ -1836,10 +1836,15 @@ function loadFile(event) {
             },
             body: JSON.stringify(data)
         })).then(x => x.json()).then(response => {
-            document.querySelector("#success_upload").style = "display:block;"
-            setTimeout(function () {
-                document.querySelector("#success_upload").style = "display:none;"
-            }, 5000);
+            // document.querySelector("#success_upload").style = "display:block;"
+            if(response.status===200 && response.ok){
+                swal("Merci de votre partage.", "Votre photo a bien été partagée.", "success", {
+                    button: "Ok",
+                  });
+            }
+            // setTimeout(function () {
+            //     document.querySelector("#success_upload").style = "display:none;"
+            // }, 5000);
             // console.log(response)
         }
         ).catch(error => {

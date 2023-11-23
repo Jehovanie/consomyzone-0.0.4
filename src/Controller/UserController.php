@@ -2037,18 +2037,20 @@ class UserController extends AbstractController
         $pseudo = $userPoster->getPseudo();
 
         if ($is_tribu == 1) { /* Add By Nantenaina */
-            
+
             $tributName  = $balise;
 
-            $tribut->setTribuT($tribu_t_joined_info->name, $tribu_t_joined_info->description, $tribu_t_joined_info->logo_path, $tribu_t_joined_info->extension, $userPosterId,"tribu_t_joined", $tributName);
+            $nameMuable = $tribu_t_joined_info->name_tribu_t_muable;
+
+            $tribut->setTribuT($tribu_t_joined_info->name, $tribu_t_joined_info->description, $tribu_t_joined_info->logo_path, $tribu_t_joined_info->extension, $userPosterId,"tribu_t_joined", $nameMuable);
 
             $tribut->updateMember($balise, $userPosterId, 1);
 
             $userFullname = $tribut->getFullName($userPosterId);
 
-            $content = $userFullname . " a accepté l'invitation de rejoindre la tribu " . $tributName;
+            $content = $userFullname . " a accepté l'invitation de rejoindre la tribu " . $nameMuable;
 
-            $type = "Invitation pour rejoindre la tribu " . $tributName;
+            $type = "Invitation pour rejoindre la tribu " . $nameMuable;
 
             $requesting->setIsAccepted($tableRequestingName, $balise, intval($idR), $userPosterId);
 

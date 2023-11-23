@@ -743,7 +743,8 @@ class AgendaController extends AbstractController
                     // $tributGService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir.$fileName);
                 }else{
                     // $pathDir = "/uploads/tribu_t/photo/".$directoryroot."/user_".$userId."/";
-                    $pathDir = '/public/uploads/tribu_t/photo/' .$directoryroot . "_publication" . "/";
+                    ///$pathDir = '/public/uploads/tribu_t/photos/' .$directoryroot . "_publication" . "/";
+                    $pathDir = '/public/uploads/tribu_t/photos/' .$directoryroot . "/";
                     // $tribuTService->createOnePub($directoryroot . "_publication", $userId, "", 1, $pathDir . $fileName);
                 }
             }else{
