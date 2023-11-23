@@ -266,3 +266,57 @@ function bindContentTableTribuT(){
     </div>
     `
 }
+
+function getListeInfoTovalidate(e){
+    
+    let linkActives = document.querySelectorAll("#navbarSuperAdmin > ul > li > a")
+    linkActives.forEach(link=>{
+        if(link.classList.contains("text-primary"))
+            link.classList.remove("text-primary")
+    })
+    e.target.classList.add("text-primary")
+    document.querySelector("#list-tribu-g").style.display = "none"
+    // document.querySelector("#list-tribu-t").style.display = "none"
+    document.querySelector("#list-demande-partenaire").style.display = "none"
+    document.querySelector("#list-infoAvalider").style.display = "block"
+    let _table = `<table class="table" id="listeRestoAvaliderTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Adresse</th>
+                            <th scope="col">Téléphone</th>
+                            <th scope="col">Submitter</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    `
+
+    fetch("/user/liste/information/to/update")
+        .then(response => response.json())
+        .then(r => {
+            console.log(r)
+            let _tr = "";
+            if(r.length > 0){
+                for (const items of r) {
+                    let item = items.info
+                    let _adresse = item.numvoie + " " + item.nomvoie + " " + item.compvoie + " " + item.codpost + " " + item.commune
+                    _adresse = _adresse.replace(/\s+/g, ' ');
+                    _tr += `<tr style="text-align:center;">
+                            <td>${item.denominationF}</td>
+                            <td>${_adresse}</td>
+                            <td>${item.tel}</td>
+                            <td><a href="/user/profil/${item.userId}" style="color:blue;">${items.userFullName}</a></td>
+                            <td><span style="background-color:blue; border-radius:5px; color:white; padding:5px">A valider</span></td>
+                            <td><button class="btn btn-info">Voir</button></td>
+                        </tr>`
+                }
+            }else{
+                _tr = `<tr><td colspan="4">Aucune information à valider</td></tr>`;
+            }
+            _table += _tr + "</tbody></table>"
+            document.querySelector(".content_list_infoAvalider_js").innerHTML = _table
+        })
+
+}

@@ -21,7 +21,7 @@ use App\Form\PublicationType;
 use App\Form\MixtePublicationType;
 
 use App\Form\UserSettingType;
-
+use App\Repository\BddRestoUserModifRepository;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
@@ -2607,6 +2607,34 @@ class UserController extends AbstractController
             ['isVerifiedTributGAdmin' => false]
         );
         $json = $serializerInterface->serialize($fields, 'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    #[Route("/user/liste/information/to/update", name:"app_liste_resto_to_update", methods:["GET"])]
+    public function getListeRestoToUpdate(
+        SupplierRepository $suplierRepo,
+        SerializerInterface $serializerInterface,
+        BddRestoUserModifRepository $bddRestoUserModifRepository,
+        TributGService $tributGService,
+        PDOConnexionService $pDOConnexionService
+    ){
+        $fields = $bddRestoUserModifRepository->findAll();
+        $tab = [];
+        if(count($fields) > 0)
+            foreach ($fields as $key) {
+                $temp = [];
+                $key->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true));
+                $key->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true));
+                $key->setNomvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true));
+                $key->setCompvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true));
+                $key->setVillenorm(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true));
+                $key->setCommune(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true));
+                $temp["info"] = $key;
+                $temp["userFullName"] = $tributGService->getFullName($key->getUserId());
+                array_push($tab, $temp);
+            }
+
+        $json = $serializerInterface->serialize($tab, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 

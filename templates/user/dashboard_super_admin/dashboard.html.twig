@@ -43,6 +43,10 @@
 								<li class="nav-item">
 									<a class="nav-link list-partenaire" data-target="list-demande-partenaire" onclick="getListeDemandePartenariat(event)">Liste des demande de partenariats</a>
 								</li>
+
+								<li class="nav-item">
+									<a class="nav-link list-infoAvalider" data-target="list-infoAvalider" onclick="getListeInfoTovalidate(event)">Liste des adresses à valider</a>
+								</li>
 								
 							</ul>
 						</div>
@@ -94,10 +98,49 @@
 							</h5>
 						</div>
 						<div class="container content_global_super_admin content_global_super_admin_tribu_t_js_jheo">
-							<div class="content_chargement_liste_partenaire_nanta_js">
+							<div class="content_chargement_liste_partenaire_nanta_js" style="width:100%;">
 								<div class="spinner-border spinner-border text-info" role="status">
 									<span class="visually-hidden">Loading...</span>
 								</div>
+
+							</div>
+						</div>
+					</div>
+					
+				</div>
+
+				<div class="row content_right_actualite content-super-admin mb-4" style="display:none;" id="list-infoAvalider">
+					<div class="content_list">
+						<div class="entete mb-2 ms-3">
+							<h5>
+								<i class="fa-solid  fa-list"></i>
+								Liste des restaurants à valider
+							</h5>
+						</div>
+						<div class="container content_global_super_admin content_global_super_admin_tribu_t_js_jheo">
+							<div class="content_list_infoAvalider_js" style="width:100%;">
+								<div class="spinner-border spinner-border text-info" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+
+								{# <table class="table">
+									<thead>
+										<tr>
+											<th scope="col">Nom</th>
+											<th scope="col">Adresse</th>
+											<th scope="col">Téléphone</th>
+											<th scope="col">Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>LE DEBOTTE</td>
+											<td>18 boulevard du general de gaulle 44200 nantes</td>
+											<td>02 49 62 09 79</td>
+											<td><button class="btn btn-primary">Valider</button></td>
+										</tr>
+									</tbody>
+								</table> #}
 
 							</div>
 						</div>
