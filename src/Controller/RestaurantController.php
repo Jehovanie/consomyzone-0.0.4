@@ -5,6 +5,7 @@ namespace App\Controller;
 use Exception;
 use App\Service\Status;
 use App\Entity\Codinsee;
+use App\Service\UserService;
 use App\Entity\AvisRestaurant;
 use App\Service\MessageService;
 use App\Service\TributGService;
@@ -17,13 +18,16 @@ use App\Repository\CodeinseeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\BddRestoUserModifRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
+
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class RestaurantController extends AbstractController
@@ -963,7 +967,8 @@ class RestaurantController extends AbstractController
         $id_restaurant,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
-        AvisRestaurantRepository $avisRestaurantRepository
+        AvisRestaurantRepository $avisRestaurantRepository,
+        Filesystem $filesyst
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
         $details= $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
@@ -1044,6 +1049,28 @@ class RestaurantController extends AbstractController
 
         }
 
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/restaurant/".$id_restaurant."/";
+
+        $tabPhoto = [];
+
+        $dir_exist = $filesyst->exists($folder);
+
+        // dd($folder);
+
+
+        if($dir_exist){
+            $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
+
+            // dd($images);
+            foreach ($images as $image) {
+                $photo = explode("uploads/valider",$image)[1];
+                $photo = "/public/uploads/valider".$photo;
+                array_push($tabPhoto, ["photo"=>$photo]);
+            }
+        }
+
+        // dd($tabPhoto);
+        
         return $this->render("restaurant/detail_resto.html.twig", [
             "id_restaurant"=>$id_restaurant,
             "details" => $details,
@@ -1055,6 +1082,7 @@ class RestaurantController extends AbstractController
             "tribu_t_can_pastille" => $arrayTribu,
             "tribu_t_resto_pastille" => $arrayTribuRestoPast,
             "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
+            "photos" => $tabPhoto,
         ]);
     }
 
@@ -1371,6 +1399,72 @@ class RestaurantController extends AbstractController
         $response = new Response();
         $response->setStatusCode(201);
         return $response;
-    } 
+    }
+
+
+    #[Route("/restaurant/add/photos/{id_resto}", name: "app_add_photos_resto")]
+    public function changeProfileActionTribuG( $id_resto, Request $request,
+        Filesystem $filesyst, UserService $userService
+    ) {
+
+        $date = new \DateTimeImmutable();
+
+        $timestamp = (int)$date->format('Uu');
+
+        if (!$this->getUser()) {
+
+            return $this->json([
+
+                "error" => "Invalid credentials",
+
+            ], 401);
+        }
+
+        $user_id = $this->getUser()->getId();
+
+        $requestContent = json_decode($request->getContent(), true);
+
+        if ($requestContent["image"]) {
+
+            $image = $requestContent["image"];
+
+            ///download image
+
+            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/avalider/restaurant/'.$id_resto;
+
+            $path_name = '/uploads/avalider/restaurant/'.$id_resto .'/';
+
+            $dir_exist = $filesyst->exists($path);
+
+            if ($dir_exist == false) {
+    
+                $filesyst->mkdir($path, 0777);
+            }
+
+            $temp = explode(";", $image);
+
+            $extension = explode("/", $temp[0])[1];
+
+            $image_name = "resto_" . $id_resto ."_". $timestamp . "." . $extension;
+
+            ///save image in public/uploader folder
+
+            file_put_contents($path . $image_name, file_get_contents($image));
+
+
+            ///insert into database
+
+            $photo_path = $path_name .$image_name;
+
+            $userService->insertPhotoResto($id_resto, $user_id, $photo_path);
+
+        }
+
+        return $this->json([
+
+            "result" => "success"
+
+        ], 201);
+    }
     
 }

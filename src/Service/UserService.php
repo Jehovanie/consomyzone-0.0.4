@@ -196,5 +196,73 @@ class UserService  extends PDOConnexionService{
         return $result;
     }
 
+    /**
+     * @author Elie
+     * Function insert data into photo_resto
+     */
+    public function insertPhotoResto($resto_id, $user_id, $photo_path){
+
+        $sql = "INSERT INTO photo_resto (resto_id, user_id, photo_path) VALUES (?, ? , ? )";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $resto_id);
+
+        $stmt->bindParam(2, $user_id);
+
+        $stmt->bindParam(3, $photo_path);
+
+        $stmt->execute();
+    }
+
+    /**
+     * @author Elie
+     * Function insert data into photo_golf
+     */
+    public function insertPhotoGolf($golf_id, $user_id, $photo_path){
+
+        $sql = "INSERT INTO photo_golf (golf_id, user_id, photo_path) VALUES (?, ? , ? )";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $golf_id);
+
+        $stmt->bindParam(2, $user_id);
+
+        $stmt->bindParam(3, $photo_path);
+
+        $stmt->execute();
+    }
+
+    /**
+     * @author Elie
+     * function validate or devalidate photo resto
+     */
+    public function updateSatatusPhotoResto($id_resto, $is_valid)
+    {
+
+        $statement = $this->getPDO()->PREPARE("UPDATE photo_resto SET is_valid = ? WHERE id = ?");
+        $statement->bindParam(1, $is_valid, PDO::PARAM_INT);
+        $statement->bindParam(2, $id_resto, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * function validate or devalidate photo golf
+     */
+    public function updateSatatusPhotoGolf($id_golf, $is_valid)
+    {
+
+        $statement = $this->getPDO()->PREPARE("UPDATE photo_golf SET is_valid = ? WHERE id = ?");
+        $statement->bindParam(1, $is_valid, PDO::PARAM_INT);
+        $statement->bindParam(2, $id_golf, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 
 }
