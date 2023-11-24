@@ -167,6 +167,8 @@ if( document.querySelector(".information_user_conected_jheo_js")){
 
             //// update all sse
             updateAllWhenStateChange(all_notification);
+
+            ///will generate toast js
         }
     }
 }

@@ -73,14 +73,18 @@ class NotificationService extends PDOConnexionService{
      * 
      * To send notification.
      * 
-     * @param int $user_id_post: user dispatch an action and send notification
-     * @param int $user_id: user receive notification
+     * @param int $user_id_post: user who send notification
+     * @param int $user_id: user who received notification
      * @param string $type: type of message (ex:publication, reaction, commentaire, ajout amis, ... )
      * @param string $content: content of message
      * 
      * @return void
      */
-    public function sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null ){
+    public function sendNotificationForOne(int $user_id_post, 
+    int $user_id, 
+    string $type, 
+    string $content, 
+    string $link= "" ){
 
         ///get the name of the table notification for $user_id_post to send new notification
         $statement = $this->getPDO()->prepare('SELECT tablenotification, `type` FROM user WHERE id= '. $user_id );
@@ -90,27 +94,27 @@ class NotificationService extends PDOConnexionService{
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
         //// check if this table notification exists
-if($result && $result["type"] != "Type"){
-            //// check if this table notification exists
-        $tableNotification = $result["tablenotification"];
-        if(!$this->isTableExist($tableNotification)){
-            return false;
-        }
-        $content= $this->convertUtf8ToUnicode($content);
-        $default = 0;
-        
-        ///insert notification
-        $statement = $this->getPDO()->prepare("INSERT INTO  $tableNotification  (user_id,user_post,type,content,isShow,isRead) VALUES (:user_id, :user_post, :type, :content, :isShow, :isRead)");
-        
-        $statement->bindParam(':user_id', $user_id);
-        $statement->bindParam(':user_post', $user_id_post);
-        $statement->bindParam(':type', $type);
-        $statement->bindParam(':content', $content);
-        $statement->bindParam(':isShow', $default);
-        $statement->bindParam(':isRead', $default);
+        if($result && $result["type"] != "Type"){
+                    //// check if this table notification exists
+                $tableNotification = $result["tablenotification"];
+                if(!$this->isTableExist($tableNotification)){
+                    return false;
+                }
+                $content= $this->convertUtf8ToUnicode($content);
+                $default = 0;
+                
+                ///insert notification
+                $statement = $this->getPDO()->prepare("INSERT INTO  $tableNotification  (user_id,user_post,type,content,isShow,isRead) VALUES (:user_id, :user_post, :type, :content, :isShow, :isRead)");
+                
+                $statement->bindParam(':user_id', $user_id);
+                $statement->bindParam(':user_post', $user_id_post);
+                $statement->bindParam(':type', $type);
+                $statement->bindParam(':content', $content);
+                $statement->bindParam(':isShow', $default);
+                $statement->bindParam(':isRead', $default);
 
-        $statement->execute();
-}
+                $statement->execute();
+        }
 
     }
 
