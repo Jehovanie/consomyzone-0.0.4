@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="{{asset('assets/css/account/listTribuG_sp.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/listTribuG_sp_respons.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/home/search.css')}}">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
 
 {% endblock %}
@@ -45,7 +46,7 @@
 								</li>
 
 								<li class="nav-item">
-									<a class="nav-link list-infoAvalider" data-target="list-infoAvalider" onclick="getListeInfoTovalidate(event)">Liste des adresses à valider</a>
+									<a class="nav-link list-infoAvalider" data-target="list-infoAvalider" onclick="getListeInfoTovalidate(event)">Validation adresse</a>
 								</li>
 								
 							</ul>
@@ -246,6 +247,87 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" onclick="sendFeedBackForPartenariat()">Envoyer</button>
 				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="infoRestoToValidateModal" tabindex="-1" aria-labelledby="infoRestoToValidateModalLabel" aria-hidden="true" style="z-index: 99999;">
+		<div class="modal-dialog modal-xl modal-dialog-scrollable">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="infoRestoToValidateModalLabel">Comparaison des informations</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="row" style="text-align:justify;">
+					<div class="col-6" style="border-right:1px solid black">
+						<div style="font-weight:bold;" class="text-primary">Information actuelle</div>
+						<div class="row container-depart pt-4 element content_current_info_nanta_js">
+							<div class="col-md-12">
+								<div class="cmz-rubrique mb-2">
+									<span class="rubrique small">
+											
+									</span>
+								</div>
+								<h5 class="card-title" id="rubriqueName">
+									<a class="name_to_filter_js_jheo" href="#"></a>
+								</h5>
+								<p class="card-text cmz-adresse">
+									<a href="#" class="small"></a>
+								</p>
+								<div class="cmz-categories-list">
+									<span class="cmz-category">fast_food</span>
+									<span class="cmz-category">cuisine_monde</span>
+								</div>
+
+								<div class="cmz-tel mb-2">
+									<button onclick="displayContact(this)" type="button" class="btn btn-secondary">
+										<i class="bi bi-telephone-plus"></i> Afficher le N°
+									</button>
+									<span style="display:none;" class="tel">
+										<span>Tél : </span><span class="numero"></span>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-6">
+						<div style="font-weight:bold;" class="text-primary">Nouvelle information</div>
+						<div class="row container-depart pt-4 element content_new_info_nanta_js">
+							<div class="col-md-12">
+								<div class="cmz-rubrique mb-2">
+									<span class="rubrique small">
+											
+									</span>
+								</div>
+								<h5 class="card-title" id="rubriqueName">
+									<a class="name_to_filter_js_jheo" href="#"></a>
+								</h5>
+								<p class="card-text cmz-adresse">
+									<a href="#" class="small"></a>
+								</p>
+								<div class="cmz-categories-list">
+									<span class="cmz-category">fast_food</span>
+									<span class="cmz-category">cuisine_monde</span>
+								</div>
+
+								<div class="cmz-tel mb-2">
+									<button onclick="displayContact(this)" type="button" class="btn btn-secondary">
+										<i class="bi bi-telephone-plus"></i> Afficher le N°
+									</button>
+									<span style="display:none;" class="tel">
+										<span>Tél : </span><span class="numero"></span>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Rejeter</button>
+				<button type="button" class="btn btn-primary">Valider</button>
 			</div>
 			</div>
 		</div>

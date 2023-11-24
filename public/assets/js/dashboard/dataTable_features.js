@@ -267,6 +267,13 @@ function bindContentTableTribuT(){
     `
 }
 
+/**
+ * @Author Nantenaina
+ * Où: On utilise cette fonction dans l'onglet validation adresse de la rubrique Super Admin 
+ * Localisation du fichier: dataTable_features.js,
+ * Je veux: voir la liste des adresses à valider
+ *
+*/
 function getListeInfoTovalidate(e){
     
     let linkActives = document.querySelectorAll("#navbarSuperAdmin > ul > li > a")
@@ -285,7 +292,7 @@ function getListeInfoTovalidate(e){
                             <th scope="col">Nom</th>
                             <th scope="col">Adresse</th>
                             <th scope="col">Téléphone</th>
-                            <th scope="col">Submitter</th>
+                            <th scope="col">Demandeur</th>
                             <th scope="col">Status</th>
                             <th scope="col">Action</th>
                         </tr>
@@ -301,15 +308,15 @@ function getListeInfoTovalidate(e){
             if(r.length > 0){
                 for (const items of r) {
                     let item = items.info
-                    let _adresse = item.numvoie + " " + item.nomvoie + " " + item.compvoie + " " + item.codpost + " " + item.commune
-                    _adresse = _adresse.replace(/\s+/g, ' ');
-                    _tr += `<tr style="text-align:center;">
+                    let _adresse = item.numvoie + " " + item.typevoie + " " + item.nomvoie + " " + item.compvoie + " " + item.codpost + " " + item.commune
+                    _adresse = _adresse.replace(/\s+/g, ' ').trim();
+                    _tr += `<tr style="text-align:center;vertical-align:middle;">
                             <td>${item.denominationF}</td>
                             <td>${_adresse}</td>
                             <td>${item.tel}</td>
                             <td><a href="/user/profil/${item.userId}" style="color:blue;">${items.userFullName}</a></td>
                             <td><span style="background-color:blue; border-radius:5px; color:white; padding:5px">A valider</span></td>
-                            <td><button class="btn btn-info">Voir</button></td>
+                            <td><button class="btn btn-info" onclick="getRestoInfoToValidate(${item.restoId}, ${item.userId})">Voir</button></td>
                         </tr>`
                 }
             }else{
@@ -320,3 +327,83 @@ function getListeInfoTovalidate(e){
         })
 
 }
+
+function getRestoInfoToValidate(restoId, userId){
+    document.querySelector(".navbar-expand-lg").display = "none";
+    $("#infoRestoToValidateModal").modal("show")
+    //document.querySelector(".navbar-expand-lg").display = "block";
+    fetch(`/user/information/${restoId}/etablissement/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            let contentCurrentInfo = document.querySelector(".content_current_info_nanta_js")
+            let newCurrentInfo = document.querySelector(".content_new_info_nanta_js")
+            let new_info = data.new_info
+            let current_info = data.current_info
+            if(current_info.restaurant){
+                contentCurrentInfo.querySelector("span.rubrique").textContent = "RESTAURANT"
+                contentCurrentInfo.querySelector("#rubriqueName > a").textContent = current_info.denominationF
+                let current_adresse = current_info.numvoie + " " + current_info.typevoie + " " + current_info.nomvoie + " " + current_info.compvoie + " " + current_info.codpost + " " + current_info.villenorm
+                current_adresse = current_adresse.replace(/\s+/g, ' ').trim();
+                contentCurrentInfo.querySelector(".cmz-adresse > a").textContent = current_adresse.toLocaleLowerCase()
+
+                if(current_info.tel != ""){
+                    contentCurrentInfo.querySelector(".tel > .numero").textContent = current_info.tel
+                    contentCurrentInfo.querySelector(".cmz-tel").style.display = "block"
+                }else{
+                    contentCurrentInfo.querySelector(".tel > .numero").textContent = ""
+                    contentCurrentInfo.querySelector(".cmz-tel").style.display = "none"
+                }
+                contentCurrentInfo.querySelector(".cmz-categories-list").innerHTML = ""
+                checkRestoMenu(current_info,contentCurrentInfo.querySelector(".cmz-categories-list"))
+
+            }else{
+                contentCurrentInfo.querySelector("span.rubrique").textContent = "GOLF"
+            }
+
+            if(new_info.restaurant){
+                newCurrentInfo.querySelector("span.rubrique").textContent = "RESTAURANT"
+                newCurrentInfo.querySelector("#rubriqueName > a").textContent = new_info.denominationF
+                let current_adresse = new_info.numvoie + " " + new_info.typevoie + " " + new_info.nomvoie + " " + new_info.compvoie + " " + new_info.codpost + " " + new_info.villenorm
+                current_adresse = current_adresse.replace(/\s+/g, ' ').trim();
+                newCurrentInfo.querySelector(".cmz-adresse > a").textContent = current_adresse.toLocaleLowerCase()
+
+                if(new_info.tel != ""){
+                    newCurrentInfo.querySelector(".tel > .numero").textContent = new_info.tel
+                    newCurrentInfo.querySelector(".cmz-tel").style.display = "block"
+                }else{
+                    newCurrentInfo.querySelector(".tel > .numero").textContent = ""
+                    newCurrentInfo.querySelector(".cmz-tel").style.display = "none"
+                }
+                newCurrentInfo.querySelector(".cmz-categories-list").innerHTML = ""
+                checkRestoMenu(new_info,newCurrentInfo.querySelector(".cmz-categories-list"))
+
+            }else{
+                newCurrentInfo.querySelector("span.rubrique").textContent = "GOLF"
+            }
+
+        })
+}
+
+function checkRestoMenu(resto,selector){
+    if(resto.brasserie == 1)
+        selector.innerHTML += `<span class="cmz-category">brasserie</span>`
+    if(resto.creperie == 1)
+        selector.innerHTML += `<span class="cmz-category">creperie</span>`
+    if(resto.fastFood == 1)
+        selector.innerHTML += `<span class="cmz-category">fast_food</span>`
+    if(resto.pizzeria == 1)
+        selector.innerHTML += `<span class="cmz-category">pizzeria</span>`
+
+    if(resto.boulangerie == 1)
+        selector.innerHTML += `<span class="cmz-category">boulangerie</span>`
+    if(resto.cafe == 1)
+        selector.innerHTML += `<span class="cmz-category">cafe</span>`
+    if(resto.bar == 1)
+        selector.innerHTML += `<span class="cmz-category">bar</span>`
+    if(resto.cuisineMonde == 1)
+        selector.innerHTML += `<span class="cmz-category">cuisine_monde</span>`
+    if(resto.salonThe == 1)
+        selector.innerHTML += `<span class="cmz-category">salon_the</span>`
+}
+
