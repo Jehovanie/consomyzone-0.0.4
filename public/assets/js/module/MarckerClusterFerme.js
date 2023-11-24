@@ -164,7 +164,7 @@ class MarckerClusterFerme extends MapModule {
      */
     getIcon(item, isSelected){
         const icon_path= isSelected ? "assets/icon/NewIcons/icon-ferme-new-R.png" : "assets/icon/NewIcons/icon-ferme-new-B.png";
-        const icon_size= isSelected ? 3 : 0; /// 0: normal, 3: selected
+        const icon_size= isSelected ? 2 : 0; /// 0: normal, 3: selected
 
         return { 'path': icon_path, 'size': icon_size };
     }

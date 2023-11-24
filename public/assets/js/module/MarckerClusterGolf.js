@@ -137,7 +137,7 @@ class MarckerClusterGolf extends MapModule {
      */
     getIcon(item, isSelected){
         let icon_path= "";
-        let icon_size= isSelected ? 3 : 0; /// 0: min, 1: moyenne, 2 : grand
+        let icon_size= isSelected ? 2 : 0; /// 0: min, 1: moyenne, 2 : grand
 
         if( item.user_status.a_faire === null &&  item.user_status.fait === null && item.user_status.mon_golf === null && item.user_status.refaire === null ){
             icon_path= isSelected ? "assets/icon/NewIcons/icon-rouge-golf-C.png" : "assets/icon/NewIcons/icon-blanc-golf-vertC.png";

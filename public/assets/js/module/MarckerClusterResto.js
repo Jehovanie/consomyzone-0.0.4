@@ -161,10 +161,10 @@ class MarckerClusterResto extends MapModule  {
         let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(item.id)) : [];
         let poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
         let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
-        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
+        let isPastille = resultRestoPastille.length > 0 ? 1 : 0;
 
         const icon_path= isSelected ? poi_icon_Selected : poi_icon;
-        const icon_size= isSelected ? 3 : isPastille; /// 0: normal, 3: selected
+        const icon_size= isSelected ? 2 : isPastille; /// 0: normal, 3: selected
 
         return { 'path': icon_path, 'size': icon_size };
     }

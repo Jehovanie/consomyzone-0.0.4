@@ -327,7 +327,7 @@ class MarckerClusterHome extends MapModule  {
 
     getIcon(item, isSelected= false){
         let icon_path= "";
-        let icon_size= isSelected ? 3: 0;
+        let icon_size= isSelected ? 2: 0;
 
         if( item.ferme !== undefined ){
             icon_path= isSelected ? "assets/icon/NewIcons/icon-ferme-new-R.png" : "assets/icon/NewIcons/icon-ferme-new-B.png";
@@ -345,7 +345,7 @@ class MarckerClusterHome extends MapModule  {
         }else if (item.golf !== undefined){
             if( item.user_status.a_faire === null &&  item.user_status.fait === null && item.user_status.mon_golf === null && item.user_status.refaire === null ){
                 icon_path= isSelected ? "assets/icon/NewIcons/icon-rouge-golf-C.png" : "assets/icon/NewIcons/icon-blanc-golf-vertC.png";
-                icon_size= isSelected ? 3 : 0;
+                icon_size= isSelected ? 2 : 0;
             }else{
                 if( !!item.user_status.a_faire === true ){
                     icon_path= isSelected ? "assets/icon/NewIcons/icon-vert-golf-orange.png" : "assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png";
@@ -595,7 +595,7 @@ class MarckerClusterHome extends MapModule  {
             }else{
                 // marker.setIcon(this.setSpecialIcon(item, true, poi_icon, poi_icon_Selected, isPastille))
                 golfMarker.setIcon(
-                    this.setSpecialIconRefactor( golfMarker, icon.path, icon.size )
+                    this.setSpecialIconRefactor( item, icon.path, icon.size )
                 )
             }
 

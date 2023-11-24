@@ -139,7 +139,7 @@ class MarckerClusterTabac extends MapModule {
      */
     getIcon(item, isSelected){
         const icon_path= isSelected ? "assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
-        const icon_size= isSelected ? 3 : 0; /// 0: normal, 3: selected
+        const icon_size= isSelected ? 2 : 0; /// 0: normal, 2: selected
 
         return { 'path': icon_path, 'size': icon_size };
     }

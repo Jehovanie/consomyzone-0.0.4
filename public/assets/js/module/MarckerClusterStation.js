@@ -174,7 +174,7 @@ class MarckerClusterStation extends MapModule  {
      */
     getIcon(item, isSelected= false ){
         const icon_path= isSelected ? "assets/icon/NewIcons/icon-station-new-R.png" : "assets/icon/NewIcons/icon-station-new-B.png";
-        const icon_size= isSelected ? 3 : 0; /// 0: normal, 3: selected
+        const icon_size= isSelected ? 2 : 1; /// 0: normal, 2: selected
 
         return { 'path': icon_path, 'size': icon_size };
     }

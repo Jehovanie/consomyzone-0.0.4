@@ -297,7 +297,7 @@ class MarckerClusterSearch extends MapModule  {
      */
     getIcon(item, isSelected= false){
         let icon_path= "";
-        let icon_size= isSelected ? 3: 0;
+        let icon_size= isSelected ? 2 : 0;
 
         if( item.ferme !== undefined ){
             icon_path= isSelected ? "assets/icon/NewIcons/icon-ferme-new-R.png" : "assets/icon/NewIcons/icon-ferme-new-B.png";
@@ -328,7 +328,7 @@ class MarckerClusterSearch extends MapModule  {
                 }else{
                     icon_path= isSelected ? "assets/icon/NewIcons/icon-rouge-golf-C.png" : "assets/icon/NewIcons/icon-blanc-golf-vertC.png";
                 }
-                icon_size= isSelected ? 3 : 2;
+                icon_size= isSelected ? 2 : 1;
             }
 
         }else if( item.tabac !== undefined){
