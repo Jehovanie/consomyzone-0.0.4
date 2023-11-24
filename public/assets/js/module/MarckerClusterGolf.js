@@ -185,7 +185,8 @@ class MarckerClusterGolf extends MapModule {
                 L.latLng(parseFloat(item.lat), parseFloat(item.long)),
                 item, 
                 icon.path, 
-                icon.size, 
+                icon.size,
+                "golf"
             )
         }
         

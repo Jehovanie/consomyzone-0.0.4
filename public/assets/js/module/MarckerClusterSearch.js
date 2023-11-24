@@ -472,7 +472,14 @@ class MarckerClusterSearch extends MapModule  {
             const zoom = this.map._zoom;
             const icon = this.getIcon(item, true);
 
-            marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+            if(!item.moyenne_note){
+                marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+            }else{
+                // marker.setIcon(this.setSpecialIcon(item, true, poi_icon, poi_icon_Selected, isPastille))
+                marker.setIcon(
+                    this.setSpecialIconRefactor( item, icon.path, icon.size )
+                )
+            }
 
             this.updateLastMarkerSelected(marker, "golf");
 
@@ -581,7 +588,8 @@ class MarckerClusterSearch extends MapModule  {
                 L.latLng(parseFloat(item.lat), parseFloat(item.long)),
                 item, 
                 icon.path, 
-                icon.size, 
+                icon.size,
+                "resto"
             )
         }
 
@@ -603,14 +611,28 @@ class MarckerClusterSearch extends MapModule  {
         const zoom = this.map._zoom;
         const icon = this.getIcon(item, isSelected);
 
-        let marker = L.marker(
-            L.latLng(parseFloat(item.lat), parseFloat(item.long )), 
-            {
-                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
-                id: item.id, 
-                type: "golf"
-            }
-        );
+        let marker= null;
+        if(!item.moyenne_note){
+            marker = L.marker(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                {
+                    icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                    // cleNom: item.denominationF,
+                    id: item.id,
+                    type: "golf"
+                }
+            );
+        }else{
+            // marker= this.setSpecialMarkerToShowNote( L.latLng(parseFloat(item.lat), parseFloat(item.long)), item,  isSelected,  poi_icon,  poi_icon_Selected,  isPastille,  zoom)
+            marker= this.setSpecialMarkerToShowNoteRefactor(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                item, 
+                icon.path, 
+                icon.size,
+                "golf"
+            )
+        }
+
         
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.nom_commune + " " + item.adresse;
         const title = "<span class='fw-bolder'> Golf: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep +"." + adress;
@@ -671,7 +693,8 @@ class MarckerClusterSearch extends MapModule  {
             const zoom = this.map._zoom;
             const icon= this.getIcon(last_item, false );
 
-            if(this.marker_last_selected_type === "resto"){
+            const array_content_moyenne= [ "resto", "golf" ];
+            if(array_content_moyenne.includes( this.marker_last_selected_type) ){
                 // let oneResto = this.default_data.results[0].find(jtem => jtem.resto && parseInt(this.marker_last_selected.options.id) === parseInt(jtem.id))
                 // this.marker_last_selected.setIcon(this.setSpecialIcon(oneResto, false, icon_marker, icon_marker, 0))
                 if(!last_item.moyenne_note){
@@ -1057,17 +1080,17 @@ class MarckerClusterSearch extends MapModule  {
      * je veux: mettre à jour la note moyenne sur un POI
      * si une POI a une note, la note se montre en haut à gauche du POI
      */
-    showNoteMoyenneRealTime(idResto, note){
-        let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(idResto)) : [];
-        let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
-        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
-
+    showNoteMoyenneRealTime(idItem, note, type){
+        console.log(type)
         this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(idResto) && marker.options.type === "resto" ) {
-                // let oneResto = this.default_data.resto.find(jtem => parseInt(idResto) === parseInt(jtem.id))
-                let oneResto = this.default_data.results[0].find(jtem => jtem.resto && parseInt(idResto) === parseInt(jtem.id) );
-                oneResto.moyenne_note = parseFloat(note).toFixed(2)
-                marker.setIcon(this.setSpecialIcon(oneResto, true, poi_icon_Selected, poi_icon_Selected, isPastille))
+            if (parseInt(marker.options.id) === parseInt(idItem) && marker.options.type === type ) {
+                let single_data= this.default_data.results[0].find(jtem => parseInt(idItem) === parseInt(jtem.id) && jtem.hasOwnProperty(type))
+                single_data.moyenne_note = parseFloat(note).toFixed(2)
+
+                const icon= this.getIcon(single_data, true )
+                marker.setIcon(
+                    this.setSpecialIconRefactor( single_data, icon.path, icon.size )
+                )
             }
         });
 
@@ -1127,7 +1150,6 @@ class MarckerClusterSearch extends MapModule  {
      */
     checkIsExist(idToCheck, type){
         const default_data= this.transformDataStructure();
-
         if(default_data.some((item) => parseInt(item.id) === parseInt(idToCheck) && item.hasOwnProperty(type))){
             let isAlreadyExist= false;
             this.markers.eachLayer(( marker ) => {
@@ -1141,7 +1163,7 @@ class MarckerClusterSearch extends MapModule  {
                 this.settingSingleMarker(data, false)
             }
         }
-        return default_data.some(({id}) => parseInt(id) === parseInt(idToCheck))
+        return default_data.some((item) => parseInt(item.id) === parseInt(idToCheck) && item.hasOwnProperty(type))
     }
         
     /**
@@ -1153,9 +1175,9 @@ class MarckerClusterSearch extends MapModule  {
      * 
      * @returns 
      */
-    clickOnMarker(id){
+    clickOnMarker(id, type){
         this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === "resto" ) {
+            if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === type ) {
                 marker.fireEvent('click'); 
             }
         });

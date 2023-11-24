@@ -357,14 +357,12 @@ class ToutsController extends AbstractController
         $userID= $this->getUser() ? $this->getUser()->getId(): null;
 
         $restos = $bddRestoRepository->appendRestoPastille($bddRestoRepository->getSomeDataShuffle($taille),$arrayIdResto);
-
         $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$restos);
-
         $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
 
-        $golfs = $golfFranceRepository->getSomeDataShuffle($userID, $taille);
-        $ids=array_map('App\Service\SortResultService::getIdFromData', $golfs);
-        $moyenne_golfs = $avisGolfRepository->getAllNoteById($ids);
+        $golfs= $golfFranceRepository->getSomeDataShuffle($userID, $taille);
+        $ids_golf= array_map('App\Service\SortResultService::getIdFromData', $golfs);
+        $moyenne_golfs= $avisGolfRepository->getAllNoteById($ids_golf);
 
         return $this->json([
             "station" => $stationServiceFrGeomRepository->getSomeDataShuffle($taille),

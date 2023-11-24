@@ -191,7 +191,8 @@ class MarckerClusterResto extends MapModule  {
                 L.latLng(parseFloat(item.lat), parseFloat(item.long)),
                 item, 
                 icon.path, 
-                icon.size, 
+                icon.size,
+                "resto"
             )
         }
 

@@ -1654,7 +1654,7 @@ class MapModule{
         });
     }
 
-    setSpecialMarkerToShowNoteRefactor(latLng, item, poi_icon, taille ){
+    setSpecialMarkerToShowNoteRefactor(latLng, item, poi_icon, taille, type= "resto" ){
         let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
         let [w,h]= (taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
 
@@ -1678,7 +1678,7 @@ class MapModule{
                 }),
                 // cleNom:item.denominationF,
                 id:item.id,
-                type:"resto"
+                type: type
             });
     }
 

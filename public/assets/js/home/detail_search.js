@@ -1,6 +1,7 @@
 function getDetailFromListLeft(type, depart_name, depart_code, id) { 
+    
     if( OBJECT_MARKERS_SEARCH.checkIsExist(id, type)){
-        OBJECT_MARKERS_SEARCH.clickOnMarker(id)
+        OBJECT_MARKERS_SEARCH.clickOnMarker(id, type)
     }
 
     if (type === "resto") {
