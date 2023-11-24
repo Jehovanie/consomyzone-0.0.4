@@ -109,12 +109,21 @@ class GolfFranceController extends AbstractController
     #[Route('/api/golf', name: 'api_golf_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
         GolfFranceRepository $golfFranceRepository,
+        AvisGolfRepository $avisGolfRepository,
+        GolfFranceService $golfFranceService,
     ) {
 
         $golfs = [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
 
-        $golfs = $golfFranceRepository->getSomeDataShuffle($userID);
+        $data = $golfFranceRepository->getSomeDataShuffle($userID);
+
+        
+        $ids=array_map('App\Service\SortResultService::getIdFromData', $data);
+        $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
+
+        $golfs= $golfFranceService->mergeDatasAndAvis($data, $moyenneNote);
+
 
         return $this->json([
             "success" => true,
@@ -396,15 +405,22 @@ class GolfFranceController extends AbstractController
         $nom_dep,
         $id_dep,
         GolfFranceRepository $golfFranceRepository,
+        AvisGolfRepository $avisGolfRepository,
+        GolfFranceService $golfFranceService,
         Status $status,
         TributGService $tributGService,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
     ) {
-        $golfs = [];
+        $data = [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
 
-        $golfs = $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID);
+        $data = $golfFranceRepository->getGolfByDep($nom_dep, $id_dep, $userID);
+
+        $ids=array_map('App\Service\SortResultService::getIdFromData', $data);
+        $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
+
+        $golfs= $golfFranceService->mergeDatasAndAvis($data, $moyenneNote);
 
         return $this->json([
             "success" => true,

@@ -45,6 +45,33 @@ class GolfFranceService extends PDOConnexionService{
 
         return $results;
     }
+
+    /**
+     * @author Nantenaina <email>
+     * où= dans la fonction getAllRestCoor
+     * location=RestaurantController.phpo
+     * je veux fussioner les  resto recupéré apres  appel de la fonction getDataBetweenAnd() et leur note
+     * pour avoir les notes
+     */
+    public function mergeDatasAndAvis($datas,$notes){
+        $noteExist=[];
+        foreach($datas as $data){
+            foreach($notes as $note){
+                if(intval($data["id"]) === intval($note["id_golf"])){
+                    // array_push($noteExist,array_merge($data,$note));
+                    $data["moyenne_note"] = $note["moyenne_note"];
+                    $data["id_golf"] = $note["id_golf"];
+                    array_push($noteExist,$data);
+                    break;
+                }
+               
+            }
+            if( !isset($data["moyenne_note"]))
+                array_push($noteExist,$data);
+        }
+       return $noteExist;
+        
+    }
 }
 
 ?>

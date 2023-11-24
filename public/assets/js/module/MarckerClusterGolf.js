@@ -169,14 +169,25 @@ class MarckerClusterGolf extends MapModule {
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.commune + " " + item.adress;
         let title = "<span class='fw-bolder'> Golf: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep +"." + adress;
        
-        let marker = L.marker(
-            L.latLng(parseFloat(item.lat), parseFloat(item.long )),
-            {
-                // icon: setIconn(pathIcon,'content_badge', taille, zoom),
-                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
-                id: item.id
-            }
-        );
+        let marker= null;
+        if(!item.moyenne_note){
+            marker = L.marker(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                {
+                    icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                    cleNom: item.denominationF,
+                    id: item.id,
+                }
+            );
+        }else{
+            // marker= this.setSpecialMarkerToShowNote( L.latLng(parseFloat(item.lat), parseFloat(item.long)), item,  isSelected,  poi_icon,  poi_icon_Selected,  isPastille,  zoom)
+            marker= this.setSpecialMarkerToShowNoteRefactor(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                item, 
+                icon.path, 
+                icon.size, 
+            )
+        }
         
         marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
         
@@ -199,7 +210,14 @@ class MarckerClusterGolf extends MapModule {
             const zoom = this.map._zoom;
             const icon = this.getIcon(item, true);
 
-            marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+            if(!item.moyenne_note){
+                marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+            }else{
+                // marker.setIcon(this.setSpecialIcon(item, true, poi_icon, poi_icon_Selected, isPastille))
+                marker.setIcon(
+                    this.setSpecialIconRefactor( item, icon.path, icon.size )
+                )
+            }
 
             this.updateLastMarkerSelected( marker, item );
 
@@ -220,9 +238,18 @@ class MarckerClusterGolf extends MapModule {
     updateLastMarkerSelected( marker, item ){
         if (this.marker_last_selected && this.marker_last_selected != marker ) {
             const last_marker= this.data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
+
+            const zoom = this.map._zoom;
             const icon= this.getIcon(last_marker, false );
 
-            this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, 9 ));
+            if(!last_marker.moyenne_note){
+                this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, zoom ))
+            }else{
+                this.marker_last_selected.setIcon(
+                    // this.setSpecialIcon(oneResto, false, poi_icon, poi_icon_Selected, isPastille)
+                    this.setSpecialIconRefactor( last_marker, icon.path, icon.size )
+                )
+            }
         }
         this.marker_last_selected = marker;
     }
@@ -363,6 +390,30 @@ class MarckerClusterGolf extends MapModule {
 
     showNoteGlobaleOnMarker(idItem, globalNote){
         console.log(idItem, globalNote);
+    }
+
+
+    /**
+     * @Author Nantenaina
+     * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: mettre à jour la note moyenne sur un POI
+     * si une POI a une note, la note se montre en haut à gauche du POI 
+     */
+    showNoteMoyenneRealTime(idGolf, note){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(idGolf)) {
+                let oneGolf = this.default_data.find(jtem => parseInt(idGolf) === parseInt(jtem.id));
+                oneGolf.moyenne_note = parseFloat(note).toFixed(2)
+
+                const icon= this.getIcon(oneGolf, true )
+                marker.setIcon(
+                    this.setSpecialIconRefactor( oneGolf, icon.path, icon.size )
+                )
+            }
+        });
+
+        this.markers.refreshClusters();
     }
 
 }

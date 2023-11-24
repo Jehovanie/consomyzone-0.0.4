@@ -1676,7 +1676,7 @@ class MapModule{
                     shadowSize: [68, 95],
                     shadowAnchor: [22, 94],
                 }),
-                cleNom:item.denominationF,
+                // cleNom:item.denominationF,
                 id:item.id,
                 type:"resto"
             });

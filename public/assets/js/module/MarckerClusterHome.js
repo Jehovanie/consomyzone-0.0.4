@@ -550,15 +550,26 @@ class MarckerClusterHome extends MapModule  {
         const zoom = this.map._zoom;
         const icon = this.getIcon(item, isSelected);
 
-        let marker = L.marker(
-            L.latLng(parseFloat(item.lat), parseFloat(item.long )), 
-            {
-                // icon: setIconn(pathIcon,'content_badge', taille),
-                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
-                id: item.id, 
-                type: "golf"
-            }
-        );
+        let marker= null;
+        if(!item.moyenne_note){
+            marker = L.marker(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                {
+                    icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                    cleNom: item.denominationF,
+                    id: item.id,
+                    type: "golf"
+                }
+            );
+        }else{
+            // marker= this.setSpecialMarkerToShowNote( L.latLng(parseFloat(item.lat), parseFloat(item.long)), item,  isSelected,  poi_icon,  poi_icon_Selected,  isPastille,  zoom)
+            marker= this.setSpecialMarkerToShowNoteRefactor(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                item, 
+                icon.path, 
+                icon.size, 
+            )
+        }
 
         // console.log(item)
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.commune + " " + item.adress;
@@ -579,7 +590,14 @@ class MarckerClusterHome extends MapModule  {
             const zoom = this.map._zoom;
             const icon = this.getIcon(item, true);
 
-            golfMarker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+            if(!item.moyenne_note){
+                golfMarker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+            }else{
+                // marker.setIcon(this.setSpecialIcon(item, true, poi_icon, poi_icon_Selected, isPastille))
+                golfMarker.setIcon(
+                    this.setSpecialIconRefactor( golfMarker, icon.path, icon.size )
+                )
+            }
 
             this.updateLastMarkerSelected(golfMarker, "golf")
             
@@ -662,9 +680,8 @@ class MarckerClusterHome extends MapModule  {
             const zoom = this.map._zoom;
             const icon= this.getIcon(last_item, false );
 
-            if(this.marker_last_selected_type === "resto"){
-                // let oneResto = this.default_data.resto.find(jtem => parseInt(this.marker_last_selected.options.id) === parseInt(jtem.id))
-                // this.marker_last_selected.setIcon(this.setSpecialIcon(oneResto, false, icon_marker, icon_marker, 0))
+            const array_content_moyenne= [ "resto", "golf" ];
+            if(array_content_moyenne.includes( this.marker_last_selected_type) ){
                 if(!last_item.moyenne_note){
                     this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, zoom ))
                 }else{
@@ -1123,16 +1140,21 @@ class MarckerClusterHome extends MapModule  {
      * je veux: mettre à jour la note moyenne sur un POI
      * si une POI a une note, la note se montre en haut à gauche du POI
      */
-    showNoteMoyenneRealTime(idResto, note){
-        let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(idResto)) : [];
-        let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
-        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
-
+    showNoteMoyenneRealTime(idItem, note, type){
         this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(idResto) && marker.options.type === "resto" ) {
-                let oneResto = this.default_data.resto.find(jtem => parseInt(idResto) === parseInt(jtem.id))
-                oneResto.moyenne_note = parseFloat(note).toFixed(2)
-                marker.setIcon(this.setSpecialIcon(oneResto, true, poi_icon_Selected, poi_icon_Selected, isPastille))
+            if (parseInt(marker.options.id) === parseInt(idItem)) {
+                let single_data = null;
+                if( type === "resto" ){
+                    single_data = this.default_data.resto.find(jtem => parseInt(idItem) === parseInt(jtem.id))
+                }else if( type === "golf" ){
+                    single_data = this.default_data.golf.find(jtem => parseInt(idItem) === parseInt(jtem.id));
+                }
+                single_data.moyenne_note = parseFloat(note).toFixed(2)
+
+                const icon= this.getIcon(single_data, true )
+                marker.setIcon(
+                    this.setSpecialIconRefactor( single_data, icon.path, icon.size )
+                )
             }
         });
 
@@ -1147,7 +1169,7 @@ class MarckerClusterHome extends MapModule  {
      * si un utilisateur veut modifier une ou des informations
      * @param {} id 
      */
-      makeMarkerDraggable(id){
+    makeMarkerDraggable(id){
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === "resto" ) {
                 let initialPos=marker.getLatLng();
@@ -1179,4 +1201,5 @@ class MarckerClusterHome extends MapModule  {
             }
         });
     }
+
 }
