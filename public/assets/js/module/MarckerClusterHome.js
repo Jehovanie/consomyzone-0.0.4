@@ -79,11 +79,29 @@ class MarckerClusterHome extends MapModule  {
         this.markers = L.markerClusterGroup({ 
             chunkedLoading: true,
             animate: true,
-            disableClusteringAtZoom: true,
             animateAddingMarkers:true,
             chunkedLoading: true,
-            chunkInterval: 500, 
-            chunkDelay: 100,
+            spiderfyOnEveryZoom: true,
+            disableClusteringAtZoom: true,
+            // iconCreateFunction: function (cluster) {
+                // console.log(cluster.getAllChildMarkers())
+
+                // var pointA = new L.LatLng(28.635308, 77.22496);
+                // var pointB = new L.LatLng(28.984461, 77.70641);
+                // var pointList = [pointA, pointB];
+
+                // return L.polyline(pointList, {
+                //     color: 'red',
+                //     weight: 3,
+                //     opacity: 0.5,
+                //     smoothFactor: 1
+                // });
+                // return L.divIcon({
+                //     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                //     className: "mycluster",
+                //     iconSize:L.point(35,35)
+                // });
+            // },
         });
 
         // const that = this;
