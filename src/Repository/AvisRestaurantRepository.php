@@ -146,6 +146,18 @@ class AvisRestaurantRepository extends ServiceEntityRepository
     }
 
 
+    public function getNoteById($id){
+        return $this->createQueryBuilder("r")
+                    ->select("AVG(r.note) as moyenne_note, IDENTITY(r.restaurant) as id_resto")
+                    ->where("r.restaurant = :u ")
+                    ->setParameter("u",$id)
+                    ->groupBy("r.restaurant")
+                    ->getQuery()
+                    ->getOneOrNullResult();
+    }
+
+
+
     public function getState($idrestaurant){
         $results = $this->createQueryBuilder("r")
             ->select("

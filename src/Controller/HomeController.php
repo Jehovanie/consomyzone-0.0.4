@@ -613,6 +613,42 @@ class HomeController extends AbstractController
         ]);
     }
 
+    #[Route("/api/get_one/{type}/{id}", name: "api_get_one_item", methods: "GET")]
+    public function getOneItem(
+        $type, $id,
+        BddRestoRepository $bddRestoRepository,
+        AvisRestaurantRepository $avisRestaurantRepository,
+        
+        FermeGeomRepository $fermeGeomRepository,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository,
+        GolfFranceRepository $golfFranceRepository,
+        TabacRepository $tabacRepository
+    ){
+        $result= null;
+
+        if( $type === "resto"){
+            $data = $bddRestoRepository->getOneItemByID($id);
+            $moyenneNote = $avisRestaurantRepository->getNoteById($id);
+            if( $moyenneNote !== null ){
+                $data["moyenne_note"]= $moyenneNote["moyenne_note"];
+            }
+        }else if( $type === "ferme" ){
+            $result = $fermeGeomRepository->getOneItemByID($id);
+        }else if( $type === "station" ){
+            $result = $stationServiceFrGeomRepository->getOneItemByID($id);
+        }else if( $type === "golf" ){
+            $result = $golfFranceRepository->getOneItemByID($id);
+        }else if( $type === "tabac" ){
+            $result = $tabacRepository->getOneItemByID($id);
+        }else{
+            $result = null;
+        }
+
+        return $this->json([
+            "result" => $result
+        ]);
+    }
+
     #[Route("/user/demande/devenir/partenaire",name:"app_get_partenaire",methods:["POST","GET"])]
     public function askToGetPartenaire(Status $status){
 

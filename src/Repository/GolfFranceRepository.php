@@ -197,6 +197,65 @@ class GolfFranceRepository extends ServiceEntityRepository
         return $data;
     }
 
+    public function getOneItemByID($id){
+
+        $data=  $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.web',
+                        'r.nom_golf as name',
+                        'r.nom_golf as nameFilter',
+                        'r.nom_golf as golf',
+                        'r.dep',
+                        'r.nom_dep',
+                        'r.adr1 as adress',
+                        'r.adr2',
+                        'r.adr3',
+                        'r.cp',
+                        'r.e_mail as email',
+                        'r.site_web',
+                        'r.nom_commune as commune',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
+                    ->where("r.id =:id")
+                    ->setParameter("id", $id)
+                    ->getQuery()
+                    ->getOneOrNullResult();
+       
+        $user = $this->security->getUser();
+        $userID= $user != null ? $user->getId(): null;
+        
+        if(!$userID){
+            $data["user_status"]=[
+                    "a_faire" => null, 
+                    "fait" => null, 
+                    "mon_golf"=>null,
+                    "refaire"=>null
+                ];
+            $data["user_id"]=null;
+        }else{
+            $golfFinishedRepository = new GolfFinishedRepository($this->registry);
+            $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data["id"]]);
+            
+            $data["user_status"]=($user) ? [
+                    "a_faire" => $user->getAfaire(), 
+                    "fait" => $user->getFait(), 
+                    "mon_golf" => $user->getMonGolf(),
+                    "refaire" => $user->getARefaire()
+                ] : [
+                    "a_faire" => null, 
+                    "fait" => null, 
+                    "mon_golf"=> null,
+                    "refaire" =>null
+                ];
+
+            $data[$i]["user_id"]=$userID;
+        }
+
+        return $data;
+    }
+
 
     ///jheo : prendre tous les fermes qui appartients dans un departement specifique
     public function getGolfByDep($nom_dep="", $id_dep="" , $userID=null)

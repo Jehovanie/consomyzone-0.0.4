@@ -929,6 +929,54 @@ class FermeGeomRepository extends ServiceEntityRepository
             return $query->getResult();;
     }
 
+
+    public function getOneItemByID($id){
+        return $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.nomFerme',
+                        'r.nomFerme as nameFilter',
+                        'r.adresseFerme',
+                        'r.departement',
+                        'r.departementName',
+                        'r.produitFerme',
+                        'r.email',
+                        'r.engagementProd',
+                        'r.fax',
+                        'r.genre',
+                        'r.horairesVenteAFerme',
+                        'r.horairesVenteMagasinProd',
+                        'r.horairesVenteAuMarche',
+                        'r.accesHandicape',
+                        'r.accesHandicapAuditif',
+                        'r.accesHandicapMental',
+                        'r.accesHandicapMotrice',
+                        'r.accesHandicapVisuel',
+                        'r.accesVoiture',
+                        'r.adherentAdeve',
+                        'r.agricultureBio',
+                        'r.animauxAutoriser',
+                        'r.atelier',
+                        'r.carteBancaire',
+                        'r.chequeVacance',
+                        'r.degustation',
+                        'r.marcherProduit',
+                        'r.motDuFermier',
+                        'r.produitFerme',
+                        'r.produitFerme as ferme',
+                        'r.codePostal',
+                        'r.nomProprietaire',
+                        'r.motDuFermier',
+                        'r.ville',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
+                    ->where("r.id =:id")
+                    ->setParameter("id", $id)
+                    ->getQuery()
+                    ->getOneOrNullResult();
+    }
+
     //    /**
     //     * @return FermeGeom[] Returns an array of FermeGeom objects
     //     */

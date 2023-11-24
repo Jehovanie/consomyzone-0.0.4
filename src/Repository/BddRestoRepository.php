@@ -567,6 +567,52 @@ class BddRestoRepository extends ServiceEntityRepository
 
         return [ $results , count($results) , "resto"];
     }
+    
+    /**
+     * 
+     */
+    public function getOneItemByID($id){
+        return $this->createQueryBuilder("r")
+                    ->select("r.id,
+                        r.denominationF,
+                        r.denominationF as nameFilter,
+                        r.numvoie,
+                        r.typevoie,
+                        r.nomvoie,
+                        r.compvoie,
+                        r.codpost,
+                        r.villenorm,
+                        r.commune,
+                        r.restaurant,
+                        r.restaurant as resto,
+                        r.brasserie,
+                        r.creperie,
+                        r.fastFood,
+                        r.pizzeria,
+                        r.boulangerie,
+                        r.bar,
+                        r.cuisineMonde,
+                        r.cafe,
+                        r.salonThe,
+                        r.site1,
+                        r.fonctionalite1,
+                        r.fourchettePrix1,
+                        r.horaires1,
+                        r.prestation1,
+                        r.regimeSpeciaux1,
+                        r.repas1,
+                        r.typeCuisine1,
+                        r.dep,
+                        r.depName,
+                        r.tel,
+                        r.poiY as lat,
+                        r.poiX as long"
+                    )
+                    ->where("r.id =:id")
+                    ->setParameter("id", $id)
+                    ->getQuery()
+                    ->getOneOrNullResult();
+    }
 
     public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
         $dicoResto = new DicoRestoForSearchService();
@@ -1295,10 +1341,10 @@ class BddRestoRepository extends ServiceEntityRepository
                     r.tel,
                     r.poiX,
                     r.poiY")
-        ->orderBy('RAND()')
-        ->setMaxResults($limits)
-        ->getQuery()
-        ->getResult();
+            ->orderBy('RAND()')
+            ->setMaxResults($limits)
+            ->getQuery()
+            ->getResult();
     }
 
     public function getAllEtab()
