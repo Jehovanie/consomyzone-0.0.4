@@ -786,6 +786,7 @@ function initCKEditor(idElement,callback){
             // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
             placeholder: 'Ecrivez içi votre message!',
             // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
+
             fontFamily: {
                 options: [
                     'default',
@@ -825,7 +826,12 @@ function initCKEditor(idElement,callback){
             // https://ckeditor.com/docs/ckeditor5/latest/features/link.html#custom-link-attributes-decorators
             link: {
                 decorators: {
-                    addTargetToExternalLinks: true,
+                    addTargetToExternalLinks: {
+                        mode: 'automatic',
+                        attributes: {
+                            target: '_blank',
+                        }
+                    },
                     defaultProtocol: 'https://',
                     toggleDownloadable: {
                         mode: 'manual',
@@ -1165,7 +1171,8 @@ function showPartenairAsk(){
 
 function showReponsePartenaire(){
     // let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
-const nameTribuT=document.querySelector("#tribu_t_name_main_head").textContent
+    const nameTribuT=document.querySelector("#tribu_t_name_main_head").textContent;
+
     return html=`
         <span>Madame, Monsieur,</span></br>
 

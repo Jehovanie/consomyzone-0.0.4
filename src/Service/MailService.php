@@ -110,7 +110,10 @@ class MailService extends AbstractController {
 
         $customMailer->send($email);
     }
-    public function sendLinkOnEmailAboutAgendaSharing($email_to,$fullName_to,$context,$sender="ConsoMyZone"):void
+
+
+
+    public function sendLinkOnEmailAboutAgendaSharing($email_to, $fullName_to, $context, $sender="ConsoMyZone", $cc= [], $cci= [] ):void
     {
         $customMailer =  $this->configSendEmail();
 
@@ -119,6 +122,22 @@ class MailService extends AbstractController {
                 ->from(new Address($this->defaultEmailSender ,$sender)) 
                 ->to(new Address($email_to, $fullName_to ))
                 ->subject($context["object_mail"]);
+        
+        if( count( $cc ) > 0 ){
+            $email = $email->cc(new Address($cc[0], "Future Fans"));
+
+            for( $i= 1; $i < count($cc); $i++ ){
+                $email = $email->addCc(new Address($cc[$i], "Future Fans"));
+            }
+        }
+
+        if( count( $cci ) > 0 ){
+            $email = $email->bcc(new Address($cci[0], "Future Fans"));
+
+            for( $i= 1; $i < count($cci); $i++ ){
+                $email = $email->addBcc(new Address($cci[$i], "Future Fans"));
+            }
+        }
 
         if(isset($context["piece_joint"])){
             $all_pieces_joint= $context["piece_joint"];
