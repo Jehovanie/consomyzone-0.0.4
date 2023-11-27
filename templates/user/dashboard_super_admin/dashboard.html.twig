@@ -17,6 +17,7 @@
 {% block javascripts %}
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
 	<script src="{{ asset('assets/js/dashboard/tributG.js') }}" defer></script>
+	<script src="{{ asset('assets/js/account/L.Map.Sync.js') }}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	<script src="{{ asset('assets/js/dashboard/dataTable_features.js') }}" defer></script>
 
@@ -265,7 +266,8 @@
 						<div style="font-weight:bold;" class="text-primary">Information actuelle</div>
 						<div class="row container-depart pt-4 element content_current_info_nanta_js">
 							<div class="col-md-12">
-								<div class="cmz-rubrique mb-2">
+								<div id="current-map"></div>
+								<div class="cmz-rubrique mb-2 mt-3">
 									<span class="rubrique small">
 											
 									</span>
@@ -296,7 +298,8 @@
 						<div style="font-weight:bold;" class="text-primary">Nouvelle information</div>
 						<div class="row container-depart pt-4 element content_new_info_nanta_js">
 							<div class="col-md-12">
-								<div class="cmz-rubrique mb-2">
+								<div id="new-map"></div>
+								<div class="cmz-rubrique mb-2 mt-3">
 									<span class="rubrique small">
 											
 									</span>

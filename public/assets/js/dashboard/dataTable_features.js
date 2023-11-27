@@ -12,7 +12,7 @@
 //         { title: 'Salary' },
 //     ],
 // }
-
+var __tabMarker1 = [], __tabMarker2 = []
 window.addEventListener('load', () => {
 
     document.querySelector(".content_global_super_admin_js_jheo").innerHTML = `
@@ -340,10 +340,11 @@ function getRestoInfoToValidate(restoId, userId){
             let newCurrentInfo = document.querySelector(".content_new_info_nanta_js")
             let new_info = data.new_info
             let current_info = data.current_info
+            let _iconAdminUrl = ""
             if(current_info.restaurant){
                 contentCurrentInfo.querySelector("span.rubrique").textContent = "RESTAURANT"
                 contentCurrentInfo.querySelector("#rubriqueName > a").textContent = current_info.denominationF
-                let current_adresse = current_info.numvoie + " " + current_info.typevoie + " " + current_info.nomvoie + " " + current_info.compvoie + " " + current_info.codpost + " " + current_info.villenorm
+                let current_adresse = current_info.numvoie + " " + current_info.typevoie + " " + current_info.nomvoie + " " /*+ current_info.compvoie + " "*/ + current_info.codpost + " " + current_info.villenorm
                 current_adresse = current_adresse.replace(/\s+/g, ' ').trim();
                 contentCurrentInfo.querySelector(".cmz-adresse > a").textContent = current_adresse.toLocaleLowerCase()
 
@@ -356,15 +357,17 @@ function getRestoInfoToValidate(restoId, userId){
                 }
                 contentCurrentInfo.querySelector(".cmz-categories-list").innerHTML = ""
                 checkRestoMenu(current_info,contentCurrentInfo.querySelector(".cmz-categories-list"))
+                _iconAdminUrl = "/assets/icon/NewIcons/icon-resto-new-B.png"
 
             }else{
                 contentCurrentInfo.querySelector("span.rubrique").textContent = "GOLF"
+                _iconAdminUrl = "/assets/icon/NewIcons/icon-blanc-golf-vertC.png"
             }
 
-            if(new_info.restaurant){
+            if(new_info.restoId){
                 newCurrentInfo.querySelector("span.rubrique").textContent = "RESTAURANT"
                 newCurrentInfo.querySelector("#rubriqueName > a").textContent = new_info.denominationF
-                let current_adresse = new_info.numvoie + " " + new_info.typevoie + " " + new_info.nomvoie + " " + new_info.compvoie + " " + new_info.codpost + " " + new_info.villenorm
+                let current_adresse = new_info.numvoie + " " + new_info.typevoie + " " + new_info.nomvoie + " " /*+ new_info.compvoie + " "*/ + new_info.codpost + " " + new_info.villenorm
                 current_adresse = current_adresse.replace(/\s+/g, ' ').trim();
                 newCurrentInfo.querySelector(".cmz-adresse > a").textContent = current_adresse.toLocaleLowerCase()
 
@@ -382,6 +385,38 @@ function getRestoInfoToValidate(restoId, userId){
                 newCurrentInfo.querySelector("span.rubrique").textContent = "GOLF"
             }
 
+            let _map1, _map2
+
+            var _container1 = L.DomUtil.get('current-map');
+            if(_container1 != null){
+                _container1._leaflet_id = null;
+            }
+
+            if (__tabMarker1.length > 0) {
+                console.log(__tabMarker1.length)
+                for (const item of __tabMarker1) {
+                    _map1.removeLayer(item)
+                }
+            }
+            if (__tabMarker2.length > 0) {
+                console.log(__tabMarker2.length)
+                for (const item of __tabMarker2) {
+                    _map2.removeLayer(item)
+                }
+            }
+
+            var _container2 = L.DomUtil.get('new-map');
+            if(_container2 != null){
+                _container2._leaflet_id = null;
+            }
+            let _latLng1 = {lat:current_info.poiY,lng:current_info.poiX};
+            let _latLng2 = {lat:new_info.poiY,lng:new_info.poiX};
+            _map1 = L.map('current-map').setView([_latLng1.lat, _latLng1.lng], 17);;
+            _map2 = L.map('new-map').setView([_latLng2.lat, _latLng2.lng], 17);;
+            initMapForEtab(_map1,_map2, current_info.denominationF, new_info.denominationF, _latLng1, _latLng2, _iconAdminUrl)
+            
+        }).catch(error=>{
+            console.log(error)
         })
 }
 
@@ -407,3 +442,38 @@ function checkRestoMenu(resto,selector){
         selector.innerHTML += `<span class="cmz-category">salon_the</span>`
 }
 
+function initMapForEtab(_map1,_map2, _nom1, _nom2, _latLng1, _latLng2, iconUrl){
+
+    let _mapIcon = L.icon({
+        iconUrl: iconUrl,
+        iconSize:[30, 45]
+    });
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(_map1);
+
+    let _marker1 = L.marker([_latLng1.lat, _latLng1.lng], {icon: _mapIcon}).addTo(_map1)
+        .bindPopup(_nom1)
+        .openPopup();
+
+    __tabMarker1.push(_marker1)
+
+    _map1.setView([_latLng1.lat, _latLng1.lng], 17);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(_map2);
+
+    let _marker2 = L.marker([_latLng2.lat, _latLng2.lng], {icon: _mapIcon}).addTo(_map2)
+        .bindPopup(_nom2)
+        .openPopup();
+
+    __tabMarker2.push(_marker1)
+
+    _map2.setView([_latLng2.lat, _latLng2.lng], 17);
+
+    _map1.sync(_map2);
+
+    _map2.sync(_map1);
+}

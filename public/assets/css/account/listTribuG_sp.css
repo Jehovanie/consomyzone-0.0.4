@@ -156,3 +156,11 @@ table.dataTable thead th, table.dataTable tfoot th {
     margin-left: 45%;
     margin-bottom: 10px;
 }
+
+#current-map, #new-map{
+    height: 300px;
+}
+
+.leaflet-popup-pane{
+    margin-top: -10px;
+}
