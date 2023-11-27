@@ -134,18 +134,20 @@
 			</div>
 
 			<div class="p-4">
-				<div class="content_images">
+				{% set len = photos|length %}
+				{% set height = len > 0 ? "" : "h-40" %}
+				<div class="content_images {{height}}">
 					<label type="button" for="photo-upload-detail" class="add-photo-detail">
 						<i class="fa-solid fa-camera"></i>
 						Ajouter des photos
 					</label>
-					<input type="file" id="photo-upload-detail" class="d-none"/>
-					{% set len = photos|length %}
+					<input type="file" id="photo-upload-detail" class="d-none" onchange="addPhotoToGallery(this)" data-id="{{details.id}}"/>
+					
 					{% if len > 0 %}
 
 						<img class="preview-photo-detail" src="{{photos[len - 1].photo|replace({'/public':''}) }}" alt="photo"/>
 
-						<div class="all-photos-detail" data-bs-toggle="modal" data-bs-target="#modalGalleryPhoto" onclick="openGalleriesPhoto(this)">
+						<div class="all-photos-detail" onclick="openGalleriesPhoto(this)">
 							{% if len > 1 %}
 								{% set autre_image_len = len - 1 %}
 

@@ -6782,21 +6782,23 @@ function insertPhotoRubrique(rubrique, id_rubrique) {
  */
 function openGalleriesPhoto(elem) {
 
+  $('#modalGalleryPhoto').modal("show")
+
   let imgs = elem.querySelectorAll("img")
 
-  console.log(imgs);
+  // console.log(imgs);
 
   const nb_images = imgs.length
   const last_image = imgs[nb_images - 1]
   last_image.setAttribute("data-length", nb_images - 1)
 
   const previous = document.createElement("button")
-  previous.classList ="btn-previous-photo"
+  previous.classList = "btn-previous-photo"
   previous.innerHTML = '<i class="fa-solid fa-angle-left"></i>'
   previous.setAttribute("onclick", "previousPhotoGallery(this)")
 
   const next = document.createElement("button")
-  next.classList ="btn-next-photo"
+  next.classList = "btn-next-photo"
   next.innerHTML = '<i class="fa-solid fa-angle-right"></i>'
   next.setAttribute("onclick", "nextPhotoGallery(this)")
 
@@ -6805,23 +6807,23 @@ function openGalleriesPhoto(elem) {
   document.querySelector("#bodyGalleryPhoto").appendChild(last_image)
 
   document.querySelector("#bodyGalleryPhoto").appendChild(next)
-  
+
 
   for (let i = 0; i < nb_images - 1; i++) {
 
     let img = imgs[i]
-    img.setAttribute("class", "image-miniature miniature-"+i)
+    img.setAttribute("class", "image-miniature miniature-" + i)
     img.setAttribute("data-length", i)
     img.setAttribute("onclick", "setUp(this)")
     document.querySelector("#footerGalleryPhoto").appendChild(img)
 
   }
-  
+
   let instance = document.createElement("img")
-  instance.setAttribute("class", "image-miniature current-gallery-photo miniature-"+last_image.dataset.length)
+  instance.setAttribute("class", "image-miniature current-gallery-photo miniature-" + last_image.dataset.length)
   instance.setAttribute("data-length", last_image.dataset.length)
   instance.src = last_image.src
-  instance.setAttribute("onclick","setUp(this)")
+  instance.setAttribute("onclick", "setUp(this)")
 
   document.querySelector("#footerGalleryPhoto").appendChild(instance)
 
@@ -6833,13 +6835,23 @@ function openGalleriesPhoto(elem) {
  * @constructor set to up image galerry
  * @param {*} param 
  */
-function setUp(param){
+function setUp(param) {
 
   document.querySelector("#bodyGalleryPhoto > img").src = param.src
   document.querySelector("#bodyGalleryPhoto > img").dataset.length = param.getAttribute("data-length")
 
-  document.querySelectorAll("#footerGalleryPhoto > img").forEach(img=>{
-    if(img.classList.contains("current-gallery-photo")){
+  setActivePhoto(param)
+
+}
+
+/**
+ * @author Elie
+ * @constructor set photo to active
+ * @param {*} param 
+ */
+function setActivePhoto(param) {
+  document.querySelectorAll("#footerGalleryPhoto > img").forEach(img => {
+    if (img.classList.contains("current-gallery-photo")) {
       img.classList.remove("current-gallery-photo")
     }
   })
@@ -6847,7 +6859,7 @@ function setUp(param){
 
 }
 
-function closeModalGallery(){
+function closeModalGallery() {
   // document.querySelector("#bodyGalleryPhoto").innerHTML =""
   // document.querySelector("#footerGalleryPhoto").innerHTML =""
 }
@@ -6858,13 +6870,13 @@ function closeModalGallery(){
  * @param {*} e 
  */
 function nextPhotoGallery(e) {
-  let currentPhoto  = e.parentElement.querySelector("img")
+  let currentPhoto = e.parentElement.querySelector("img")
   const num = parseInt(currentPhoto.dataset.length)
 
   let all_photos = document.querySelectorAll("#footerGalleryPhoto > img")
 
-  let next_len = num+1
-  if(next_len >= all_photos.length){
+  let next_len = num + 1
+  if (next_len >= all_photos.length) {
     next_len = 0
   }
 
@@ -6873,7 +6885,8 @@ function nextPhotoGallery(e) {
   currentPhoto.src = next_photo.src
   currentPhoto.dataset.length = next_photo.dataset.length
 
-  
+  setActivePhoto(next_photo)
+
 }
 
 
@@ -6883,14 +6896,14 @@ function nextPhotoGallery(e) {
  * @param {*} e 
  */
 function previousPhotoGallery(e) {
-  let currentPhoto  = e.parentElement.querySelector("img")
+  let currentPhoto = e.parentElement.querySelector("img")
   let num = parseInt(currentPhoto.dataset.length)
 
   let all_photos = document.querySelectorAll("#footerGalleryPhoto > img")
 
   let previous_len = num - 1
-  if(previous_len < 0){
-    previous_len = all_photos.length - 1 
+  if (previous_len < 0) {
+    previous_len = all_photos.length - 1
   }
 
 
@@ -6899,5 +6912,95 @@ function previousPhotoGallery(e) {
   currentPhoto.src = previous_photo.src
   currentPhoto.dataset.length = previous_photo.dataset.length
 
+  setActivePhoto(previous_photo)
+
+}
+
+/**
+ * @constructor Ajout photo dans un gallery
+ * @author Elie
+ * @param {*} e 
+ */
+function addPhotoToGallery(e){
+    ///read file
+    const fileReader = new FileReader();
+  
+    ////on load file
+    fileReader.addEventListener("load", () => {
+  
+      let photoRubrique = fileReader.result;
+  
+      const listExt = ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'jpe', 'webp'];
+      const octetMax = 2e+6; //2Mo 
+
+      // console.log(photoRubrique);
+  
+      if (!checkFileExtension(listExt, photoRubrique)) {
+  
+        swal({
+          title: "Le format de fichier n\'est pas pris en charge!",
+          text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, gif, tiff, jpe, webp)",
+          icon: "error",
+          button: "OK",
+        });
+  
+      } else {
+        if (!checkTailleImage(octetMax, photoRubrique)) {
+
+          swal({
+            title: "Le fichier est trop volumineux!",
+            text: "La taille de l\'image doit être inférieure à 2Mo.",
+            icon: "error",
+            button: "OK",
+          });
+  
+        } else {
+
+  
+          let data = {
+            image: photoRubrique
+          }
+  
+          fetch(
+            
+            new Request("/restaurant/add/photos/"+e.dataset.id, {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            })
+          ).then(response=>response.json())
+          .then(res=>{
+            if(res.result == "success"){
+              swal({
+                title: "Ajout succès!",
+                text: "Votre photo n'est affiché que si il est approuvée par l'administrateur",
+                icon: "success",
+                button: "OK",
+              }); 
+            }
+
+            if(res.error){
+              swal({
+                title: res.error,
+                text: "Veuillez connecter pour vous ajouter des photos !",
+                icon: "error",
+                button: 'Se connecter',
+              }).then(res=>{
+                location.href="/connexion"
+              })
+            }
+          })
+
+        }
+      }
+  
+    });
+  
+    ///run event load in file reader.
+    fileReader.readAsDataURL(e.files[0]);
   
 }
+

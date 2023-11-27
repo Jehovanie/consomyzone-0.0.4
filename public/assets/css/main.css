@@ -2735,3 +2735,6 @@ textarea {
     border: 2px #00ff00 solid;
     scale: 1.2;
 }
+.h-40{
+    height: 40px !important;
+}

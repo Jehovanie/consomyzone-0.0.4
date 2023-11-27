@@ -238,12 +238,12 @@ class UserService  extends PDOConnexionService{
      * @author Elie
      * function validate or devalidate photo resto
      */
-    public function updateSatatusPhotoResto($id_resto, $is_valid)
+    public function updateSatatusPhotoResto($id_gallery, $is_valid)
     {
 
         $statement = $this->getPDO()->PREPARE("UPDATE photo_resto SET is_valid = ? WHERE id = ?");
         $statement->bindParam(1, $is_valid, PDO::PARAM_INT);
-        $statement->bindParam(2, $id_resto, PDO::PARAM_INT);
+        $statement->bindParam(2, $id_gallery, PDO::PARAM_INT);
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result;
@@ -253,16 +253,45 @@ class UserService  extends PDOConnexionService{
      * @author Elie
      * function validate or devalidate photo golf
      */
-    public function updateSatatusPhotoGolf($id_golf, $is_valid)
+    public function updateSatatusPhotoGolf($id_gallery, $is_valid)
     {
 
         $statement = $this->getPDO()->PREPARE("UPDATE photo_golf SET is_valid = ? WHERE id = ?");
         $statement->bindParam(1, $is_valid, PDO::PARAM_INT);
-        $statement->bindParam(2, $id_golf, PDO::PARAM_INT);
+        $statement->bindParam(2, $id_gallery, PDO::PARAM_INT);
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
+
+    /**
+     * @author Elie
+     * function delete photo resto
+     */
+    public function deletePhotoResto($id_gallery)
+    {
+
+        $statement = $this->getPDO()->PREPARE("DELETE FROM photo_resto WHERE id = ?");
+        $statement->bindParam(1, $id_gallery, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * function delete photo golf
+     */
+    public function deletePhotoGolf($id_gallery)
+    {
+
+        $statement = $this->getPDO()->PREPARE("DELETE FROM photo_golf WHERE id = ?");
+        $statement->bindParam(1, $id_gallery, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 
 
 }

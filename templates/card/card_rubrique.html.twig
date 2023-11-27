@@ -123,10 +123,12 @@
                 {% endif %}
             {% endif %}
         </div>
-        {% if type == "resto" or type == "golf"%}
-            <div class="col-md-4 d-flex">
-                <img class="img-fluid rounded-end m-auto" src="https://themewagon.github.io/deskapp2/vendors/images/product-1.jpg" alt="preview">
-            </div>
+        {% if type == "resto" or type == "golf" %}
+            {% if rubrique.photo != null %}
+                <div class="col-md-4 d-flex">
+                    <img class="img-fluid rounded-end m-auto" src="{{rubrique.photo}}" alt="preview">
+                </div>
+            {% endif %}
         {% endif %}
         
     </div>

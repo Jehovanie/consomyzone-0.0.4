@@ -1,0 +1,58 @@
+
+<div class="content_home content_body_details_jheo_js" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
+	<div class="left_content_home">
+		<div class="description" id="details-coord" data-toggle-type="resto">
+			
+			<div class="p-4">
+				<div class="content_images">
+					<label type="button" for="photo-upload-detail" class="add-photo-detail">
+						<i class="fa-solid fa-camera"></i>
+						Ajouter des photos
+					</label>
+					<input type="file" id="photo-upload-detail" class="d-none" onchange="addPhotoToGallery(this)"/>
+					{% set len = photos|length %}
+					{% if len > 0 %}
+
+						<div class="all-photos-detail">
+							
+							<div class="gallery-photo-detail d-none">
+								{% for img in photos %}
+
+									<img width="100" src="{{img.photo|replace({'/public':''}) }}" alt="photo"/>
+                                    <button onclick='validatePhoto("8218","1","{{img.photo|replace({'/public':''}) }}")'>Valider</button>
+
+								{% endfor %}
+							</div>
+						</div>
+
+					{% endif %}
+
+				</div>
+				
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    function validatePhoto(id_resto, id_gallery, file_path){
+
+    let file_name = file_path.split("/")[file_path.split("/").length - 1].trim()
+
+
+    fetch( new Request("/restaurant/validate/photos/"+id_resto+"/"+id_gallery, {
+        method: "POST",
+        headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify({image_name : file_name}),
+    })
+    ).then(response=>response.json())
+    .then(res=>{
+        console.log(res)
+    })
+
+   
+
+    }
+</script>
