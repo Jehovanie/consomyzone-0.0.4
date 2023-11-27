@@ -1357,7 +1357,8 @@ class RestaurantController extends AbstractController
             ->setPoiX(doubleval(($contents["poix"])))
             ->setPoiY(doubleval(($contents["poiy"])))
             ->setUserId(intval($this->getUser()->getId()))
-            ->setRestoId(intval(($contents["restoId"])));
+            ->setRestoId(intval(($contents["restoId"])))
+            ->setStatus(-1);
 
             $bddRepo->save($bddRestoUserModif,true);
         // }catch(Exception $e){

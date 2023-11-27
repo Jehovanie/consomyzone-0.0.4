@@ -21,6 +21,7 @@ use App\Form\PublicationType;
 use App\Form\MixtePublicationType;
 
 use App\Form\UserSettingType;
+use App\Repository\BddRestoBackupRepository;
 use App\Repository\BddRestoRepository;
 use App\Repository\BddRestoUserModifRepository;
 use App\Service\TributGService;
@@ -2675,6 +2676,82 @@ class UserController extends AbstractController
         $tab["current_info"] = $resto;
         $json = $serializerInterface->serialize($tab, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet validation adresse de la rubrique Super Admin
+     * Localisation du fichier : UserController.php
+     * Je veux : refuser une demande pour l'adresse à valider
+     * 
+     */
+    #[Route("/user/reject/etab/to/update", name:"app_reject_etab_update", methods:["POST"])]
+    public function rejectAdresseValidate(
+        BddRestoUserModifRepository $bddRestoUserModifRepository,
+        Request $request
+    ){
+        $data = json_decode($request->getContent(), true);
+        extract($data); 
+        $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
+        $key->setStatus(0);
+        $bddRestoUserModifRepository->save($key,true);
+        return $this->json("Bravo!");
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet validation adresse de la rubrique Super Admin
+     * Localisation du fichier : UserController.php
+     * Je veux : accepter une demande pour l'adresse à valider
+     * 
+     */
+    #[Route("/user/accept/etab/to/update", name:"app_accept_etab_update", methods:["POST"])]
+    public function acceptAdresseValidate(
+        BddRestoUserModifRepository $bddRestoUserModifRepository,
+        Request $request,
+        BddRestoRepository $bddRestoRepository,
+        BddRestoBackupRepository $bddRestoBackupRepository,
+        PDOConnexionService $pDOConnexionService
+    ){
+        $data = json_decode($request->getContent(), true);
+        extract($data);
+        $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
+        $key->setStatus(1);
+        $bddRestoUserModifRepository->save($key,true);
+        $resto = $bddRestoRepository->findOneById(intval($restoId));
+
+        $restoBackup = $bddRestoBackupRepository->findOneById(intval($restoId));
+
+        if($restoBackup != null){
+            
+        }else{
+
+        }
+
+        $resto->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true))
+            ->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true))
+            ->setNomvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true))
+            ->setCompvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true))
+            ->setVillenorm(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true))
+            ->setCommune(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true))
+            ->setNumvoie($key->getNumvoie())
+            ->setCodpost($key->getCodpost())
+            ->setTel($key->getTel())
+            ->setRestaurant(1)
+            ->setBrasserie($key->getBrasserie())
+            ->setCreperie($key->getCreperie())
+            ->setFastFood($key->getFastFood())
+            ->setPizzeria($key->getPizzeria())
+            ->setBoulangerie($key->getBoulangerie())
+            ->setBar($key->getBar())
+            ->setCuisineMonde($key->getCuisineMonde())
+            ->setCafe($key->getCafe())
+            ->setSalonThe($key->getSalonThe())
+            ->setPoiX($key->getPoiX())
+            ->setPoiY($key->getPoiY());
+        $bddRestoRepository->save($resto,true);
+
+        return $this->json("Bravo!");
     }
 
     #[Route("/is/pseudo/{pseudo}",name:"app_check_pseudo", methods:["GET"])]

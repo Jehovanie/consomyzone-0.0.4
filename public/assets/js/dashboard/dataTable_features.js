@@ -12,7 +12,8 @@
 //         { title: 'Salary' },
 //     ],
 // }
-var __tabMarker1 = [], __tabMarker2 = []
+var __markerOld1 = null, __markerOld2 = null
+var __map1, __map2
 window.addEventListener('load', () => {
 
     document.querySelector(".content_global_super_admin_js_jheo").innerHTML = `
@@ -309,13 +310,25 @@ function getListeInfoTovalidate(e){
                 for (const items of r) {
                     let item = items.info
                     let _adresse = item.numvoie + " " + item.typevoie + " " + item.nomvoie + " " + item.compvoie + " " + item.codpost + " " + item.commune
+                    let _status = item.status == 1 ? "Validé" : (item.status == 0 ? "Refusé" : "A valider" )
+                    let _bgColor = "";
+                    if(item.status == 1){
+                        _status = "Validé"
+                        _bgColor = "green"
+                    }else if(item.status == 0){
+                        _status = "Refusé"
+                        _bgColor = "grey"
+                    }else{
+                        _status = "A valider"
+                        _bgColor = "blue"
+                    }
                     _adresse = _adresse.replace(/\s+/g, ' ').trim();
                     _tr += `<tr style="text-align:center;vertical-align:middle;">
                             <td>${item.denominationF}</td>
                             <td>${_adresse}</td>
                             <td>${item.tel}</td>
                             <td><a href="/user/profil/${item.userId}" style="color:blue;">${items.userFullName}</a></td>
-                            <td><span style="background-color:blue; border-radius:5px; color:white; padding:5px">A valider</span></td>
+                            <td><span style="background-color:${_bgColor}; border-radius:5px; color:white; padding:5px">${_status}</span></td>
                             <td><button class="btn btn-info" onclick="getRestoInfoToValidate(${item.restoId}, ${item.userId})">Voir</button></td>
                         </tr>`
                 }
@@ -330,6 +343,8 @@ function getListeInfoTovalidate(e){
 
 function getRestoInfoToValidate(restoId, userId){
     document.querySelector(".navbar-expand-lg").display = "none";
+    document.querySelector("#rejectAddTovalidate").dataset.breakfast = restoId
+    document.querySelector("#rejectAddTovalidate").dataset.killer = userId
     $("#infoRestoToValidateModal").modal("show")
     //document.querySelector(".navbar-expand-lg").display = "block";
     fetch(`/user/information/${restoId}/etablissement/${userId}`)
@@ -385,24 +400,16 @@ function getRestoInfoToValidate(restoId, userId){
                 newCurrentInfo.querySelector("span.rubrique").textContent = "GOLF"
             }
 
-            let _map1, _map2
-
             var _container1 = L.DomUtil.get('current-map');
             if(_container1 != null){
                 _container1._leaflet_id = null;
             }
 
-            if (__tabMarker1.length > 0) {
-                console.log(__tabMarker1.length)
-                for (const item of __tabMarker1) {
-                    _map1.removeLayer(item)
-                }
+            if (__markerOld1 != null) {
+                __map1.removeLayer(__markerOld1)
             }
-            if (__tabMarker2.length > 0) {
-                console.log(__tabMarker2.length)
-                for (const item of __tabMarker2) {
-                    _map2.removeLayer(item)
-                }
+            if (__markerOld2 != null) {
+                __map2.removeLayer(__markerOld2)
             }
 
             var _container2 = L.DomUtil.get('new-map');
@@ -411,9 +418,9 @@ function getRestoInfoToValidate(restoId, userId){
             }
             let _latLng1 = {lat:current_info.poiY,lng:current_info.poiX};
             let _latLng2 = {lat:new_info.poiY,lng:new_info.poiX};
-            _map1 = L.map('current-map').setView([_latLng1.lat, _latLng1.lng], 17);;
-            _map2 = L.map('new-map').setView([_latLng2.lat, _latLng2.lng], 17);;
-            initMapForEtab(_map1,_map2, current_info.denominationF, new_info.denominationF, _latLng1, _latLng2, _iconAdminUrl)
+            __map1 = L.map('current-map').setView([_latLng1.lat, _latLng1.lng], 17);;
+            __map2 = L.map('new-map').setView([_latLng2.lat, _latLng2.lng], 17);;
+            initMapForEtab(__map1,__map2, current_info.denominationF, new_info.denominationF, _latLng1, _latLng2, _iconAdminUrl)
             
         }).catch(error=>{
             console.log(error)
@@ -453,11 +460,9 @@ function initMapForEtab(_map1,_map2, _nom1, _nom2, _latLng1, _latLng2, iconUrl){
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(_map1);
 
-    let _marker1 = L.marker([_latLng1.lat, _latLng1.lng], {icon: _mapIcon}).addTo(_map1)
+    __markerOld1 = L.marker([_latLng1.lat, _latLng1.lng], {icon: _mapIcon}).addTo(_map1)
         .bindPopup(_nom1)
         .openPopup();
-
-    __tabMarker1.push(_marker1)
 
     _map1.setView([_latLng1.lat, _latLng1.lng], 17);
 
@@ -465,15 +470,40 @@ function initMapForEtab(_map1,_map2, _nom1, _nom2, _latLng1, _latLng2, iconUrl){
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
     }).addTo(_map2);
 
-    let _marker2 = L.marker([_latLng2.lat, _latLng2.lng], {icon: _mapIcon}).addTo(_map2)
+    __markerOld2 = L.marker([_latLng2.lat, _latLng2.lng], {icon: _mapIcon}).addTo(_map2)
         .bindPopup(_nom2)
         .openPopup();
-
-    __tabMarker2.push(_marker1)
 
     _map2.setView([_latLng2.lat, _latLng2.lng], 17);
 
     _map1.sync(_map2);
 
     _map2.sync(_map1);
+}
+
+function rejectAdresseValidate(ev){
+    let restoId = ev.target.dataset.breakfast
+    let userId = ev.target.dataset.killer
+    let data = {restoId:restoId,userId:userId}
+    let request =new Request("/user/reject/etab/to/update",{
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    fetch(request).then(r=>{ 
+        if(r.status===200 && r.ok){
+            swal({
+                title: "Merci!",
+                text: "Information rejetée",
+                icon: "success",
+                button: "Ok",
+              }).then(value=>{
+                $("#infoRestoToValidateModal").modal("hide")
+              });
+        }
+    })
 }
