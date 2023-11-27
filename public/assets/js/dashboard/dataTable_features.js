@@ -12,7 +12,7 @@
 //         { title: 'Salary' },
 //     ],
 // }
-
+var __tabMarker1 = [], __tabMarker2 = []
 window.addEventListener('load', () => {
 
     document.querySelector(".content_global_super_admin_js_jheo").innerHTML = `
@@ -265,4 +265,215 @@ function bindContentTableTribuT(){
         
     </div>
     `
+}
+
+/**
+ * @Author Nantenaina
+ * Où: On utilise cette fonction dans l'onglet validation adresse de la rubrique Super Admin 
+ * Localisation du fichier: dataTable_features.js,
+ * Je veux: voir la liste des adresses à valider
+ *
+*/
+function getListeInfoTovalidate(e){
+    
+    let linkActives = document.querySelectorAll("#navbarSuperAdmin > ul > li > a")
+    linkActives.forEach(link=>{
+        if(link.classList.contains("text-primary"))
+            link.classList.remove("text-primary")
+    })
+    e.target.classList.add("text-primary")
+    document.querySelector("#list-tribu-g").style.display = "none"
+    // document.querySelector("#list-tribu-t").style.display = "none"
+    document.querySelector("#list-demande-partenaire").style.display = "none"
+    document.querySelector("#list-infoAvalider").style.display = "block"
+    let _table = `<table class="table" id="listeRestoAvaliderTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Nom</th>
+                            <th scope="col">Adresse</th>
+                            <th scope="col">Téléphone</th>
+                            <th scope="col">Demandeur</th>
+                            <th scope="col">Status</th>
+                            <th scope="col">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    `
+
+    fetch("/user/liste/information/to/update")
+        .then(response => response.json())
+        .then(r => {
+            console.log(r)
+            let _tr = "";
+            if(r.length > 0){
+                for (const items of r) {
+                    let item = items.info
+                    let _adresse = item.numvoie + " " + item.typevoie + " " + item.nomvoie + " " + item.compvoie + " " + item.codpost + " " + item.commune
+                    _adresse = _adresse.replace(/\s+/g, ' ').trim();
+                    _tr += `<tr style="text-align:center;vertical-align:middle;">
+                            <td>${item.denominationF}</td>
+                            <td>${_adresse}</td>
+                            <td>${item.tel}</td>
+                            <td><a href="/user/profil/${item.userId}" style="color:blue;">${items.userFullName}</a></td>
+                            <td><span style="background-color:blue; border-radius:5px; color:white; padding:5px">A valider</span></td>
+                            <td><button class="btn btn-info" onclick="getRestoInfoToValidate(${item.restoId}, ${item.userId})">Voir</button></td>
+                        </tr>`
+                }
+            }else{
+                _tr = `<tr><td colspan="4">Aucune information à valider</td></tr>`;
+            }
+            _table += _tr + "</tbody></table>"
+            document.querySelector(".content_list_infoAvalider_js").innerHTML = _table
+        })
+
+}
+
+function getRestoInfoToValidate(restoId, userId){
+    document.querySelector(".navbar-expand-lg").display = "none";
+    $("#infoRestoToValidateModal").modal("show")
+    //document.querySelector(".navbar-expand-lg").display = "block";
+    fetch(`/user/information/${restoId}/etablissement/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+            console.log(data)
+            let contentCurrentInfo = document.querySelector(".content_current_info_nanta_js")
+            let newCurrentInfo = document.querySelector(".content_new_info_nanta_js")
+            let new_info = data.new_info
+            let current_info = data.current_info
+            let _iconAdminUrl = ""
+            if(current_info.restaurant){
+                contentCurrentInfo.querySelector("span.rubrique").textContent = "RESTAURANT"
+                contentCurrentInfo.querySelector("#rubriqueName > a").textContent = current_info.denominationF
+                let current_adresse = current_info.numvoie + " " + current_info.typevoie + " " + current_info.nomvoie + " " /*+ current_info.compvoie + " "*/ + current_info.codpost + " " + current_info.villenorm
+                current_adresse = current_adresse.replace(/\s+/g, ' ').trim();
+                contentCurrentInfo.querySelector(".cmz-adresse > a").textContent = current_adresse.toLocaleLowerCase()
+
+                if(current_info.tel != ""){
+                    contentCurrentInfo.querySelector(".tel > .numero").textContent = current_info.tel
+                    contentCurrentInfo.querySelector(".cmz-tel").style.display = "block"
+                }else{
+                    contentCurrentInfo.querySelector(".tel > .numero").textContent = ""
+                    contentCurrentInfo.querySelector(".cmz-tel").style.display = "none"
+                }
+                contentCurrentInfo.querySelector(".cmz-categories-list").innerHTML = ""
+                checkRestoMenu(current_info,contentCurrentInfo.querySelector(".cmz-categories-list"))
+                _iconAdminUrl = "/assets/icon/NewIcons/icon-resto-new-B.png"
+
+            }else{
+                contentCurrentInfo.querySelector("span.rubrique").textContent = "GOLF"
+                _iconAdminUrl = "/assets/icon/NewIcons/icon-blanc-golf-vertC.png"
+            }
+
+            if(new_info.restoId){
+                newCurrentInfo.querySelector("span.rubrique").textContent = "RESTAURANT"
+                newCurrentInfo.querySelector("#rubriqueName > a").textContent = new_info.denominationF
+                let current_adresse = new_info.numvoie + " " + new_info.typevoie + " " + new_info.nomvoie + " " /*+ new_info.compvoie + " "*/ + new_info.codpost + " " + new_info.villenorm
+                current_adresse = current_adresse.replace(/\s+/g, ' ').trim();
+                newCurrentInfo.querySelector(".cmz-adresse > a").textContent = current_adresse.toLocaleLowerCase()
+
+                if(new_info.tel != ""){
+                    newCurrentInfo.querySelector(".tel > .numero").textContent = new_info.tel
+                    newCurrentInfo.querySelector(".cmz-tel").style.display = "block"
+                }else{
+                    newCurrentInfo.querySelector(".tel > .numero").textContent = ""
+                    newCurrentInfo.querySelector(".cmz-tel").style.display = "none"
+                }
+                newCurrentInfo.querySelector(".cmz-categories-list").innerHTML = ""
+                checkRestoMenu(new_info,newCurrentInfo.querySelector(".cmz-categories-list"))
+
+            }else{
+                newCurrentInfo.querySelector("span.rubrique").textContent = "GOLF"
+            }
+
+            let _map1, _map2
+
+            var _container1 = L.DomUtil.get('current-map');
+            if(_container1 != null){
+                _container1._leaflet_id = null;
+            }
+
+            if (__tabMarker1.length > 0) {
+                console.log(__tabMarker1.length)
+                for (const item of __tabMarker1) {
+                    _map1.removeLayer(item)
+                }
+            }
+            if (__tabMarker2.length > 0) {
+                console.log(__tabMarker2.length)
+                for (const item of __tabMarker2) {
+                    _map2.removeLayer(item)
+                }
+            }
+
+            var _container2 = L.DomUtil.get('new-map');
+            if(_container2 != null){
+                _container2._leaflet_id = null;
+            }
+            let _latLng1 = {lat:current_info.poiY,lng:current_info.poiX};
+            let _latLng2 = {lat:new_info.poiY,lng:new_info.poiX};
+            _map1 = L.map('current-map').setView([_latLng1.lat, _latLng1.lng], 17);;
+            _map2 = L.map('new-map').setView([_latLng2.lat, _latLng2.lng], 17);;
+            initMapForEtab(_map1,_map2, current_info.denominationF, new_info.denominationF, _latLng1, _latLng2, _iconAdminUrl)
+            
+        }).catch(error=>{
+            console.log(error)
+        })
+}
+
+function checkRestoMenu(resto,selector){
+    if(resto.brasserie == 1)
+        selector.innerHTML += `<span class="cmz-category">brasserie</span>`
+    if(resto.creperie == 1)
+        selector.innerHTML += `<span class="cmz-category">creperie</span>`
+    if(resto.fastFood == 1)
+        selector.innerHTML += `<span class="cmz-category">fast_food</span>`
+    if(resto.pizzeria == 1)
+        selector.innerHTML += `<span class="cmz-category">pizzeria</span>`
+
+    if(resto.boulangerie == 1)
+        selector.innerHTML += `<span class="cmz-category">boulangerie</span>`
+    if(resto.cafe == 1)
+        selector.innerHTML += `<span class="cmz-category">cafe</span>`
+    if(resto.bar == 1)
+        selector.innerHTML += `<span class="cmz-category">bar</span>`
+    if(resto.cuisineMonde == 1)
+        selector.innerHTML += `<span class="cmz-category">cuisine_monde</span>`
+    if(resto.salonThe == 1)
+        selector.innerHTML += `<span class="cmz-category">salon_the</span>`
+}
+
+function initMapForEtab(_map1,_map2, _nom1, _nom2, _latLng1, _latLng2, iconUrl){
+
+    let _mapIcon = L.icon({
+        iconUrl: iconUrl,
+        iconSize:[30, 45]
+    });
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(_map1);
+
+    let _marker1 = L.marker([_latLng1.lat, _latLng1.lng], {icon: _mapIcon}).addTo(_map1)
+        .bindPopup(_nom1)
+        .openPopup();
+
+    __tabMarker1.push(_marker1)
+
+    _map1.setView([_latLng1.lat, _latLng1.lng], 17);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(_map2);
+
+    let _marker2 = L.marker([_latLng2.lat, _latLng2.lng], {icon: _mapIcon}).addTo(_map2)
+        .bindPopup(_nom2)
+        .openPopup();
+
+    __tabMarker2.push(_marker1)
+
+    _map2.setView([_latLng2.lat, _latLng2.lng], 17);
+
+    _map1.sync(_map2);
+
+    _map2.sync(_map1);
 }

@@ -21,7 +21,8 @@ use App\Form\PublicationType;
 use App\Form\MixtePublicationType;
 
 use App\Form\UserSettingType;
-
+use App\Repository\BddRestoRepository;
+use App\Repository\BddRestoUserModifRepository;
 use App\Service\TributGService;
 
 use App\Service\Tribu_T_Service;
@@ -2036,7 +2037,7 @@ class UserController extends AbstractController
         $pseudo = $userPoster->getPseudo();
 
         if ($is_tribu == 1) { /* Add By Nantenaina */
-            
+
             $tributName  = $balise;
 
             $nameMuable = $tribu_t_joined_info->name_tribu_t_muable;
@@ -2607,6 +2608,72 @@ class UserController extends AbstractController
             ['isVerifiedTributGAdmin' => false]
         );
         $json = $serializerInterface->serialize($fields, 'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet validation adresse de la rubrique Super Admin
+     * Localisation du fichier : UserController.php
+     * Je veux : voir la liste des adresses à valider
+     * 
+     */
+    #[Route("/user/liste/information/to/update", name:"app_liste_resto_to_update", methods:["GET"])]
+    public function getListeRestoToUpdate(
+        SerializerInterface $serializerInterface,
+        BddRestoUserModifRepository $bddRestoUserModifRepository,
+        TributGService $tributGService,
+        PDOConnexionService $pDOConnexionService
+    ){
+        $fields = $bddRestoUserModifRepository->findAll();
+        $tab = [];
+        if(count($fields) > 0)
+            foreach ($fields as $key) {
+                $temp = [];
+                $key->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true));
+                $key->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true));
+                $key->setNomvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true));
+                $key->setCompvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true));
+                $key->setVillenorm(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true));
+                $key->setCommune(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true));
+                $temp["info"] = $key;
+                $temp["userFullName"] = $tributGService->getFullName($key->getUserId());
+                array_push($tab, $temp);
+            }
+
+        $json = $serializerInterface->serialize($tab, 'json');
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet validation adresse de la rubrique Super Admin
+     * Localisation du fichier : UserController.php
+     * Je veux : voir la liste des adresses à valider
+     * 
+     */
+    #[Route("/user/information/{restoId}/etablissement/{userId}", name:"app_information_etablissement", methods:["GET"])]
+    public function getInfoEtab(
+        $restoId,
+        $userId,
+        SerializerInterface $serializerInterface,
+        BddRestoUserModifRepository $bddRestoUserModifRepository,
+        BddRestoRepository $bddRestoRepository,
+        PDOConnexionService $pDOConnexionService
+    ){
+        $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
+        $key->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true));
+        $key->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true));
+        $key->setNomvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true));
+        $key->setCompvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true));
+        $key->setVillenorm(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true));
+        $key->setCommune(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true));
+
+        $resto = $bddRestoRepository->findOneById(intval($restoId));
+        $tab = [];
+        $tab["new_info"] = $key;
+        $tab["current_info"] = $resto;
+        $json = $serializerInterface->serialize($tab, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 

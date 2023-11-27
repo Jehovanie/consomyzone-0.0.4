@@ -9,6 +9,7 @@
 	<link rel="stylesheet" href="{{asset('assets/css/account/listTribuG_sp.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/listTribuG_sp_respons.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/home/search.css')}}">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
 
 {% endblock %}
@@ -16,6 +17,7 @@
 {% block javascripts %}
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
 	<script src="{{ asset('assets/js/dashboard/tributG.js') }}" defer></script>
+	<script src="{{ asset('assets/js/account/L.Map.Sync.js') }}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	<script src="{{ asset('assets/js/dashboard/dataTable_features.js') }}" defer></script>
 
@@ -42,6 +44,10 @@
 								</li> #}
 								<li class="nav-item">
 									<a class="nav-link list-partenaire" data-target="list-demande-partenaire" onclick="getListeDemandePartenariat(event)">Liste des demande de partenariats</a>
+								</li>
+
+								<li class="nav-item">
+									<a class="nav-link list-infoAvalider" data-target="list-infoAvalider" onclick="getListeInfoTovalidate(event)">Validation adresse</a>
 								</li>
 								
 							</ul>
@@ -94,10 +100,49 @@
 							</h5>
 						</div>
 						<div class="container content_global_super_admin content_global_super_admin_tribu_t_js_jheo">
-							<div class="content_chargement_liste_partenaire_nanta_js">
+							<div class="content_chargement_liste_partenaire_nanta_js" style="width:100%;">
 								<div class="spinner-border spinner-border text-info" role="status">
 									<span class="visually-hidden">Loading...</span>
 								</div>
+
+							</div>
+						</div>
+					</div>
+					
+				</div>
+
+				<div class="row content_right_actualite content-super-admin mb-4" style="display:none;" id="list-infoAvalider">
+					<div class="content_list">
+						<div class="entete mb-2 ms-3">
+							<h5>
+								<i class="fa-solid  fa-list"></i>
+								Liste des restaurants à valider
+							</h5>
+						</div>
+						<div class="container content_global_super_admin content_global_super_admin_tribu_t_js_jheo">
+							<div class="content_list_infoAvalider_js" style="width:100%;">
+								<div class="spinner-border spinner-border text-info" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+
+								{# <table class="table">
+									<thead>
+										<tr>
+											<th scope="col">Nom</th>
+											<th scope="col">Adresse</th>
+											<th scope="col">Téléphone</th>
+											<th scope="col">Action</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td>LE DEBOTTE</td>
+											<td>18 boulevard du general de gaulle 44200 nantes</td>
+											<td>02 49 62 09 79</td>
+											<td><button class="btn btn-primary">Valider</button></td>
+										</tr>
+									</tbody>
+								</table> #}
 
 							</div>
 						</div>
@@ -203,6 +248,89 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-primary" onclick="sendFeedBackForPartenariat()">Envoyer</button>
 				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="infoRestoToValidateModal" tabindex="-1" aria-labelledby="infoRestoToValidateModalLabel" aria-hidden="true" style="z-index: 99999;">
+		<div class="modal-dialog modal-xl modal-dialog-scrollable">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="infoRestoToValidateModalLabel">Comparaison des informations</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="row" style="text-align:justify;">
+					<div class="col-6" style="border-right:1px solid black">
+						<div style="font-weight:bold;" class="text-primary">Information actuelle</div>
+						<div class="row container-depart pt-4 element content_current_info_nanta_js">
+							<div class="col-md-12">
+								<div id="current-map"></div>
+								<div class="cmz-rubrique mb-2 mt-3">
+									<span class="rubrique small">
+											
+									</span>
+								</div>
+								<h5 class="card-title" id="rubriqueName">
+									<a class="name_to_filter_js_jheo" href="#"></a>
+								</h5>
+								<p class="card-text cmz-adresse">
+									<a href="#" class="small"></a>
+								</p>
+								<div class="cmz-categories-list">
+									<span class="cmz-category">fast_food</span>
+									<span class="cmz-category">cuisine_monde</span>
+								</div>
+
+								<div class="cmz-tel mb-2">
+									<button onclick="displayContact(this)" type="button" class="btn btn-secondary">
+										<i class="bi bi-telephone-plus"></i> Afficher le N°
+									</button>
+									<span style="display:none;" class="tel">
+										<span>Tél : </span><span class="numero"></span>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="col-6">
+						<div style="font-weight:bold;" class="text-primary">Nouvelle information</div>
+						<div class="row container-depart pt-4 element content_new_info_nanta_js">
+							<div class="col-md-12">
+								<div id="new-map"></div>
+								<div class="cmz-rubrique mb-2 mt-3">
+									<span class="rubrique small">
+											
+									</span>
+								</div>
+								<h5 class="card-title" id="rubriqueName">
+									<a class="name_to_filter_js_jheo" href="#"></a>
+								</h5>
+								<p class="card-text cmz-adresse">
+									<a href="#" class="small"></a>
+								</p>
+								<div class="cmz-categories-list">
+									<span class="cmz-category">fast_food</span>
+									<span class="cmz-category">cuisine_monde</span>
+								</div>
+
+								<div class="cmz-tel mb-2">
+									<button onclick="displayContact(this)" type="button" class="btn btn-secondary">
+										<i class="bi bi-telephone-plus"></i> Afficher le N°
+									</button>
+									<span style="display:none;" class="tel">
+										<span>Tél : </span><span class="numero"></span>
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Rejeter</button>
+				<button type="button" class="btn btn-primary">Valider</button>
 			</div>
 			</div>
 		</div>
