@@ -7004,3 +7004,38 @@ function addPhotoToGallery(e){
   
 }
 
+/**
+ * @author Elie
+ * @constructor Validation photo for Super Admin
+ * @param {*} id_resto 
+ * @param {*} id_gallery 
+ * @param {*} file_path 
+ */
+function validatePhoto(id_resto, id_gallery, file_path){
+
+  let file_name = file_path.split("/")[file_path.split("/").length - 1].trim()
+
+
+  fetch( new Request("/restaurant/validate/photos/"+id_resto+"/"+id_gallery, {
+      method: "POST",
+      headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+      },
+      body: JSON.stringify({image_name : file_name}),
+  })
+  ).then(response=>{
+    if(response.status == 201){
+      swal({
+        title: "Photo accepté!",
+        text: "Le photo est actuellement affiché dans le detail de restaurant!",
+        icon: "success",
+        button: "OK",
+      }).then(re=>{
+        if(document.querySelector("#navbarSuperAdmin > ul > li:nth-child(4) > a")){
+          document.querySelector("#navbarSuperAdmin > ul > li:nth-child(4) > a").click()
+        }
+      });
+    }
+  })
+}

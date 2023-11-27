@@ -1567,32 +1567,36 @@ class RestaurantController extends AbstractController
         ], 201);
     }
 
-    #[Route("/restaurant/avalider/{id_restaurant}", name: "app_test_avaliser_resto")]
-    public function test($id_restaurant, Filesystem $filesyst){
+    #[Route("/restaurant/not-valid", name: "app_not_valid_resto")]
+    public function getRestoNotValidate(Filesystem $filesyst, UserService $userServ):Response
+    {
 
-        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/avalider/restaurant/".$id_restaurant."/";
+        $not_valid = $userServ->getAllPhotoNotValidResto();
 
-        $tabPhoto = [];
+        // $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/avalider/restaurant/".$id_restaurant."/";
 
-        $dir_exist = $filesyst->exists($folder);
+        // $tabPhoto = [];
 
-        // dd($folder);
+        // $dir_exist = $filesyst->exists($folder);
+
+        // // dd($folder);
 
 
-        if($dir_exist){
-            $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
+        // if($dir_exist){
+        //     $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
 
-            // dd($images);
-            foreach ($images as $image) {
-                $photo = explode("uploads/avalider",$image)[1];
-                $photo = "/public/uploads/avalider".$photo;
-                array_push($tabPhoto, ["photo"=>$photo]);
-            }
-        }
+        //     // dd($images);
+        //     foreach ($images as $image) {
+        //         $photo = explode("uploads/avalider",$image)[1];
+        //         $photo = "/public/uploads/avalider".$photo;
+        //         array_push($tabPhoto, ["photo"=>$photo]);
+        //     }
+        // }
 
-        return $this->render("home/test.html.twig",[
-            "photos"=>$tabPhoto,
-        ]);
+        // return $this->render("home/test.html.twig",[
+        //     "photos"=>$tabPhoto,
+        // ]);
+        return $this->json($not_valid);
     }
 
     /**

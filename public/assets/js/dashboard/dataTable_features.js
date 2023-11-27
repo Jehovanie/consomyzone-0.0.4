@@ -477,3 +477,74 @@ function initMapForEtab(_map1,_map2, _nom1, _nom2, _latLng1, _latLng2, iconUrl){
 
     _map2.sync(_map1);
 }
+
+function getListePhotoTovalidate(e){
+    
+    let linkActives = document.querySelectorAll("#navbarSuperAdmin > ul > li > a")
+    linkActives.forEach(link=>{
+        if(link.classList.contains("text-primary"))
+            link.classList.remove("text-primary")
+    })
+    e.target.classList.add("text-primary")
+    document.querySelector("#list-tribu-g").style.display = "none"
+    // document.querySelector("#list-tribu-t").style.display = "none"
+    document.querySelector("#list-demande-partenaire").style.display = "none"
+    document.querySelector("#list-infoAvalider").style.display = "block"
+
+    document.querySelector("#titre-info").textContent = "Liste des demandes d'approbation des photos";
+
+    let _table = `<table class="table" id="listeRestoAvaliderTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Demandes reçus</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    `
+
+    fetch("/restaurant/not-valid")
+        .then(response => response.json())
+        .then(r => {
+            console.log(r)
+            let _tr = "";
+            if(r.length > 0){
+                for (const item of r) {
+                    // let item = item
+                    // let _adresse = item.numvoie + " " + item.typevoie + " " + item.nomvoie + " " + item.compvoie + " " + item.codpost + " " + item.commune
+                    // _adresse = _adresse.replace(/\s+/g, ' ').trim();
+                    _tr += `<tr style="text-align:center;vertical-align:middle;">
+                            <td>
+                                <div class="card mb-3">
+                                    <div class="row g-0">
+                                    <div class="col-md-4">
+                                        <img src="${item.photo_path}" class="img-fluid rounded-start h-100" alt="...">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="card-body">
+                                        <p class="card-text"><a href="/user/profil/${item.user_id}" class="text-body-primary" style="color:blue !important;">${item.username}</a> a ajouté un photo dans un restaurant</p>
+                                        <h5 class="card-title">${item.denomination_f}</h5>
+                                        <p class="card-text"><address>Adresse : ${item.adresse}</address></p>
+                                        <p class="card-text">Date de demande : <small class="text-body-secondary">${item.date_creation}</small></p>
+                                        <button class="btn btn-success btn-sm m-2" onclick='validatePhoto(${item.resto_id}, ${item.id_gallery},\"${item.photo_path }\")'>Accepter</button> <button class="btn btn-danger btn-sm m-2" onclick="">Réfuser</button>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                        </tr>`
+                }
+            }else{
+                _tr = `<tr><td colspan="4">Aucune demande à valider</td></tr>`;
+            }
+            _table += _tr + "</tbody></table>"
+            document.querySelector(".content_list_infoAvalider_js").innerHTML = _table
+
+            $('#listeRestoAvaliderTable').DataTable({
+                "language": {
+                  url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                }
+              });
+        })
+
+}

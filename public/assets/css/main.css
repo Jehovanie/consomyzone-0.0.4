@@ -2738,3 +2738,7 @@ textarea {
 .h-40{
     height: 40px !important;
 }
+.photo-not-valid{
+    width: 150px;
+    height: 150px;
+}

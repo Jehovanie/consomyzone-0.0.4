@@ -292,6 +292,26 @@ class UserService  extends PDOConnexionService{
         return $result;
     }
 
+    public function getAllPhotoNotValidResto()
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT photo_resto.id as id_gallery, resto_id, date_creation, photo_path, denomination_f, photo_resto.user_id as user_id, 
+        concat(numvoie, \" \", typevoie,\" \",  nomvoie, \" \", compvoie, \" \", codpost, \" \", bdd_resto.commune) as adresse, concat(firstname, \" \", lastname) as username FROM photo_resto 
+        INNER JOIN bdd_resto ON photo_resto.resto_id = bdd_resto.id INNER JOIN consumer ON photo_resto.user_id = consumer.user_id WHERE is_valid = 0");
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public function getAllPhotoNotValidGolf()
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM photo_golf WHERE is_valid = 0");
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 
 
 }
