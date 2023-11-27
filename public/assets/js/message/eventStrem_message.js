@@ -63,10 +63,10 @@ if(document.querySelector(".content_entete_msg_grp_jheo_js")){
         //// get data
         
         const all_messages = JSON.parse(event.data);
-        console.log(all_messages)
+        //console.log(all_messages)
 
         all_messages.forEach(message => {
-            console.log(message)
+           // console.log(message)
             const idExpediteur=parseInt(message.id_expediteur);
             const currentuser=parseInt(document.querySelector(".spid_js_faniry").classList[1])
             

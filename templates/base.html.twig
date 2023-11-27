@@ -92,12 +92,17 @@
         {% endif %}
 
         {% block body %}{% endblock %}
-        
+        <audio id="myAudio_faniry_js" controls hidden>
+            <source src="https://drive.google.com/uc?export=download&id=1M95VOpto1cQ4FQHzNBaLf0WFQglrtWi7"  type="audio/ogg">
+            <source src="https://drive.google.com/uc?export=download&id=1M95VOpto1cQ4FQHzNBaLf0WFQglrtWi7" type="audio/mpeg">
+        </audio>
+        <button id="btn_faniry_js"></button>
         <script src="{{asset('assets/js/bootstrap/bootstrap.min.js')}}"></script>
         <script src="{{asset('assets/js/const.js')}}"></script>
         <script src="{{ asset('assets/js/Langue/translate.js') }}" defer></script>
         <script src="{{ asset('assets/js/owlcarousel/owl.carousel.min.js')}}"></script>
         {% block googleApi %}{% endblock %}
+
     </body>
 </html>
 

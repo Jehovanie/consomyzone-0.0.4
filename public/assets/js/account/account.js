@@ -37,6 +37,19 @@ if( document.querySelector(".information_user_conected_jheo_js")){
             document.querySelector(".nbr_message_jheo_js").innerText= new_nbr_message > 9 ? new_nbr_message : `0${new_nbr_message}`;
         }
 
+        const notificationContainer=document.querySelector(".content_card_msg_jheo_js")
+        let oldAllNotificationsId =[]
+        let allUserAlreadyNotified = []
+        if(notificationContainer){
+            const allNotifications = Array.from(notificationContainer.querySelectorAll(".show_single_msg_popup_jheo_js"))
+            oldAllNotificationsId =allNotifications.length > 0 ? 
+            allNotifications.map(notificationContainer=>parseInt(notificationContainer.id)) :[]
+            allUserAlreadyNotified=allNotifications.length > 0 ? 
+            allNotifications.map(notificationContainer=>parseInt(notificationContainer.dataset.toggleOtherId)) :[]
+        }
+        console.log(oldAllNotificationsId)
+        console.log(allUserAlreadyNotified)
+        console.log(new_message)
         /// check if there is no message in the modal.
         if(document.querySelectorAll(".show_single_msg_popup_jheo_js").length === 0){ 
 
@@ -158,15 +171,27 @@ if( document.querySelector(".information_user_conected_jheo_js")){
         if( event.data != ""){
             /// all notifications
             const all_notification = JSON.parse(event.data);
-
+            const notificationContainer=document.querySelector(".content_card_notification_jheo_js")
+            let oldAllNotificationsId =[]
+            if(notificationContainer){
+                const allNotifications = Array.from(notificationContainer.querySelectorAll(".single_notif_jheo_js"))
+                oldAllNotificationsId =allNotifications.length > 0 ? 
+                allNotifications.map(notificationContainer=>parseInt(notificationContainer.dataset.toggleNotifId)) :[]
+            }
+            
             //// update number notifications and show red badge when there is new notification don't show
             updateNbrNotificationAndShowBadge(all_notification)
           
             //// generate new notification 
             injectNewCardNotification(all_notification);
 
+            showToastNotification(all_notification,oldAllNotificationsId);
+
+            
             //// update all sse
             updateAllWhenStateChange(all_notification);
+
+           
 
             ///will generate toast js
         }
@@ -415,7 +440,94 @@ if (document.querySelector("#send-request")) {
 
 /**---------------------end tommy----------------- */
 
+/**
+ * @author faniry
+ * cette fonction fait apparaitre des toast pour les notifications pour plus de visibilité
+ * @param int[] notifications  (le resultat du query du sse )
+ * @param int[] allNotificationsId  (les notifications dèja charger par l'appli)
+ */
+function showToastNotification(notifications, allNotificationsId){
+    if(allNotificationsId.length > 0)
+        for(const notification of notifications){
+            if(allNotificationsId.indexOf(parseInt(notification.id)) < 0 ){ 
+                    console.log("eee "+ notification.id +" "+allNotificationsId.indexOf(parseInt(notification.id)))
+                    const div = document.createElement("div");
+                    div.setAttribute("id", `toast_faniry_${notification.id}`)
+                    div.innerHTML = `<a class="lc kg ug" href="${notification.notification_type}">
+                            <div class="h sa wf uk th ni ej cb">
+                                <img class="image_profil_navbar_msg" src="${notification.photoDeProfil ? "/public"+notification.photoDeProfil: '/public/uploads/users/photos/default_pdp.png'}" alt="User"/>
+                            </div>
+                            <div>
+                                <figure>
+                                    <blockquote class="blockquote">
+                                        <h6 class="un zn gs">
+                                            ${notification.fullname}
+                                        </h6>
+                                        <p class="mn hc">
+                                            ${notification.content}
+                                        </p>
+                                    </blockquote>
+                                    <figcaption class="blockquote-footer" style="float: right;">
+                                        <cite class="fontSize07">${notification.datetime}</cite>
+                                    </figcaption>
+                                </figure>
+                            </div>
+                        </a>`;
+                    const alert= "#842029", info= "#084298" , news= "#055160";
+                    const bg_alert= "#f8d7da", bg_info= "#cfe2ff" , bg_news= "#cff4fc";
+                    const duration=-1;
+                    const timeOutDelay = 600;
 
+                    const audio = new Audio('https://drive.google.com/uc?export=download&id=1M95VOpto1cQ4FQHzNBaLf0WFQglrtWi7');
+                    audio.play().then(r=>{}).catch(error=>{
+                        console.log(error)
+                        
+                    }).finally(()=>{
+                        Toastify({
+                            // text: message,
+                            node: div, 
+                            duration: duration,
+                            // destination: "https://github.com/apvarun/toastify-js",
+                            // newWindow: true,
+                            close: true,
+                            gravity:"bottom", // `top` or `bottom`
+                            position: 'left', // `left`, `center` or `right`
+                            stopOnFocus: true, // Prevents dismissing of toast on hover
+                            style: {
+                            //color: alert ,
+                            background:  "linear-gradient(to right, #00b09b, #96c93d)",
+                            fontSize: '0.9rem',
+                            width: '350px',
+                            maxWidth: screen.width <= 375 ? '75vw': '93vw'
+                            },
+                            // onClick: function(){ // Callback after click
+                            //     clickedOnToastMessage(toastId)
+                            // } 
+                        }).showToast();
+                    });
+                    // setTimeout(() => {
+                       
+                    // }, timeOutDelay);
+                    
+            }
+        }
+}
+
+function showToastMessage(messageToasts, allMessageNotifications) {
+
+}
+
+/**not used */
+function simulateUserClick(element){
+    var events = ["mousemove", "mouseover", "focus", "mousedown", "mouseup", "click"];
+ 
+
+  for (var i = 0; i < events.length; i++) {
+    var eventObject = new Event(events[i], {"bubbles":true, "cancelable":false});
+
+     document.dispatchEvent(eventObject);
+  }
+}
 
 function updateNbrNotificationAndShowBadge(allNotifications){
 
@@ -494,6 +606,7 @@ function injectNewCardNotification(allNotifications){
                         fullname : item.fullname,
                         isConnected : item.is_connected
                     }
+
                 )
             })
         }
@@ -603,6 +716,7 @@ function createAndAddCardNotification(
     }else{
         contentNotificationHtml.appendChild(notification_item)
     }
+    
     // contentNotificationHtml.appendChild(notification_item)
 
 }

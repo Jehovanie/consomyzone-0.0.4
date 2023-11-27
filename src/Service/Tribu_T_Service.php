@@ -2274,8 +2274,10 @@ class Tribu_T_Service extends PDOConnexionService
                     $emailUserReceivedNotification = $user->getEmail();
                     $firstnameUserReceivedNotification  = $userService->getUserFirstName($user->getId());
                     $lastnameUserReceivedNotification  = $userService->getUserLastName($user->getId());
+                    $link="/user/tribu/msg?name=".$tribu_t."&type=t";
+                    //$content.=";". $link;
                     $notificationService->sendNotificationForOne(intval($idSender), intval($idUserReceivedNotification),
-                    "message tribu G",$content,"");
+                    $link,$content,$link);
                 }
                
                 

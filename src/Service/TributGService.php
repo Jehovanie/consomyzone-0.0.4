@@ -1822,8 +1822,10 @@ class TributGService extends PDOConnexionService{
                         $firstnameUserReceivedNotification  = $userService->getUserFirstName($user->getId());
                         $lastnameUserReceivedNotification  = $userService->getUserLastName($user->getId());
                         $statusUserReceivedNotification  = $this->getCurrentStatus($tribu_g, $user->getId());
+                        $link="/user/tribu/msg?name=".$tribu_g."&type=g";
+                        //$content.=";". $link;
                         $notificationService->sendNotificationForOne(intval($idSender), intval($idUserReceivedNotification),
-                        "message tribu G",$content,"");
+                        $link,$content,"");
                     }
                 }
                 //i will use sendNotificationForOne in notificationService

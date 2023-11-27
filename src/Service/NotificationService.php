@@ -303,7 +303,7 @@ class NotificationService extends PDOConnexionService{
      */
     public function fetchAllNotification($table){
         // $statement = getPDO()->prepare("SELECT * FROM " . $table . " WHERE isShow=0");
-        $statement = $this->getPDO()->prepare("SELECT t.id, t.user_id, t.user_post, t.type, t.content, t.isShow, t.isRead, t.datetime, t.tribu, u.type, u.is_connected FROM $table as t inner join user as u on t.user_post = u.id");
+        $statement = $this->getPDO()->prepare("SELECT t.id, t.user_id, t.user_post, t.type as notification_type, t.content, t.isShow, t.isRead, t.datetime, t.tribu, u.type, u.is_connected FROM $table as t inner join user as u on t.user_post = u.id");
         $statement->execute();
         $notifications = $statement->fetchAll(PDO::FETCH_ASSOC);
 
