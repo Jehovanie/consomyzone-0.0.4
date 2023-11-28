@@ -789,110 +789,129 @@ let apiJitsi
 
 function joinMeet(...args) {
 
-    let room = args[0]
-    let parentNodeId = args[1]
+    // try{
+    //     // AUDIO_FOR_JITSI = document.querySelector("#myAudio_faniry_js");
+    //     // AUDIO_FOR_JITSI.pause();
+    //     // AUDIO_FOR_JITSI.currentTime = 0;
+       
+       
+    // }catch(e){
+    //     console.log(e)
+    // }finally{
+        let room = args[0];
+        let parentNodeId = args[1];
 
-    // let user_name = document.querySelector("#my_full_name").textContent.trim()
+        // let user_name = document.querySelector("#my_full_name").textContent.trim()
 
-    if (document.querySelector("#visioMessageElie")) {
-        document.querySelector("#visioMessageElie").classList.remove("d-none")
-    }
-
-    if (document.querySelector("#minimizeVisio")) {
-        document.querySelector("#minimizeVisio").innerHTML =""
-        // document.querySelector("#minimizeVisio").style = "display :block !important;"
-    }
-
-    if (document.querySelector('#' + parentNodeId).querySelector("iframe")) {
-        document.querySelector('#' + parentNodeId).querySelector("iframe").remove()
-    }
-
-    toolbarButtonsList = [
-        'camera',
-        'chat',
-        'closedcaptions',
-        'desktop',
-        'download',
-        'embedmeeting',
-        'etherpad',
-        'feedback',
-        'filmstrip',
-        'fullscreen',
-        'hangup',
-        'help',
-        'highlight',
-        // 'invite',
-        'linktosalesforce',
-        'livestreaming',
-        'microphone',
-        'noisesuppression',
-        // 'participants-pane',
-        'profile',
-        'raisehand',
-        'recording',
-        'security',
-        'select-background',
-        'settings',
-        'shareaudio',
-        'sharedvideo',
-        'shortcuts',
-        'stats',
-        'tileview',
-        'toggle-camera',
-        'videoquality',
-        'whiteboard',
-    ]
-
-    const options = {
-        roomName: home_room + room,
-        width: "100%",
-        height: "100%",
-        lang: 'fr',
-        jwt: jwt,
-        // configOverwrite: { prejoinPageEnabled: false },
-        configOverwrite: { prejoinPageEnabled: false, toolbarButtons: toolbarButtonsList },
-        interfaceConfigOverwrite: { VERTICAL_FILMSTRIP: true },
-        parentNode: document.querySelector('#' + parentNodeId),
-    };
-
-    apiJitsi = new JitsiMeetExternalAPI(domain, options)
-    // console.log(apiJitsi)
-    apiJitsi.executeCommand('displayName', user_name);
-
-    setStatusMeetByName(room, "progress")
-
-    const iframe = apiJitsi.getIFrame();
-
-    // localStorage.setItem("room_name", room)
-
-    iframe.scrollIntoView();
-
-    apiJitsi.on('readyToClose', () => {
-
-        if (localStorage.getItem("room_name")) {
-            localStorage.removeItem("room_name")
+        if (document.querySelector("#visioMessageElie")) {
+          document
+            .querySelector("#visioMessageElie")
+            .classList.remove("d-none");
         }
 
         if (document.querySelector("#minimizeVisio")) {
-            document.querySelector("#minimizeVisio").innerHTML = ""
-            document.querySelector("#minimizeVisio").style = "display:none !important;"
+          document.querySelector("#minimizeVisio").innerHTML = "";
+          // document.querySelector("#minimizeVisio").style = "display :block !important;"
         }
 
-        if (document.querySelector("#visioMessageElie")) {
-            document.querySelector("#visioMessageElie").style = "display:none !important;"
+        if (
+          document.querySelector("#" + parentNodeId).querySelector("iframe")
+        ) {
+          document
+            .querySelector("#" + parentNodeId)
+            .querySelector("iframe")
+            .remove();
         }
 
-        setStatusMeetByName(room, "finished")
+        toolbarButtonsList = [
+          "camera",
+          "chat",
+          "closedcaptions",
+          "desktop",
+          "download",
+          "embedmeeting",
+          "etherpad",
+          "feedback",
+          "filmstrip",
+          "fullscreen",
+          "hangup",
+          "help",
+          "highlight",
+          // 'invite',
+          "linktosalesforce",
+          "livestreaming",
+          "microphone",
+          "noisesuppression",
+          // 'participants-pane',
+          "profile",
+          "raisehand",
+          "recording",
+          "security",
+          "select-background",
+          "settings",
+          "shareaudio",
+          "sharedvideo",
+          "shortcuts",
+          "stats",
+          "tileview",
+          "toggle-camera",
+          "videoquality",
+          "whiteboard",
+        ];
 
-        //document.querySelector('#'+parentNodeId).innerHTML = ""
+        const options = {
+          roomName: home_room + room,
+          width: "100%",
+          height: "100%",
+          lang: "fr",
+          jwt: jwt,
+          // configOverwrite: { prejoinPageEnabled: false },
+          configOverwrite: {
+            prejoinPageEnabled: false,
+            toolbarButtons: toolbarButtonsList,
+          },
+          interfaceConfigOverwrite: { VERTICAL_FILMSTRIP: true },
+          parentNode: document.querySelector("#" + parentNodeId),
+        };
 
-        const currentUrl = window.location.href;
+        apiJitsi = new JitsiMeetExternalAPI(domain, options);
+        // console.log(apiJitsi)
+        apiJitsi.executeCommand("displayName", user_name);
 
-        if (currentUrl.includes("user/message")) {
+        setStatusMeetByName(room, "progress");
 
-            $("#visioMessageElie").modal("hide")
+        const iframe = apiJitsi.getIFrame();
 
-            let node = ""
+        // localStorage.setItem("room_name", room)
+
+        iframe.scrollIntoView();
+
+        apiJitsi.on("readyToClose", () => {
+          if (localStorage.getItem("room_name")) {
+            localStorage.removeItem("room_name");
+          }
+
+          if (document.querySelector("#minimizeVisio")) {
+            document.querySelector("#minimizeVisio").innerHTML = "";
+            document.querySelector("#minimizeVisio").style =
+              "display:none !important;";
+          }
+
+          if (document.querySelector("#visioMessageElie")) {
+            document.querySelector("#visioMessageElie").style =
+              "display:none !important;";
+          }
+
+          setStatusMeetByName(room, "finished");
+
+          //document.querySelector('#'+parentNodeId).innerHTML = ""
+
+          const currentUrl = window.location.href;
+
+          if (currentUrl.includes("user/message")) {
+            $("#visioMessageElie").modal("hide");
+
+            let node = "";
             let message_id = 0;
 
             let content = `<div class="qb-chat vh-chat hi-chat vj-chat yr-chat el-chat yl-chat">
@@ -900,7 +919,7 @@ function joinMeet(...args) {
                 <i class="fas fa-video-camera me-2 ms-1"></i>
                 Appel términé
                 </p> 
-            </div>`
+            </div>`;
 
             // if(args[2]){
             //     node = args[2]
@@ -908,80 +927,111 @@ function joinMeet(...args) {
             //     node.parentElement.parentElement.parentElement.parentElement.innerHTML = content
             // }
 
-
             if (args[2]) {
-                if (args[3]) {
-                    node = args[2]
-                    message_id = node.parentElement.parentElement.parentElement.parentElement.getAttribute("id").replaceAll(/[^0-9]/g, "");
-                    node.parentElement.parentElement.parentElement.parentElement.innerHTML = content
-                } else {
-                    message_id = document.querySelector("#content_discussion_elie").lastElementChild.getAttribute("id").replaceAll(/[^0-9]/g, "");
-                    document.querySelector("#content_discussion_elie").lastElementChild.innerHTML = content
-                }
-
+              if (args[3]) {
+                node = args[2];
+                message_id =
+                  node.parentElement.parentElement.parentElement.parentElement
+                    .getAttribute("id")
+                    .replaceAll(/[^0-9]/g, "");
+                node.parentElement.parentElement.parentElement.parentElement.innerHTML =
+                  content;
+              } else {
+                message_id = document
+                  .querySelector("#content_discussion_elie")
+                  .lastElementChild.getAttribute("id")
+                  .replaceAll(/[^0-9]/g, "");
+                document.querySelector(
+                  "#content_discussion_elie"
+                ).lastElementChild.innerHTML = content;
+              }
             }
 
             let msg = {
-                text: content,
-                imagges: [],
-                files: []
+              text: content,
+              imagges: [],
+              files: [],
+            };
+
+            fetch("/update/oneMessage/" + message_id, {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(msg),
+            })
+              .then((response) => response.json())
+              .then((res) => {
+                //alert("terminé")
+              });
+
+            if (
+              document.querySelector("#" + parentNodeId).querySelector("iframe")
+            ) {
+              document
+                .querySelector("#" + parentNodeId)
+                .querySelector("iframe")
+                .remove();
             }
+          } else {
+            document.querySelector("#" + parentNodeId).innerHTML = "";
+          }
 
-            fetch('/update/oneMessage/' + message_id, {
-                method: "POST",
-                headers: {
-                    'Accept': 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(msg)
-            }).then(response => response.json())
-                .then(res => {
-                    //alert("terminé")
-                })
+          if (document.querySelector("#user_name_chat")) {
+            document.querySelector("#user_name_chat").innerText =
+              "VisioConférence";
+          }
+          if (document.querySelector("#visioMessageElieLabel")) {
+            document.querySelector("#visioMessageElieLabel").innerText =
+              "VisioConférence";
+          }
+        });
 
-            if (document.querySelector('#' + parentNodeId).querySelector("iframe")) {
-                document.querySelector('#' + parentNodeId).querySelector("iframe").remove()
+        if (document.querySelector(".btn-minimize-elie")) {
+          // document.querySelector(".btn-minimize-elie").setAttribute("onclick", "joinMeet('" + room + "','minimizeVisio', this)")
+          document
+            .querySelector(".btn-minimize-elie")
+            .setAttribute("data-room", room);
+        }
+
+        apiJitsi.addEventListener("participantJoined", (e) => {
+          if (document.querySelector("#user_name_chat")) {
+            if (
+              !document
+                .querySelector("#user_name_chat")
+                .textContent.trim()
+                .includes(e.displayName)
+            ) {
+              document.querySelector("#user_name_chat").innerText =
+                document
+                  .querySelector("#user_name_chat")
+                  .textContent.trim()
+                  .replace("VisioConférence", "Vous") +
+                ", " +
+                e.displayName;
             }
-        } else {
-            document.querySelector('#' + parentNodeId).innerHTML = ""
-        }
-
-
-        if (document.querySelector("#user_name_chat")) {
-            document.querySelector("#user_name_chat").innerText = "VisioConférence"
-        }
-        if (document.querySelector("#visioMessageElieLabel")) {
-            document.querySelector("#visioMessageElieLabel").innerText = "VisioConférence"
-        }
-
-    })
-
-
-    if (document.querySelector(".btn-minimize-elie")) {
-        // document.querySelector(".btn-minimize-elie").setAttribute("onclick", "joinMeet('" + room + "','minimizeVisio', this)")
-        document.querySelector(".btn-minimize-elie").setAttribute("data-room", room)
-    }
-
-    apiJitsi.addEventListener('participantJoined', (e) => {
-
-        if (document.querySelector("#user_name_chat")) {
-
-            if (!document.querySelector("#user_name_chat").textContent.trim().includes(e.displayName)) {
-
-                document.querySelector("#user_name_chat").innerText = document.querySelector("#user_name_chat").textContent.trim().replace("VisioConférence", "Vous") + ", " + e.displayName
+          }
+          if (document.querySelector("#visioMessageElieLabel")) {
+            if (
+              !document
+                .querySelector("#visioMessageElieLabel")
+                .textContent.trim()
+                .includes(e.displayName)
+            ) {
+              document.querySelector("#visioMessageElieLabel").innerText =
+                document
+                  .querySelector("#visioMessageElieLabel")
+                  .textContent.trim()
+                  .replace("VisioConférence", "Vous") +
+                ", " +
+                e.displayName;
             }
-
-        }
-        if (document.querySelector("#visioMessageElieLabel")) {
-
-            if (!document.querySelector("#visioMessageElieLabel").textContent.trim().includes(e.displayName)) {
-
-                document.querySelector("#visioMessageElieLabel").innerText = document.querySelector("#visioMessageElieLabel").textContent.trim().replace("VisioConférence", "Vous") + ", " + e.displayName
-            }
-        }
-
-
-    })
+          }
+        });
+    //}
+    
+    
 
 }
 

@@ -1259,7 +1259,8 @@ class MessageController extends AbstractController
 
         ///last message for each user
         $all_message = $messageService->getMessageForEveryUser(
-            $this->getUser()->getTablemessage()
+            $this->getUser()->getTablemessage(),
+            intval($this->getUser()->getId())
         );
         ///last message for each user and their profil .
         $results = [];
