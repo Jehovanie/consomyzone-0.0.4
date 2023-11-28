@@ -197,7 +197,7 @@ class HomeController extends AbstractController
         TabacRepository $tabacRepository,
         RestaurantController $restaurantController,
         AvisRestaurantRepository $avisRestaurantRepository,
-        Filesystem $filesyst
+        Filesystem $filesyst,
     ){
 
         ///current user connected
@@ -644,6 +644,7 @@ class HomeController extends AbstractController
      * Get image preview gallery
      */
     public function getPhotoPreviewResto($type, $filesyst, $id_restaurant){
+         
 
         $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/".$type."/".$id_restaurant."/";
 

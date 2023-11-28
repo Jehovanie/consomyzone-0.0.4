@@ -141,7 +141,7 @@
 						<i class="fa-solid fa-camera"></i>
 						Ajouter des photos
 					</label>
-					<input type="file" id="photo-upload-detail" class="d-none" onchange="addPhotoToGallery(this)" data-id="{{details.id}}"/>
+					<input type="file" id="photo-upload-detail" class="d-none" onchange='addPhotoToGallery(this,"restaurant")' data-id="{{details.id}}"/>
 					
 					{% if len > 0 %}
 

@@ -292,26 +292,35 @@ class UserService  extends PDOConnexionService{
         return $result;
     }
 
+    /**
+     * @author Elie
+     * Fetch photo not valid resto
+     */
     public function getAllPhotoNotValidResto()
     {
 
-        $statement = $this->getPDO()->PREPARE("SELECT photo_resto.id as id_gallery, resto_id, date_creation, photo_path, denomination_f, photo_resto.user_id as user_id, 
+        $statement = $this->getPDO()->PREPARE("SELECT photo_resto.id as id_gallery, resto_id as id_rubrique, date_creation, photo_path, denomination_f, photo_resto.user_id as user_id, 
         concat(numvoie, \" \", typevoie,\" \",  nomvoie, \" \", compvoie, \" \", codpost, \" \", bdd_resto.commune) as adresse, concat(firstname, \" \", lastname) as username FROM photo_resto 
-        INNER JOIN bdd_resto ON photo_resto.resto_id = bdd_resto.id INNER JOIN consumer ON photo_resto.user_id = consumer.user_id WHERE is_valid = 0");
+        INNER JOIN bdd_resto ON photo_resto.resto_id = bdd_resto.id INNER JOIN (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as partisan ON photo_resto.user_id = partisan.user_id WHERE is_valid = 0");
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
 
+    /**
+     * @author Elie
+     * Fetch photo not valid golf
+     */
     public function getAllPhotoNotValidGolf()
     {
 
-        $statement = $this->getPDO()->PREPARE("SELECT * FROM photo_golf WHERE is_valid = 0");
+        $statement = $this->getPDO()->PREPARE("SELECT photo_golf.id as id_gallery, golf_id as id_rubrique, date_creation, photo_path, nom_golf as denomination_f, photo_golf.user_id as user_id, 
+        concat(adr1, \" \", cp,\" \",  nom_commune) as adresse, concat(firstname, \" \", lastname) as username FROM photo_golf 
+        INNER JOIN golffrance ON photo_golf.golf_id = golffrance.id INNER JOIN (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as partisan ON photo_golf.user_id = partisan.user_id WHERE is_valid = 0");
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
-
 
 
 }

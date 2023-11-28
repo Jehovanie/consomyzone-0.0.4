@@ -1573,29 +1573,6 @@ class RestaurantController extends AbstractController
 
         $not_valid = $userServ->getAllPhotoNotValidResto();
 
-        // $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/avalider/restaurant/".$id_restaurant."/";
-
-        // $tabPhoto = [];
-
-        // $dir_exist = $filesyst->exists($folder);
-
-        // // dd($folder);
-
-
-        // if($dir_exist){
-        //     $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
-
-        //     // dd($images);
-        //     foreach ($images as $image) {
-        //         $photo = explode("uploads/avalider",$image)[1];
-        //         $photo = "/public/uploads/avalider".$photo;
-        //         array_push($tabPhoto, ["photo"=>$photo]);
-        //     }
-        // }
-
-        // return $this->render("home/test.html.twig",[
-        //     "photos"=>$tabPhoto,
-        // ]);
         return $this->json($not_valid);
     }
 
@@ -1606,32 +1583,33 @@ class RestaurantController extends AbstractController
     public function getPhotoPreviewResto($type, $filesyst, $id_restaurant){
          
 
-         $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/".$type."/".$id_restaurant."/";
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/".$type."/".$id_restaurant."/";
 
-         $tabPhoto = [];
- 
-         $dir_exist = $filesyst->exists($folder);
- 
-         // dd($folder);
- 
- 
-         if($dir_exist){
-             $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
- 
-             // dd($images);
-             foreach ($images as $image) {
-                 $photo = explode("uploads/valider",$image)[1];
-                 $photo = "/public/uploads/valider".$photo;
-                 array_push($tabPhoto, $photo);
-             }
-         }
-         if(count($tabPhoto) > 0){
-            return $tabPhoto[count($tabPhoto)-1];
-         }else{
-            return null;
-         }
- 
-        //  $last_photo = $tabPhoto[count($tabPhoto)-1];
-    }
+        $tabPhoto = [];
+
+        $dir_exist = $filesyst->exists($folder);
+
+        // dd($folder);
+
+
+        if($dir_exist){
+            $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
+
+            // dd($images);
+            foreach ($images as $image) {
+                $photo = explode("uploads/valider",$image)[1];
+                $photo = "/public/uploads/valider".$photo;
+                array_push($tabPhoto, $photo);
+            }
+        }
+        if(count($tabPhoto) > 0){
+           return $tabPhoto[count($tabPhoto)-1];
+        }else{
+           return null;
+        }
+
+       //  $last_photo = $tabPhoto[count($tabPhoto)-1];
+   }
+
     
 }

@@ -6921,29 +6921,32 @@ function previousPhotoGallery(e) {
  * @author Elie
  * @param {*} e 
  */
-function addPhotoToGallery(e){
+function addPhotoToGallery(...args) {
+  let e = args[0];
+  let rubrique = args[1];
+  if (rubrique) {
     ///read file
     const fileReader = new FileReader();
-  
+
     ////on load file
     fileReader.addEventListener("load", () => {
-  
+
       let photoRubrique = fileReader.result;
-  
+
       const listExt = ['jpg', 'jpeg', 'png', 'gif', 'tiff', 'jpe', 'webp'];
       const octetMax = 2e+6; //2Mo 
 
       // console.log(photoRubrique);
-  
+
       if (!checkFileExtension(listExt, photoRubrique)) {
-  
+
         swal({
           title: "Le format de fichier n\'est pas pris en charge!",
           text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, gif, tiff, jpe, webp)",
           icon: "error",
           button: "OK",
         });
-  
+
       } else {
         if (!checkTailleImage(octetMax, photoRubrique)) {
 
@@ -6953,17 +6956,17 @@ function addPhotoToGallery(e){
             icon: "error",
             button: "OK",
           });
-  
+
         } else {
 
-  
+
           let data = {
             image: photoRubrique
           }
-  
+
           fetch(
-            
-            new Request("/restaurant/add/photos/"+e.dataset.id, {
+
+            new Request("/" + rubrique + "/add/photos/" + e.dataset.id, {
               method: "POST",
               headers: {
                 Accept: "application/json",
@@ -6971,69 +6974,113 @@ function addPhotoToGallery(e){
               },
               body: JSON.stringify(data),
             })
-          ).then(response=>response.json())
-          .then(res=>{
-            if(res.result == "success"){
-              swal({
-                title: "Ajout succès!",
-                text: "Votre photo n'est affiché que si il est approuvée par l'administrateur",
-                icon: "success",
-                button: "OK",
-              }); 
-            }
+          ).then(response => response.json())
+            .then(res => {
+              if (res.result == "success") {
+                swal({
+                  title: "Ajout succès!",
+                  text: "Votre photo sera affiché qu'après avoir été approuvée par l'administrateur",
+                  icon: "success",
+                  button: "OK",
+                });
+              }
 
-            if(res.error){
-              swal({
-                title: res.error,
-                text: "Veuillez connecter pour vous ajouter des photos !",
-                icon: "error",
-                button: 'Se connecter',
-              }).then(res=>{
-                location.href="/connexion"
-              })
-            }
-          })
+              if (res.error) {
+                swal({
+                  title: res.error,
+                  text: "Veuillez connecter pour vous ajouter des photos !",
+                  icon: "error",
+                  button: 'Se connecter',
+                }).then(res => {
+                  location.href = "/connexion"
+                })
+              }
+            })
 
         }
       }
-  
+
     });
-  
+
     ///run event load in file reader.
     fileReader.readAsDataURL(e.files[0]);
-  
+  }else{
+    swal({
+      title: "Erreur de parametre",
+      text: "Veuillez spécifier votre parametre de votre function!",
+      icon: "error",
+      button: 'OK',
+    })
+  }
+
 }
 
 /**
  * @author Elie
  * @constructor Validation photo for Super Admin
- * @param {*} id_resto 
+ * @param {*} id_rubrique 
  * @param {*} id_gallery 
  * @param {*} file_path 
  */
-function validatePhoto(id_resto, id_gallery, file_path){
+function validatePhoto(id_rubrique, id_gallery, file_path, rubrique) {
 
   let file_name = file_path.split("/")[file_path.split("/").length - 1].trim()
 
 
-  fetch( new Request("/restaurant/validate/photos/"+id_resto+"/"+id_gallery, {
-      method: "POST",
-      headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-      },
-      body: JSON.stringify({image_name : file_name}),
+  fetch(new Request("/"+rubrique+"/validate/photos/" + id_rubrique + "/" + id_gallery, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ image_name: file_name }),
   })
-  ).then(response=>{
-    if(response.status == 201){
+  ).then(response => {
+    if (response.status == 201) {
       swal({
         title: "Photo accepté!",
-        text: "Le photo est actuellement affiché dans le detail de restaurant!",
+        text: "Le photo est actuellement affiché dans le detail de "+rubrique+"!",
         icon: "success",
         button: "OK",
-      }).then(re=>{
-        if(document.querySelector("#navbarSuperAdmin > ul > li:nth-child(4) > a")){
-          document.querySelector("#navbarSuperAdmin > ul > li:nth-child(4) > a").click()
+      }).then(re => {
+        if (document.querySelector(".tr_photo_" + id_gallery)) {
+          document.querySelector(".tr_photo_" + id_gallery).remove()
+        }
+      });
+    }
+  })
+}
+
+/**
+ * @author Elie
+ * @constructor rejet d'un photo dans un rubrique golf ou resto
+ * @param {*} id_rubrique 
+ * @param {*} id_gallery 
+ * @param {*} file_path 
+ * @param {*} rubrique 
+ */
+function rejectPhoto(id_rubrique, id_gallery, file_path, rubrique) {
+
+  let file_name = file_path.split("/")[file_path.split("/").length - 1].trim()
+
+  fetch(new Request("/"+rubrique+"/reject/photos/" + id_rubrique + "/" + id_gallery, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ image_name: file_name }),
+  })
+  ).then(response => {
+    if (response.status == 201) {
+      swal({
+        title: "Photo rejeté!",
+        text: "Le photo est rejecté dans le detail de "+rubrique+"!",
+        icon: "success",
+        button: "OK",
+      }).then(re => {
+        if (document.querySelector(".tr_photo_" + id_gallery)) {
+          document.querySelector(".tr_photo_" + id_gallery).remove()
         }
       });
     }

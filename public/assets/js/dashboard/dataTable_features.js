@@ -478,7 +478,7 @@ function initMapForEtab(_map1,_map2, _nom1, _nom2, _latLng1, _latLng2, iconUrl){
     _map2.sync(_map1);
 }
 
-function getListePhotoTovalidate(e){
+function getListePhotoTovalidate(e, rubrique){
     
     let linkActives = document.querySelectorAll("#navbarSuperAdmin > ul > li > a")
     linkActives.forEach(link=>{
@@ -502,7 +502,7 @@ function getListePhotoTovalidate(e){
                     <tbody>
                     `
 
-    fetch("/restaurant/not-valid")
+    fetch("/"+rubrique+"/not-valid")
         .then(response => response.json())
         .then(r => {
             console.log(r)
@@ -512,20 +512,20 @@ function getListePhotoTovalidate(e){
                     // let item = item
                     // let _adresse = item.numvoie + " " + item.typevoie + " " + item.nomvoie + " " + item.compvoie + " " + item.codpost + " " + item.commune
                     // _adresse = _adresse.replace(/\s+/g, ' ').trim();
-                    _tr += `<tr style="text-align:center;vertical-align:middle;">
+                    _tr += `<tr style="text-align:center;vertical-align:middle;" class="tr_photo_${item.id_gallery}">
                             <td>
                                 <div class="card mb-3">
                                     <div class="row g-0">
                                     <div class="col-md-4">
-                                        <img src="${item.photo_path}" class="img-fluid rounded-start h-100" alt="...">
+                                        <img src="${item.photo_path}" class="img-fluid rounded-start h-100" alt="..." style="max-height:200px;">
                                     </div>
                                     <div class="col-md-8">
                                         <div class="card-body">
-                                        <p class="card-text"><a href="/user/profil/${item.user_id}" class="text-body-primary" style="color:blue !important;">${item.username}</a> a ajouté un photo dans un restaurant</p>
+                                        <p class="card-text"><a href="/user/profil/${item.user_id}" class="text-body-primary" style="color:blue !important;">${item.username}</a> a ajouté un photo dans un ${rubrique}</p>
                                         <h5 class="card-title">${item.denomination_f}</h5>
-                                        <p class="card-text"><address>Adresse : ${item.adresse}</address></p>
+                                        <p class="card-text"><address style="color : #19a8d8;">Adresse : ${item.adresse}</address></p>
                                         <p class="card-text">Date de demande : <small class="text-body-secondary">${item.date_creation}</small></p>
-                                        <button class="btn btn-success btn-sm m-2" onclick='validatePhoto(${item.resto_id}, ${item.id_gallery},\"${item.photo_path }\")'>Accepter</button> <button class="btn btn-danger btn-sm m-2" onclick="">Réfuser</button>
+                                        <button class="btn btn-success btn-sm m-2" onclick='validatePhoto(${item.id_rubrique}, ${item.id_gallery},\"${item.photo_path }\", \"${rubrique}\")'>Accepter</button> <button class="btn btn-danger btn-sm m-2" onclick='rejectPhoto(${item.id_rubrique}, ${item.id_gallery},\"${item.photo_path }\", \"${rubrique}\")'>Réfuser</button>
                                         </div>
                                     </div>
                                     </div>

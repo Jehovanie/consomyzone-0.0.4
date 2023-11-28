@@ -102,6 +102,44 @@
     </div>
 
     <div class="p-4">
+
+        {% set len = photos|length %}
+        {% set height = len > 0 ? "" : "h-40" %}
+        <div class="content_images {{height}}">
+            <label type="button" for="photo-upload-detail" class="add-photo-detail">
+                <i class="fa-solid fa-camera"></i>
+                Ajouter des photos
+            </label>
+            <input type="file" id="photo-upload-detail" class="d-none" onchange='addPhotoToGallery(this,"golf")' data-id="{{details.id}}"/>
+            
+            {% if len > 0 %}
+
+                <img class="preview-photo-detail" src="{{photos[len - 1].photo|replace({'/public':''}) }}" alt="photo"/>
+
+                <div class="all-photos-detail" onclick="openGalleriesPhoto(this)">
+                    {% if len > 1 %}
+                        {% set autre_image_len = len - 1 %}
+
+                        {% if autre_image_len > 0 %}
+                            <span class="nombre-photo-detail">+
+                                {{autre_image_len}}</span>
+                        {% endif %}
+
+                    {% endif %}
+
+                    <div class="gallery-photo-detail d-none">
+                        {% for img in photos %}
+
+                            <img src="{{img.photo|replace({'/public':''}) }}" alt="photo"/>
+
+                        {% endfor %}
+                    </div>
+                </div>
+
+            {% endif %}
+
+        </div>
+        <hr>
         <div class="content_note mb-3">
             <div class="text-center start start_jheo_js">
                 {% set rate = details.avis.note != 0 ?  details.avis.note - (details.avis.note|number_format - 1): 0 %}
