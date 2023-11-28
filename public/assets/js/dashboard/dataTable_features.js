@@ -287,6 +287,9 @@ function getListeInfoTovalidate(e){
     // document.querySelector("#list-tribu-t").style.display = "none"
     document.querySelector("#list-demande-partenaire").style.display = "none"
     document.querySelector("#list-infoAvalider").style.display = "block"
+    document.querySelector(".content_list_infoAvalider_js").innerHTML = `<div class="spinner-border spinner-border text-info" role="status">
+    <span class="visually-hidden">Loading...</span>
+</div>`
     let _table = `<table class="table" id="listeRestoAvaliderTable">
                     <thead>
                         <tr>
@@ -345,6 +348,10 @@ function getRestoInfoToValidate(restoId, userId){
     document.querySelector(".navbar-expand-lg").display = "none";
     document.querySelector("#rejectAddTovalidate").dataset.breakfast = restoId
     document.querySelector("#rejectAddTovalidate").dataset.killer = userId
+    document.querySelector("#acceptAddTovalidate").dataset.breakfast = restoId
+    document.querySelector("#acceptAddTovalidate").dataset.killer = userId
+    document.querySelector("#cancelAddTovalidate").dataset.breakfast = restoId
+    document.querySelector("#cancelAddTovalidate").dataset.killer = userId
     $("#infoRestoToValidateModal").modal("show")
     //document.querySelector(".navbar-expand-lg").display = "block";
     fetch(`/user/information/${restoId}/etablissement/${userId}`)
@@ -395,6 +402,19 @@ function getRestoInfoToValidate(restoId, userId){
                 }
                 newCurrentInfo.querySelector(".cmz-categories-list").innerHTML = ""
                 checkRestoMenu(new_info,newCurrentInfo.querySelector(".cmz-categories-list"))
+
+                if(new_info.status!== undefined){
+                    document.querySelector(".titleNewOrOld").textContent = "Nouvelle information"
+                    document.querySelector("#rejectAddTovalidate").style.display = "block"
+                    document.querySelector("#acceptAddTovalidate").style.display = "block"
+                    document.querySelector("#cancelAddTovalidate").style.display = "none"
+                }else{
+                    document.querySelector(".titleNewOrOld").textContent = "Ancienne information"
+                    document.querySelector("#cancelAddTovalidate").style.display = "block"
+                    document.querySelector("#rejectAddTovalidate").style.display = "none"
+                    document.querySelector("#acceptAddTovalidate").style.display = "none"
+                }
+
 
             }else{
                 newCurrentInfo.querySelector("span.rubrique").textContent = "GOLF"
@@ -496,13 +516,84 @@ function rejectAdresseValidate(ev){
 
     fetch(request).then(r=>{ 
         if(r.status===200 && r.ok){
+            $("#infoRestoToValidateModal").modal("hide")
             swal({
                 title: "Merci!",
                 text: "Information rejetée",
                 icon: "success",
                 button: "Ok",
               }).then(value=>{
-                $("#infoRestoToValidateModal").modal("hide")
+                document.querySelector(".list-infoAvalider").click()
+              });
+        }
+    })
+}
+
+function acceptAdresseValidate(ev){
+    let restoId = ev.target.dataset.breakfast
+    let userId = ev.target.dataset.killer
+    let data = {restoId:restoId,userId:userId}
+
+    let _btnAccept = document.querySelector("#acceptAddTovalidate")
+    _btnAccept.disabled = true
+    _btnAccept.textContent = "Validation"
+    
+    let request =new Request("/user/accept/etab/to/update",{
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    fetch(request).then(r=>{
+        if(r.status===200 && r.ok){
+            $("#infoRestoToValidateModal").modal("hide")
+            _btnAccept.disabled = false
+            _btnAccept.textContent = "Valider"
+            swal({
+                title: "Merci!",
+                text: "Information bien validée",
+                icon: "success",
+                button: "Ok",
+              }).then(value=>{
+                document.querySelector(".list-infoAvalider").click()
+              });
+        }
+    })
+}
+
+function cancelAdresseValidate(ev){
+    let restoId = ev.target.dataset.breakfast
+    let userId = ev.target.dataset.killer
+    let data = {restoId:restoId,userId:userId}
+
+    let _btnCancel = document.querySelector("#cancelAddTovalidate")
+    _btnCancel.disabled = true
+    _btnCancel.textContent = "Annulation"
+    
+    let request =new Request("/user/cancel/etab/to/update",{
+        method: "POST",
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    })
+
+    fetch(request).then(r=>{
+        if(r.status===200 && r.ok){
+            $("#infoRestoToValidateModal").modal("hide")
+            _btnCancel.disabled = false
+            _btnCancel.textContent = "Annuler"
+            swal({
+                title: "Merci!",
+                text: "Information bien annulée",
+                icon: "success",
+                button: "Ok",
+              }).then(value=>{
+                document.querySelector(".list-infoAvalider").click()
               });
         }
     })

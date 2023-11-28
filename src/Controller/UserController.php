@@ -7,7 +7,6 @@ namespace App\Controller;
 
 
 use PDO;
-
 use App\Service\Status;
 
 use App\Entity\Consumer;
@@ -18,27 +17,27 @@ use App\Service\UserService;
 
 use App\Form\PublicationType;
 
-use App\Form\MixtePublicationType;
-
 use App\Form\UserSettingType;
-use App\Repository\BddRestoBackupRepository;
-use App\Repository\BddRestoRepository;
-use App\Repository\BddRestoUserModifRepository;
+
+use App\Entity\BddRestoBackup;
+
 use App\Service\TributGService;
-
 use App\Service\Tribu_T_Service;
-
-use App\Service\SortResultService;
-
+use App\Entity\BddRestoUserModif;
+use App\Form\MixtePublicationType;
 use App\Repository\UserRepository;
 
 use App\Service\RequestingService;
 
+use App\Service\SortResultService;
+
 use Proxies\__CG__\App\Entity\User;
 
 use App\Service\NotificationService;
+
 use App\Service\PDOConnexionService;
 
+use App\Repository\BddRestoRepository;
 use App\Repository\ConsumerRepository;
 
 use App\Repository\SupplierRepository;
@@ -46,6 +45,8 @@ use App\Repository\SupplierRepository;
 use App\Repository\FermeGeomRepository;
 
 use Doctrine\ORM\EntityManagerInterface;
+
+use App\Repository\BddRestoBackupRepository;
 
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -55,18 +56,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 use Symfony\Component\Routing\RouterInterface;
 
+use App\Repository\BddRestoUserModifRepository;
+
 use Symfony\Component\Routing\Annotation\Route;
 
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-
-use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 
 class UserController extends AbstractController
 {
@@ -2660,20 +2662,30 @@ class UserController extends AbstractController
         SerializerInterface $serializerInterface,
         BddRestoUserModifRepository $bddRestoUserModifRepository,
         BddRestoRepository $bddRestoRepository,
+        BddRestoBackupRepository $bddRestoBackupRepository,
         PDOConnexionService $pDOConnexionService
     ){
         $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
-        $key->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true));
-        $key->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true));
-        $key->setNomvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true));
-        $key->setCompvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true));
-        $key->setVillenorm(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true));
-        $key->setCommune(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true));
-
+        
         $resto = $bddRestoRepository->findOneById(intval($restoId));
         $tab = [];
-        $tab["new_info"] = $key;
         $tab["current_info"] = $resto;
+
+        if($key->getStatus() != 1){
+            $key->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true));
+            $key->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true));
+            $key->setNomvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true));
+            $key->setCompvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true));
+            $key->setVillenorm(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true));
+            $key->setCommune(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true));
+
+        }else{
+            $key = $bddRestoBackupRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
+        }
+
+        $tab["new_info"] = $key;
+        
+
         $json = $serializerInterface->serialize($tab, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
@@ -2720,13 +2732,37 @@ class UserController extends AbstractController
         $bddRestoUserModifRepository->save($key,true);
         $resto = $bddRestoRepository->findOneById(intval($restoId));
 
-        $restoBackup = $bddRestoBackupRepository->findOneById(intval($restoId));
+        $restoBackup = $bddRestoBackupRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
 
-        if($restoBackup != null){
-            
-        }else{
-
+        if($restoBackup == null){
+            $restoBackup = new BddRestoBackup();
+            $restoBackup->setRestoId(intval($restoId))
+                        ->setUserId(intval($userId));
         }
+
+        $restoBackup->setDenominationF($resto->getDenominationF())
+                    ->setTypevoie($resto->getTypevoie())
+                    ->setNomvoie($resto->getNomvoie())
+                    ->setCompvoie($resto->getCompvoie())
+                    ->setVillenorm($resto->getVillenorm())
+                    ->setCommune($resto->getCommune())
+                    ->setNumvoie($resto->getNumvoie())
+                    ->setCodpost($resto->getCodpost())
+                    ->setTel($resto->getTel())
+                    ->setRestaurant(1)
+                    ->setBrasserie($resto->getBrasserie())
+                    ->setCreperie($resto->getCreperie())
+                    ->setFastFood($resto->getFastFood())
+                    ->setPizzeria($resto->getPizzeria())
+                    ->setBoulangerie($resto->getBoulangerie())
+                    ->setBar($resto->getBar())
+                    ->setCuisineMonde($resto->getCuisineMonde())
+                    ->setCafe($resto->getCafe())
+                    ->setSalonThe($resto->getSalonThe())
+                    ->setPoiX($resto->getPoiX())
+                    ->setPoiY($resto->getPoiY());
+
+        $bddRestoBackupRepository->save($restoBackup,true);
 
         $resto->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true))
             ->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true))
@@ -2749,6 +2785,60 @@ class UserController extends AbstractController
             ->setSalonThe($key->getSalonThe())
             ->setPoiX($key->getPoiX())
             ->setPoiY($key->getPoiY());
+            
+        $bddRestoRepository->save($resto,true);
+
+        return $this->json("Bravo!");
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet validation adresse de la rubrique Super Admin
+     * Localisation du fichier : UserController.php
+     * Je veux : annuler une demande pour l'adresse à valider
+     * 
+     */
+    #[Route("/user/cancel/etab/to/update", name:"app_cancel_etab_update", methods:["POST"])]
+    public function cancelAdresseValidate(
+        BddRestoUserModifRepository $bddRestoUserModifRepository,
+        Request $request,
+        BddRestoRepository $bddRestoRepository,
+        BddRestoBackupRepository $bddRestoBackupRepository
+    ){
+        /*$restoBackup = $bddRestoUserModifRepository->findOneBy(["userId" => 1, "restoId" => 918]);
+        dd($restoBackup);*/
+        $data = json_decode($request->getContent(), true);
+        extract($data);
+        $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
+        $key->setStatus(-1);
+        $bddRestoUserModifRepository->save($key,true);
+
+        $restoBackup = $bddRestoBackupRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
+
+        $resto = $bddRestoRepository->findOneById(intval($restoId));
+
+        $resto->setDenominationF($restoBackup->getDenominationF())
+                    ->setTypevoie($restoBackup->getTypevoie())
+                    ->setNomvoie($restoBackup->getNomvoie())
+                    ->setCompvoie($restoBackup->getCompvoie())
+                    ->setVillenorm($restoBackup->getVillenorm())
+                    ->setCommune($restoBackup->getCommune())
+                    ->setNumvoie($restoBackup->getNumvoie())
+                    ->setCodpost($restoBackup->getCodpost())
+                    ->setTel($restoBackup->getTel())
+                    ->setRestaurant(1)
+                    ->setBrasserie($restoBackup->getBrasserie())
+                    ->setCreperie($restoBackup->getCreperie())
+                    ->setFastFood($restoBackup->getFastFood())
+                    ->setPizzeria($restoBackup->getPizzeria())
+                    ->setBoulangerie($restoBackup->getBoulangerie())
+                    ->setBar($restoBackup->getBar())
+                    ->setCuisineMonde($restoBackup->getCuisineMonde())
+                    ->setCafe($restoBackup->getCafe())
+                    ->setSalonThe($restoBackup->getSalonThe())
+                    ->setPoiX($restoBackup->getPoiX())
+                    ->setPoiY($restoBackup->getPoiY());
+
         $bddRestoRepository->save($resto,true);
 
         return $this->json("Bravo!");
