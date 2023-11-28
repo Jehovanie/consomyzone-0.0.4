@@ -200,7 +200,8 @@ function showBlockPub() {
                 }
                 document.querySelector("#see-gallery").classList.add("active")
                 document.querySelector("#tribu_t_conteuneur").innerHTML = ""
-                showPhotos()
+                // showPhotos()
+                galleryAll()
 
             })
             /**end */
@@ -1754,7 +1755,7 @@ function showPhotos() {
         }
     })
     fetch(requete).then(rqt => rqt.json()).then(data => {
-        //console.log(data);
+        console.log(data);
         photosContainer.innerHTML = `
                 <div class="intro">
                     <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
@@ -1796,7 +1797,15 @@ function showPhotos() {
 
         } else {
             //photosContainer.style.textAlign = "center"
-            photosContainer.innerHTML += `<div class="gallery-container"><div id="gallery">Aucune photo</div></div>`;
+            photosContainer.innerHTML += `<div class="gallery-container"><div>
+                    <span class="h2">Vos photo</span> 
+                    <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
+                        <i class="bi bi-camera-fill"></i> Importer
+                        <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                        <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
+                    </label>
+                </div>
+                <div id="gallery">Aucune photo</div></div>`;
             // invitationsContainer.innerHTML = "";               
             // invitationsContainer.style.display = "none"
             // restoContainer.style.display = "none"

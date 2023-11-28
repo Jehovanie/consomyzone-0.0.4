@@ -1494,14 +1494,22 @@ class TributTController extends AbstractController
         // $tribu_t = new Tribu_T_Service();
         // $photos = $tribu_t->showAllphotosTribut($table);
         // return $this->json($photos);
-        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photos/".str_replace("_publication","",$table) ."/";
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photos/" . str_replace("_publication", "", $table) . "/";
+        $folder2 = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photo/" . $table . "/";
+        $filemtime = file_exists($folder) ? filemtime($folder) : idate("t");
+        $filemtime2 =  file_exists($folder2) ? filemtime($folder2) : idate("t");
         $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
-
+        $images2 = glob($folder2 . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
         $tabPhoto = [];
+        foreach ($images2 as $image) {
+            $photo = explode("uploads/tribu_t", $image)[1];
+            $photo = "/public/uploads/tribu_t" . $photo;
+            array_push($tabPhoto, ["photo" => $photo, "dateCreate" => date("F d Y H:i:s.", $filemtime)]);
+        }
         foreach ($images as $image) {
-            $photo = explode("uploads/tribu_t",$image)[1];
-            $photo = "/public/uploads/tribu_t".$photo;
-            array_push($tabPhoto, ["photo"=>$photo]);
+            $photo = explode("uploads/tribu_t", $image)[1];
+            $photo = "/public/uploads/tribu_t" . $photo;
+            array_push($tabPhoto, ["photo" => $photo, "dateCreate" => date("F d Y H:i:s.", $filemtime2)]);
         }
         return $this->json($tabPhoto);
     }

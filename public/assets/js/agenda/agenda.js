@@ -321,6 +321,15 @@ function bindEventForAnEvent(id) {
         .then(response => {
             const agenda = response.agenda;
             setAndShowModal(agenda)
+            if (agenda.isGolfCMZ == 1) {
+                document.querySelector("#golfRadio").checked = true
+            } else if (agenda.isRestoCMZ == 1) { 
+                document.querySelector("#restoRadio").checked = true
+            } else if (agenda.isVisioCMZ == 1) {
+                document.querySelector("#visioRadio").checked = true
+            } else {
+                document.querySelector("#autreRadio").checked = true
+            }
         })
 }
 
@@ -763,14 +772,14 @@ function activeOnglet(elem) {
     }
 }
 
-function getListEtabCMZ(element) {
+function getListEtabCMZ(element, cmzEtab) {
     document.querySelector("#hideOrShow").style.display = "block"
     document.querySelector("#quoi").value = ""
     document.querySelector("#where").value = ""
     document.querySelector("#contentForSearchEtab").style.display = "block"
     seletOtherEtab(true)
     $("#createAgenda").modal("hide")
-    let cmzEtab = element.value
+    // let cmzEtab = element.value
     let tab = document.querySelectorAll("#smallNavInvitationDep > li > a")
     document.querySelector("#hiddenListDep").dataset.etab = cmzEtab
     let idDep = parseInt(document.querySelector("#hiddenIdDep").value)
@@ -1703,18 +1712,25 @@ function tableActiveFilterPartisant(e) {
     if (!e.classList.contains("active")) {
         e.classList.add("active")
     }
+    if (e.classList.contains("redirect_inscrit_g_tomm_js")) {
+        document.querySelector("li > .email_non_inscrit").classList.add("active")
+    }
+
+    if (document.querySelector(".btn-close-partisans-tribuT")) {
+        document.querySelector(".btn-close-partisans-tribuT").click()
+    }
 
     if (e.classList.contains("agenda-emailing")) {
         document.querySelector("#agenda-emailing").style.display = "block"
         document.querySelector("#agenda-tribu-g").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "none"
-document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
         document.querySelector("#invitation-story").style.display = "none"
     }else if(e.classList.contains("agenda-tribu-g")){
         document.querySelector("#agenda-tribu-g").style.display = "block"
         document.querySelector("#agenda-emailing").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "none"
-document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
         document.querySelector("#invitation-story").style.display = "none"
     }else if(e.classList.contains("email_non_inscrit")){
         document.querySelector("#agenda-tribu-g").style.display = "none"
@@ -1732,7 +1748,7 @@ document.querySelector("#agenda-non-inscrit").style.display = "none"
     }else{
         document.querySelector("#agenda-tribu-g").style.display = "none"
         document.querySelector("#agenda-emailing").style.display = "none"
-document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
         document.querySelector("#invitation-story").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "block"
 
@@ -1761,7 +1777,7 @@ if (document.querySelector('#list-tribu-g-partage-agenda')) {
         language: {
             url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
             "search": "Recherche global",
-            "emptyTable": "Aucun partisan à part vous dans ce tribu",
+            "emptyTable": `Aucun fan à part vous dans ce tribu <a class="btn btn-success email_non_inscrit redirect_inscrit_g_tomm_js" data-target="agenda-non-inscrit" onclick="tableActiveFilterPartisant(this)">inviter des fans</a>`,
 
         },})
 }
@@ -1918,7 +1934,7 @@ function showPartisanAgenda(tribu_t_name) {
                     language: {
                         url: '//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
                         "search": "Recherche global",
-                        "emptyTable": "Aucun partisan à part vous dans ce tribu",
+                        "emptyTable": `Aucun fan à part vous dans ce tribu <a class="btn btn-success email_non_inscrit redirect_inscrit_g_tomm_js" data-target="agenda-non-inscrit" onclick="tableActiveFilterPartisant(this)">inviter des fans</a>`,
             
                     }
                 })
