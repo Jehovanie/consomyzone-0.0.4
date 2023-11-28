@@ -1,0 +1,58 @@
+<!-- Button trigger modal -->
+<button type="button" class="modal_addlink_invitation_jheo_js hidden" data-bs-toggle="modal" data-bs-target="#addLinkInvitation"></button>
+
+<!-- Modal -->
+<div class="modal fade" id="addLinkInvitation" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="addLinkInvitationLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addLinkInvitationLabel">Ajouter un lien</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+            <div class="content_body">
+                <div class="content_input_text_display">
+                    <div class="mb-3 row input_text_display">
+                        <label for="input_text_display" class="col-sm-4 col-form-label">Texte à afficher : 	</label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control form-control-sm link_name_jheo_js" id="input_text_display">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content_input_link_display">
+                    <div class="mb-3 row">
+                        <div class="col-4">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item">Lien vers: </li>
+                                <li class="list-group-item">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="link_type_web" checked>
+                                        <label class="form-check-label" style="margin-top: 0!important; font-size:0.8rem" for="link_type_web">
+                                            Adress Web
+                                        </label>
+                                    </div>
+                                    {# <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="link_type_email" disabled>
+                                        <label class="form-check-label" style="margin-top: 0!important; font-size:0.8rem" for="link_type_email">
+                                            Adress e-mail
+                                        </label>
+                                    </div> #}
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-8">
+                            <label for="url_link" class="form-label">À quelle URL ce lien est-il associé ?</label>
+                            <textarea class="form-control link_value_jheo_js" id="url_link" rows="3"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" onclick="cancelAddLink()">Annuler</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" onclick="addLinkOnMailBody()">Terminer</button>
+      </div>
+    </div>
+  </div>
+</div>

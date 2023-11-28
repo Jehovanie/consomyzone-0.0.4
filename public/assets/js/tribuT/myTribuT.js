@@ -2021,10 +2021,9 @@ function showInvitations() {
     ///hover tooltip piece joint, ...
     displayTooltipHelpMsg();
 
-    const addLink= document.querySelector("#exampleFormControlTextarea32 > div > div > div.ck.ck-editor__top.ck-reset_all > div > div.ck.ck-sticky-panel__content > div > div > button:nth-child(30)")
-    if( addLink && document.querySelector(".content_add_link_jheo_js")){
-        document.querySelector(".content_add_link_jheo_js").addEventListener("click", () => {
-            addLink.click();
+    if( document.querySelector(".content_add_link_jheo_js")){
+        document.querySelector(".label_add_link_jheo_js").addEventListener("click", () => {
+            document.querySelector(".modal_addlink_invitation_jheo_js").click();
         })
     }
 
@@ -2102,12 +2101,12 @@ function showInvitations() {
             status = false;
         }
 
-        if (checkIfExistMailInValid(input_cc.value)) {
+        if (!!input_cc.value && checkIfExistMailInValid(input_cc.value)) {
             input_cc.style.border = "1px solid red";
             status = false;
         }
 
-        if (checkIfExistMailInValid(input_cci.value)) {
+        if (!!input_cci.value && checkIfExistMailInValid(input_cci.value)) {
             input_cci.style.border = "1px solid red";
             status = false;
         }
@@ -2208,7 +2207,8 @@ function showInvitations() {
 
 
                 if( document.querySelector(".content_list_piece_joint_jheo_js")){
-                    document.querySelector(".content_list_piece_joint_jheo_js").innerHTML = "";
+                    const content_list_piece_joint= document.querySelector(".content_list_piece_joint_jheo_js")
+                    content_list_piece_joint.innerHTML = "";
 
                     if( !content_list_piece_joint.classList.contains("d-none")){
                         content_list_piece_joint.classList.add("d-none")
@@ -2235,23 +2235,7 @@ function showInvitations() {
 }
 
 
-function checkIfExistMailInValid(stringLong){
-    const stringSplit= stringLong.trim().split(", ");
-    return stringSplit.some( item => !verifieEmailValid(item))
-}
 
-
-function formatEmailAdresseFromStringLong(stringLong){
-    let tab_email= [];
-    const stringSplit= stringLong.trim().split(",");
-    stringSplit.forEach(item => {
-        if( verifieEmailValid(item.trim())){
-            tab_email.push(item.trim());
-        }
-    })
-
-    return tab_email;
-}
 
 function displayTooltipHelpMsg(){
 
@@ -2302,24 +2286,24 @@ function displayTooltipHelpMsg(){
     }
 }
 
-function controlInputEmailToMultiple(allInputHtml){
-    allInputHtml.forEach(input => {
-        input.addEventListener("keyup", (e) => {
-            if( e.code === "KeyM" ){
-                input.value += " ";
-            }else if( e.code === "Space" ){
-                if( input.value.trim().endsWith(",") ){
-                    input.value= input.value.trim() + " ";
-                }else{
-                    input.value= input.value.trim() +  ", ";
-                }
-            }else if ( e.code === "Backspace" ){
-                if( input.value.endsWith(",")){
-                    input.value += " ";
-                }
-            }
-        })
-    })
+function cancelAddLink(){
+    document.querySelector(".link_name_jheo_js").value= null;
+    document.querySelector(".link_value_jheo_js").value= null;
+
+}
+
+function addLinkOnMailBody(){
+    const link_name= document.querySelector(".link_name_jheo_js").value.trim();
+    const link_value= encodeURI(document.querySelector(".link_value_jheo_js").value);
+
+    if( editor ){
+        editor.setData(
+            editor.getData() + `<a href="${link_value}" class="stretched-link">${link_name}</a>`
+        )
+        // editor.insertHtml( `<a href="${link_value}" class="stretched-link">${link_name}</a>`);
+    }
+
+    cancelAddLink();
 }
 
 function setActiveTab(elem, param) {
@@ -2333,7 +2317,7 @@ function setActiveTab(elem, param) {
         document.querySelector("#" + elem.dataset.element).style = "";
         // if (elem.parentElement.nextElementSibling) {
             //     elem.parentElement.nextElementSibling.firstElementChild.classList.remove("active")
-//     document.querySelector("#" + elem.parentElement.nextElementSibling.firstElementChild.dataset.element).style.display = "none";
+            //     document.querySelector("#" + elem.parentElement.nextElementSibling.firstElementChild.dataset.element).style.display = "none";
         // } else {
         //     elem.parentElement.previousElementSibling.firstElementChild.classList.remove("active")
         //     document.querySelector("#" + elem.parentElement.previousElementSibling.firstElementChild.dataset.element).style.display = "none";

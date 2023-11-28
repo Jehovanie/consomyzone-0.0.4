@@ -756,8 +756,8 @@ function initCKEditor(idElement,callback){
                     '-',
                     'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
                     'alignment', '|',
-                    'link', 'blockQuote','|',
-                     'horizontalLine', 'pageBreak', '|',
+                    'link', 'blockQuote', '|',
+                    'horizontalLine', 'pageBreak', '|',
                     'textPartLanguage',
                 ],
                 shouldNotGroupWhenFull: true
@@ -826,10 +826,14 @@ function initCKEditor(idElement,callback){
             // https://ckeditor.com/docs/ckeditor5/latest/features/link.html#custom-link-attributes-decorators
             link: {
                 decorators: {
-                    addTargetToExternalLinks: {
-                        mode: 'automatic',
+                    addTargetToExternalLinks: true,
+                    openInNewTab: {
+                        mode: 'manual',
+                        label: 'Open in a new tab',
+                        defaultValue: true,			// This option will be selected by default.
                         attributes: {
                             target: '_blank',
+                            rel: 'noopener noreferrer'
                         }
                     },
                     defaultProtocol: 'https://',
@@ -895,8 +899,11 @@ function initCKEditor(idElement,callback){
             ]
         }).then( newEditor => {
             editor=newEditor
-            let html=callback()
-            editor.setData(html)
+
+            let html=callback();
+            editor.setData(html);
+
+            // console.log(editor)
         });
     }
     

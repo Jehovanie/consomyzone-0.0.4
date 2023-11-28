@@ -6938,3 +6938,51 @@ function shuffle(array) {
   
 	return array;
   }
+
+
+  function controlInputEmailToMultiple(allInputHtml){
+    allInputHtml.forEach(input => {
+        input.addEventListener("keyup", (e) => {
+			console.log(e.target.value)
+            if( e.code === "KeyM"  ||  e.code === "Space" ){
+                if( input.value.trim().endsWith(",") ){
+					const email=  formatListInputEmail(input.value);
+                    if( email.length > 2 ){
+						input.value=email + ", ";
+					}else{
+						input.value=email;
+					}
+                }else{
+                    input.value= input.value.trim() +  ", ";
+                }
+            }else if ( e.code === "Backspace" ){
+                if( input.value.endsWith(",")){
+                    input.value += " ";
+                }
+            }
+        })
+    })
+}
+
+function formatListInputEmail(input_value){
+    return input_value.trim().split(",").filter(item => verifieEmailValid(item.trim())).map(item => item.trim()).join(", ")
+}
+
+
+function checkIfExistMailInValid(stringLong){
+    const stringSplit= stringLong.trim().split(", ");
+    return stringSplit.some( item => !verifieEmailValid(item))
+}
+
+
+function formatEmailAdresseFromStringLong(stringLong){
+    let tab_email= [];
+    const stringSplit= stringLong.trim().split(",");
+    stringSplit.forEach(item => {
+        if( verifieEmailValid(item.trim())){
+            tab_email.push(item.trim());
+        }
+    })
+
+    return tab_email;
+}
