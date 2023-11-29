@@ -87,15 +87,15 @@
 
         {# on a besoin de cette balise pour verifier si l"utilisateur est connecté#}
         {% if (app.user)%}
-            <div class="ref_tom_js"></div>
+            <div class="ref_tom_js" data-roof="{{app.user.id}}"></div>
 
         {% endif %}
 
         {% block body %}{% endblock %}
-        {# <audio id="myAudio_faniry_js" controls hidden>
+        <audio id="myAudio_faniry_js" controls hidden>
             <source src="/assets/song/best_ringtone_2022.mp3"  type="audio/ogg">
             <source src="/assets/song/best_ringtone_2022.mp3" type="audio/mpeg">
-        </audio> #}
+        </audio>
         <button id="btn_faniry_js"></button>
         <script src="{{asset('assets/js/bootstrap/bootstrap.min.js')}}"></script>
         <script src="{{asset('assets/js/const.js')}}"></script>

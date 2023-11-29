@@ -54,20 +54,49 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
     const notificationContainer = document.querySelector(
       ".content_card_msg_jheo_js"
     );
-    let oldAllNotificationsId = [];
+
     let allUserAlreadyInNotifications = [];
+    let oldMessageNotifId = [];
+    let obj = {};
+    const currentUser = document.querySelector(".ref_tom_js").dataset.roof;
+
     if (notificationContainer) {
       const allNotifications = Array.from(
         notificationContainer.querySelectorAll(".show_single_msg_popup_jheo_js")
       );
-      let map2 = new Map();
-      oldAllNotificationsId =
-        allNotifications.length > 0
-          ? allNotifications.map((notif) =>
-              //la cle est l'user_id et la valeur est l'id du message
-              map2.set(notif.dataset.toggleOtherId, parseInt(notif.id))
-            )
-          : [];
+      // let map2 = new Map();
+      //get cookie
+      
+      if (Cookies2.get("_egemonie_n_" + currentUser) != undefined) {
+            console.log("ato express")
+            let tmp = Cookies2.get("_egemonie_n_" + currentUser);
+
+            Cookies2.set("_egemonie_0_" + currentUser, tmp, {
+             expires: 30,
+             secure: true,
+           });
+           console.log(JSON.parse(tmp));
+      } else {
+        //set cookie old
+
+        console.log("tsy misy lty a")
+        for (let notif of Array.from(allNotifications)) {
+          for (let msg of new_message) {
+            if (notif.dataset.toggleOtherId == msg.message.user_post) {
+              obj = { [notif.dataset.toggleOtherId]: parseInt(notif.id) };
+              oldMessageNotifId.push(obj);
+            }
+          }
+        }
+        let tmp = JSON.stringify(oldMessageNotifId)
+        
+        Cookies2.set("_egemonie_0_" + currentUser, JSON.stringify(tmp), {
+          expires: 30,
+          secure: true,
+        });
+      }
+
+      //get all user list
       allUserAlreadyInNotifications =
         allNotifications.length > 0
           ? allNotifications.map((notif) =>
@@ -106,8 +135,29 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
 
       //// get all id message in the popup
       const tab_id_msg_already_show = [];
-
+      //set cookie here
+      let obj2 = [];
+      let oldMessageNotifId2 = [];
+      
+      
+      for (let notif of Array.from(div_message_already_show)) {
+        for (let msg of new_message) {
+          if (notif.dataset.toggleOtherId == msg.message.user_post ) {
+              obj2 = { [notif.dataset.toggleOtherId]: parseInt(notif.id) };
+               oldMessageNotifId2.push(obj2);
+          }
+        }
+      }
+     
+      console.log(oldMessageNotifId2);
+      Cookies2.set(
+        "_egemonie_n_" + currentUser,
+        JSON.stringify(oldMessageNotifId2),
+        { expires: 30, secure: true }
+      );
       div_message_already_show.forEach((element) => {
+        //set cookies here
+
         const dataOtherId = parseInt(
           element.getAttribute("data-toggle-other-id")
         );
@@ -166,11 +216,7 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
       }
     }
 
-    showToastMessage(
-      oldAllNotificationsId,
-      new_message,
-      allUserAlreadyInNotifications
-    );
+    showToastMessage(new_message, allUserAlreadyInNotifications);
 
     //// inside message link message discussion
     if (
@@ -576,10 +622,14 @@ function showToastNotification(notifications, allNotificationsId) {
 }
 
 function showToastMessage(
-  oldMessages,
   allMessageNotifications,
   allUserAlreadyInNotifications
 ) {
+  // retrieve to cookies oldMessages,
+  const currentUser = document.querySelector(".ref_tom_js").dataset.roof;
+  const oldMessagesStr = Cookies2.get("_egemonie_0_" + currentUser);
+  const oldMessages=JSON.parse(oldMessagesStr);
+  console.log(oldMessages);
   if (oldMessages.length > 0 && allUserAlreadyInNotifications.length > 0) {
     for (const message of allMessageNotifications) {
       const userLastName = message.lastname;
@@ -595,340 +645,400 @@ function showToastMessage(
 
       if (!toastMessageElement) {
         if (allUserAlreadyInNotifications.indexOf(userId) != -1) {
-          const oldmesageId =
-            oldMessages[0].get(`${userId}`) != undefined
-              ? oldMessages[0].get(`${userId}`)
-              : "";
-
-          if (mesageId != oldmesageId) {
-            // console.log("userId" + userId);
-            // console.log(oldMessages[0].get(`${userId}`));
-            // //  console.log("old messages" + messageId);
-            // console.log("message new " + mesageId);
-
-            //on verifie si le message est visio ou non
-            if (messageTextContent.includes('<div class="qb-chat')) {
-              const div = document.createElement("div");
-              div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
-              div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
-                            <div class="h sa wf uk th ni ej cb">
-                                <img class="image_profil_navbar_msg" src="${
-                                  profil
-                                    ? "/public" + profil
-                                    : "/public/uploads/users/photos/default_pdp.png"
-                                }" alt="User"/>
-                            </div>
-                            <div>
-                                <figure>
-                                    <blockquote class="blockquote">
-                                        <h6 class="un zn gs">
-                                          Appel rentrant de
-                                        </h6>
-                                        <p class="mn hc">
-                                            ${
-                                              userFirstName + " " + userLastName
-                                            }
-                                        </p>
-                                    </blockquote>
-                                    <figcaption class="blockquote-footer" style="float: right;">
-                                        <cite class="fontSize07">${
-                                          message.message.datetime
-                                        }</cite>
-                                    </figcaption>
-                                </figure>
-                            </div>
-                        </a>`;
-
-              const duration = -1;
-              let aftersondPlayed=null
-             if (window.location.pathname.includes("user/message/perso")){
-                Toastify({
-                  // text: message,
-                  node: div,
-                  duration: duration,
-                  // destination: "https://github.com/apvarun/toastify-js",
-                  // newWindow: true,
-                  close: true,
-                  gravity: "bottom", // `top` or `bottom`
-                  position: "left", // `left`, `center` or `right`
-                  stopOnFocus: true, // Prevents dismissing of toast on hover
-                  style: {
-                    //color: alert ,
-                    background: "linear-gradient(to right, #00b09b, #96c93d)",
-                    fontSize: "0.9rem",
-                    width: "350px",
-                    maxWidth: screen.width <= 375 ? "75vw" : "93vw",
-                  },
-                  // onClick: function(){ // Callback after click
-                  //     clickedOnToastMessage(toastId)
-                  // }
-                }).showToast();
-            }else{
-                
-                 AUDIO_FOR_JITSI =new Audio("/assets/song/best_ringtone_2022.mp3");
-                 aftersondPlayed=AUDIO_FOR_JITSI.play();
-                 aftersondPlayed
-                   .then((r) => {})
-                   .catch((error) => {
-                     console.log(error);
-                   })
-                   .finally(() => {
-                     Toastify({
-                       // text: message,
-                       node: div,
-                       duration: duration,
-                       // destination: "https://github.com/apvarun/toastify-js",
-                       // newWindow: true,
-                       close: true,
-                       gravity: "bottom", // `top` or `bottom`
-                       position: "left", // `left`, `center` or `right`
-                       stopOnFocus: true, // Prevents dismissing of toast on hover
-                       style: {
-                         //color: alert ,
-                         background:
-                           "linear-gradient(to right, #00b09b, #96c93d)",
-                         fontSize: "0.9rem",
-                         width: "350px",
-                         maxWidth: screen.width <= 375 ? "75vw" : "93vw",
-                       },
-                       // onClick: function(){ // Callback after click
-                       //     clickedOnToastMessage(toastId)
-                       // }
-                     }).showToast();
-                   });
+           let oldmesageId=0;
+            for(let oldMessage of oldMessages){
+                 for(let [key, value] of Object.entries(oldMessage) ){
+                      if(key== userId){
+                          oldmesageId = parseInt(value);	
+                          break;
+                      }
+                 }
             }
-                
+          if (mesageId != oldmesageId && oldmesageId!=0) {
+            if (messageTextContent.includes('<div class="qb-chat')) {
+              if (window.location.pathname.includes("user/message/perso")) {
+                showNotifVisoCallWithSound(
+                  profil,
+                  mesageId,
+                  userId,
+                  userFirstName,
+                  userLastName,
+                  message
+                );
+              } else {
+                showNotifVisoCallWithSound(
+                  profil,
+                  mesageId,
+                  userId,
+                  userFirstName,
+                  userLastName,
+                  message
+                );
+              }
             } else {
-              const div = document.createElement("div");
-              div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
-              div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
-                            <div class="h sa wf uk th ni ej cb">
-                                <img class="image_profil_navbar_msg" src="${
-                                  profil
-                                    ? "/public" + profil
-                                    : "/public/uploads/users/photos/default_pdp.png"
-                                }" alt="User"/>
-                            </div>
-                            <div>
-                                <figure>
-                                    <blockquote class="blockquote">
-                                        <h6 class="un zn gs">
-                                           Vous avez reçu un nouveau message de
-                                        </h6>
-                                        <p class="mn hc">
-                                            ${
-                                              userFirstName + " " + userLastName
-                                            }
-                                        </p>
-                                    </blockquote>
-                                    <figcaption class="blockquote-footer" style="float: right;">
-                                        <cite class="fontSize07">${
-                                          message.message.datetime
-                                        }</cite>
-                                    </figcaption>
-                                </figure>
-                            </div>
-                        </a>`;
-
-              const duration = -1;
-
-              const audio = new Audio(
-                "https://drive.google.com/uc?export=download&id=1M95VOpto1cQ4FQHzNBaLf0WFQglrtWi7"
+              showNotifMessageWithSound(
+                profil,
+                mesageId,
+                userId,
+                userFirstName,
+                userLastName,
+                message
               );
-              audio
-                .play()
-                .then((r) => {})
-                .catch((error) => {
-                  console.log(error);
-                })
-                .finally(() => {
-                  Toastify({
-                    // text: message,
-                    node: div,
-                    duration: duration,
-                    // destination: "https://github.com/apvarun/toastify-js",
-                    // newWindow: true,
-                    close: true,
-                    gravity: "bottom", // `top` or `bottom`
-                    position: "left", // `left`, `center` or `right`
-                    stopOnFocus: true, // Prevents dismissing of toast on hover
-                    style: {
-                      //color: alert ,
-                      background: "linear-gradient(to right, #00b09b, #96c93d)",
-                      fontSize: "0.9rem",
-                      width: "350px",
-                      maxWidth: screen.width <= 375 ? "75vw" : "93vw",
-                    },
-                    // onClick: function(){ // Callback after click
-                    //     clickedOnToastMessage(toastId)
-                    // }
-                  }).showToast();
-                });
             }
           }
         } else {
           if (messageTextContent.includes('<div class="qb-chat')) {
-            const div = document.createElement("div");
-            div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
-            div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
-                            <div class="h sa wf uk th ni ej cb">
-                                <img class="image_profil_navbar_msg" src="${
-                                  profil
-                                    ? "/public" + profil
-                                    : "/public/uploads/users/photos/default_pdp.png"
-                                }" alt="User"/>
-                            </div>
-                            <div>
-                                <figure>
-                                    <blockquote class="blockquote">
-                                        <h6 class="un zn gs">
-                                          Appel rentrant de
-                                        </h6>
-                                        <p class="mn hc">
-                                            ${
-                                              userFirstName + " " + userLastName
-                                            }
-                                        </p>
-                                    </blockquote>
-                                    <figcaption class="blockquote-footer" style="float: right;">
-                                        <cite class="fontSize07">${
-                                          message.message.datetime
-                                        }</cite>
-                                    </figcaption>
-                                </figure>
-                            </div>
-                        </a>`;
-
-            const duration = -1;
             ///user/message/perso
-            if (window.location.pathname.includes("user/message/perso")){
-                  Toastify({
-                    // text: message,
-                    node: div,
-                    duration: duration,
-                    // destination: "https://github.com/apvarun/toastify-js",
-                    // newWindow: true,
-                    close: true,
-                    gravity: "bottom", // `top` or `bottom`
-                    position: "left", // `left`, `center` or `right`
-                    stopOnFocus: true, // Prevents dismissing of toast on hover
-                    style: {
-                      //color: alert ,
-                      background: "linear-gradient(to right, #00b09b, #96c93d)",
-                      fontSize: "0.9rem",
-                      width: "350px",
-                      maxWidth: screen.width <= 375 ? "75vw" : "93vw",
-                    },
-                    // onClick: function(){ // Callback after click
-                    //     clickedOnToastMessage(toastId)
-                    // }
-                  }).showToast();
-            }else{
-                
-                 AUDIO_FOR_JITSI =new Audio("/assets/song/best_ringtone_2022.mp3");
-                 AUDIO_FOR_JITSI.play()
-                    .then((r) => {})
-                   .catch((error) => {
-                     console.log(error);
-                   })
-                   .finally(() => {
-                     Toastify({
-                       // text: message,
-                       node: div,
-                       duration: duration,
-                       // destination: "https://github.com/apvarun/toastify-js",
-                       // newWindow: true,
-                       close: true,
-                       gravity: "bottom", // `top` or `bottom`
-                       position: "left", // `left`, `center` or `right`
-                       stopOnFocus: true, // Prevents dismissing of toast on hover
-                       style: {
-                         //color: alert ,
-                         background:
-                           "linear-gradient(to right, #00b09b, #96c93d)",
-                         fontSize: "0.9rem",
-                         width: "350px",
-                         maxWidth: screen.width <= 375 ? "75vw" : "93vw",
-                       },
-                       // onClick: function(){ // Callback after click
-                       //     clickedOnToastMessage(toastId)
-                       // }
-                     }).showToast();
-                   });
+            if (window.location.pathname.includes("user/message/perso")) {
+              showNotifVisoCallWithSound(
+                profil,
+                mesageId,
+                userId,
+                userFirstName,
+                userLastName,
+                message
+              );
+            } else {
+              showNotifVisoCallWithSound(
+                profil,
+                mesageId,
+                userId,
+                userFirstName,
+                userLastName,
+                message
+              );
             }
-               
-              
           } else {
-            const div = document.createElement("div");
-            div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
-            div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
-                            <div class="h sa wf uk th ni ej cb">
-                                <img class="image_profil_navbar_msg" src="${
-                                  profil
-                                    ? "/public" + profil
-                                    : "/public/uploads/users/photos/default_pdp.png"
-                                }" alt="User"/>
-                            </div>
-                            <div>
-                                <figure>
-                                    <blockquote class="blockquote">
-                                        <h6 class="un zn gs">
-                                           Vous avez reçu un nouveau message de
-                                        </h6>
-                                        <p class="mn hc">
-                                            ${
-                                              userFirstName + " " + userLastName
-                                            }
-                                        </p>
-                                    </blockquote>
-                                    <figcaption class="blockquote-footer" style="float: right;">
-                                        <cite class="fontSize07">${
-                                          message.message.datetime
-                                        }</cite>
-                                    </figcaption>
-                                </figure>
-                            </div>
-                        </a>`;
-
-            const duration = -1;
-
-            const audio = new Audio(
-              "https://drive.google.com/uc?export=download&id=1M95VOpto1cQ4FQHzNBaLf0WFQglrtWi7"
+            showNotifMessageWithSound(
+              profil,
+              mesageId,
+              userId,
+              userFirstName,
+              userLastName,
+              message
             );
-            audio
-              .play()
-              .then((r) => {})
-              .catch((error) => {
-                console.log(error);
-              })
-              .finally(() => {
-                Toastify({
-                  // text: message,
-                  node: div,
-                  duration: duration,
-                  // destination: "https://github.com/apvarun/toastify-js",
-                  // newWindow: true,
-                  close: true,
-                  gravity: "bottom", // `top` or `bottom`
-                  position: "left", // `left`, `center` or `right`
-                  stopOnFocus: true, // Prevents dismissing of toast on hover
-                  style: {
-                    //color: alert ,
-                    background: "linear-gradient(to right, #00b09b, #96c93d)",
-                    fontSize: "0.9rem",
-                    width: "350px",
-                    maxWidth: screen.width <= 375 ? "75vw" : "93vw",
-                  },
-                  // onClick: function(){ // Callback after click
-                  //     clickedOnToastMessage(toastId)
-                  // }
-                }).showToast();
-              });
           }
         }
       }
     }
   }
+}
+
+/**
+ * @author faniry
+ * @param {*} profil
+ * @param {*} mesageId
+ * @param {*} userId
+ * @param {*} userFirstName
+ * @param {*} userLastName
+ * @param {*} message
+ * cette fonction a pour but de montrer un toast message lorsqu'il y a un appel
+ * sans audio
+ */
+function justShowSimpleToastWithoutSound(
+  profil,
+  mesageId,
+  userId,
+  userFirstName,
+  userLastName,
+  message
+) {
+  div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
+  div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
+                            <div class="h sa wf uk th ni ej cb">
+                                <img class="image_profil_navbar_msg" src="${
+                                  profil
+                                    ? "/public" + profil
+                                    : "/public/uploads/users/photos/default_pdp.png"
+                                }" alt="User"/>
+                            </div>
+                            <div>
+                                <figure>
+                                    <blockquote class="blockquote">
+                                        <h6 class="un zn gs">
+                                           Vous avez reçu un nouveau message de
+                                        </h6>
+                                        <p class="mn hc">
+                                            ${
+                                              userFirstName + " " + userLastName
+                                            }
+                                        </p>
+                                    </blockquote>
+                                    <figcaption class="blockquote-footer" style="float: right;">
+                                        <cite class="fontSize07">${
+                                          message.message.datetime
+                                        }</cite>
+                                    </figcaption>
+                                </figure>
+                            </div>
+                        </a>`;
+
+  const duration = -1;
+  Toastify({
+    // text: message,
+    node: div,
+    duration: duration,
+    // destination: "https://github.com/apvarun/toastify-js",
+    // newWindow: true,
+    close: true,
+    gravity: "bottom", // `top` or `bottom`
+    position: "left", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      //color: alert ,
+      background: "linear-gradient(to right, #00b09b, #96c93d)",
+      fontSize: "0.9rem",
+      width: "350px",
+      maxWidth: screen.width <= 375 ? "75vw" : "93vw",
+    },
+    // onClick: function(){ // Callback after click
+    //     clickedOnToastMessage(toastId)
+    // }
+  }).showToast();
+}
+
+/**
+ * @author faniry
+ * @param {*} profil
+ * @param {*} mesageId
+ * @param {*} userId
+ * @param {*} userFirstName
+ * @param {*} userLastName
+ * @param {*} message
+ * cette fonction a pour but de montrer un toast message pour les messages lorsqu'il y a un appel
+ * avec audio
+ */
+function showNotifMessageWithSound(
+  profil,
+  mesageId,
+  userId,
+  userFirstName,
+  userLastName,
+  message
+) {
+  const div = document.createElement("div");
+  div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
+  div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
+                            <div class="h sa wf uk th ni ej cb">
+                                <img class="image_profil_navbar_msg" src="${
+                                  profil
+                                    ? "/public" + profil
+                                    : "/public/uploads/users/photos/default_pdp.png"
+                                }" alt="User"/>
+                            </div>
+                            <div>
+                                <figure>
+                                    <blockquote class="blockquote">
+                                        <h6 class="un zn gs">
+                                           Vous avez reçu un nouveau message de
+                                        </h6>
+                                        <p class="mn hc">
+                                            ${
+                                              userFirstName + " " + userLastName
+                                            }
+                                        </p>
+                                    </blockquote>
+                                    <figcaption class="blockquote-footer" style="float: right;">
+                                        <cite class="fontSize07">${
+                                          message.message.datetime
+                                        }</cite>
+                                    </figcaption>
+                                </figure>
+                            </div>
+                        </a>`;
+
+  const duration = -1;
+
+  const audio = new Audio(
+    "https://drive.google.com/uc?export=download&id=1M95VOpto1cQ4FQHzNBaLf0WFQglrtWi7"
+  );
+  audio
+    .play()
+    .then((r) => {})
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      Toastify({
+        // text: message,
+        node: div,
+        duration: duration,
+        // destination: "https://github.com/apvarun/toastify-js",
+        // newWindow: true,
+        close: true,
+        gravity: "bottom", // `top` or `bottom`
+        position: "left", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          //color: alert ,
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+          fontSize: "0.9rem",
+          width: "350px",
+          maxWidth: screen.width <= 375 ? "75vw" : "93vw",
+        },
+        // onClick: function(){ // Callback after click
+        //     clickedOnToastMessage(toastId)
+        // }
+      }).showToast();
+    });
+}
+
+/**
+ * @author faniry
+ * @param {*} profil
+ * @param {*} mesageId
+ * @param {*} userId
+ * @param {*} userFirstName
+ * @param {*} userLastName
+ * @param {*} message
+ * cette fonction a pour but de montrer un toast message pour les appel visio lorsqu'il y a un appel
+ * avec audio
+ */
+function showNotifVisoCallWithSound(
+  profil,
+  mesageId,
+  userId,
+  userFirstName,
+  userLastName,
+  message
+) {
+  const div = document.createElement("div");
+  div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
+  div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
+                            <div class="h sa wf uk th ni ej cb">
+                                <img class="image_profil_navbar_msg" src="${
+                                  profil
+                                    ? "/public" + profil
+                                    : "/public/uploads/users/photos/default_pdp.png"
+                                }" alt="User"/>
+                            </div>
+                            <div>
+                                <figure>
+                                    <blockquote class="blockquote">
+                                        <h6 class="un zn gs">
+                                          Appel rentrant de
+                                        </h6>
+                                        <p class="mn hc">
+                                            ${
+                                              userFirstName + " " + userLastName
+                                            }
+                                        </p>
+                                    </blockquote>
+                                    <figcaption class="blockquote-footer" style="float: right;">
+                                        <cite class="fontSize07">${
+                                          message.message.datetime
+                                        }</cite>
+                                    </figcaption>
+                                </figure>
+                            </div>
+                        </a>`;
+
+  const duration = -1;
+
+  AUDIO_FOR_JITSI = document.querySelector("#myAudio_faniry_js");
+  AUDIO_FOR_JITSI.play()
+    .then((r) => {})
+    .catch((error) => {
+      console.log(error);
+    })
+    .finally(() => {
+      Toastify({
+        // text: message,
+        node: div,
+        duration: duration,
+        // destination: "https://github.com/apvarun/toastify-js",
+        // newWindow: true,
+        close: true,
+        gravity: "bottom", // `top` or `bottom`
+        position: "left", // `left`, `center` or `right`
+        stopOnFocus: true, // Prevents dismissing of toast on hover
+        style: {
+          //color: alert ,
+          background: "linear-gradient(to right, #00b09b, #96c93d)",
+          fontSize: "0.9rem",
+          width: "350px",
+          maxWidth: screen.width <= 375 ? "75vw" : "93vw",
+        },
+        // onClick: function(){ // Callback after click
+        //     clickedOnToastMessage(toastId)
+        // }
+      }).showToast();
+    });
+}
+
+/**
+ * @author faniry
+ * @param {*} profil
+ * @param {*} mesageId
+ * @param {*} userId
+ * @param {*} userFirstName
+ * @param {*} userLastName
+ * @param {*} message
+ * cette fonction a pour but de montrer un toast message pour les appel visio lorsqu'il y a un appel
+ * sans audio
+ */
+function showNotifVisoCallWithoutSound(
+  profil,
+  mesageId,
+  userId,
+  userFirstName,
+  userLastName,
+  message
+) {
+  const div = document.createElement("div");
+  div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
+  div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
+                            <div class="h sa wf uk th ni ej cb">
+                                <img class="image_profil_navbar_msg" src="${
+                                  profil
+                                    ? "/public" + profil
+                                    : "/public/uploads/users/photos/default_pdp.png"
+                                }" alt="User"/>
+                            </div>
+                            <div>
+                                <figure>
+                                    <blockquote class="blockquote">
+                                        <h6 class="un zn gs">
+                                          Appel rentrant de
+                                        </h6>
+                                        <p class="mn hc">
+                                            ${
+                                              userFirstName + " " + userLastName
+                                            }
+                                        </p>
+                                    </blockquote>
+                                    <figcaption class="blockquote-footer" style="float: right;">
+                                        <cite class="fontSize07">${
+                                          message.message.datetime
+                                        }</cite>
+                                    </figcaption>
+                                </figure>
+                            </div>
+                        </a>`;
+
+  const duration = -1;
+
+  Toastify({
+    // text: message,
+    node: div,
+    duration: duration,
+    // destination: "https://github.com/apvarun/toastify-js",
+    // newWindow: true,
+    close: true,
+    gravity: "bottom", // `top` or `bottom`
+    position: "left", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      //color: alert ,
+      background: "linear-gradient(to right, #00b09b, #96c93d)",
+      fontSize: "0.9rem",
+      width: "350px",
+      maxWidth: screen.width <= 375 ? "75vw" : "93vw",
+    },
+    // onClick: function(){ // Callback after click
+    //     clickedOnToastMessage(toastId)
+    // }
+  }).showToast();
 }
 
 /**not used */
