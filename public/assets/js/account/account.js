@@ -143,7 +143,7 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
       for (let notif of Array.from(div_message_already_show)) {
         for (let msg of new_message) {
           if (notif.dataset.toggleOtherId == msg.message.user_post ) {
-              obj2 = { [notif.dataset.toggleOtherId]: parseInt(notif.id) };
+              obj2 = { [notif.dataset.toggleOtherId]: msg.message.id };
                oldMessageNotifId2.push(obj2);
           }
         }
