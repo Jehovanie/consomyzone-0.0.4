@@ -1,0 +1,66 @@
+/* small  */
+@media screen and (min-width:576px) { 
+    .checkbox_filter label{
+        margin-left: 10px;
+    }
+}
+/* medium */
+@media screen and (min-width:768px) {
+    /* .content_filter_global{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    } */
+
+    .content_filter_slide_bar {
+        display: block;
+        width: 30%;
+        margin: 0;
+    }
+
+    .checkbox_filter{
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 0 5px;
+    }
+}
+
+/* large  */
+@media screen and (min-width:992px) {
+
+    .cta_filter_mobile{
+        display: none;
+    }
+    .filter_other_mobile{
+        display: block;
+    }
+
+    .content_main{
+        /* top : 10vh; */
+    }
+
+    .content_filter_global{
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        width: 94%;
+    }
+    
+    .content_checkbox_filter{
+        justify-content: center;
+    }
+    
+    .checkbox_filter label{
+        margin-left: 10px;
+    }
+
+    .price_input{
+        margin-bottom: 5px;
+    }
+
+    .content_show_list_mobile , .content_left_side_mobile{
+        display: none;
+    }
+}

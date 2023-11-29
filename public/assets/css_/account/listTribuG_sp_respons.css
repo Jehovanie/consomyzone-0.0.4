@@ -1,0 +1,16 @@
+@media screen and (max-width:992px) {
+    .content_left_menu_account_mobile{
+        background-color: white;
+        z-index:1000;
+    }
+    .content_global_super_admin{
+        z-index:100;
+    }
+    .content_right_actualite {
+        top: 80px !important;
+    }
+
+    .btn_search{
+        display: none;
+    }
+}
