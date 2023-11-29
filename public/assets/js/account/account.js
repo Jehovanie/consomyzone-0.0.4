@@ -75,7 +75,7 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
              expires: 30,
              secure: true,
            });
-           console.log(JSON.parse(tmp));
+           
       } else {
         //set cookie old
 
@@ -148,8 +148,6 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
           }
         }
       }
-     
-      console.log(oldMessageNotifId2);
       Cookies2.set(
         "_egemonie_n_" + currentUser,
         JSON.stringify(oldMessageNotifId2),
