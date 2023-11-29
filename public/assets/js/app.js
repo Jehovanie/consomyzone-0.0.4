@@ -1208,6 +1208,7 @@ function getListeDemandePartenariat(e){
     document.querySelector("#list-tribu-g").style.display = "none"
     // document.querySelector("#list-tribu-t").style.display = "none"
     document.querySelector("#list-demande-partenaire").style.display = "block"
+    document.querySelector("#list-infoAvalider").style.display = "none"
     fetch("/user/liste/demande/partenariat")
         .then(response => response.json())
         .then(r => {

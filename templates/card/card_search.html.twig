@@ -1,8 +1,8 @@
 <li class="list_result_search list_item list_item_search_js_jheo">
-    <div class="content_element container-depart p-2 element w-100">
+    <div class="row content_element container-depart element">
         
         {% set type = item.station is defined ? "station" : (item.ferme is defined ? "ferme" : (item.golf is defined ? "golf" : (item.tabac is defined ? "tabac" : "resto")) ) %}
-        <div class="content_text">
+        <div class="col-md-8">
             <div class="cmz-rubrique mb-2">
                 <span class="rubrique small">
                     {% if type == "resto" %}
@@ -105,5 +105,12 @@
                 {% endif %}
             {% endif %}
         </div>
+        {% if type == "resto" or type == "golf" %}
+            {% if item.photo != null %}
+                <div class="col-md-4 d-flex">
+                    <img class="img-fluid rounded-end m-auto" src="{{item.photo}}" alt="preview">
+                </div>
+            {% endif %}
+        {% endif %}
     </div>
 </li>

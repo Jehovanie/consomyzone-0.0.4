@@ -5,6 +5,7 @@ namespace App\Controller;
 use Exception;
 use App\Service\Status;
 use App\Entity\Codinsee;
+use App\Service\UserService;
 use App\Entity\AvisRestaurant;
 use App\Service\MessageService;
 use App\Service\TributGService;
@@ -17,13 +18,16 @@ use App\Repository\CodeinseeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\BddRestoUserModifRepository;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
+
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\Validator\Constraints\DateTime;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class RestaurantController extends AbstractController
@@ -308,6 +312,7 @@ class RestaurantController extends AbstractController
         AvisRestaurantRepository $avisRestaurantRepository,
         Tribu_T_Service $tribu_T_Service,
         MessageService $messageService,
+        Filesystem $filesyst,
     ) {
 
         $dataRequest = $request->query->all();
@@ -322,6 +327,8 @@ class RestaurantController extends AbstractController
             $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
 
             $global_note  = $avisRestaurantRepository->getNoteGlobale($data["id"]);
+
+            $photo = $this->getPhotoPreviewResto("restaurant",$filesyst, $data["id"]);
 
             $isAlreadyCommented = false;
             $avis = ["note" => null, "text" => null];
@@ -339,8 +346,10 @@ class RestaurantController extends AbstractController
                 "nbr" => $nbr_avis_resto,
                 "note" => $global_note ?  $note_temp / count($global_note) : 0,
                 "isAlreadyCommented" => $isAlreadyCommented,
-                "avisPerso" => $avis
+                "avisPerso" => $avis,
             ];
+
+            $data["photo"] = $photo;
             
 
             array_push($datas, $data);
@@ -814,7 +823,8 @@ class RestaurantController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         AvisRestaurantRepository $avisRestaurantRepository,
-        MessageService $messageService
+        MessageService $messageService,
+        Filesystem $filesyst,
     ) {
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
@@ -849,7 +859,10 @@ class RestaurantController extends AbstractController
                 "isAlreadyCommented" => $isAlreadyCommented,
                 "avisPerso" => $avis
             ];
+
+            $photo = $this->getPhotoPreviewResto("restaurant",$filesyst, $data["id"]);
             
+            $data["photo"]=$photo;
 
             array_push($datas, $data);
 
@@ -963,7 +976,8 @@ class RestaurantController extends AbstractController
         $id_restaurant,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
-        AvisRestaurantRepository $avisRestaurantRepository
+        AvisRestaurantRepository $avisRestaurantRepository,
+        Filesystem $filesyst
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
         $details= $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
@@ -1044,6 +1058,28 @@ class RestaurantController extends AbstractController
 
         }
 
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/restaurant/".$id_restaurant."/";
+
+        $tabPhoto = [];
+
+        $dir_exist = $filesyst->exists($folder);
+
+        // dd($folder);
+
+
+        if($dir_exist){
+            $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
+
+            // dd($images);
+            foreach ($images as $image) {
+                $photo = explode("uploads/valider",$image)[1];
+                $photo = "/public/uploads/valider".$photo;
+                array_push($tabPhoto, ["photo"=>$photo]);
+            }
+        }
+
+        // dd($tabPhoto);
+        
         return $this->render("restaurant/detail_resto.html.twig", [
             "id_restaurant"=>$id_restaurant,
             "details" => $details,
@@ -1055,6 +1091,7 @@ class RestaurantController extends AbstractController
             "tribu_t_can_pastille" => $arrayTribu,
             "tribu_t_resto_pastille" => $arrayTribuRestoPast,
             "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
+            "photos" => $tabPhoto,
         ]);
     }
 
@@ -1371,6 +1408,208 @@ class RestaurantController extends AbstractController
         $response = new Response();
         $response->setStatusCode(201);
         return $response;
-    } 
+    }
+
+
+    #[Route("/restaurant/add/photos/{id_resto}", name: "app_add_photos_resto")]
+    public function addPhotoRestoToGallery( $id_resto, Request $request,
+        Filesystem $filesyst, UserService $userService
+    ) {
+
+        $date = new \DateTimeImmutable();
+
+        $timestamp = (int)$date->format('Uu');
+
+        if (!$this->getUser()) {
+
+            return $this->json([
+
+                "error" => "Invalid credentials",
+
+            ], 401);
+
+        }else{
+
+            $user_id = $this->getUser()->getId();
+
+            $requestContent = json_decode($request->getContent(), true);
+    
+            if ($requestContent["image"]) {
+    
+                $image = $requestContent["image"];
+    
+                ///download image
+    
+                $path = $this->getParameter('kernel.project_dir') . '/public/uploads/avalider/restaurant/'.$id_resto;
+    
+                $path_name = '/uploads/avalider/restaurant/'.$id_resto .'/';
+    
+                $dir_exist = $filesyst->exists($path);
+    
+                if ($dir_exist == false) {
+        
+                    $filesyst->mkdir($path, 0777);
+                }
+    
+                $temp = explode(";", $image);
+    
+                $extension = explode("/", $temp[0])[1];
+    
+                $image_name = "resto_" . $id_resto ."_". $timestamp . "." . $extension;
+    
+                ///save image in public/uploader folder
+    
+                file_put_contents($path . "/".$image_name, file_get_contents($image));
+    
+    
+                ///insert into database
+    
+                $photo_path = $path_name .$image_name;
+    
+                $userService->insertPhotoResto($id_resto, $user_id, $photo_path);
+    
+            }
+    
+            return $this->json([
+    
+                "result" => "success"
+    
+            ], 201);
+        }
+        
+    }
+
+    #[Route("/restaurant/validate/photos/{id_resto}/{id_gallery}", name: "app_validate_photos_resto")]
+    public function validatePhotoRestoGallery($id_resto, $id_gallery, Request $request,
+        Filesystem $filesyst, UserService $userService
+    ){
+
+        $old_path = $this->getParameter('kernel.project_dir') . '/public/uploads/avalider/restaurant/'.$id_resto;
+        
+        $new_path = $this->getParameter('kernel.project_dir') . '/public/uploads/valider/restaurant/'.$id_resto;
+
+        $dir_exist = $filesyst->exists($new_path);
+
+        if ($dir_exist == false) {
+
+            $filesyst->mkdir($new_path, 0777);
+        }
+
+        $requestContent = json_decode($request->getContent(), true);
+
+        $image_name = $requestContent["image_name"];
+
+        ///save image in public/uploader folder
+
+        $current = file_get_contents($old_path."/".$image_name);
+
+        file_put_contents($new_path . "/".$image_name, $current);
+
+        //delete old path
+        unlink($old_path."/".$image_name);
+
+        $userService->updateSatatusPhotoResto($id_gallery, 1);
+
+        return $this->json([
+
+            "result" => "success"
+
+        ], 201);
+    }
+
+    #[Route("/restaurant/reject/photos/{id_resto}/{id_gallery}", name: "app_reject_photos_resto")]
+    public function rejectPhotoRestoGallery($id_resto, $id_gallery, Request $request,
+        Filesystem $filesyst, UserService $userService
+    ){
+
+        $old_path = $this->getParameter('kernel.project_dir') . '/public/uploads/avalider/restaurant/'.$id_resto;
+
+        $requestContent = json_decode($request->getContent(), true);
+
+        $image_name = $requestContent["image_name"];
+
+        $current = file_get_contents($old_path."/".$image_name);
+
+        //delete old path
+        unlink($old_path."/".$image_name);
+
+        $userService->updateSatatusPhotoResto($id_gallery, 2);
+
+        return $this->json([
+
+            "result" => "success"
+
+        ], 201);
+    }
+
+    #[Route("/restaurant/delete/photos/{id_resto}/{id_gallery}", name: "app_delete_photos_resto")]
+    public function deletePhotoRestoGallery($id_resto, $id_gallery, Request $request,
+        Filesystem $filesyst, UserService $userService
+    ){
+
+        $old_path = $this->getParameter('kernel.project_dir') . '/public/uploads/valider/restaurant/'.$id_resto;
+
+        $requestContent = json_decode($request->getContent(), true);
+
+        $image_name = $requestContent["image_name"];
+
+        $current = file_get_contents($old_path."/".$image_name);
+
+        //delete old path
+        unlink($old_path."/".$image_name);
+
+        $userService->deletePhotoResto($id_gallery);
+
+        return $this->json([
+
+            "result" => "success"
+
+        ], 201);
+    }
+
+    #[Route("/restaurant/not-valid", name: "app_not_valid_resto")]
+    public function getRestoNotValidate(Filesystem $filesyst, UserService $userServ):Response
+    {
+
+        $not_valid = $userServ->getAllPhotoNotValidResto();
+
+        return $this->json($not_valid);
+    }
+
+    /**
+     * @author Elie
+     * Get image preview gallery
+     */
+    public function getPhotoPreviewResto($type, $filesyst, $id_restaurant){
+         
+
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/".$type."/".$id_restaurant."/";
+
+        $tabPhoto = [];
+
+        $dir_exist = $filesyst->exists($folder);
+
+        // dd($folder);
+
+
+        if($dir_exist){
+            $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
+
+            // dd($images);
+            foreach ($images as $image) {
+                $photo = explode("uploads/valider",$image)[1];
+                $photo = "/public/uploads/valider".$photo;
+                array_push($tabPhoto, $photo);
+            }
+        }
+        if(count($tabPhoto) > 0){
+           return $tabPhoto[count($tabPhoto)-1];
+        }else{
+           return null;
+        }
+
+       //  $last_photo = $tabPhoto[count($tabPhoto)-1];
+   }
+
     
 }

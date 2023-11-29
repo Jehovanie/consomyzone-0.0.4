@@ -1535,13 +1535,12 @@ if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
   function showPage(pageId) {
     pages.forEach((page) => {
       pageStyle = page.getAttribute("style");
-
       if (page.id === pageId) {
         page.style.display = "block";
       } else {
         page.style.display = "none";
       }
-    });
+    })
   }
 
   navLinks.forEach((link) => {
@@ -1550,30 +1549,21 @@ if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
 
       event.preventDefault();
       const pageId = event.target.dataset.target;
-      if (dataLink === "list-tribu-g") {
-        document
-          .querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g")
-          .classList.add("text-primary");
-        document
-          .querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire")
-          .classList.remove("text-primary");
-        // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
-      } else if (dataLink === "list-tribu-t") {
-        // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.add('text-primary')
-        document
-          .querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g")
-          .classList.remove("text-primary");
-        document
-          .querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire")
-          .classList.remove("text-primary");
-      } else if (dataLink === "list-fournisseur") {
-        document
-          .querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire")
-          .classList.add("text-primary");
-        document
-          .querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g")
-          .classList.remove("text-primary");
-        // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
+      if (dataLink === 'list-tribu-g') {
+        document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.add('text-primary')
+        document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.remove('text-primary')
+        document.querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider").classList.remove('text-primary')
+          // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
+      } else if (dataLink === 'list-tribu-t') {
+          // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.add('text-primary')
+        document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.remove('text-primary')
+        document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.remove('text-primary')
+        document.querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider").classList.remove('text-primary')
+      }else if (dataLink === 'list-fournisseur') {
+        document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.add('text-primary')
+        document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.remove('text-primary')
+        document.querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider").classList.remove('text-primary')
+          // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
       }
       showPage(pageId);
     });
@@ -1783,6 +1773,7 @@ document.querySelectorAll(".elie_nav_link").forEach((i) => {
     }
   });
 });
+
 if (arrangeSetingApparitionMobile()) {
   set_iris_partisan();
 }

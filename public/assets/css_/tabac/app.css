@@ -1,0 +1,44 @@
+.select_region{
+    max-height: 25vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.show_list_select{
+    float: right;
+    font-size: 0.5rem;
+    margin-top: 5px
+}
+
+.content_header_right_side {
+    height: 40px;
+}
+
+.right_side_body{
+    display: block;
+    max-height: 68vh;
+    overflow-y: scroll;
+    padding: 5px;
+
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.right_side_body::-webkit-scrollbar {
+    width: 0 !important;
+    display: none;
+}
+
+.navleft .list-depart {
+    margin-top: 0px;
+    font-size: 10pt;
+}
+
+.content_description {
+    height: 75vh ;
+}
+.navleft .list-depart-all-specific {
+    height: 70vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}

@@ -196,5 +196,131 @@ class UserService  extends PDOConnexionService{
         return $result;
     }
 
+    /**
+     * @author Elie
+     * Function insert data into photo_resto
+     */
+    public function insertPhotoResto($resto_id, $user_id, $photo_path){
+
+        $sql = "INSERT INTO photo_resto (resto_id, user_id, photo_path) VALUES (?, ? , ? )";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $resto_id);
+
+        $stmt->bindParam(2, $user_id);
+
+        $stmt->bindParam(3, $photo_path);
+
+        $stmt->execute();
+    }
+
+    /**
+     * @author Elie
+     * Function insert data into photo_golf
+     */
+    public function insertPhotoGolf($golf_id, $user_id, $photo_path){
+
+        $sql = "INSERT INTO photo_golf (golf_id, user_id, photo_path) VALUES (?, ? , ? )";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $golf_id);
+
+        $stmt->bindParam(2, $user_id);
+
+        $stmt->bindParam(3, $photo_path);
+
+        $stmt->execute();
+    }
+
+    /**
+     * @author Elie
+     * function validate or devalidate photo resto
+     */
+    public function updateSatatusPhotoResto($id_gallery, $is_valid)
+    {
+
+        $statement = $this->getPDO()->PREPARE("UPDATE photo_resto SET is_valid = ? WHERE id = ?");
+        $statement->bindParam(1, $is_valid, PDO::PARAM_INT);
+        $statement->bindParam(2, $id_gallery, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * function validate or devalidate photo golf
+     */
+    public function updateSatatusPhotoGolf($id_gallery, $is_valid)
+    {
+
+        $statement = $this->getPDO()->PREPARE("UPDATE photo_golf SET is_valid = ? WHERE id = ?");
+        $statement->bindParam(1, $is_valid, PDO::PARAM_INT);
+        $statement->bindParam(2, $id_gallery, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * function delete photo resto
+     */
+    public function deletePhotoResto($id_gallery)
+    {
+
+        $statement = $this->getPDO()->PREPARE("DELETE FROM photo_resto WHERE id = ?");
+        $statement->bindParam(1, $id_gallery, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * function delete photo golf
+     */
+    public function deletePhotoGolf($id_gallery)
+    {
+
+        $statement = $this->getPDO()->PREPARE("DELETE FROM photo_golf WHERE id = ?");
+        $statement->bindParam(1, $id_gallery, PDO::PARAM_INT);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * Fetch photo not valid resto
+     */
+    public function getAllPhotoNotValidResto()
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT photo_resto.id as id_gallery, resto_id as id_rubrique, date_creation, photo_path, denomination_f, photo_resto.user_id as user_id, 
+        concat(numvoie, \" \", typevoie,\" \",  nomvoie, \" \", compvoie, \" \", codpost, \" \", bdd_resto.commune) as adresse, concat(firstname, \" \", lastname) as username FROM photo_resto 
+        INNER JOIN bdd_resto ON photo_resto.resto_id = bdd_resto.id INNER JOIN (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as partisan ON photo_resto.user_id = partisan.user_id WHERE is_valid = 0");
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * Fetch photo not valid golf
+     */
+    public function getAllPhotoNotValidGolf()
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT photo_golf.id as id_gallery, golf_id as id_rubrique, date_creation, photo_path, nom_golf as denomination_f, photo_golf.user_id as user_id, 
+        concat(adr1, \" \", cp,\" \",  nom_commune) as adresse, concat(firstname, \" \", lastname) as username FROM photo_golf 
+        INNER JOIN golffrance ON photo_golf.golf_id = golffrance.id INNER JOIN (SELECT user_id, firstname, lastname FROM consumer UNION SELECT user_id, firstname, lastname FROM supplier) as partisan ON photo_golf.user_id = partisan.user_id WHERE is_valid = 0");
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 
 }

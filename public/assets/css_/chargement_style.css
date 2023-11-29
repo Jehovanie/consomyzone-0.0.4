@@ -1,0 +1,155 @@
+.chargement_content {
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.content_box {
+  height: 10%;
+  width: 5%;
+}
+
+.box {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  width: 80%;
+  height: 70%;
+  border-radius: 50%;
+  background: linear-gradient(45deg, transparent, transparent 40%, yellow),
+    linear-gradient(#262626, #141414);
+  animation: rotate 1.5s linear infinite;
+}
+
+.box:before,
+.box:after {
+  content: " ";
+  position: absolute;
+  inset: 8px;
+
+  border-radius: inherit;
+}
+
+.box:before {
+  background: linear-gradient(45deg, transparent, transparent 40%, yellow);
+  filter: blur(32px);
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+    filter: hue-rotate(360deg);
+  }
+}
+
+.under_box {
+  display: block;
+  height: 100%;
+  width: 80%;
+  background-color: white;
+  border-radius: 50%;
+}
+
+
+
+
+
+.containt{
+  display: flex;
+  align-items: center;
+  justify-content:flex-start;
+  position: fixed;
+  z-index: 1;
+}
+
+.word{
+  display: inline-block;
+  padding: 5px;
+  color:white;
+  /* position: relative;
+  left:50vw;
+  top:50vh; */
+  font-size: 30px;
+}
+
+.word-1{
+  background: #4B4BFC; 
+  animation: bounce 2.25s linear infinite;
+ 
+}
+
+.word-2{
+  mix-blend-mode: darken;
+  background: #282828; 
+  animation: spin 2.25s linear infinite;
+   
+}
+
+.word-3{
+  background: #58CB53;
+  animation: bounce 2.25s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(0deg);
+  }
+  20% {
+    transform: rotate(90deg);
+  }
+  35% {
+    transform: rotate(90deg);
+  }
+  45% {
+    transform: rotate(180deg);
+  }
+  60% {
+    transform: rotate(180deg);
+  }
+  75% {
+    transform: rotate(270deg);
+  }
+  85% {
+    transform: rotate(270deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bounce {
+  0% {
+    transform: scaleX(1);
+  }
+  10% {
+    transform: scaleX(1);
+  }
+  20% {
+    transform: scaleX(0.78);
+  }
+  35% {
+    transform: scaleX(0.78);
+  }
+  45% {
+    transform: scaleX(1);
+  }
+  60% {
+    transform: scaleX(1);
+  }
+  75% {
+    transform: scaleX(0.78);
+  }
+  85% {
+    transform: scaleX(0.78);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}

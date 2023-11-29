@@ -755,8 +755,6 @@ class Tribu_T_Service extends PDOConnexionService
 
         $statement->bindParam(':userfullname', $userfullname);
 
-
-
         $result = $statement->execute();
 
 

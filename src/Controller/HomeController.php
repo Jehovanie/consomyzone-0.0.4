@@ -20,6 +20,7 @@ use App\Service\StringTraitementService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
+use Symfony\Component\Filesystem\Filesystem;
 use App\Repository\CommuneGeoCoderRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -199,7 +200,8 @@ class HomeController extends AbstractController
         GolfFranceService $golfFranceService,
         TabacRepository $tabacRepository,
         RestaurantController $restaurantController,
-        AvisRestaurantRepository $avisRestaurantRepository
+        AvisRestaurantRepository $avisRestaurantRepository,
+        Filesystem $filesyst,
     ){
 
         ///current user connected
@@ -297,6 +299,7 @@ class HomeController extends AbstractController
                 $golf[0] = $golfFranceService->mergeDatasAndAvis($golf[0], $moyenne_golfs);
 
                 $results = $golf;
+
                 break;
             case "tabac":
                 $tabac = $tabacRepository->getBySpecificClef($cles0, $cles1, $page, $size);
@@ -618,6 +621,20 @@ class HomeController extends AbstractController
         array_push($resultSort, [0 => $resultSort0, 1 => $nombreResult, 2 => $type]);
 
         $results = $resultSort[0];
+
+        for($i=0; $i<count($results[0]) ; $i++){
+            $r = $results[0][$i];
+            $photo = null;
+            if(array_key_exists("resto",$results[0][$i])){
+                $photo = $this->getPhotoPreviewResto("restaurant",$filesyst, $r["id"]);
+            }
+            if(array_key_exists("golf",$results[0][$i])){
+                $photo = $this->getPhotoPreviewResto("golf",$filesyst, $r["id"]);
+            }
+            $results[0][$i]["photo"] = $photo;
+        }
+
+        // dd($results);
        
         return $this->render("home/search_result.html.twig", [
             "userConnected" => $userConnected,
@@ -676,5 +693,40 @@ class HomeController extends AbstractController
             "userConnected" => $userConnected
     ]);
     }
+
+    /**
+     * @author Elie
+     * Get image preview gallery
+     */
+    public function getPhotoPreviewResto($type, $filesyst, $id_restaurant){
+         
+
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/".$type."/".$id_restaurant."/";
+
+        $tabPhoto = [];
+
+        $dir_exist = $filesyst->exists($folder);
+
+        // dd($folder);
+
+
+        if($dir_exist){
+            $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
+
+            // dd($images);
+            foreach ($images as $image) {
+                $photo = explode("uploads/valider",$image)[1];
+                $photo = "/public/uploads/valider".$photo;
+                array_push($tabPhoto, $photo);
+            }
+        }
+        if(count($tabPhoto) > 0){
+           return $tabPhoto[count($tabPhoto)-1];
+        }else{
+           return null;
+        }
+
+       //  $last_photo = $tabPhoto[count($tabPhoto)-1];
+   }
 
 }
