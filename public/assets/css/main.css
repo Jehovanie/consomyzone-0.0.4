@@ -2764,3 +2764,6 @@ textarea {
     width: 150px;
     height: 150px;
 }
+.bi-heart-fill {
+    color: red;
+}

@@ -303,7 +303,7 @@
 						</div>
 					</div>
 					<div class="col-6">
-						<div style="font-weight:bold;" class="text-primary">Nouvelle information</div>
+						<div style="font-weight:bold;" class="text-primary titleNewOrOld">Nouvelle information</div>
 						<div class="row container-depart pt-4 element content_new_info_nanta_js">
 							<div class="col-md-12">
 								<div id="new-map"></div>
@@ -337,8 +337,9 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Rejeter</button>
-				<button type="button" class="btn btn-primary">Valider</button>
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="rejectAdresseValidate(event)" id="rejectAddTovalidate">Rejeter</button>
+				<button type="button" class="btn btn-primary" onclick="acceptAdresseValidate(event)" id="acceptAddTovalidate">Valider</button>
+				<button type="button" class="btn btn-danger me-3" onclick="cancelAdresseValidate(event)" id="cancelAddTovalidate">Annuler</button>
 			</div>
 			</div>
 		</div>

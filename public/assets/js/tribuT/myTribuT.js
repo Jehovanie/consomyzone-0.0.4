@@ -727,8 +727,8 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                         <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s)</span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like" onclick="openSwalNonActif()"></i>
-                                                        <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
+                                                        <i style="cursor:pointer;" class="${data[i].reaction == 1 ? "bi-heart-fill" : "bi-heart" } like reaction_${tribu_t[0].name}_${data[i].id}" onclick="isLike('${data[i].id}', '${data[i].user_id}', '${tribu_t[0].name}')"></i>
+                                                        <i style="cursor:pointer;" class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
                                                             onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
@@ -829,7 +829,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                         <span class="nbr_comment_jheo_js">  ${dataNbr} commentaire(s) </span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like non_active"></i>
+                                                        <i style="cursor:pointer;" class="${data[i].reaction == 1 ? "bi-heart-fill" : "bi-heart" } like reaction_${tribu_t[0].name}_${data[i].id}" onclick="isLike('${data[i].id}', '${data[i].user_id}', '${tribu_t[0].name}')"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
                                                         onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
                                                     </div>
@@ -977,7 +977,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                     </p>
 
                                                     <div class="reaction-icon d-flex">
-                                                        <i class="bi-heart like non_active"></i>
+                                                        <i style="cursor:pointer;" class="${data[i].reaction == 1 ? "bi-heart-fill" : "bi-heart" } like reaction_${tribu_t[0].name}_${data[i].id}" onclick="isLike('${data[i].id}', '${data[i].user_id}', '${tribu_t[0].name}')"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
                                                         onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
                                                     </div>

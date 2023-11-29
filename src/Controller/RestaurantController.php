@@ -1381,7 +1381,8 @@ class RestaurantController extends AbstractController
             ->setVillenorm(json_encode($contents["villenorm"]))
             ->setCommune(json_encode($contents["commune"]))
             ->setTel(($contents["tel"]))
-            ->setRestaurant(intval(($contents["restaurant"])))
+            // ->setRestaurant(intval(($contents["restaurant"])))
+            ->setRestaurant(1)
             ->setBrasserie(intval(($contents["brasserie"])))
             ->setCreperie(intval(($contents["creperie"])))
             ->setFastFood(intval(($contents["fastFood"])))
@@ -1394,7 +1395,8 @@ class RestaurantController extends AbstractController
             ->setPoiX(doubleval(($contents["poix"])))
             ->setPoiY(doubleval(($contents["poiy"])))
             ->setUserId(intval($this->getUser()->getId()))
-            ->setRestoId(intval(($contents["restoId"])));
+            ->setRestoId(intval(($contents["restoId"])))
+            ->setStatus(-1);
 
             $bddRepo->save($bddRestoUserModif,true);
         // }catch(Exception $e){

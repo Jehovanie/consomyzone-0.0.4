@@ -8,11 +8,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  *
  *
- * @ORM\Table(name="bdd_resto_usrmodif")
- * @ORM\Entity(repositoryClass="App\Repository\BddRestoUserModifRepository")
+ * @ORM\Table(name="bdd_resto_backup")
+ * @ORM\Entity(repositoryClass="App\Repository\BddRestoBackupRepository")
  * 
  */
-class BddRestoUserModif
+class BddRestoBackup
 {
     /**
      * @var int
@@ -27,56 +27,56 @@ class BddRestoUserModif
     /**
      * @var string|null
      *
-     * @ORM\Column(name="denomination_f_new", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="denomination_f", type="string", length=1024, nullable=true)
      */
     private $denominationF;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="numvoie_new", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="numvoie", type="string", length=1024, nullable=true)
      */
     private $numvoie;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="typevoie_new", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="typevoie", type="string", length=1024, nullable=true)
      */
     private $typevoie;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="nomvoie_new", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="nomvoie", type="string", length=1024, nullable=true)
      */
     private $nomvoie;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="compvoie_new", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="compvoie", type="string", length=1024, nullable=true)
      */
     private $compvoie;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="codpost_new", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="codpost", type="string", length=1024, nullable=true)
      */
     private $codpost;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="villenorm_new", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="villenorm", type="string", length=1024, nullable=true)
      */
     private $villenorm;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="commune_new", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="commune", type="string", length=1024, nullable=true)
      */
     private $commune;
 
@@ -84,77 +84,77 @@ class BddRestoUserModif
     /**
      * @var string|null
      *
-     * @ORM\Column(name="tel_new", type="string", length=1024, nullable=true)
+     * @ORM\Column(name="tel", type="string", length=1024, nullable=true)
      */
     private $tel;
 
     /**
      * @var float|null
      *
-     * @ORM\Column(name="restaurant_new", type="float", precision=10, scale=0, nullable=true)
+     * @ORM\Column(name="restaurant", type="float", precision=10, scale=0, nullable=true)
      */
     private $restaurant;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="brasserie_new", type="decimal", precision=1, scale=0, nullable=true)
+     * @ORM\Column(name="brasserie", type="decimal", precision=1, scale=0, nullable=true)
      */
     private $brasserie;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="creperie_new", type="decimal", precision=1, scale=0, nullable=true)
+     * @ORM\Column(name="creperie", type="decimal", precision=1, scale=0, nullable=true)
      */
     private $creperie;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="fast_food_new", type="decimal", precision=1, scale=0, nullable=true)
+     * @ORM\Column(name="fast_food", type="decimal", precision=1, scale=0, nullable=true)
      */
     private $fastFood;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="pizzeria_new", type="decimal", precision=1, scale=0, nullable=true)
+     * @ORM\Column(name="pizzeria", type="decimal", precision=1, scale=0, nullable=true)
      */
     private $pizzeria;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="boulangerie_new", type="decimal", precision=1, scale=0, nullable=true)
+     * @ORM\Column(name="boulangerie", type="decimal", precision=1, scale=0, nullable=true)
      */
     private $boulangerie;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="bar_new", type="decimal", precision=1, scale=0, nullable=true)
+     * @ORM\Column(name="bar", type="decimal", precision=1, scale=0, nullable=true)
      */
     private $bar;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="cuisine_monde_new", type="decimal", precision=1, scale=0, nullable=true)
+     * @ORM\Column(name="cuisine_monde", type="decimal", precision=1, scale=0, nullable=true)
      */
     private $cuisineMonde;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="cafe_new", type="decimal", precision=1, scale=0, nullable=true)
+     * @ORM\Column(name="cafe", type="decimal", precision=1, scale=0, nullable=true)
      */
     private $cafe;
 
     /**
      * @var string|null
      *
-     * @ORM\Column(name="salon_the_new", type="decimal", precision=1, scale=0, nullable=true)
+     * @ORM\Column(name="salon_the", type="decimal", precision=1, scale=0, nullable=true)
      */
     private $salonThe;
 
@@ -163,14 +163,14 @@ class BddRestoUserModif
     /**
      * @var float|null
      *
-     * @ORM\Column(name="poi_x_new",type="decimal", precision=16, scale=14, nullable=true)
+     * @ORM\Column(name="poi_x",type="decimal", precision=16, scale=14, nullable=true)
      */
     private $poiX;
 
     /**
      * @var float|null
      *
-     * @ORM\Column(name="poi_y_new",type="decimal", precision=16, scale=14, nullable=true)
+     * @ORM\Column(name="poi_y",type="decimal", precision=16, scale=14, nullable=true)
      */
     private $poiY;
 
@@ -185,14 +185,6 @@ class BddRestoUserModif
      * 
      */
     private $restoId;
-
-    /**
-     * @ORM\Column(name="status", type="integer")
-     * 
-     */
-    private $status;
-
-  
 
     public function getId(): ?int
     {
@@ -493,23 +485,4 @@ class BddRestoUserModif
         return $this;
     }
 
-    /**
-     * Get the value of status
-     */ 
-    public function getStatus()
-    {
-        return $this->status;
-    }
-
-    /**
-     * Set the value of status
-     *
-     * @return  self
-     */ 
-    public function setStatus($status)
-    {
-        $this->status = $status;
-
-        return $this;
-    }
 }

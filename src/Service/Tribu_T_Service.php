@@ -1600,13 +1600,19 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
     
-    public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits){
+    public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits, $userId){
         $resultF=[];
+        $regex = "/\_publication+$/";
+
+        $tableReaction = preg_replace($regex, "_reaction", $table_publication_Tribu_T);
+  
         if($idMin == 0){
             //id,user_id,confidentiality,photo,userfullname,datetime, publication 
 
-            $sql = "SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)"
-            . "as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits ";
+            $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)"
+            . "as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits) as tb1 " .
+            "LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react, reaction FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId"
+            ;
            
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
@@ -1615,8 +1621,9 @@ class Tribu_T_Service extends PDOConnexionService
 
             
         }else{
-            $sql = "SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)"
-            . "as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id and t1.id < :idmin ORDER BY id DESC LIMIT :limits";
+            $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)"
+            . "as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id and t1.id < :idmin ORDER BY id DESC LIMIT :limits) as tb1 " .
+            "LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react, reaction FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId";
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->bindValue(':idmin', $idMin, PDO::PARAM_INT); 
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
@@ -1852,12 +1859,12 @@ class Tribu_T_Service extends PDOConnexionService
             $statement_photos = $this->getPDO()->prepare("SELECT tab.photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $user_id");
             $statement_photos->execute();
             $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
-
+            $commentaire= $this->convertUnicodeToUtf8(json_decode($comment["commentaire"],true));
             $temp= [
                 "comment_id" => $comment["id"],
                 "pub_id" => $comment["pub_id"],
                 "dateTime" => $comment["datetime"],
-                "text_comment" => $this->convertUnicodeToUtf8($comment["commentaire"]) ? $this->convertUnicodeToUtf8($comment["commentaire"]) : $comment["commentaire"],
+                "text_comment" => $commentaire,
                 "user" => [
                     "fullname" => $comment["userfullname"],
                     "photo" => $photo_profil["photo_profil"],

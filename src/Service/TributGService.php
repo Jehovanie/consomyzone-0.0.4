@@ -1015,12 +1015,10 @@ class TributGService extends PDOConnexionService{
 
      */
 
-    public function handlePublicationReaction( $pub_id , $user_id , $reaction  ){
+    public function handlePublicationReaction( $pub_id , $user_id , $reaction, $tableTribuTReaction=null ){
 
 
-
-        $table_reaction = $this->getTableNameTributG($user_id) . "_reaction";
-
+        $table_reaction = $tableTribuTReaction ? $tableTribuTReaction : $this->getTableNameTributG($user_id) . "_reaction";
 
 
         $sql = $this->getPDO()->prepare("SELECT COUNT(*) AS NB FROM $table_reaction WHERE user_id = $user_id AND pub_id = $pub_id");
