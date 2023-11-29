@@ -150,11 +150,12 @@ function removeChargement(){
     }
 }
 
-function isLike(pub_id, author_id) {
+function isLike(pub_id, author_id, table="") {
 
     value = 0
 
-    x = document.querySelector(".reaction_js_" + pub_id + "_jheo")
+    //x = document.querySelector(".reaction_js_" + pub_id + "_jheo")
+    x = document.querySelector(".reaction_" + table + "_" + pub_id)
 
     if (x.classList.contains("bi-heart-fill")) {
 
@@ -196,6 +197,8 @@ function isLike(pub_id, author_id) {
 
             "is_like": value,
 
+            "table":table,
+
             "author_id": author_id,
 
         })
@@ -203,8 +206,6 @@ function isLike(pub_id, author_id) {
     }).then(res => res.json())
 
     .then(res => {
-
-
 
         if( parseInt(res.reaction) > 0 ){
 

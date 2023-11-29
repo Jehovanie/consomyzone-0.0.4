@@ -2502,3 +2502,7 @@ textarea {
     height: 50px;
     clip-path: circle();
 }
+
+.bi-heart-fill {
+    color: red;
+}

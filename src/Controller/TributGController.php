@@ -61,17 +61,33 @@ class TributGController extends AbstractController
 
         extract($data); /// $pub_id , $is_like, $author_id
 
+        $isTribuT = explode("_",$table)[0] === "tribu";
 
+        if($isTribuT){
+            $tableReaction = $table."_reaction";
+            $reaction = $tributGService->handlePublicationReaction(
+    
+                $pub_id,
+    
+                $this->getUser()->getId(),
+    
+                $is_like,
+                
+                $tableReaction
+    
+            );
+        }else{
 
-        $reaction = $tributGService->handlePublicationReaction(
-
-            $pub_id,
-
-            $this->getUser()->getId(),
-
-            $is_like
-
-        );
+            $reaction = $tributGService->handlePublicationReaction(
+    
+                $pub_id,
+    
+                $this->getUser()->getId(),
+    
+                $is_like
+    
+            );
+        }
 
 
 

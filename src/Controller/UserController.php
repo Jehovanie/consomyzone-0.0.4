@@ -381,6 +381,8 @@ class UserController extends AbstractController
             return $this->redirect($request->getUri());
         }
 
+        // dd($tributGService->getAllPublicationsUpdate($profil[0]->getTributg()));
+
         
         return $this->render("tribu_g/account.html.twig", [
             "userConnected" => $userConnected,

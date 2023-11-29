@@ -2226,7 +2226,8 @@ class TributTController extends AbstractController
         $limits=$request->query->get('limits');
         $tableCommentaireTribuT=$request->query->get('tblCommentaire');
        
-        $result=$srv->getPartisantPublication($tableTribuTPublication, $tableCommentaireTribuT ,$idMin, $limits);
+        $result=$srv->getPartisantPublication($tableTribuTPublication, $tableCommentaireTribuT ,$idMin, $limits, $this->getUser()->getId());
+
         $json=$serializer->serialize($result,'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }

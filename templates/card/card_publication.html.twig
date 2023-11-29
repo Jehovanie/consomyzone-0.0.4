@@ -87,9 +87,21 @@
         </p>
        
         <div class="reaction-icon d-flex">
-            <i class="bi-heart like" onclick="openSwalNonActif()"></i>
-            <i class=" fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}', '{{userOwnPub.id}}')"></i>
-            {# <i class="non_active fa-regular fa-comment comment"></i> #}
+            {% if publication.reactions > 0 %}
+                {% set _i = 0 %}
+                {% for reaction in publication.reactions %}
+                    {% if reaction.user_id == app.user.id and reaction.reaction == 1 %}
+                        {% set _i = 1 %}
+                        <i style="cursor:pointer;" class="bi-heart-fill like reaction_{{tribu.table}}_{{publication.id}}" onclick="isLike('{{publication.id}}', '{{userOwnPub.id}}', '{{tribu.table}}')"></i>
+                    {% endif %}
+                {% endfor %}
+                {% if _i == 0 %}
+                    <i style="cursor:pointer;" class="bi-heart like reaction_{{tribu.table}}_{{publication.id}}" onclick="isLike('{{publication.id}}', '{{userOwnPub.id}}', '{{tribu.table}}')"></i>
+                {% endif %}
+            {% else %}
+                <i style="cursor:pointer;" class="bi-heart like reaction_{{tribu.table}}_{{publication.id}}" onclick="isLike('{{publication.id}}', '{{userOwnPub.id}}', '{{tribu.table}}')"></i>
+            {% endif %}
+            <i style="cursor:pointer;" class=" fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}', '{{userOwnPub.id}}')"></i>
         </div>
     </div>
     
