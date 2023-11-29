@@ -580,7 +580,7 @@ if (document.querySelector("#elie-btn-visio")) {
         </div>
         </div>
         `
-
+        console.log(event.target.dataset.roof);
         let roomRandom_msg = "Meet" + generateUID() +event.target.dataset.roof
 
         document.querySelector(".btn-minimize-elie").setAttribute('data-onclick', `joinMeet('${roomRandom_msg}', 'bodyVisioMessageElie', this,'old')`)

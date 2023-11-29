@@ -3,6 +3,8 @@ const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
 const url_test = new URL(current_url);
+//j'utilise cette variable pour les call de jitsi, dans fichier account.js
+let AUDIO_FOR_JITSI = null ;
 let Cookies2 = Cookies.noConflict();
 // cloneResultDepResto()
 if( document.querySelector(".form_content_search_navbar_js")){

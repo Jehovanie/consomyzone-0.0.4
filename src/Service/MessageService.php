@@ -73,7 +73,7 @@ class MessageService extends PDOConnexionService{
         ///insert notification
         $sql_sender = "INSERT INTO " . $result_sender[0]["tablemessage"] . " (user_id,user_post,content,message_type, isForMe, isShow,isRead) VALUES (?,?,?,?,?,?,?)";
              
-        $this->getPDO()->prepare($sql_sender)->execute([$user_id, $user_id_post, $content, $message_type, 0, 1, 1]);
+        $this->getPDO()->prepare($sql_sender)->execute([$user_id, $user_id, $content, $message_type, 0, 1, 1]);
         //---------------------- FINISH HERE --------------------
 
         $max_id = $this->getPDO()->prepare("SELECT max(id) as last_id_message FROM  ". $result_sender[0]["tablemessage"]);
@@ -109,11 +109,13 @@ class MessageService extends PDOConnexionService{
      * To get the number messages that is not show by the user.
      * @param string $table_name: name of the table.
      */
-    public function getMessageForEveryUser(string $table_name ){
+    public function getMessageForEveryUser(string $table_name,int $userId ){
         
         //// get the different user already talk to me.
-        $sql = "SELECT DISTINCT user_post from ".$table_name;
-        $exec_other_user_id = $this->getPDO()->query($sql);
+        $sql = "SELECT DISTINCT user_post from ".$table_name." WHERE user_post != :id";
+        $exec_other_user_id = $this->getPDO()->prepare($sql);
+        $exec_other_user_id->bindParam(":id",$userId,PDO::PARAM_INT);
+        $exec_other_user_id->execute();
         $other_user_id= $exec_other_user_id->fetchAll(PDO::FETCH_ASSOC);
         // dd($other_user_id),
 

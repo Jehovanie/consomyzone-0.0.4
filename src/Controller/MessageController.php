@@ -16,6 +16,7 @@ use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
 use App\Repository\ConsumerRepository;
 use App\Repository\SupplierRepository;
+use App\Service\NotificationService;
 use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
@@ -29,12 +30,9 @@ use Symfony\Component\Serializer\SerializerInterface;
 class MessageController extends AbstractController
 {
 
-    private function decryptData($encryptedData){
-        $decryptionMethod ="AES-256-CBC";
-        $encryptionMethod="AES-256-CBC";
-        $secretKey="ThisIsASecretKey123";
-        $iv = \openssl_random_pseudo_bytes(openssl_cipher_iv_length($encryptionMethod));
-        $decryptedData = openssl_decrypt($encryptedData, $decryptionMethod, $secretKey, 0, $iv);
+    private function decryptData($encryptedData, $iv){
+      
+       $decryptedData = openssl_decrypt($encryptedData, $_ENV["DECRYPTIONMETHOD"], $_ENV["SECRET"], 0, $iv);
         return $decryptedData;
     }
 
@@ -78,9 +76,13 @@ class MessageController extends AbstractController
                 $groupSendTo=$tableName;
                 $allMessage=$tributTService->getMessageGRP($tableName);
                 foreach($allMessage as &$message){
-                    $message["msg"]=json_decode($message["msg"],true);
-                    $message["images"]=json_decode($message["images"],true);
-                    $message["files"]=json_decode($message["files"],true);
+                    $iv=$tributGService->getIv($groupSendTo,$message["id_msg"])[0]["iv"];
+                    $decryptedData=$this->decryptData($message["msg"],$iv);
+                    $decryptedImages=$this->decryptData($message["images"],$iv);
+                    $decryptedFiles=$this->decryptData($message["files"],$iv);
+                    $message["msg"]= $decryptedData != false ? $decryptedData : json_decode($message["msg"],true);
+                    $message["images"]= $decryptedImages != false ? json_decode($decryptedImages,true): json_decode($message["images"],true);
+                    $message["files"]= $decryptedFiles !=false ?   json_decode($decryptedFiles,true) : json_decode($message["files"],true);
                 }
                 foreach($all_tribuT as $tribut){
                      if($tribut["table_name"] ==$tableName)
@@ -98,11 +100,15 @@ class MessageController extends AbstractController
                 if(count($allMessage)>0)
                     $tribuG["last_message"]=$allMessage[0];
                 else
-                $tribuG["last_message"]=[];
+                    $tribuG["last_message"]=[];
                 foreach($allMessage as &$message){
-                    $message["msg"]=json_decode($message["msg"],true);
-                    $message["images"]=json_decode($message["images"],true);
-                    $message["files"]=json_decode($message["files"],true);
+                    $iv=$tributGService->getIv($groupSendTo,$message["id_msg"])[0]["iv"];
+                    $decryptedData=$this->decryptData($message["msg"],$iv);
+                    $decryptedImages=$this->decryptData($message["images"],$iv);
+                    $decryptedFiles=$this->decryptData($message["files"],$iv);
+                    $message["msg"]= $decryptedData != false ? $decryptedData : json_decode($message["msg"],true);
+                    $message["images"]= $decryptedImages != false ? json_decode($decryptedImages,true): json_decode($message["images"],true);
+                    $message["files"]= $decryptedFiles !=false ?   json_decode($decryptedFiles,true) : json_decode($message["files"],true);
                 }
                 break;
             }
@@ -111,7 +117,7 @@ class MessageController extends AbstractController
             }
         } 
 
-        //dd($tribuG);
+        //dump($allMessage);
         // $tribuG["last_message"]=$allMessage[0];
         return $this->render("user/message/mgs_grp_tribu.html.twig",[
             "group_send_to"=>$groupSendTo,
@@ -131,7 +137,10 @@ class MessageController extends AbstractController
     public function pushMessageGrpT(
         Request $request,
         Tribu_T_Service $tributTService,
-        Filesystem $filesyst
+        Filesystem $filesyst, 
+        UserRepository $userRepository,
+        UserService $userService,
+        NotificationService $notificationService
     ){
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_home');
@@ -184,9 +193,8 @@ class MessageController extends AbstractController
         }
         
         $result= $tributTService->sendMessageGroupe($message,  
-        $file_list , 
-        $image_list, 
-        $userId, 0, 1, 0,$receiver);
+        $file_list , $image_list, $userId, 
+        0, 1, 0,$receiver,$userRepository,$userService,$notificationService);
 
         // return $this->json(array("ok"=>"ok"));
 
@@ -199,7 +207,10 @@ class MessageController extends AbstractController
     public function pushMessageGrp(
         Request $request,
         TributGService $tributGService,
-        Filesystem $filesyst
+        Filesystem $filesyst,
+        UserRepository $userRepository,
+        UserService $userService,
+        NotificationService $notificationService
     ){
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_home');
@@ -251,10 +262,8 @@ class MessageController extends AbstractController
 
         }
 
-        $result= $tributGService->sendMessageGroupe($message,  
-        $file_list , 
-        $image_list, 
-        $userId, 0, 1, 0,$receiver);
+        $result= $tributGService->sendMessageGroupe($message,  $file_list , $image_list, 
+                $userId, 0, 1, 0,$receiver,$userRepository,$userService,$notificationService);
 
         // return $this->json(array("ok"=>"ok"));
 
@@ -1250,7 +1259,8 @@ class MessageController extends AbstractController
 
         ///last message for each user
         $all_message = $messageService->getMessageForEveryUser(
-            $this->getUser()->getTablemessage()
+            $this->getUser()->getTablemessage(),
+            intval($this->getUser()->getId())
         );
         ///last message for each user and their profil .
         $results = [];
@@ -1353,15 +1363,18 @@ class MessageController extends AbstractController
             case 't':{
 
                 $tableName=$request->query->get('name');
+                $groupSendTo=$tableName;
                 $allMessage=$tributTService->getMessageGRP($tableName);
-                $allMessage=mb_convert_encoding( $allMessage, 'UTF-8', 'UTF-8');
+                //$allMessage=mb_convert_encoding( $allMessage, 'UTF-8', 'UTF-8');
                 foreach($allMessage as &$message){
-                    $message["msg"]=json_decode($message["msg"],true);
-                    $message["images"]=json_decode($message["images"],true);
-                    $message["files"]=json_decode($message["files"],true);
-                    // $message["firstname"]=utf8_encode($message["firstname"]);
-                    // $message["lastname"]=utf8_encode($message["lastname"]);
-                    // $message["num_rue"]=utf8_encode($message["num_rue"]);
+                    $iv=$tributGService->getIv($groupSendTo,$message["id_msg"])[0]["iv"];
+                    $decryptedData=$this->decryptData($message["msg"],$iv);
+                    $decryptedImages=$this->decryptData($message["images"],$iv);
+                    $decryptedFiles=$this->decryptData($message["files"],$iv);
+                    $message["msg"]= $decryptedData != false ? $decryptedData : json_decode($message["msg"],true);
+                    $message["images"]= $decryptedImages != false ? json_decode($decryptedImages,true): json_decode($message["images"],true);
+                    $message["files"]= $decryptedFiles !=false ?   json_decode($decryptedFiles,true) : json_decode($message["files"],true);
+                   
                 }
                 //dd( $allMessage);
                 break;
@@ -1370,15 +1383,17 @@ class MessageController extends AbstractController
 
             case 'g':{
                 $tableName=$request->query->get('name');
+                $groupSendTo=$tableName;
                 $allMessage=$tributGService->getMessageGRP($tableName);
-                $allMessage=mb_convert_encoding( $allMessage, 'UTF-8', 'UTF-8');
+                //$allMessage=mb_convert_encoding( $allMessage, 'UTF-8', 'UTF-8');
                 foreach($allMessage as &$message){
-                    $message["msg"]=json_decode($message["msg"],true);
-                    $message["images"]=json_decode($message["images"],true);
-                    $message["files"]=json_decode($message["files"],true);
-                    // $message["firstname"]=utf8_encode($message["firstname"]);
-                    // $message["lastname"]=utf8_encode($message["lastname"]);
-                    // $message["num_rue"]=utf8_encode($message["num_rue"]);
+                    $iv=$tributGService->getIv($groupSendTo,$message["id_msg"])[0]["iv"];
+                    $decryptedData=$this->decryptData($message["msg"],$iv);
+                    $decryptedImages=$this->decryptData($message["images"],$iv);
+                    $decryptedFiles=$this->decryptData($message["files"],$iv);
+                    $message["msg"]= $decryptedData != false ? $decryptedData : json_decode($message["msg"],true);
+                    $message["images"]= $decryptedImages != false ? json_decode($decryptedImages,true): json_decode($message["images"],true);
+                    $message["files"]= $decryptedFiles !=false ?   json_decode($decryptedFiles,true) : json_decode($message["files"],true);
                    
                 }
                 break;

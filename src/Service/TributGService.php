@@ -1752,6 +1752,7 @@ class TributGService extends PDOConnexionService{
         "isRead tinyint NOT NULL DEFAULT 0,".
         "isRemoved tinyint,".
         "isEpingler tinyint,".
+        "iv blob, ".
         "date_message_created datetime NOT NULL DEFAULT current_timestamp()".
         " )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
@@ -1759,14 +1760,156 @@ class TributGService extends PDOConnexionService{
         $stmt->execute();
     }
 
+    /**
+     * @author faniry <faniryandriamihaingo@gmail.com>
+     * @param string $messgae
+     * @param string[] $files
+     * @param string[] $images
+     * @param integer $idSender , user who send messages
+     * @param integer $isPrivate
+     * @param integer $isPublic
+     * @param integer $isRead
+     * @param string $tribu_t
+     * cette fonction insert les messages envoyées dans la table des messages
+     * utilisé dans messagecontroller
+     * @return integer[] id (l'id du message créé)
+     */
     public function sendMessageGroupe($message,  
+        $files , 
+        $images, 
+        $idSender, 
+        $isPrivate, 
+        $isPublic,
+        $isRead,
+        $tribu_g,
+        $userRepository,
+        $userService,
+        $notificationService)
+    {
+            $tableMessageName=$tribu_g."_msg_grp";
+            $iv = openssl_random_pseudo_bytes(openssl_cipher_iv_length($_ENV["ENCRYPTIONMETHOD"]));
+            $encryptedData = openssl_encrypt($message,$_ENV["ENCRYPTIONMETHOD"], $_ENV["SECRET"], 0, $iv);
+            $sql='INSERT INTO '. $tableMessageName.
+            '(id_expediteur, msg , files, images, isPrivate, isPublic, isRead, iv)'. 
+            'VALUES(:id_expediteur, :msg, :files, :images, :isPrivate, :isPublic, :isRead, :iv )';
+            $encryptedImages= openssl_encrypt(json_encode($images),$_ENV["ENCRYPTIONMETHOD"], $_ENV["SECRET"], 0, $iv);
+            $encryptedFiles= openssl_encrypt(json_encode($files),$_ENV["ENCRYPTIONMETHOD"], $_ENV["SECRET"], 0, $iv);
+            $statement = $this->getPDO()->prepare($sql);
+            $statement->bindParam(':id_expediteur',$idSender,PDO::PARAM_STR);
+            $statement->bindParam(':msg',$encryptedData,PDO::PARAM_STR);
+            $statement->bindParam(':files',$encryptedFiles,PDO::PARAM_STR);
+            $statement->bindParam(':images',$encryptedImages,PDO::PARAM_STR);
+            $statement->bindParam(':isPrivate',$isPrivate,PDO::PARAM_INT);
+            $statement->bindParam(':isPublic',$isPublic,PDO::PARAM_INT);
+            $statement->bindParam(':isRead',$isRead,PDO::PARAM_INT);
+            $statement->bindParam(':iv',$iv);
+            $isSuccess=$statement->execute();
+            $max_id=1;
+            if($isSuccess){
+                //TODO: send notification
+                $allFanIdInTribuG=$this->getAllTributG($tribu_g);
+                $userSender= $userRepository->find(intval($idSender));
+                $firstnameUserSendNotification  = $userService->getUserFirstName($userSender->getId());
+                $lastnameUserSendNotification  = $userService->getUserLastName($userSender->getId());
+                $content=$lastnameUserSendNotification." ".$firstnameUserSendNotification.
+                " a envoyé un message dans la discussion générale ".$tribu_g; 
+                
+                foreach ($allFanIdInTribuG as $user_id) {
+                    $user= $userRepository->find(intval($user_id["user_id"]));
+                    $idUserReceivedNotification = $user->getId();
+                    if($idSender != $idUserReceivedNotification ){
+                        $emailUserReceivedNotification = $user->getEmail();
+                        $firstnameUserReceivedNotification  = $userService->getUserFirstName($user->getId());
+                        $lastnameUserReceivedNotification  = $userService->getUserLastName($user->getId());
+                        $statusUserReceivedNotification  = $this->getCurrentStatus($tribu_g, $user->getId());
+                        $link="/user/tribu/msg?name=".$tribu_g."&type=g";
+                        //$content.=";". $link;
+                        $notificationService->sendNotificationForOne(intval($idSender), intval($idUserReceivedNotification),
+                        $link,$content,"");
+                    }
+                }
+                //i will use sendNotificationForOne in notificationService
+                $max_id = $this->getPDO()->prepare("SELECT max(id_msg) as last_id_message FROM  ". $tableMessageName );
+                $max_id->execute();
+                return $max_id->fetchAll(PDO::FETCH_ASSOC);
+            }
+            return $max_id;
+    }
+
+
+    /**
+     * @author faniry
+     * cette fonction recupère tous les messages avec l'user profil des expéditeur
+     *  @return any[]
+     */
+    public function getMessageGRP($tribu_g){
+        $tableMessageName=$tribu_g."_msg_grp";
+        $sql="SELECT t1.id_msg, t1.id_expediteur, t1.msg, ". 
+        "t1.files, t1.images, t1.isPrivate, t1.isPublic, t1.isRead, t1.date_message_created,". 
+        " t2.id, t2.user_id, t2.firstname, t2.lastname, t2.photo_profil". " FROM " .$tableMessageName.
+        " as t1 LEFT JOIN consumer as t2 ON t1.id_expediteur=t2.user_id ORDER BY t1.date_message_created ASC ";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+        
+        return $results;
+        
+    }
+
+    /**
+     * @author faniry
+     * cette fonction recupère tous l'avatar d'un tribu g
+     *  @return any[]
+     */
+    public function getAvatar($tribug){
+        $sql="SELECT avatar FROM ".$tribug." limit 1";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $results;
+    }
+
+
+    
+
+    /**
+     * @author cette fonction recupéré le vecteur d'initialisation pour le décryptage des message
+     * @return any[]
+     */
+    public function getIv($tribu_T,$id){
+        $tableMessageName=$tribu_T."_msg_grp";
+
+        $sql="SELECT iv FROM " . $tableMessageName . " where id_msg= ".$id;
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
+        
+    }
+
+
+    public function tmp($tribu_T,$id){
+        $tableMessageName=$tribu_T."_msg_grp";
+
+        $sql="SELECT * FROM " . $tableMessageName . " where id_msg= ".$id;
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results;
+        
+    }
+    
+    public function sdmsgT($message,  
         $files , 
         $images, 
         $id, 
         $isPrivate, 
         $isPublic,
         $isRead,
-        $tribu_g)
+        $tribu_g,
+        $iv)
     {
             $tableMessageName=$tribu_g."_msg_grp";
             // $encryptionMethod=$_ENV["ENCRYPTIONMETHOD"];
@@ -1779,8 +1922,8 @@ class TributGService extends PDOConnexionService{
             // $encryptedFiles=\openssl_encrypt($files, $encryptionMethod, $secretKey, 0, $iv,);
 
             $sql='INSERT INTO '. $tableMessageName.
-            '(id_expediteur, msg , files, images, isPrivate, isPublic, isRead)'. 
-            'VALUES(:id_expediteur, :msg, :files, :images, :isPrivate, :isPublic, :isRead )';
+            '(id_expediteur, msg , files, images, isPrivate, isPublic, isRead,IV)'. 
+            'VALUES(:id_expediteur, :msg, :files, :images, :isPrivate, :isPublic, :isRead, :IV )';
             $message=json_encode($message);
             $images=json_encode($images);
             $files=json_encode($files);
@@ -1792,33 +1935,13 @@ class TributGService extends PDOConnexionService{
             $statement->bindParam(':isPrivate',$isPrivate,PDO::PARAM_INT);
             $statement->bindParam(':isPublic',$isPublic,PDO::PARAM_INT);
             $statement->bindParam(':isRead',$isRead,PDO::PARAM_INT);
-
+            $statement->bindParam(':IV',$iv);
             $statement->execute();
 
             $max_id = $this->getPDO()->prepare("SELECT max(id_msg) as last_id_message FROM  ". $tableMessageName );
             $max_id->execute();
 
             return $max_id->fetchAll(PDO::FETCH_ASSOC);
-    }
-
-    public function getMessageGRP($tribu_g){
-        $tableMessageName=$tribu_g."_msg_grp";
-        $sql="SELECT * FROM ".$tableMessageName.
-        " as t1 LEFT JOIN consumer as t2 ON t1.id_expediteur=t2.user_id ORDER BY t1.date_message_created ASC ";
-        $statement = $this->getPDO()->prepare($sql);
-        $statement->execute();
-        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
-        
-        return $results;
-        
-    }
-
-    public function getAvatar($tribug){
-        $sql="SELECT avatar FROM ".$tribug." limit 1";
-        $statement = $this->getPDO()->prepare($sql);
-        $statement->execute();
-        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
-        return $results;
     }
 
 }
