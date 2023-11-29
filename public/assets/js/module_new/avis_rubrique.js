@@ -150,8 +150,11 @@ function addAvis(idItemRubrique=null){
         body:JSON.stringify(requestParam)
     })
 
-    fetch(request).then(r => {
-        if (r.ok && r.status === 200) {
+    fetch(request)
+        .then(r => r.json())
+        .then(response => {
+
+            console.log(response)
 
             ///// generate list avis in modal
             showModifArea(idItem, newUserId)
@@ -170,8 +173,14 @@ function addAvis(idItemRubrique=null){
                 document.querySelector(".content_avis_person_hidden_jheo_js").setAttribute("data-avis-note", note )
                 document.querySelector(".content_avis_person_hidden_jheo_js").setAttribute("data-avis-text", avis )
             }
-        }
-    })
+
+            const state= response.state;
+
+            let total_note= 0
+            state.forEach(item => { total_note+= parseFloat(item.note) });
+
+            showNoteGlobaleOnMarker( idItem, total_note/state.length, type);
+        })
 }
 
 
@@ -320,12 +329,11 @@ function createShowAvisAreas(json,currentUserId,idItem = 0, rubrique_type= null 
     let modalebtnModife = "";
     modalebtnModife = `
         <div class="content_action">
-            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id}' ,'${json.note}' , '${encodeURIComponent(json.avis.replaceAll("'", " "))}', '${idItem}', '${rubrique_type}')">
+            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}', '${idItem}', '${rubrique_type}')">
                 <i class="fa-solid fa-pen-to-square"></i>
             </button>
         </div>
     `
-    // <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id}' ,'${json.note}' , '${json.avis.replace('\n', '')}', '${idItem}', '${rubrique_type}')">
 
     const spec_selector = (currentUserId == json.user.id && currentUserId!=null) ? "my_comment_jheo_js" : "";
     const editHTMl = modalebtnModife
@@ -437,9 +445,7 @@ function settingAvis(avisID, avisNote, avisText, idItem, rubriquType= null){
     document.querySelector(".title_modal_jheo_js").innerHTML = "Modifier votre avis."
     
     document.querySelector(".note_number_jheo_js").value = parseFloat(avisNote);
-    // document.querySelector(".note_avis_jheo_js").value = avisText;
-    document.querySelector(".note_avis_jheo_js").value = decodeURIComponent(avisText);
-
+    document.querySelector(".note_avis_jheo_js").value = avisText;
 
     const btn_update = document.querySelector(".send_avis_jheo_js");
     

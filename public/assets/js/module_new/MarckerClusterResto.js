@@ -33,7 +33,9 @@ class MarckerClusterResto extends MapModule  {
             
             this.listRestoPastille= responseJson.allIdRestoPastille;
 
-            this.initMap(null, null, null, isAddControl);
+            const zoom = this.codinsee ? 13 : null;
+            this.initMap(null, null, zoom, isAddControl);
+            
             this.bindAction();
 
             if(getDataInSessionStorage("lastSearchPosition")){
@@ -46,41 +48,59 @@ class MarckerClusterResto extends MapModule  {
     }
 
     createMarkersCluster(){
-        const that= this;
+        // const that= this;
         this.markers = L.markerClusterGroup({ 
             chunkedLoading: true,
-            iconCreateFunction: function (cluster) {
-                if(that.marker_last_selected){
-                    let sepcMarmerIsExist = false;
-                    for (let g of  cluster.getAllChildMarkers()){
-                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
-                            sepcMarmerIsExist = true;
-                            break;
-                        }
-                    }
+            animate: true,
+            disableClusteringAtZoom: true,
+            animateAddingMarkers:true,
+            chunkedLoading: true,
+            chunkInterval: 500, 
+            chunkDelay: 100
+        })
+            // chunkProgress: null,
+            // maxClusterRadius: 40,
+            // iconCreateFunction: function (cluster) {
+            //     console.log(cluster)
+            //     return L.divIcon({
+            //         className: "d-none",
+            //     });
+            // },
+            
+            // maxClusterRadius: function(zoom){
+            //     return 210 - zoom * 10
+            //     // return 10
+            // },
+            // iconCreateFunction: function (cluster) {
+            //     if(that.marker_last_selected){
+            //         console.log(cluster)
+            //         let sepcMarmerIsExist = false;
+            //         for (let g of  cluster.getAllChildMarkers()){
+            //             if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+            //                 sepcMarmerIsExist = true;
+            //                 break;
+            //             }
+            //         }
 
-                    if(sepcMarmerIsExist){
-                        return L.divIcon({
-                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
-                            className: "spec_cluster",
-                            iconSize:L.point(35,35)
-                        });
-                    }else{
-                        return L.divIcon({
-                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                            className: "mycluster",
-                            iconSize:L.point(35,35)
-                        });
-                    }
-                }else{
-                    return L.divIcon({
-                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                        className: "mycluster",
-                        iconSize:L.point(35,35)
-                    });
-                }
-            },
-        });
+            //         if(sepcMarmerIsExist){
+            //             return L.divIcon({
+            //                 html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+            //                 className: "spec_cluster",
+            //                 iconSize:L.point(35,35)
+            //             });
+            //         }else{
+            //             return L.divIcon({
+            //                 className: "d-none",
+            //             });
+            //         }
+            //     }else{
+            //         return L.divIcon({
+            //             className: "d-none",
+            //         });
+            //     }
+            // },
+            
+        // });
     }
 
 
@@ -100,122 +120,90 @@ class MarckerClusterResto extends MapModule  {
 
 
     addMarker(newData){
-        newData.forEach(item => {
-            this.settingSingleMarker(item, false)
-        })
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
 
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
+        newData.forEach(item => {
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
+        })
+        // console.log(dataFiltered);
         this.map.addLayer(this.markers);
     }
 
-    settingSingleMarker(item, isSelected= false){
-        
-        const departementName = item.depName
-        const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
-
-        const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
-        const title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
-
+    /**
+     * Goals object about markers icon.
+     * @param {*} item  this rubric item.
+     * @param {*} isSelected : true or false
+     * @returns object : { path: ..., size: }
+     */
+    getIcon(item, isSelected){
         let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(item.id)) : [];
-
         let poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
         let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
-        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
+        let isPastille = resultRestoPastille.length > 0 ? 1 : 0;
 
-        let marker
+        const icon_path= isSelected ? poi_icon_Selected : poi_icon;
+        const icon_size= isSelected ? 2 : isPastille; /// 0: normal, 3: selected
 
-        /*const marker = L.marker(
-            L.latLng(parseFloat(item.lat), parseFloat(item.long)),
-            {
-                icon: isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille),
-                cleNom: item.denominationF,
-                id: item.id
-            }
-        );*/
+        return { 'path': icon_path, 'size': icon_size };
+    }
 
+    settingSingleMarker(item, isSelected= false){
+
+        const zoom = this.map._zoom;
+        const icon = this.getIcon(item, isSelected);
+
+        let marker= null;
         if(!item.moyenne_note){
             marker = L.marker(
                 L.latLng(parseFloat(item.lat), parseFloat(item.long)),
                 {
-                    icon: isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille),
+                    icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
                     cleNom: item.denominationF,
                     id: item.id,
                     draggable:false
                 }
             );
         }else{
-            marker=this.setSpecialMarkerToShowNote(L.latLng(parseFloat(item.lat), parseFloat(item.long)),item, isSelected, poi_icon, poi_icon_Selected, isPastille)
+            // marker= this.setSpecialMarkerToShowNote( L.latLng(parseFloat(item.lat), parseFloat(item.long)), item,  isSelected,  poi_icon,  poi_icon_Selected,  isPastille,  zoom)
+            marker= this.setSpecialMarkerToShowNoteRefactor(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                item, 
+                icon.path, 
+                icon.size,
+                "resto"
+            )
         }
 
+        const departementName = item.depName
+        const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
+        const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
+        const title = "<span class='fw-bolder'> Restaurant:</span>  " + item.denominationF + ".<span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
+        
         marker.bindTooltip(title,{ direction: "top", offset: L.point(0, -30)}).openTooltip();
 
-        marker.on('click', (e) => {
-            ////close right if this open
-            this.closeRightSide();
-
-            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
-
-            let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(item.id)) : [];
-
-            let poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
-            let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
-            let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
-
-
-
-            const icon_R = L.Icon.extend({
-                options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/" + poi_icon_Selected  : this.currentUrl.origin + "/public/" + poi_icon_Selected,
-                    iconSize: isPastille === 2 ? [45, 60] : [30,45] ,
-                    iconAnchor: [11, 30],
-                    popupAnchor: [0, -20],
-                    shadowSize: [68, 95],
-                    shadowAnchor: [22, 94]
-                }
-            })
-
-            if(!item.moyenne_note){
-                marker.setIcon(new icon_R)
-            }else{
-                marker.setIcon(this.setSpecialIcon(item, true, poi_icon, poi_icon_Selected, isPastille))
-            }
-
-            if (this.marker_last_selected && this.marker_last_selected != marker ) {
-                
-                resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(this.marker_last_selected.options.id)) : [];
-                poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
-
-                const icon_B = L.Icon.extend({
-                    options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/" + poi_icon :  this.currentUrl.origin + "/public/" + poi_icon,
-                        iconSize: [32,50],
-                        iconAnchor: [11, 30],
-                        popupAnchor: [0, -20],
-                        //shadowUrl: 'my-icon-shadow.png',
-                        shadowSize: [68, 95],
-                        shadowAnchor: [22, 94]
-                    }
-                })
-
-                let oneResto = this.default_data.find(jtem => parseInt(this.marker_last_selected.options.id) === parseInt(jtem.id));
-
-                if(!oneResto.moyenne_note){
-                    this.marker_last_selected.setIcon(new icon_B)
-                }else{
-                    this.marker_last_selected.setIcon(this.setSpecialIcon(oneResto, false, poi_icon, poi_icon_Selected, isPastille))
-                }
-
-            }
-            this.marker_last_selected = marker;
-
-            this.markers.refreshClusters();
-
-            if (screen.width < 991) {
-                getDetailResto(item.dep, item.depName, item.id, false)
-            } else {
-                getDetailResto(item.dep, item.depName, item.id, false)
-            }
-
-        })
+        this.bindEventClick( marker, item );
 
         this.markers.addLayer(marker);
 
@@ -227,15 +215,72 @@ class MarckerClusterResto extends MapModule  {
         }
     }
 
+    bindEventClick( marker, item ){
+        marker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+            
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(item, true );
+
+            if(!item.moyenne_note){
+                marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+            }else{
+                // marker.setIcon(this.setSpecialIcon(item, true, poi_icon, poi_icon_Selected, isPastille))
+                marker.setIcon(
+                    this.setSpecialIconRefactor( item, icon.path, icon.size )
+                )
+            }
+
+            this.updateLastMarkerSelected( marker, item )
+
+            this.markers.refreshClusters();
+
+            this.renderFicheDetails( item );
+
+        })
+    }
+
+
+    updateLastMarkerSelected( marker, item){
+        if (this.marker_last_selected && this.marker_last_selected != marker ) {
+            let oneResto = this.default_data.find(jtem => parseInt(this.marker_last_selected.options.id) === parseInt(jtem.id));
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(oneResto, false );
+            if(!oneResto.moyenne_note){
+                this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, zoom ))
+            }else{
+                this.marker_last_selected.setIcon(
+                    // this.setSpecialIcon(oneResto, false, poi_icon, poi_icon_Selected, isPastille)
+                    this.setSpecialIconRefactor( oneResto, icon.path, icon.size )
+                )
+            }
+
+        }
+        this.marker_last_selected = marker;
+    }
+
+    renderFicheDetails( item ){
+        if (screen.width < 991) {
+            getDetailResto(item.dep, item.depName, item.id, false)
+        } else {
+            getDetailResto(item.dep, item.depName, item.id, false)
+        }
+    }
+
       
     addEventOnMap(map) {
+        // map.on("resize moveend", () => { 
         map.on("resize moveend", () => { 
             const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
             const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
 
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
-            this.addPeripheriqueMarker(new_size)
+            this.updateMarkersDisplay(new_size);
+            this.addPeripheriqueMarker(new_size);
         })
     }
 
@@ -254,19 +299,6 @@ class MarckerClusterResto extends MapModule  {
         }
     }
 
-    checkIsExist(idToCheck){
-        return this.default_data.some(({id}) => parseInt(id) === parseInt(idToCheck))
-    }
-
-    clickOnMarker(id){
-        this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(id) ) {
-                marker.fireEvent('click'); 
-            }
-        });
-    }
-
-  
 
     async fetchOneData(id){
         try {
@@ -332,11 +364,14 @@ class MarckerClusterResto extends MapModule  {
             const response = await fetch(`${this.api_data}${param}`);
             const responseJson = await response.json();
             let new_data = responseJson.data;
+
+            this.addMarkerNewPeripherique(new_data, new_size);
+
             
             // const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
             new_data = new_data.filter(item => !this.default_data.some(j => parseInt(j.id) === parseInt(item.id)))
 
-            this.addMarker(this.checkeFilterType(new_data));
+            // this.addMarker(this.checkeFilterType(new_data));
 
             this.default_data= this.default_data.concat(new_data)
 

@@ -183,89 +183,50 @@ class MarckerClusterSearch extends MapModule  {
     }
 
     createMarkersCluster() {
-        this.markers = L.markerClusterGroup({ 
+        const that= this;
+        this.markers = L.markerClusterGroup({
             chunkedLoading: true,
-            animate: true,
-            disableClusteringAtZoom: true,
-            animateAddingMarkers:true,
-            chunkedLoading: true,
-            chunkInterval: 500, 
-            chunkDelay: 100,
+            iconCreateFunction: function (cluster) {
+                if(that.marker_last_selected){
+                    let sepcMarmerIsExist = false;
+                    for (let g of  cluster.getAllChildMarkers()){
+                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+                            sepcMarmerIsExist = true;
+                            break;
+                        }
+                    }
+                    if(sepcMarmerIsExist){
+                        return L.divIcon({
+                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+                            className: "spec_cluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }else{
+                        return L.divIcon({
+                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                            className: "mycluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }
+                }else{
+                    return L.divIcon({
+                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                        className: "mycluster",
+                        iconSize:L.point(35,35)
+                    });
+                }
+            },
         });
-        // const that= this;
-
-        // this.markers = L.markerClusterGroup({
-        //     chunkedLoading: true,
-        //     iconCreateFunction: function (cluster) {
-        //         if(that.marker_last_selected){
-        //             let sepcMarmerIsExist = false;
-        //             for (let g of  cluster.getAllChildMarkers()){
-        //                 if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
-        //                     sepcMarmerIsExist = true;
-        //                     break;
-        //                 }
-        //             }
-        //             if(sepcMarmerIsExist){
-        //                 return L.divIcon({
-        //                     html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
-        //                     className: "spec_cluster",
-        //                     iconSize:L.point(35,35)
-        //                 });
-        //             }else{
-        //                 return L.divIcon({
-        //                     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-        //                     className: "mycluster",
-        //                     iconSize:L.point(35,35)
-        //                 });
-        //             }
-        //         }else{
-        //             return L.divIcon({
-        //                 html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-        //                 className: "mycluster",
-        //                 iconSize:L.point(35,35)
-        //             });
-        //         }
-        //     },
-        // });
     }
 
     addMarker(newData) {
         if( newData.length > 0 ){
-
-            const zoom = this.map._zoom;
-            const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
-            const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
-            const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
-    
-            const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
-            const { dataMax, ratio }= current_object_dataMax;
-            
-            const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
-            const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
-    
-            const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
-
             newData.forEach(item => {
-                const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
-                const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
-    
-                if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
-    
-                    this.settingSingleMarker(item, false);
-    
-                    dataFiltered.forEach(ktem => {
-                        if(parseFloat(ktem.lat) === item_with_ratio ){
-                            ktem.data.push(item)
-                        }
-                    })
-                }
-                // this.settingSingleMarker(item, false);
+                this.settingSingleMarker(item, false);
             })
+
             ////affiche les resultats.
             this.map.addLayer(this.markers);
-
-            // ////count marker in map
-            // this.countMarkerInCart()
         }
     }
 
@@ -722,29 +683,9 @@ class MarckerClusterSearch extends MapModule  {
 
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
-            this.updateMarkersDisplay(new_size);
+            // this.updateMarkersDisplay(new_size);
             this.addPeripheriqueMarker(new_size);
         })
-    }
-
-    async updateData(new_min_ll, new_max_ll) {
-        try {
-            const data = { "last": { min: this.last_minll, max: this.last_maxll }, "new": { min: new_min_ll, max: new_max_ll } };
-
-            if ((this.last_minll.lat > new_min_ll.lat) && (this.last_maxll.lng < new_max_ll.lng)) {
-                ///same action update
-
-                if (!this.is_online) {
-                    this.is_online = true;
-                    await this.addPeripheriqueMarker(data);
-                    this.last_minll = new_min_ll;
-                    this.last_maxll = new_max_ll;
-                }
-
-            }
-        } catch (e) {
-            console.log(e.message)
-        }
     }
 
     addPeripheriqueMarker(new_size) {
