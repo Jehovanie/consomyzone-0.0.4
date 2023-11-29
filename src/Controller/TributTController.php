@@ -1495,9 +1495,15 @@ class TributTController extends AbstractController
         // $photos = $tribu_t->showAllphotosTribut($table);
         // return $this->json($photos);
         $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photos/".str_replace("_publication","",$table) ."/";
+        $folder2 = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photo/".$table."/";
         $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
-
+        $images2 = glob($folder2 . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
         $tabPhoto = [];
+        foreach ($images2 as $image) {
+            $photo = explode("uploads/tribu_t",$image)[1];
+            $photo = "/public/uploads/tribu_t".$photo;
+            array_push($tabPhoto, ["photo"=>$photo]);
+        }
         foreach ($images as $image) {
             $photo = explode("uploads/tribu_t",$image)[1];
             $photo = "/public/uploads/tribu_t".$photo;

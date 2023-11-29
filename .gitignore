@@ -8,6 +8,7 @@
 /config/secrets/prod/prod.decrypt.private.php
 /public/bundles/
 /public/uploads/
+/public/uploads_22/
 /public/assets/publications/photos/
 /var/
 /vendor/
