@@ -8,7 +8,7 @@ let idleTimer = setTimeout(function () {
 let idleTimer2 = setTimeout(function () {
   console.log("debut");
 }, 30000);
-let heartBeatTimer = setTimeout(() => { }, 100);
+let heartBeatTimer = setTimeout(() => {}, 100);
 /*
 
 */
@@ -68,20 +68,28 @@ function addControlPlaceholders(map) {
 }
 
 ///jheo: dynamique icon for map leaflet. ---------
-function setIconn(urlIcon, classIcon="", taille=0, zoom=null) {
+function setIconn(urlIcon, classIcon = "", taille = 0, zoom = null) {
   // taille : 0: min, 1 : moyenne, 2 : max
-  const depart= 15;
+  const depart = 15;
   const url = new URL(window.location.href);
   var myIcon = L.icon({
-      // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
-      iconUrl: IS_DEV_MODE ? url.origin + "/" + urlIcon : url.origin + "/public/" + urlIcon, ///on dev
-      iconSize: zoom ? ([depart+zoom, depart+zoom +9]) : ((taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60]),
-      iconAnchor: [11, 30],
-      popupAnchor: [0, -20],
-      //shadowUrl: 'my-icon-shadow.png',
-      shadowSize: [68, 95],
-      shadowAnchor: [22, 94],
-      className: classIcon
+    // iconUrl: url.origin+"/public/"+urlIcon,  ///only prod
+    iconUrl: IS_DEV_MODE
+      ? url.origin + "/" + urlIcon
+      : url.origin + "/public/" + urlIcon, ///on dev
+    iconSize: zoom
+      ? [depart + zoom, depart + zoom + 9]
+      : taille === 0
+      ? [30, 45]
+      : taille === 1
+      ? [35, 55]
+      : [45, 60],
+    iconAnchor: [11, 30],
+    popupAnchor: [0, -20],
+    //shadowUrl: 'my-icon-shadow.png',
+    shadowSize: [68, 95],
+    shadowAnchor: [22, 94],
+    className: classIcon,
   });
   return myIcon;
 }
@@ -878,20 +886,17 @@ function setPhotoTribu(btn_photo) {
   if (btn_photo.tagName != "IMG") {
     if (document.querySelector("#img_modal")) {
       document.querySelector("#img_modal").src =
-      btn_photo.querySelector("img").src;
+        btn_photo.querySelector("img").src;
     } else {
       document.querySelector("#img_modal_actu").src =
-      btn_photo.querySelector("img").src;
+        btn_photo.querySelector("img").src;
     }
-    
-    
   } else {
     if (document.querySelector("#img_modal")) {
       document.querySelector("#img_modal").src = btn_photo.src;
     } else {
       document.querySelector("#img_modal_actu").src = btn_photo.src;
     }
-    
   }
 }
 
@@ -929,7 +934,7 @@ function calculateDurationOfComment(dateOfComment) {
   } else {
     let lapsTime = Math.abs(
       parseInt(dateOfComment.split(" ")[1].split(":")[0], 10) -
-      parseInt(hour.split(":")[0], 10)
+        parseInt(hour.split(":")[0], 10)
     );
     if (lapsTime == 0) {
       const minuteDetailsOfComment = parseInt(
@@ -966,8 +971,9 @@ function settingDateToStringMonthDayAndYear(dateToTransform) {
   ];
   const current_date = new Date(dateToTransform);
 
-  return `${all_months[current_date.getMonth()]
-    } ${current_date.getDate()}, ${current_date.getUTCFullYear()}`;
+  return `${
+    all_months[current_date.getMonth()]
+  } ${current_date.getDate()}, ${current_date.getUTCFullYear()}`;
 }
 
 /**
@@ -1102,8 +1108,9 @@ function pagginationModule(parentSelector, childSelector, numberPerPage) {
           .textContent.split("/")[1]
       );
 
-      document.querySelector(".current_page_js_jheo").innerText = `${current_page - 1
-        }/${maxPage}`;
+      document.querySelector(".current_page_js_jheo").innerText = `${
+        current_page - 1
+      }/${maxPage}`;
 
       if (
         document
@@ -1140,8 +1147,9 @@ function pagginationModule(parentSelector, childSelector, numberPerPage) {
           .textContent.split("/")[1]
       );
 
-      document.querySelector(".current_page_js_jheo").innerText = `${current_page + 1
-        }/${maxPage}`;
+      document.querySelector(".current_page_js_jheo").innerText = `${
+        current_page + 1
+      }/${maxPage}`;
 
       if (
         document
@@ -1792,10 +1800,11 @@ function handleNewComment(userInformations, comment) {
 
   content_comment.innerHTML = `
         <div class="h sa wf uk th ni ej">
-            <a href="#"> <img class="profil_publication" src="${userInformations.profil !== ""
-      ? "/public" + userInformations.profil
-      : "/public/uploads/users/photos/default_pdp.png"
-    }" alt="User"/> </a>
+            <a href="#"> <img class="profil_publication" src="${
+              userInformations.profil !== ""
+                ? "/public" + userInformations.profil
+                : "/public/uploads/users/photos/default_pdp.png"
+            }" alt="User"/> </a>
         </div>
 
         <div>
@@ -1893,77 +1902,88 @@ function bindDataUpdatePub(table, id) {
   const publication = document.querySelector(`.pub_${table}_${id}_jheo_js`);
 
   if (!publication) {
-      console.log(`Selector not found: pub_${table}_${id}_jheo_js`);
-      return false;
+    console.log(`Selector not found: pub_${table}_${id}_jheo_js`);
+    return false;
   }
 
-const update_desc= document.querySelector(".desc_update_jheo_js") ? document.querySelector(".desc_update_jheo_js") : document.querySelector("#message-text_modif")
-  update_desc.value = publication.querySelector(".pub_description_jheo_js").innerText;
+  const update_desc = document.querySelector(".desc_update_jheo_js")
+    ? document.querySelector(".desc_update_jheo_js")
+    : document.querySelector("#message-text_modif");
+  update_desc.value = publication.querySelector(
+    ".pub_description_jheo_js"
+  ).innerText;
 
-
-const tribu_Name = publication.querySelector(".tribu_name_jheo_js").innerText;
-const content_input_tribuT_name = document.querySelector(".content_input_name_tribuT_jheo_js");
+  const tribu_Name = publication.querySelector(".tribu_name_jheo_js").innerText;
+  const content_input_tribuT_name = document.querySelector(
+    ".content_input_name_tribuT_jheo_js"
+  );
 
   let tribuType = "";
   if (tribu_Name.includes("Tribu T")) {
-  if (content_input_tribuT_name && content_input_tribuT_name.classList.contains("d-none")) {
-    content_input_tribuT_name.classList.remove("d-none");
+    if (
+      content_input_tribuT_name &&
+      content_input_tribuT_name.classList.contains("d-none")
+    ) {
+      content_input_tribuT_name.classList.remove("d-none");
+    }
+
+    tribuType = "Tribu T";
+    document.querySelector(".input_name_tribuT_jheo_js").value = tribu_Name;
+  } else {
+    if (
+      content_input_tribuT_name &&
+      !content_input_tribuT_name.classList.contains("d-none")
+    ) {
+      content_input_tribuT_name.classList.add("d-none");
+    }
+
+    tribuType = "Tribu G";
   }
 
-  tribuType = "Tribu T";
-  document.querySelector(".input_name_tribuT_jheo_js").value = tribu_Name;
-
-} else {
-  if ( content_input_tribuT_name && !content_input_tribuT_name.classList.contains("d-none")) {
-    content_input_tribuT_name.classList.add("d-none");
+  if (document.querySelector(".input_disable_tribu_jheo_js")) {
+    document.querySelector(".input_disable_tribu_jheo_js").value = tribuType;
   }
 
-  tribuType = "Tribu G";
-}
+  const config_pub = publication
+    .querySelector(".config_jheo_js")
+    .getAttribute("data-confid");
+  document.querySelectorAll(".config_update_jheo_js").forEach((item) => {
+    if (parseInt(item.getAttribute("value")) === parseInt(config_pub)) {
+      item.setAttribute("selected", "");
+    }
+  });
 
-if(document.querySelector(".input_disable_tribu_jheo_js")){
-  document.querySelector(".input_disable_tribu_jheo_js").value = tribuType;
-}
-
-const config_pub = publication.querySelector(".config_jheo_js").getAttribute("data-confid");
-document.querySelectorAll(".config_update_jheo_js").forEach((item) => {
-  if (parseInt(item.getAttribute("value")) === parseInt(config_pub)) {
-    item.setAttribute("selected", "");
-  }
-});
-
-
-let hiddenElement = document.querySelector("#hiddenElementUpdate")
-hiddenElement.value= id;
-  hiddenElement.dataset.id= id
-  hiddenElement.dataset.name= table;
+  let hiddenElement = document.querySelector("#hiddenElementUpdate");
+  hiddenElement.value = id;
+  hiddenElement.dataset.id = id;
+  hiddenElement.dataset.name = table;
 
   // if (publication.querySelector(".pub_image_jheo_js")) {
-// 	const link_image = publication.querySelector(".pub_image_jheo_js").getAttribute("src");
-// 	document.querySelector(".image_upload_update_jheo_js").setAttribute("src", link_image);
+  // 	const link_image = publication.querySelector(".pub_image_jheo_js").getAttribute("src");
+  // 	document.querySelector(".image_upload_update_jheo_js").setAttribute("src", link_image);
 
-// 	if (document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
-// 		document.querySelector(".content_image_upload_jheo_js").classList.remove("d-none");
-// 	}
+  // 	if (document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
+  // 		document.querySelector(".content_image_upload_jheo_js").classList.remove("d-none");
+  // 	}
 
   // } else {
-// 	if (!document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
-// 		document.querySelector(".content_image_upload_jheo_js").classList.add("d-none");
-// 		document.querySelector(".image_upload_update_jheo_js").setAttribute("src", "#");
-// 	}
+  // 	if (!document.querySelector(".content_image_upload_jheo_js").classList.contains("d-none")){
+  // 		document.querySelector(".content_image_upload_jheo_js").classList.add("d-none");
+  // 		document.querySelector(".image_upload_update_jheo_js").setAttribute("src", "#");
+  // 	}
   // }
 }
 
-
 function updatePublicationInHome() {
-
-  let hiddenElement = document.querySelector("#hiddenElementUpdate")
+  let hiddenElement = document.querySelector("#hiddenElementUpdate");
   let id = hiddenElement.value;
   let dataId = hiddenElement.dataset.id;
   let dataName = hiddenElement.dataset.name;
 
   let confidentiality = document.querySelector("#option_modif").value;
-  let message =  document.querySelector("#message-text_modif") ? document.querySelector("#message-text_modif").value :  document.querySelector(".desc_update_jheo_js").value;
+  let message = document.querySelector("#message-text_modif")
+    ? document.querySelector("#message-text_modif").value
+    : document.querySelector(".desc_update_jheo_js").value;
 
   // document.querySelector("#" + dataId).querySelector(".text-pub").innerHTML = message
 
@@ -1987,54 +2007,53 @@ function updatePublicationInHome() {
   //     }
   // }
 
-
-
-
   //document.querySelector("#modal_publication_modif img.image-upload-image")
-let publication= document.querySelector(`#ID_${dataName}_${dataId}_jheo_js`)
+  let publication = document.querySelector(`#ID_${dataName}_${dataId}_jheo_js`);
 
-if( publication.querySelector(".pub_description_jheo_js")){
-  publication.querySelector(".pub_description_jheo_js").innerText= message;
-}
-
-  let imgSrc = null
-  let oldSrc = ""
-  if (document.querySelector(".image-upload-content").style.display == "block") {
-      imgSrc = document.querySelector(".image_upload_image_jheo_js").src
-
-      if (publication.querySelector(".pub_image_jheo_js")) {
-    publication.querySelector(".pub_image_jheo_js").src = imgSrc
-
-      } else {
-    publication.querySelector(".card_pub_actu_jheo_js").innerHTML += `
-            <img class="image_publication pub_image_jheo_js"  src="${imgSrc}" alt="image publication" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
-    `
+  if (publication.querySelector(".pub_description_jheo_js")) {
+    publication.querySelector(".pub_description_jheo_js").innerText = message;
   }
+
+  let imgSrc = null;
+  let oldSrc = "";
+  if (
+    document.querySelector(".image-upload-content").style.display == "block"
+  ) {
+    imgSrc = document.querySelector(".image_upload_image_jheo_js").src;
+
+    if (publication.querySelector(".pub_image_jheo_js")) {
+      publication.querySelector(".pub_image_jheo_js").src = imgSrc;
+    } else {
+      publication.querySelector(".card_pub_actu_jheo_js").innerHTML += `
+            <img class="image_publication pub_image_jheo_js"  src="${imgSrc}" alt="image publication" data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)">
+    `;
+    }
   }
 
   let data = {
-      "oldSrc": oldSrc,
-      "base64": imgSrc,
-      "pub_id": id,
-      "confidentiality": confidentiality,
-      "message": message,
-  "table": dataName
-  }
+    oldSrc: oldSrc,
+    base64: imgSrc,
+    pub_id: id,
+    confidentiality: confidentiality,
+    message: message,
+    table: dataName,
+  };
 
   console.log(data);
 
-  fetch(new Request("/user/acount/tributG/publication/update", {
+  fetch(
+    new Request("/user/acount/tributG/publication/update", {
       method: "POST",
       headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data)
-  })).then(response => response.json())
-      .then(message => console.log(message));
+      body: JSON.stringify(data),
+    })
+  )
+    .then((response) => response.json())
+    .then((message) => console.log(message));
 }
-
-
 
 function bindDataUpdatePub(table, id) {
   const publication = document.querySelector(`.pub_${table}_${id}_jheo_js`);
@@ -2141,7 +2160,6 @@ function pastilleRestoForTribuTDashboard(element, isPastilled) {
   fetch(request)
     .then((response) => response.json())
     .then((message) => {
-
       let tribuName = element.dataset.tribu;
       let html = "";
       if (!isPastilled) {
@@ -2187,14 +2205,18 @@ function pastilleRestoForTribuTDashboard(element, isPastilled) {
             // document.querySelector(".mainContainerLogoTribu").appendChild(div);
             reorganisePastille();
 
-            if(document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide")){
-              document.querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide").click();
+            if (
+              document.querySelector(
+                "#navBarTribu > li.listNavBarTribu.restoNotHide"
+              )
+            ) {
+              document
+                .querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide")
+                .click();
             }
-
           }
         );
       }
-
     })
     .catch((error) => console.log(error));
 }
@@ -2638,28 +2660,58 @@ function showPastillTable(e, id) {
   });
 
   /**
-    * @author Elie
-    * Setting variable into html tribu G
-    */
-  const tribu_g_r = document.querySelector("#my_tribu_g").textContent.trim() + "_restaurant"
-  document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-id", id)
-  document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-name", e.target.dataset.name)
+   * @author Elie
+   * Setting variable into html tribu G
+   */
+  const tribu_g_r =
+    document.querySelector("#my_tribu_g").textContent.trim() + "_restaurant";
+  document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-id", id);
+  document
+    .querySelector("#btn-pastille-elie-tbg")
+    .setAttribute("data-name", e.target.dataset.name);
   fetch("/user/tribu_g/isPastilled/" + tribu_g_r + "/" + id)
-    .then(res => res.json())
-    .then(isOk => {
+    .then((res) => res.json())
+    .then((isOk) => {
       if (isOk) {
-        document.querySelector("#btn-pastille-elie-tbg").setAttribute("onclick", "pastilleForTribuG(this, false," + id + ",'" + e.target.dataset.name + "')")
-        document.querySelector("#btn-pastille-elie-tbg").innerText = "Dépastiller"
-        document.querySelector("#btn-pastille-elie-tbg").classList.remove("btn-success")
-        document.querySelector("#btn-pastille-elie-tbg").classList.add("btn-info")
+        document
+          .querySelector("#btn-pastille-elie-tbg")
+          .setAttribute(
+            "onclick",
+            "pastilleForTribuG(this, false," +
+              id +
+              ",'" +
+              e.target.dataset.name +
+              "')"
+          );
+        document.querySelector("#btn-pastille-elie-tbg").innerText =
+          "Dépastiller";
+        document
+          .querySelector("#btn-pastille-elie-tbg")
+          .classList.remove("btn-success");
+        document
+          .querySelector("#btn-pastille-elie-tbg")
+          .classList.add("btn-info");
       } else {
-        document.querySelector("#btn-pastille-elie-tbg").setAttribute("onclick", "pastilleForTribuG(this, true, " + id + ",'" + e.target.dataset.name + "')")
-        document.querySelector("#btn-pastille-elie-tbg").innerText = "Pastiller"
-        document.querySelector("#btn-pastille-elie-tbg").classList.add("btn-success")
-        document.querySelector("#btn-pastille-elie-tbg").classList.remove("btn-info")
+        document
+          .querySelector("#btn-pastille-elie-tbg")
+          .setAttribute(
+            "onclick",
+            "pastilleForTribuG(this, true, " +
+              id +
+              ",'" +
+              e.target.dataset.name +
+              "')"
+          );
+        document.querySelector("#btn-pastille-elie-tbg").innerText =
+          "Pastiller";
+        document
+          .querySelector("#btn-pastille-elie-tbg")
+          .classList.add("btn-success");
+        document
+          .querySelector("#btn-pastille-elie-tbg")
+          .classList.remove("btn-info");
       }
-    })
-
+    });
 }
 
 /**
@@ -2821,14 +2873,14 @@ function showPastillTable(e, id) {
 }*/
 
 /**
-* @author Tomm
-* @action close modal pastill golf
-* @ou dans le fuction.js
-*/
+ * @author Tomm
+ * @action close modal pastill golf
+ * @ou dans le fuction.js
+ */
 function closePastillGolf(id_golf) {
-  document.querySelector(".modal-pastille-golf-tomm-js").remove()
+  document.querySelector(".modal-pastille-golf-tomm-js").remove();
   //.select_action_golf_tomm_js
-  document.querySelector(".select_action_golf_nanta_js").selectedIndex = 0
+  document.querySelector(".select_action_golf_nanta_js").selectedIndex = 0;
 }
 
 function getSpectRestoMobile(nom_dep, id_dep) {
@@ -2904,220 +2956,226 @@ if (document.querySelector(".scroll-mobile-tomm-js")) {
   });
 }
 
-
 function getDataSpecificMobile(nom_dep, id_dep, isArrondissement) {
-
   let params = new URL(document.location).searchParams;
   let codinsee = params.get("codinsee");
-  let id_user = document.querySelector(".content_body_details_jheo_js").getAttribute("data-toggle-user-id")
-  let id_resto = ''
+  let id_user = document
+    .querySelector(".content_body_details_jheo_js")
+    .getAttribute("data-toggle-user-id");
+  let id_resto = "";
   let request = null;
   if (isArrondissement) {
     // restaurant-mobile/specific / arrondissement / ${ nom_dep } /${id_dep}/${ codinsee } /5/5
-    request = new Request(`/restaurant-mobile/specific/arrondissement/${nom_dep}/${id_dep}/${codinsee}/${limitSpecTomm}/${offsetTomm}`, {
-      method: "GET",
-      headers: {
-        'Accept': 'application/json',
-        "Content-Type": "application/json; charset=utf-8"
+    request = new Request(
+      `/restaurant-mobile/specific/arrondissement/${nom_dep}/${id_dep}/${codinsee}/${limitSpecTomm}/${offsetTomm}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json; charset=utf-8",
+        },
       }
-    })
+    );
   } else {
-    request = new Request(`/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
-      method: "GET",
-      headers: {
-        'Accept': 'application/json',
-        "Content-Type": "application/json; charset=utf-8"
+    request = new Request(
+      `/restaurant-mobile/specific/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`,
+      {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json; charset=utf-8",
+        },
       }
-    })
+    );
   }
 
-  fetch(request).then(res =>
-    res.json().then(responses => {
+  fetch(request).then((res) =>
+    res.json().then((responses) => {
       if (document.querySelector(".loading-tomm-js")) {
-        document.querySelector(".loading-tomm-js").innerHTML = ''
+        document.querySelector(".loading-tomm-js").innerHTML = "";
       }
-      let listSpecMobile = document.querySelector(".list-specific-depart-mobile-tomm-js")
+      let listSpecMobile = document.querySelector(
+        ".list-specific-depart-mobile-tomm-js"
+      );
 
+      responses.restaurants.forEach((response) => {
+        id_resto = response.id;
 
-      responses.restaurants.forEach(response => {
-
-        id_resto = response.id
-
-
-        let restaurantAvisNote = response.avis.note !== 0 ? response.avis.note - (response.avis.note - 1) : 0;
+        let restaurantAvisNote =
+          response.avis.note !== 0
+            ? response.avis.note - (response.avis.note - 1)
+            : 0;
         // Calculez le taux et les pourcentages jaunes et noirs
         let rate = restaurantAvisNote;
         let rateYellow = rate * 100;
         let rateBlack = 100 - rateYellow;
-        let star = ''
+        let star = "";
         for (let item = 0; item <= 3; item++) {
           if (item < response.avis.note - 1) {
-            star += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+            star += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`;
           } else {
             if (rate !== 0) {
-              star += `<i class="fa-solid fa-star" data-rank="1" style="background: linear-gradient(90deg, #F5D165  ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>`
+              star += `<i class="fa-solid fa-star" data-rank="1" style="background: linear-gradient(90deg, #F5D165  ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;"></i>`;
               rate = 0;
             } else {
               star += `<i class="fa-solid fa-star" data-rank="1"></i>
-                            `
+                            `;
             }
           }
-
-
         }
-        let restaurant = ''
-        let brasserie = ''
-        let creperie = ''
-        let fastFood = ''
-        let pizzeria = ''
-        let boulangerie = ''
-        let bar = ''
-        let cuisineMonde = ''
-        let cafe = ''
-        let salonThe = ''
+        let restaurant = "";
+        let brasserie = "";
+        let creperie = "";
+        let fastFood = "";
+        let pizzeria = "";
+        let boulangerie = "";
+        let bar = "";
+        let cuisineMonde = "";
+        let cafe = "";
+        let salonThe = "";
         if (response.restaurant != 0) {
           restaurant = `
                         <i class="fa-solid fa-utensils"></i>
                         restaurant
-                    `
+                    `;
         }
         if (response.brasserie != 0) {
           brasserie = `
                         <i class="fa-solid fa-beer-mug-empty"></i>
                         Brasserie
-                    `
+                    `;
         }
         if (response.creperie != 0) {
           creperie = `
                         <i class="fa-solid fa-pancakes"></i>
                         creperie
-                    `
+                    `;
         }
         if (response.fastFood != 0) {
           fastFood = `
                         <i class="fa-solid fa-burger"></i>
                         fastFood
-                    `
+                    `;
         }
         if (response.boulangerie != 0) {
           boulangerie = `
                         <i class="fa-solid fa-pizza-slice"></i>
                         pizzeria
-                    `
+                    `;
         }
         if (response.pizzeria != 0) {
           pizzeria = `
                         <i class="fa-solid fa-pie"></i>
                         boulangerie
-                    `
+                    `;
         }
         if (response.bar != 0) {
           bar = `
                         <i class="fa-solid fa-martini-glass-empty"></i>
                         bar
-                    `
+                    `;
         }
         if (response.cuisineMonde != 0) {
           cuisineMonde = `
                         <i class="fa-solid fa-hat-chef"></i>
                         cuisine du monde
-                    `
+                    `;
         }
         if (response.cafe != 0) {
           cafe = `
                         <i class="fa-solid fa-coffee-pot"></i>
                         café
-                    `
+                    `;
         }
         if (response.salonThe != 0) {
           salonThe = `
                         <i class="fa-solid fa-mug-tea"></i>
                         salon de thé
-                    `
+                    `;
         }
-        let fourchettePrix1 = ''
+        let fourchettePrix1 = "";
         if (response.fourchettePrix1) {
           fourchettePrix1 = `
                         <span class="fw-bold">
                         Fourchette de prix:</span><span>${response.fourchettePrix1}</span>
-                    `
+                    `;
         }
-        let tel = ''
+        let tel = "";
         if (response.tel) {
           tel = `
                         <span class="fw-bold">Téléphone :</span>
                         <span>${response.tel}</span>
-                    `
+                    `;
         }
 
-        let btnDonneAvie = ``
-        let btnPastille = ''
+        let btnDonneAvie = ``;
+        let btnPastille = "";
         if (document.querySelector("#is-connected-tomm-js")) {
-          btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-toggle-id-resto="${response.id}" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvisCarrousel('${response.id}')">Donner votre avis</button>`
-          btnPastille = `<button type="button" data-name="${response.denominationF}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js text-point-9" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'${response.id}')">Pastiller</button>`
+          btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-toggle-id-resto="${response.id}" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvisCarrousel('${response.id}')">Donner votre avis</button>`;
+          btnPastille = `<button type="button" data-name="${response.denominationF}" class="mx-2 btn btn-success btn_modal_pastille_resto_nanta_js text-point-9" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'${response.id}')">Pastiller</button>`;
         } else {
-          btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
-          btnPastille = `<button type="button"  class="text-point-9 btn btn-secondary">Pastiller</button>`
-
+          btnDonneAvie = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`;
+          btnPastille = `<button type="button"  class="text-point-9 btn btn-secondary">Pastiller</button>`;
         }
 
-        let repas1 = ''
+        let repas1 = "";
         if (response.repas1) {
-          repas1 = `<li>${response.repas1}</li>`
+          repas1 = `<li>${response.repas1}</li>`;
         }
 
-        let regimeSpeciaux1 = ''
+        let regimeSpeciaux1 = "";
         if (response.regimeSpeciaux1) {
-          regimeSpeciaux1 = `<li>${response.regimeSpeciaux1}</li>`
+          regimeSpeciaux1 = `<li>${response.regimeSpeciaux1}</li>`;
         }
 
-        let prestation1 = ''
+        let prestation1 = "";
         if (response.prestation1) {
-          prestation1 = `<li>${response.prestation1}</li>`
+          prestation1 = `<li>${response.prestation1}</li>`;
         }
 
-        let horaires1 = ''
+        let horaires1 = "";
         if (response.horaires1) {
-          horaires1 = `<li>${response.horaires1}</li>`
+          horaires1 = `<li>${response.horaires1}</li>`;
         }
 
-        let site1 = ''
+        let site1 = "";
         if (response.site1) {
           site1 = `<div class="site_web non_active">
                                 <a class="btn btn-success" href="${response.site1}" target="_blank">Lien :  site Web</a>
-                            </div>`
+                            </div>`;
         }
 
-        let fonctionalite1 = ''
+        let fonctionalite1 = "";
         if (response.fonctionalite1) {
-          fonctionalite1 = `<li>${response.fonctionalite1}</li>`
+          fonctionalite1 = `<li>${response.fonctionalite1}</li>`;
         }
 
-        let isPastie = ""
+        let isPastie = "";
 
         if (document.querySelector("#is-connected-tomm-js")) {
-          let logoPathResto = ""
-          let logoPathJoined = ""
+          let logoPathResto = "";
+          let logoPathJoined = "";
 
-
-          let tribu_t_resto_pastille = response.tribuTPastie.tribu_t_resto_pastille
+          let tribu_t_resto_pastille =
+            response.tribuTPastie.tribu_t_resto_pastille;
           if (tribu_t_resto_pastille.length > 0) {
             for (item of tribu_t_resto_pastille) {
               if (item.logo_path !== "") {
-                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`;
               } else {
-                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                logoPathResto += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`;
               }
             }
           }
 
-          let tribu_t_resto_joined_pastille = response.tribuTPastie.tribu_t_resto_joined_pastille
+          let tribu_t_resto_joined_pastille =
+            response.tribuTPastie.tribu_t_resto_joined_pastille;
           if (tribu_t_resto_joined_pastille.length > 0) {
             for (item of tribu_t_resto_joined_pastille) {
               if (item.logo_path !== "") {
-                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/${item.logo_path}" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`;
               } else {
-                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`
+                logoPathJoined += `<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}" id="${item.table_name}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="${item.name_tribu_t_muable}" data-name="${item.name_tribu_t_muable}"></div>`;
               }
             }
           }
@@ -3129,28 +3187,35 @@ function getDataSpecificMobile(nom_dep, id_dep, isArrondissement) {
                                 ${logoPathJoined}
                             </div>
                         </div>
-                        <div class="iconePlus_nanta_js d-none"><a href="#" onclick="showLogoAndNameTribus()"><i class="bi bi-plus"></i></a></div>`
-
+                        <div class="iconePlus_nanta_js d-none"><a href="#" onclick="showLogoAndNameTribus()"><i class="bi bi-plus"></i></a></div>`;
         }
 
-
-
-
-
         listSpecMobile.innerHTML += `
-                    <li class="nav-item icon-tabac me-3 item_carrousel_${response.id}_jheo_js content_avie_details_tomm_js " data-toggle-id-resto="${response.id}" data-toggle-type="resto">
+                    <li class="nav-item icon-tabac me-3 item_carrousel_${
+                      response.id
+                    }_jheo_js content_avie_details_tomm_js " data-toggle-id-resto="${
+          response.id
+        }" data-toggle-type="resto">
                             <div class="containt-specific">
-                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${response.id}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id}')">
+                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${
+                                  response.id
+                                }" onclick="getDetailFromListLeft('${
+          response.depName
+        }', '${response.dep}', '${response.id}')">
                                     <div class="row">
                                         <div class="col-6">
-                                            <p class="text-point-12 fw-bold">${response.nom}</p>
+                                            <p class="text-point-12 fw-bold">${
+                                              response.nom
+                                            }</p>
                                         </div>
                                         <div class="col-6">
                                             ${isPastie}
                                         </div>
                                     </div>    
                                     <div class="content_note">
-                                        <div class=" start start_jheo_js${response.id}" id="start-globale-mobile">
+                                        <div class=" start start_jheo_js${
+                                          response.id
+                                        }" id="start-globale-mobile">
                                             ${star}
                                         </div>
                                         <div class="nombre_avis"></div>
@@ -3177,8 +3242,14 @@ function getDataSpecificMobile(nom_dep, id_dep, isArrondissement) {
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
                                     <span>
-                                        <a id="see-tom-js${response.id}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie('${response.id}')">
-                                            <span class="nbr_avis_resto_jheo_js">${response.avis.nbr}    </span> avis
+                                        <a id="see-tom-js${
+                                          response.id
+                                        }" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie('${
+          response.id
+        }')">
+                                            <span class="nbr_avis_resto_jheo_js">${
+                                              response.avis.nbr
+                                            }    </span> avis
                                         </a>
                                     </span>
                                     ${btnDonneAvie}
@@ -3186,12 +3257,10 @@ function getDataSpecificMobile(nom_dep, id_dep, isArrondissement) {
                                 </div>
                             </div>
                     </li>
-                `
-
-      })
-
-    }))
-
+                `;
+      });
+    })
+  );
 }
 
 /**
@@ -3382,12 +3451,14 @@ function getRestoSpecSearchMobile(nom_dep, id_dep, idResto) {
       listSpecMobile.innerHTML = `
                     <li class="nav-item icon-tabac me-3 content_avie_details_tomm_js " data-toggle-id-resto="${idRestaurant}">
                             <div class="containt-specific">
-                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${idRestaurant}" onclick="getDetailFromListLeft('${restaurants.depName
-        }', '${restaurants.dep}', '${idRestaurant}')">
+                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${idRestaurant}" onclick="getDetailFromListLeft('${
+        restaurants.depName
+      }', '${restaurants.dep}', '${idRestaurant}')">
                                     <div class="row">
                                         <div class="col-6">
-                                            <p class="text-point-12 fw-bold">${restaurants.nom
-        }</p>
+                                            <p class="text-point-12 fw-bold">${
+                                              restaurants.nom
+                                            }</p>
                                         </div>
                                         <div class="col-6">
                                             ${isPastie}
@@ -3422,8 +3493,9 @@ function getRestoSpecSearchMobile(nom_dep, id_dep, idResto) {
                                 <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
                                     <span>
                                         <a id="see-tom-js${idRestaurant}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop${idRestaurant}" onclick="showListAvieMobile(${idRestaurant}, ${id_user})">
-                                            <span class="nbr_avis_resto_jheo_js">${restaurants.avis.nbr
-        }    </span> avis
+                                            <span class="nbr_avis_resto_jheo_js">${
+                                              restaurants.avis.nbr
+                                            }    </span> avis
                                         </a>
                                     </span>
                                     ${btnDonneAvie}
@@ -3465,9 +3537,11 @@ function getRestoSpecSearchMobile(nom_dep, id_dep, idResto) {
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-warning send_avis_${idRestaurant}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${response.id
-        }" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id
-        }, ${id_user})">Envoyer</button>
+                                    <button type="button" class="btn btn-warning send_avis_${idRestaurant}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${
+        response.id
+      }" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${
+        response.id
+      }, ${id_user})">Envoyer</button>
                                 </div>
                             </div>
                         </div>
@@ -4446,42 +4520,50 @@ function getDataSpecStationMobile(nom_dep, id_dep) {
  * @utiliser dans le golf/data_golf.js
  */
 function getDataSpecGolfMobile(nom_dep, id_dep) {
-  const request = new Request(`/golf-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`, {
-    method: "GET",
-    headers: {
-      'Accept': 'application/json',
-      "Content-Type": "application/json; charset=utf-8"
+  const request = new Request(
+    `/golf-mobile/departement/${nom_dep}/${id_dep}/${limitSpecTomm}/${offsetTomm}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json; charset=utf-8",
+      },
     }
-  })
-  fetch(request).then(res => res.json())
-    .then(responses => {
+  );
+  fetch(request)
+    .then((res) => res.json())
+    .then((responses) => {
       if (document.querySelector(".loading-tomm-js")) {
-        document.querySelector(".loading-tomm-js").innerHTML = ''
+        document.querySelector(".loading-tomm-js").innerHTML = "";
       }
-      let listSpecMobile = ""
+      let listSpecMobile = "";
       if (document.querySelector(".list-specific-golf-mobile-tomm-js")) {
-        listSpecMobile = document.querySelector(".list-specific-golf-mobile-tomm-js")
+        listSpecMobile = document.querySelector(
+          ".list-specific-golf-mobile-tomm-js"
+        );
       }
-      console.log(responses)
-      responses.golf.forEach(response => {
-
-        let btnAviMobile = ''
-        let containerActionGolf = ''
-        let containerActionGolfDetail = ''
-        let statusGolf = ''
-        let siteWeb = ''
+      console.log(responses);
+      responses.golf.forEach((response) => {
+        let btnAviMobile = "";
+        let containerActionGolf = "";
+        let containerActionGolfDetail = "";
+        let statusGolf = "";
+        let siteWeb = "";
         if (document.querySelector("#is-connected-tomm-js")) {
-          btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvisCarrousel('${response.id}')">Donner votre avis</button>`
-          let valueContaintGolf = ''
-          let valueContaintGolfDetail = ''
-          if (response.user_status["a_faire"] == null && response.user_status["fait"] == null) {
+          btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvisCarrousel('${response.id}')">Donner votre avis</button>`;
+          let valueContaintGolf = "";
+          let valueContaintGolfDetail = "";
+          if (
+            response.user_status["a_faire"] == null &&
+            response.user_status["fait"] == null
+          ) {
             valueContaintGolf = ` 
                                 <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
                                 <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${response.id}" onchange="executeActionForPastGolf(${response.id})">
                                     <option value="0">Aucun</option>
                                     <option value="1">A faire</option>
                                     <option value="2">Fait</option>
-                                </select>`
+                                </select>`;
             valueContaintGolfDetail = ` 
                                 <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme :
                                     </label>
@@ -4489,44 +4571,44 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
                                         <option value="0">Aucun</option>
                                         <option value="1">A faire</option>
                                         <option value="2">Fait</option>
-                                    </select>`
-            statusGolf = `<span class="badge bg-info golf_status golf_status_jheo_js"></span>`
+                                    </select>`;
+            statusGolf = `<span class="badge bg-info golf_status golf_status_jheo_js"></span>`;
           } else {
-            valueContaintGolf = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`
-            valueContaintGolfDetail = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`
+            valueContaintGolf = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`;
+            valueContaintGolfDetail = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${response.id}')">Oui</span>`;
             if (response.user_status["a_faire"] == 1) {
-              statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span>`
+              statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span>`;
             } else if (response.user_status["fait"] == 1) {
-              statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span>`
+              statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">FAIT</span>`;
             } else {
-              statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js"></span>`
+              statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js"></span>`;
             }
           }
           containerActionGolf = `
                         <div class="content_btn_golf_did_jheo_js" id="containerActionGolf">
                             ${valueContaintGolf}
                         </div>
-                    `
+                    `;
           containerActionGolfDetail = `
                         <div class="mt-3 content_btn_golf_did_jheo_js" id="containerActionGolf">
                             ${valueContaintGolfDetail}
-                    `
+                    `;
 
           siteWeb = `<div class="site_web">
                                     <a class="btn btn-outline-success" href="${response.web}" target="_blank">
                                         Lien :  Site Web
                                     </a>
-                                </div>`
+                                </div>`;
         } else {
-          btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`
+          btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis.">Donner votre avis</button>`;
           siteWeb = `<div class="site_web" data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour accéder au lien site web de ce golf.">
                                     <a class="btn btn-outline-success disabled">
                                         Lien :  Site Web
                                     </a>
-                                </div>`
+                                </div>`;
         }
 
-        let codePostal = ''
+        let codePostal = "";
         if (response.cp) {
           codePostal = `<div class="content_activite">
                                         <p class="activite">
@@ -4534,10 +4616,10 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
                                             ${response.cp}
                                         </p>
                                     </div>
-                                    <hr>`
+                                    <hr>`;
         }
 
-        let commune = ''
+        let commune = "";
         if (response.commune) {
           commune = `<div class="content_activite">
                                     <p class="activite">
@@ -4545,10 +4627,10 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
                                         ${response.commune}
                                     </p>
                                 </div>
-                                <hr>`
+                                <hr>`;
         }
 
-        let tel = ''
+        let tel = "";
         if (response.tel) {
           tel = `<div class="content_activite">
                                     <p class="activite">
@@ -4556,10 +4638,10 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
                                         ${response.tel}
                                     </p>
                                 </div>
-                                <hr>`
+                                <hr>`;
         }
 
-        let adr1 = ''
+        let adr1 = "";
         if (response.adr1) {
           adr1 = `<div class="content_activite">
                                     <p class="activite">
@@ -4567,7 +4649,7 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
                                         ${response.adr1}
                                     </p>
                                 </div>
-                                <hr>`
+                                <hr>`;
         }
 
         listSpecMobile.innerHTML += `
@@ -4610,9 +4692,9 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
 						</a>
 					</li>
                     
-                `
-      })
-    })
+                `;
+      });
+    });
 }
 
 /**
@@ -5079,15 +5161,23 @@ function dataURLtoFile(dataurl, filename) {
 }
 
 function showRepertoryDirTribuT() {
-  document.querySelector(".list-repertoryDirTribuT").classList.add("text-primary");
-  document.querySelector(".list-repertoryDirTribuG").classList.remove("text-primary");
+  document
+    .querySelector(".list-repertoryDirTribuT")
+    .classList.add("text-primary");
+  document
+    .querySelector(".list-repertoryDirTribuG")
+    .classList.remove("text-primary");
   document.querySelector("#repertoryDirTribuG").classList.add("d-none");
   document.querySelector("#repertoryDirTribuT").classList.remove("d-none");
 }
 
 function showRepertoryDirTribuG() {
-  document.querySelector(".list-repertoryDirTribuT").classList.remove("text-primary");
-  document.querySelector(".list-repertoryDirTribuG").classList.add("text-primary");
+  document
+    .querySelector(".list-repertoryDirTribuT")
+    .classList.remove("text-primary");
+  document
+    .querySelector(".list-repertoryDirTribuG")
+    .classList.add("text-primary");
   document.querySelector("#repertoryDirTribuT").classList.add("d-none");
   document.querySelector("#repertoryDirTribuG").classList.remove("d-none");
 }
@@ -5255,7 +5345,9 @@ function saveInvitationStory(table_trib, email) {
  * @param {in} id
  */
 function updateInvitationStory(table, is_valid, email) {
-  fetch("/tribu/invitation/update_story/" + table + "/" + is_valid + "/" + email)
+  fetch(
+    "/tribu/invitation/update_story/" + table + "/" + is_valid + "/" + email
+  )
     .then((resp) => resp.json())
     .then((result) => {
       // swal({
@@ -5293,13 +5385,17 @@ function arrangeSetingApparitionMobile() {
 
     console.log(allFormsSortedCloned);
 
-    const container = document.querySelector(".content-inscription-setting-tomm-js");
+    const container = document.querySelector(
+      ".content-inscription-setting-tomm-js"
+    );
 
     for (let i = 0; i < allFormsSorted.length; i++) {
       container.removeChild(allForms[i]);
     }
 
-    const referenceNode = document.querySelector(".btn_submit_for_rank_inscription_js");
+    const referenceNode = document.querySelector(
+      ".btn_submit_for_rank_inscription_js"
+    );
 
     for (let i = 0; i < allFormsSortedCloned.length; i++) {
       container.insertBefore(allFormsSortedCloned[i], referenceNode);
@@ -5330,52 +5426,67 @@ function showMoreInformation() {
  *
  */
 function detectInactivity(idle = 300) {
-  window.addEventListener('load', () => { resetTimer(idle) });
-  document.addEventListener('mousemove', () => { resetTimer(idle) });
-  document.addEventListener('keyup', () => { resetTimer(idle) });
-  document.addEventListener('scrollend', () => { resetTimer(idle) });
-  document.addEventListener('pointerup', () => { resetTimer(idle) });
+  window.addEventListener("load", () => {
+    resetTimer(idle);
+  });
+  document.addEventListener("mousemove", () => {
+    resetTimer(idle);
+  });
+  document.addEventListener("keyup", () => {
+    resetTimer(idle);
+  });
+  document.addEventListener("scrollend", () => {
+    resetTimer(idle);
+  });
+  document.addEventListener("pointerup", () => {
+    resetTimer(idle);
+  });
 }
 
 function sendHeartBeat() {
   //heartBeat();
-  window.addEventListener('load', () => { heartBeat(), console.log('load') });
+  window.addEventListener("load", () => {
+    heartBeat(), console.log("load");
+  });
   //document.addEventListener('mousemove', () => { heartBeat(), console.log('moove') });
   //document.addEventListener('keyup', () => { heartBeat(), console.log('keyup') });
-  document.addEventListener('scrollend', () => { heartBeat(), console.log('scroll') });
-  document.addEventListener('pointerup', () => { heartBeat(), console.log('pointerup') });
+  document.addEventListener("scrollend", () => {
+    heartBeat(), console.log("scroll");
+  });
+  document.addEventListener("pointerup", () => {
+    heartBeat(), console.log("pointerup");
+  });
 }
 async function relaeseIdle() {
   const p = await getUserIdle();
-  const timeToLogOut = JSON.parse(p).idle
+  const timeToLogOut = JSON.parse(p).idle;
   detectInactivity(timeToLogOut);
 }
 
 function getUserIdle() {
   return new Promise((resolve, reject) => {
     fetch("/user/idle").then((r) => {
-      if (r.ok)
-        resolve(r.text())
-    })
-  })
+      if (r.ok) resolve(r.text());
+    });
+  });
 }
 
-function resetTimer(idle=300) {
-    // console.log(idle)
-    idle = idle / 60
-    // console.log(idle)
-    let timer = idle -2
-    clearTimeout(idleTimer);
-    clearTimeout(idleTimer2);
-    //TODO set isconnect to true
-    idleTimer2 = setTimeout(function () {
-        clearTimeout(heartBeatTimer);
-        prelogout();
-        idleTimer = setTimeout(function () {
-            clearTimeout(heartBeatTimer);
-            location.href = "/deconnexion";
-        }, 60 * 2 * 1000);
-    }, 60 * timer * 1000);
+function resetTimer(idle = 300) {
+  // console.log(idle)
+  idle = idle / 60;
+  // console.log(idle)
+  let timer = idle - 2;
+  clearTimeout(idleTimer);
+  clearTimeout(idleTimer2);
+  //TODO set isconnect to true
+  idleTimer2 = setTimeout(function () {
+    clearTimeout(heartBeatTimer);
+    prelogout();
+    idleTimer = setTimeout(function () {
+      clearTimeout(heartBeatTimer);
+      location.href = "/deconnexion";
+    }, 60 * 2 * 1000);
+  }, 60 * timer * 1000);
 }
 
 function prelogout() {
@@ -5418,16 +5529,14 @@ function prelogout() {
  * location function.js
  */
 function heartBeat() {
-  
-    heartBeatTimer = setTimeout(() => {
-        fetch("/user/heartBeat").then((response) => {
-          if (response.status === 200 && response.ok) {
-             
-          } else {
-              console.log(error);
-          }
-        });
-    }, 60000);
+  heartBeatTimer = setTimeout(() => {
+    fetch("/user/heartBeat").then((response) => {
+      if (response.status === 200 && response.ok) {
+      } else {
+        console.log(error);
+      }
+    });
+  }, 60000);
 }
 
 /**
@@ -5461,7 +5570,7 @@ function updateLocation(event) {
             new swal(
               "Bonjour cher et chère Fan",
               "Vous avez modifié(e) votre délai de déconnexion automatique sur " +
-              tmp,
+                tmp,
               "info"
             );
           }
@@ -5471,70 +5580,97 @@ function updateLocation(event) {
   }
 }
 
-
 function msgErrorAlertAvis(e) {
   if (e.message == "note sup à 4") {
-
-    new swal("Attention !", "la note que vous aviez donnés est supérieur à 4 !", "warning").then((value) => {
-      document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
-    })
+    new swal(
+      "Attention !",
+      "la note que vous aviez donnés est supérieur à 4 !",
+      "warning"
+    ).then((value) => {
+      document
+        .querySelector(
+          "#staticBackdrop > div > div > div.modal-header.bg-light > button"
+        )
+        .click();
+    });
   } else if (e.message == "non numerique") {
-    new swal("Attention !", "la note que vous aviez donnés n'est pas du type numeric !", "warning").then((value) => {
-      document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
-    })
-  } else if (e.message == "note not found") { /// veulliez saisir un note de 0 à 4
-    new swal("Attention !", "Veulliez saisir un note de 0 à 4", "warning").then((value) => {
-      document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click()
-    })
+    new swal(
+      "Attention !",
+      "la note que vous aviez donnés n'est pas du type numeric !",
+      "warning"
+    ).then((value) => {
+      document
+        .querySelector(
+          "#staticBackdrop > div > div > div.modal-header.bg-light > button"
+        )
+        .click();
+    });
+  } else if (e.message == "note not found") {
+    /// veulliez saisir un note de 0 à 4
+    new swal("Attention !", "Veulliez saisir un note de 0 à 4", "warning").then(
+      (value) => {
+        document
+          .querySelector(
+            "#staticBackdrop > div > div > div.modal-header.bg-light > button"
+          )
+          .click();
+      }
+    );
   } else if (e.message == "no content") {
-    new swal("Attention !", "Veulliez saisir un note et un petit message ou annuler cette action.", "warning")
+    new swal(
+      "Attention !",
+      "Veulliez saisir un note et un petit message ou annuler cette action.",
+      "warning"
+    );
   } else {
-    console.log(e)
+    console.log(e);
   }
 }
 
 function mustBeInferior4(value, target, isThrowException) {
-  regex = /[^0-9,\.]+/
-  if (parseFloat(value) > 4.00) {
-    target.style = "border:2px solid red;"
-    msgFlash("doit être inférieur ou égale à 4", target)
-    if (isThrowException)
-      throw new Error("note sup à 4")
+  regex = /[^0-9,\.]+/;
+  if (parseFloat(value) > 4.0) {
+    target.style = "border:2px solid red;";
+    msgFlash("doit être inférieur ou égale à 4", target);
+    if (isThrowException) throw new Error("note sup à 4");
   } else if (regex.test(value)) {
-    target.style = "border:2px solid red;"
-    msgFlash("veulliez saisir un type numerique", target)
-    if (isThrowException)
-      throw new Error("non numerique")
+    target.style = "border:2px solid red;";
+    msgFlash("veulliez saisir un type numerique", target);
+    if (isThrowException) throw new Error("non numerique");
   }
 }
 
-function msgFlash(msg,target) {
-    const div = document.createElement("div")
-    div.classList.add("flash-msg-ERREUR")
-    div.innerHTML= msg
-    target.parentNode.insertBefore(div,target.nextSibling)
+function msgFlash(msg, target) {
+  const div = document.createElement("div");
+  div.classList.add("flash-msg-ERREUR");
+  div.innerHTML = msg;
+  target.parentNode.insertBefore(div, target.nextSibling);
 }
 
 /**
- * @author tomm 
+ * @author tomm
  * @action get list golf pastile
  * @ou dans mytribuT.js
  */
 function showGolf(tableGolfPastilled) {
-    // let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
-  
-    if (document.querySelector("li.listNavBarTribu > a.active")) {
-      document.querySelector("li.listNavBarTribu > a.active").classList.remove("active")
-    }
-  
-    if (document.querySelector("li.listNavBarTribu.golfNotHide > a")) {
-      document.querySelector("li.listNavBarTribu.golfNotHide > a").classList.add("active")
-    }
-    let golfContainer = ""
-    if (document.querySelector("#tribu_t_conteuneur")) {
-      golfContainer = document.querySelector("#tribu_t_conteuneur")
-  
-      golfContainer.innerHTML = `
+  // let tableGolfPastilled = document.querySelector("#activeTribu").dataset.tableName
+
+  if (document.querySelector("li.listNavBarTribu > a.active")) {
+    document
+      .querySelector("li.listNavBarTribu > a.active")
+      .classList.remove("active");
+  }
+
+  if (document.querySelector("li.listNavBarTribu.golfNotHide > a")) {
+    document
+      .querySelector("li.listNavBarTribu.golfNotHide > a")
+      .classList.add("active");
+  }
+  let golfContainer = "";
+  if (document.querySelector("#tribu_t_conteuneur")) {
+    golfContainer = document.querySelector("#tribu_t_conteuneur");
+
+    golfContainer.innerHTML = `
                                   <div class="row mt-3 p-3">
                                       <div class="col-12">
                                           <div id="form_past"></div>
@@ -5548,28 +5684,28 @@ function showGolf(tableGolfPastilled) {
                                               </div>
                                           </div>
                                       </div>
-                                  `
-   
-  
-  
+                                  `;
+
     fetch("/user/tribu/golfs-pastilles/" + tableGolfPastilled)
-      .then(response => response.json())
-      .then(data => {
+      .then((response) => response.json())
+      .then((data) => {
         if (data.length > 0) {
-          let imgTbt = `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src}" alt="123">`
-          let tr = ""
-          let i = 0
-          const action = "create"
-          const text1 = "Notez"
-  
+          let imgTbt = `<img id="avatarTribuT" src="${
+            document.querySelector("#avatarTribuT").src
+          }" alt="123">`;
+          let tr = "";
+          let i = 0;
+          const action = "create";
+          const text1 = "Notez";
+
           for (const item of data) {
-            console.log(item)
+            console.log(item);
             if (item.isPastilled) {
-              i++
-              let nbrAvis = item.nbrAvis
-              let note = item.globalNote ? item.globalNote : 0
-              let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune
-              let denomination=item.denomination_f.replaceAll("'","\\'")
+              i++;
+              let nbrAvis = item.nbrAvis;
+              let note = item.globalNote ? item.globalNote : 0;
+              let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune;
+              let denomination = item.denomination_f.replaceAll("'", "\\'");
               tr += `<tr id="golf_${item.id_golf}">
                         <td class="d-flex bd-highlight align-items-center" >
                             <div class="elie-img-pastilled"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
@@ -5586,15 +5722,13 @@ function showGolf(tableGolfPastilled) {
                             <td>
                             <button class="btn btn-primary"  onclick="openPopupActionGolf('${item.id}','${denomination}', '${adresse}','${text1}', '${action}', 'golf')"><i class="fas fa-plus"></i> Plus</button>
                             </td>
-                    </tr>`
-                    // <a  style="font-size:smaller" class="btn btn-sm bg_orange data-avis-${item.id}" onclick="openAvis(${nbrAvis}, ${item.id})">${nbrAvis} avis</a>
-                    // <button class="btn btn-primary" onclick='openPopupActionGolf("${item.id_golf}", "${item.nom_golf.replace(/"/g, '&quot;').replace(/'/g, '&apos;')}", "${adresse}",'${text1}', '${action}' )'><i class="fas fa-plus"></i> Plus</button>
-                        
+                    </tr>`;
+              // <a  style="font-size:smaller" class="btn btn-sm bg_orange data-avis-${item.id}" onclick="openAvis(${nbrAvis}, ${item.id})">${nbrAvis} avis</a>
+              // <button class="btn btn-primary" onclick='openPopupActionGolf("${item.id_golf}", "${item.nom_golf.replace(/"/g, '&quot;').replace(/'/g, '&apos;')}", "${adresse}",'${text1}', '${action}' )'><i class="fas fa-plus"></i> Plus</button>
             }
           }
-  
+
           if (i > 0) {
-  
             golfContainer.innerHTML += `<h5 class="text-primary mb-4">Liste des golfs pastillés</h5>
                                       <table id="table_golf_pastilled" class="ta" style="width:100%">
                                           <thead>
@@ -5608,229 +5742,233 @@ function showGolf(tableGolfPastilled) {
                                           <tbody>
                                               ${tr}
                                           </tbody>
-                                      </table>`
-  
-            $('#table_golf_pastilled').DataTable({
-              "language": {
-                url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
-              }
+                                      </table>`;
+
+            $("#table_golf_pastilled").DataTable({
+              language: {
+                url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+              },
             });
           } else {
-            golfContainer.style.textAlign = "center"
-            golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+            golfContainer.style.textAlign = "center";
+            golfContainer.innerHTML += "Aucun golf pastillé pour le moment";
           }
-  
-  
         } else {
-          golfContainer.style.textAlign = "center"
-          golfContainer.innerHTML += "Aucun golf pastillé pour le moment"
+          golfContainer.style.textAlign = "center";
+          golfContainer.innerHTML += "Aucun golf pastillé pour le moment";
         }
-  
+
         golfContainer.classList.add("bg-white");
         golfContainer.classList.add("p-2");
-        golfContainer.style.display = "block"
-  
-      })
-    }
+        golfContainer.style.display = "block";
+      });
+  }
 }
 
 /**
  * @author nantenaina
  */
 function pastilleGolf(element, table_tribu_t) {
-    let id = element.dataset.id
-    let name = element.dataset.name
-    let tbl = element.dataset.tbname
-    let data = {
-      id: id,
-      name: name,
-      tbl: tbl
-    }
-    let request = new Request("/user/tribu_t/pastille/golf", {
-      method: "POST",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-  
-    fetch(request)
-      .then(response => response.json())
-      .then(message => {
-  
-        new swal("Succès !", "Golf pastillé avec succès", "success")
-          .then((value) => {
-            element.classList = "btn btn-secondary ms-1"
-            element.textContent = "Pastillé"
-            element.setAttribute("disabled", true)
-            showGolf(tbl)
-            if (document.querySelector("#tribu_t_conteuneur")) {
-              document.querySelector("#tribu_t_conteuneur").style.textAlign = ""
-            }
-  
-          });
-  
-        if (message.id_golf) {
-          fetch(`/golf/pastilled/checking/${message.id_golf}`)
-            .then(response => response.json())
-            .then(datas => {
-  
-              let logoPath = ""
-              let i = 0
-              let countIsPastilled = 0;
-              for (data of datas) {
-                i += 500
-                if (data.isPastilled === true) {
-                  countIsPastilled++;
-                }
-                if (data['logo_path'] != "") {
-                  if (data['isPastilled'] == true && table_tribu_t == data['table_name']) {
-                    logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data['logo_path']}" alt="">`
-                  }
-  
-                } else {
-                  if (data['isPastilled'] == true && table_tribu_t == data['table_name']) {
-                    logoPath = `<img class="logo_path_pastille_details logo_path_${data['table_name']}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">`
-                  }
-                }
-  
-                if (document.querySelector('.logo-pastille-golf-tomm-js')) {
-                  document.querySelector('.logo-pastille-golf-tomm-js').style.width = i + 'px';
-                }
-  
-  
-              }
-  
-              if (countIsPastilled > 4) {
-                if (document.querySelector(".length-pastille-plus")) {
-                  document.querySelector(".length-pastille-plus").remove()
-                }
-                document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus">${countIsPastilled}+</span>`
-  
-              } else {
-                // document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus"></span>`
-                if (document.querySelector(".length-pastille-plus")) {
-                  document.querySelector(".length-pastille-plus").remove()
-                }
-              }
-              document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += logoPath
-              
-            })
-        }
-  
-      })
-      .catch(error => console.log(error))
-    if (document.querySelector(".modal-pastille-golf-tomm-js")) {
-      document.querySelector(".modal-pastille-golf-tomm-js").classList.toggle('hidden')
-    }
-  
-    // getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, id)
-    // fecthGolfAction(id, "for_me")
-    // OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", id)
-  
-}
+  let id = element.dataset.id;
+  let name = element.dataset.name;
+  let tbl = element.dataset.tbname;
+  let data = {
+    id: id,
+    name: name,
+    tbl: tbl,
+  };
+  let request = new Request("/user/tribu_t/pastille/golf", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
 
+  fetch(request)
+    .then((response) => response.json())
+    .then((message) => {
+      new swal("Succès !", "Golf pastillé avec succès", "success").then(
+        (value) => {
+          element.classList = "btn btn-secondary ms-1";
+          element.textContent = "Pastillé";
+          element.setAttribute("disabled", true);
+          showGolf(tbl);
+          if (document.querySelector("#tribu_t_conteuneur")) {
+            document.querySelector("#tribu_t_conteuneur").style.textAlign = "";
+          }
+        }
+      );
+
+      if (message.id_golf) {
+        fetch(`/golf/pastilled/checking/${message.id_golf}`)
+          .then((response) => response.json())
+          .then((datas) => {
+            let logoPath = "";
+            let i = 0;
+            let countIsPastilled = 0;
+            for (data of datas) {
+              i += 500;
+              if (data.isPastilled === true) {
+                countIsPastilled++;
+              }
+              if (data["logo_path"] != "") {
+                if (
+                  data["isPastilled"] == true &&
+                  table_tribu_t == data["table_name"]
+                ) {
+                  logoPath = `<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data["logo_path"]}" alt="">`;
+                }
+              } else {
+                if (
+                  data["isPastilled"] == true &&
+                  table_tribu_t == data["table_name"]
+                ) {
+                  logoPath = `<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">`;
+                }
+              }
+
+              if (document.querySelector(".logo-pastille-golf-tomm-js")) {
+                document.querySelector(
+                  ".logo-pastille-golf-tomm-js"
+                ).style.width = i + "px";
+              }
+            }
+
+            if (countIsPastilled > 4) {
+              if (document.querySelector(".length-pastille-plus")) {
+                document.querySelector(".length-pastille-plus").remove();
+              }
+              document.querySelector(
+                ".logo-pastille-golf-tomm-js"
+              ).innerHTML += ` <span class="length-pastille-plus">${countIsPastilled}+</span>`;
+            } else {
+              // document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus"></span>`
+              if (document.querySelector(".length-pastille-plus")) {
+                document.querySelector(".length-pastille-plus").remove();
+              }
+            }
+            document.querySelector(".logo-pastille-golf-tomm-js").innerHTML +=
+              logoPath;
+          });
+      }
+    })
+    .catch((error) => console.log(error));
+  if (document.querySelector(".modal-pastille-golf-tomm-js")) {
+    document
+      .querySelector(".modal-pastille-golf-tomm-js")
+      .classList.toggle("hidden");
+  }
+
+  // getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, id)
+  // fecthGolfAction(id, "for_me")
+  // OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", id)
+}
 
 function depastilleGolf(selector) {
-    let id = selector.dataset.id
-    let name = selector.dataset.name
-    let tbl = selector.dataset.tbname
-    let data = {
-      id: id,
-      name: name,
-      tbl: tbl
-    }
-  
-    let request = new Request("/user/tribu_t/depastille/golf", {
-      method: "POST",
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(data)
-    })
-  
-    fetch(request)
-      .then(response => response.json())
-      .then(message => {
-        new swal("Succès !", "Golf dépastillé avec succès", "success")
-          .then((value) => {
-            $("#detailOptionGolf").modal("hide")
-            if (document.querySelector("#golf_" + id)) {
-              document.querySelector("#golf_" + id).remove()
+  let id = selector.dataset.id;
+  let name = selector.dataset.name;
+  let tbl = selector.dataset.tbname;
+  let data = {
+    id: id,
+    name: name,
+    tbl: tbl,
+  };
+
+  let request = new Request("/user/tribu_t/depastille/golf", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  fetch(request)
+    .then((response) => response.json())
+    .then((message) => {
+      new swal("Succès !", "Golf dépastillé avec succès", "success").then(
+        (value) => {
+          $("#detailOptionGolf").modal("hide");
+          if (document.querySelector("#golf_" + id)) {
+            document.querySelector("#golf_" + id).remove();
+          }
+        }
+      );
+      if (message.id_golf) {
+        fetch(`/golf/pastilled/checking/${message.id_golf}`)
+          .then((response) => response.json())
+          .then((datas) => {
+            let countIsPastilled = 0;
+            for (data of datas) {
+              if (data.isPastilled === true) {
+                countIsPastilled++;
+              }
+              if (data["isPastilled"] != true) {
+                if (
+                  document.querySelector(
+                    `.logo_path_${data["table_name"]}_tomm_js`
+                  )
+                ) {
+                  document
+                    .querySelector(`.logo_path_${data["table_name"]}_tomm_js`)
+                    .remove();
+                }
+              }
+            }
+
+            if (countIsPastilled <= 4) {
+              if (document.querySelector(".length-pastille-plus")) {
+                document.querySelector(".length-pastille-plus").remove();
+              }
+            } else {
+              document.querySelector(
+                ".logo-pastille-golf-tomm-js"
+              ).innerHTML += `<span class="length-pastille-plus">${countIsPastilled}+</span>`;
+              if (document.querySelector(".length-pastille-plus")) {
+                document.querySelector(".length-pastille-plus").remove();
+              }
             }
           });
-        if (message.id_golf) {
-          fetch(`/golf/pastilled/checking/${message.id_golf}`)
-            .then(response => response.json())
-            .then(datas => {
-              let countIsPastilled = 0;
-              for (data of datas) {
-                if (data.isPastilled === true) {
-                  countIsPastilled++;
-                }
-                if (data['isPastilled'] != true) {
-                  if (document.querySelector(`.logo_path_${data['table_name']}_tomm_js`)) {
-                    document.querySelector(`.logo_path_${data['table_name']}_tomm_js`).remove()
-                  }
-  
-                }
-              }
-  
-              if (countIsPastilled <= 4) {
-                
-                if (document.querySelector(".length-pastille-plus")) {
-                  document.querySelector(".length-pastille-plus").remove()
-                }
-  
-              }else {
-                document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += `<span class="length-pastille-plus">${countIsPastilled}+</span>`
-                if (document.querySelector(".length-pastille-plus")) {
-                  document.querySelector(".length-pastille-plus").remove()
-                }
-              }
-              
-            })
-        }
-        showGolf(tbl);
-      })
-      .catch(error => console.log(error))
-    // fecthGolfAction(id, "cancel")
-  
-  
-    if (document.querySelector(".modal-pastille-golf-tomm-js")) {
-      document.querySelector(".modal-pastille-golf-tomm-js").classList.toggle('hidden')
-    }
-  
-}
-  
-  /**
-   * @author Tomm
-   * @action get list tribu T pastiller avec golf
-   * @ou dans detail.js
-   */
-function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
-    fetch(`/golf/pastilled/checking/${id_golf}`)
-        .then(response => response.json())
-        .then(datas => {
-            let listTibuTPast = ""
-            let monGolf = ""
-            let strVide = datas.length;
-            // if (datas.length) {
-            //   // strVide = `<h1 class="text-danger">Tribu T pastiller vide</h1>`
-            //   strVide = datas.length
-            // }
-            
-              datas.forEach(data => {
+      }
+      showGolf(tbl);
+    })
+    .catch((error) => console.log(error));
+  // fecthGolfAction(id, "cancel")
 
-                if (data['logo_path'] != "") { 
-                    logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`
-                } else {
-                    logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`
-                }
-                if (data.isPastilled == true) {
-                    listTibuTPast += `
+  if (document.querySelector(".modal-pastille-golf-tomm-js")) {
+    document
+      .querySelector(".modal-pastille-golf-tomm-js")
+      .classList.toggle("hidden");
+  }
+}
+
+/**
+ * @author Tomm
+ * @action get list tribu T pastiller avec golf
+ * @ou dans detail.js
+ */
+function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
+  fetch(`/golf/pastilled/checking/${id_golf}`)
+    .then((response) => response.json())
+    .then((datas) => {
+      let listTibuTPast = "";
+      let monGolf = "";
+      let strVide = datas.length;
+      // if (datas.length) {
+      //   // strVide = `<h1 class="text-danger">Tribu T pastiller vide</h1>`
+      //   strVide = datas.length
+      // }
+
+      datas.forEach((data) => {
+        if (data["logo_path"] != "") {
+          logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`;
+        } else {
+          logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`;
+        }
+        if (data.isPastilled == true) {
+          listTibuTPast += `
                                 <tr>
                                     <td>${logoPath}</td>
                                     <td>${data.name_tribu_t_muable}</td>
@@ -5838,20 +5976,18 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                                         <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
                                     </td>
                                 </tr>
-                            `
-
-                }else if(strVide ==0){
-                  listTibuTPast += `
+                            `;
+        } else if (strVide == 0) {
+          listTibuTPast += `
                                 <tr>
                                     <td></td>
                                     <td><h1 class="text-danger">Tribu T pastiller vide</h1></td>
                                     <td>
                                     </td>
                                 </tr>
-                            `
-                }
-                else {
-                    listTibuTPast += `
+                            `;
+        } else {
+          listTibuTPast += `
                                 <tr>
                                     <td>${logoPath}</td>
                                     <td>${data.name_tribu_t_muable}</td>
@@ -5859,32 +5995,30 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
                                         <button data-tbname=${data.table_name} data-id="${id_golf}" data-name="${name_golf}" data-adresse="${adress_golf}" class="btn btn-success" onclick="pastilleGolf(this, '${data.table_name}')">Pastillez</button>
                                     </td>
                                 </tr>
-                            `
-                }
+                            `;
+        }
+      });
 
-            })
-          
+      // console.log(datas);
 
-            // console.log(datas);
-           
-      
-      let tribu_g_name = document.querySelector("#my_tribu_g").textContent.trim()
+      let tribu_g_name = document
+        .querySelector("#my_tribu_g")
+        .textContent.trim();
 
-
-      fetch(`/user/tribu_g/isPastilled/${tribu_g_name + '_golf'}/${id_golf}`)
-        .then(s => s.json())
-        .then(isOk => {
-          let txt = ""
+      fetch(`/user/tribu_g/isPastilled/${tribu_g_name + "_golf"}/${id_golf}`)
+        .then((s) => s.json())
+        .then((isOk) => {
+          let txt = "";
           let isPastilled = false;
-          let classe = ''
+          let classe = "";
           if (isOk) {
-            txt = 'Dépastiller'
+            txt = "Dépastiller";
             isPastilled = false;
-            classe = 'info'
+            classe = "info";
           } else {
-            txt = 'Pastiller'
+            txt = "Pastiller";
             isPastilled = true;
-            classe = 'success'
+            classe = "success";
           }
 
           let modalPastillGolf = `
@@ -5919,45 +6053,45 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
               
                   </div>
               </div>
-          `
-            /*let modalPastillGolf = `
-                    <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
-                        <div class="modal-pastille-golf">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                    <div class="modal-header mb-4">
-                                        <h5 class="modal-title">Tribu T pastiller</h5>
-                                        <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
-                                    </div>
-                                    <hr>
-                                    <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
-                                        <table class="table table-striped">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Logo</th>
-                                                    <th scope="col">Tribu T</th>
-                                                    <th scope="col">Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                ${listTibuTPast}
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    `*/
+          `;
+          /*let modalPastillGolf = `
+                  <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
+                      <div class="modal-pastille-golf">
+                          <div class="modal-dialog">
+                              <div class="modal-content">
+                                  <div class="modal-header mb-4">
+                                      <h5 class="modal-title">Tribu T pastiller</h5>
+                                      <button type="button" class="btn-close btn-close-pastille-golf-tomm-js" onclick="closePastillGolf(${id_golf})" aria-label="Close"></button>
+                                  </div>
+                                  <hr>
+                                  <div class="modal-body modal-body-pastille-golf mt-4 mb-4">
+                                      <table class="table table-striped">
+                                          <thead>
+                                              <tr>
+                                                  <th scope="col">Logo</th>
+                                                  <th scope="col">Tribu T</th>
+                                                  <th scope="col">Action</th>
+                                              </tr>
+                                          </thead>
+                                          <tbody>
+                                              ${listTibuTPast}
+                                          </tbody>
+                                      </table>
+                                  </div>
+                                  
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                  `*/
 
-              if (document.querySelector("#pastilleForGolfBody")) {
-                $("#pastilleForGolf").modal("show")
-                document.querySelector("#pastilleForGolfBody").innerHTML = modalPastillGolf
-              }
-
-          })
-    })
+          if (document.querySelector("#pastilleForGolfBody")) {
+            $("#pastilleForGolf").modal("show");
+            document.querySelector("#pastilleForGolfBody").innerHTML =
+              modalPastillGolf;
+          }
+        });
+    });
 }
 
 /**
@@ -5966,30 +6100,29 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
  * @ou dans le fuction.js
  */
 function closePastillGolf(id_golf) {
-    document.querySelector(".modal-pastille-golf-tomm-js").remove()
-    //.select_action_golf_tomm_js
-    document.querySelector(".select_action_golf_nanta_js").selectedIndex = 0
+  document.querySelector(".modal-pastille-golf-tomm-js").remove();
+  //.select_action_golf_tomm_js
+  document.querySelector(".select_action_golf_nanta_js").selectedIndex = 0;
 }
-    
+
 /**
  * @author tomm
  * @action get list des pastill
  * @ou details_golf.html.twig
  */
 function isPastilledList(id_golf, name_golf) {
-    fetch(`/golf/pastilled/checking/${id_golf}`)
-      .then(response => response.json())
-      .then(datas => {
-        let listTibuTPast = ""
-        for (let data of datas) {
-          if (data['logo_path'] != "") {
-            logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`
-          } else {
-            logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`
-          }
-          if (data['isPastilled'] == true) {
-  
-            listTibuTPast += `
+  fetch(`/golf/pastilled/checking/${id_golf}`)
+    .then((response) => response.json())
+    .then((datas) => {
+      let listTibuTPast = "";
+      for (let data of datas) {
+        if (data["logo_path"] != "") {
+          logoPath = `<img class="logo_path_pastille" src="/public${data.logo_path}"></img>`;
+        } else {
+          logoPath = `<img class="logo_path_pastille" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg"></img>`;
+        }
+        if (data["isPastilled"] == true) {
+          listTibuTPast += `
                                       <tr>
                                           <td>${logoPath}</td>
                                           <td>${data.name_tribu_t_muable}</td>
@@ -5997,11 +6130,11 @@ function isPastilledList(id_golf, name_golf) {
                                               <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
                                           </td>
                                       </tr>
-                                  `
-          }
+                                  `;
         }
-  
-        let modalPastillGolf = `<table class="table table-striped">
+      }
+
+      let modalPastillGolf = `<table class="table table-striped">
                                   <thead>
                                       <tr>
                                           <th scope="col">Logo</th>
@@ -6012,131 +6145,142 @@ function isPastilledList(id_golf, name_golf) {
                                   <tbody>
                                       ${listTibuTPast}
                                   </tbody>
-                              </table> `
-  
-        if (document.querySelector("#pastilleForGolfBody")) {
-          $("#pastilleForGolf").modal("show")
-          document.querySelector("#pastilleForGolfBody").innerHTML = modalPastillGolf
-        }
-      })
-  }
-  
+                              </table> `;
+
+      if (document.querySelector("#pastilleForGolfBody")) {
+        $("#pastilleForGolf").modal("show");
+        document.querySelector("#pastilleForGolfBody").innerHTML =
+          modalPastillGolf;
+      }
+    });
+}
+
 /**
  * @author tomm
  * @action fetch les action du golf
  * @ou dans detail.js
  */
 function fecthGolfAction(goldID, action, selectElement) {
+  if (selectElement != null && selectElement instanceof HTMLElement) {
+    selectElement = selectElement.parentElement;
+    let url = "";
+    switch (action) {
+      case "finished": {
+        url = "/user/setGolf/finished";
+        break;
+      }
+      case "todo": {
+        url = "/user/setGolf/todo";
+        break;
+      }
+      // case "for_me":{
+      //     url = '/user/setGolf/for_me'
+      //     break;
+      // }
+      case "none": {
+        url = "/user/setGolf/none";
+        break;
+      }
+      case "remake": {
+        url = "/user/setGolf/remake";
+        break;
+      }
+      default: {
+        url = "/user/setGolf/unfinished";
+        break;
+      }
+    }
 
-    if (selectElement != null && selectElement instanceof HTMLElement) {
-        selectElement = selectElement.parentElement;
-        let url = ""
-        switch (action) {
-            case "finished": {
-            url = '/user/setGolf/finished'
-            break;
-            }
-            case "todo": {
-            url = '/user/setGolf/todo'
-            break;
-            }
-            // case "for_me":{
-            //     url = '/user/setGolf/for_me'
-            //     break;
-            // }
-            case "none": {
-            url = '/user/setGolf/none'
-            break;
-            }
-            case "remake": {
-            url = "/user/setGolf/remake"
-            break;
-            }
-            default: {
-            url = '/user/setGolf/unfinished'
-            break;
-            }
-    
-        }
-  
-        const request = new Request(url, {
-            method: "POST",
-            headers: {
-              'Accept': 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                golfID: goldID,
-            })
-        })
+    const request = new Request(url, {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        golfID: goldID,
+      }),
+    });
 
-        fetch(request)
-        .then(response => response.json())
-        .then(response => {
-            if (response.success) {
-                if (action === "finished") {
-                    new swal("Bravo !", "Vous avez marqué ce golf comme fait !", "success")
-                    .then((value) => {
-                        if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                        selectElement.innerHTML = `
+    fetch(request)
+      .then((response) => response.json())
+      .then((response) => {
+        if (response.success) {
+          if (action === "finished") {
+            new swal(
+              "Bravo !",
+              "Vous avez marqué ce golf comme fait !",
+              "success"
+            ).then((value) => {
+              if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                selectElement.innerHTML = `
                                         Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
-                                    `
-                        }
+                                    `;
+              }
 
-                        if (document.querySelector(".golf_status_jheo_js")) {
-                        document.querySelector(".golf_status_jheo_js").innerText = "FAIT"
-                        }
-                    });
-
-                } else if (action === "todo") {
-
-                    new swal("Bravo !", "Vous avez marqué ce golf comme à faire !", "success")
-                    .then((value) => {
-                        if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                        selectElement.innerHTML = `
+              if (document.querySelector(".golf_status_jheo_js")) {
+                document.querySelector(".golf_status_jheo_js").innerText =
+                  "FAIT";
+              }
+            });
+          } else if (action === "todo") {
+            new swal(
+              "Bravo !",
+              "Vous avez marqué ce golf comme à faire !",
+              "success"
+            ).then((value) => {
+              if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                selectElement.innerHTML = `
                                         Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
-                                    `
-                        }
+                                    `;
+              }
 
-                        if (document.querySelector(".golf_status_jheo_js")) {
-                        document.querySelector(".golf_status_jheo_js").innerText = "A FAIRE"
-                        }
-                    });
-
-                } else if (action === "none") {
-
-                    new swal("Bravo !", "Vous avez choisi de ne rien faire avec ce golf.", "success")
-                    .then((value) => {
-                        if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                        selectElement.innerHTML = `
+              if (document.querySelector(".golf_status_jheo_js")) {
+                document.querySelector(".golf_status_jheo_js").innerText =
+                  "A FAIRE";
+              }
+            });
+          } else if (action === "none") {
+            new swal(
+              "Bravo !",
+              "Vous avez choisi de ne rien faire avec ce golf.",
+              "success"
+            ).then((value) => {
+              if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                selectElement.innerHTML = `
                                         Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
-                                    `
-                        }
+                                    `;
+              }
 
-                        if (document.querySelector(".golf_status_jheo_js")) {
-                        document.querySelector(".golf_status_jheo_js").innerText = ""
-                        }
-                    });
-
-                } else if (action === "remake") {
-                    new swal("Bravo !", "Vous avez marqué ce golf comme à refaire.", "success")
-                    .then((value) => {
-                        if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                        selectElement.innerHTML = `
+              if (document.querySelector(".golf_status_jheo_js")) {
+                document.querySelector(".golf_status_jheo_js").innerText = "";
+              }
+            });
+          } else if (action === "remake") {
+            new swal(
+              "Bravo !",
+              "Vous avez marqué ce golf comme à refaire.",
+              "success"
+            ).then((value) => {
+              if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                selectElement.innerHTML = `
                                         Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
-                                    `
-                        }
+                                    `;
+              }
 
-                        if (document.querySelector(".golf_status_jheo_js")) {
-                        document.querySelector(".golf_status_jheo_js").innerText = "A REFAIRE"
-                        }
-                    });
-                } else {
-
-                    new swal("Info !", "Vous venez d'annuler votre choix !", "success")
-                    .then((value) => {
-                        if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                        selectElement.innerHTML = `
+              if (document.querySelector(".golf_status_jheo_js")) {
+                document.querySelector(".golf_status_jheo_js").innerText =
+                  "A REFAIRE";
+              }
+            });
+          } else {
+            new swal(
+              "Info !",
+              "Vous venez d'annuler votre choix !",
+              "success"
+            ).then((value) => {
+              if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+                selectElement.innerHTML = `
                                     <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
                                     <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${goldID}" onchange="executeActionForPastGolf(event,'${goldID}')">
                                         <option value="0">Aucun</option>
@@ -6144,38 +6288,37 @@ function fecthGolfAction(goldID, action, selectElement) {
                                         <option value="2">Fait</option>
                                         <option value="3">A refaire</option>
                                     </select>
-                                    `
-                        }
+                                    `;
+              }
 
-                        if (document.querySelector(".golf_status_jheo_js")) {
-                        document.querySelector(".golf_status_jheo_js").innerText = ""
-                        }
+              if (document.querySelector(".golf_status_jheo_js")) {
+                document.querySelector(".golf_status_jheo_js").innerText = "";
+              }
 
-                        OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
-                    })
+              OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID);
+            });
+          }
 
-                }
+          // else if (action === "for_me") {
+          //   new swal("Bravo !", "Vous avez marqué ce golf comme Mon Golf !", "success")
+          //     .then((value) => {
+          //       if (document.querySelector(".content_btn_golf_did_jheo_js")) {
+          //         selectElement.innerHTML = `
+          //                       Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+          //                   `
+          //       }
 
-                // else if (action === "for_me") {
-                //   new swal("Bravo !", "Vous avez marqué ce golf comme Mon Golf !", "success")
-                //     .then((value) => {
-                //       if (document.querySelector(".content_btn_golf_did_jheo_js")) {
-                //         selectElement.innerHTML = `
-                //                       Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
-                //                   `
-                //       }
+          //       if (document.querySelector(".golf_status_jheo_js")) {
+          //         document.querySelector(".golf_status_jheo_js").innerText = "MON GOLF"
+          //       }
+          //     });
 
-                //       if (document.querySelector(".golf_status_jheo_js")) {
-                //         document.querySelector(".golf_status_jheo_js").innerText = "MON GOLF"
-                //       }
-                //     });
-
-                // } 
-            }
-        })
-    } else {
-        new swal("Bonjour", "Oups!! ", "info")
-    }
+          // }
+        }
+      });
+  } else {
+    new swal("Bonjour", "Oups!! ", "info");
+  }
   // const url = (action === "finished") ? '/user/setGolf/finished': '/user/setGolf/unfinished';
 }
 
@@ -6188,115 +6331,113 @@ function fecthGolfAction(goldID, action, selectElement) {
  * @param {string} name nom resto
  */
 function pastilleForTribuG(e, type, id, name) {
-
-    const data = {
-      name: name,
-      id: id,
-      tbl: document.querySelector("#my_tribu_g").textContent.trim()
-    }
-    // For pastille
-    if (type == true) {
-        fetch("/user/tribu_g/pastille/resto", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(r => r.json())
-        .then(res => {
-            if (res.status == "ok") {
-                swal({
-                    title: "Bravo!",
-                    text: "Restaurant pastillé avec succès dans votre tribu G.",
-                    icon: "success",
-                });
-
-                e.classList = "btn btn-success ms-1"
-                e.innerText = "Pastillé"
-                document.querySelector("#fetch_resto_tribug_jheo_js").click()
-            }
-        })
-
-    }else { // For depastille
-        fetch("/user/tribu_g/depastille/resto", {
-            method: "POST",
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        }).then(r => r.json())
-        .then(res => {
-            if (res.status == "ok") {
-                swal({
-                    title: "Bravo!",
-                    text: "Restaurant dépastillé avec succès dans votre tribu G.",
-                    icon: "success",
-                });
-
-                e.classList = "btn btn-success ms-1"
-                e.innerText = "Dépastillé"
-            }
-        })
-    }
-}
-
-
-
-
-/**
-* @author Elie
-* @constructor pastille resto into tribu G
-* @param {node} e element of node
-* @param {boolean} type oui si pastille, non si depastille
-* @param {integer} id id_restaurant
-* @param {string} name nom resto
-*/
-function pastilleGolfForTribuG(e, type, id, name) {
-
   const data = {
     name: name,
     id: id,
-    tbl: document.querySelector("#my_tribu_g").textContent.trim()
-  }
+    tbl: document.querySelector("#my_tribu_g").textContent.trim(),
+  };
   // For pastille
   if (type == true) {
+    fetch("/user/tribu_g/pastille/resto", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.status == "ok") {
+          swal({
+            title: "Bravo!",
+            text: "Restaurant pastillé avec succès dans votre tribu G.",
+            icon: "success",
+          });
 
+          e.classList = "btn btn-success ms-1";
+          e.innerText = "Pastillé";
+          document.querySelector("#fetch_resto_tribug_jheo_js").click();
+        }
+      });
+  } else {
+    // For depastille
+    fetch("/user/tribu_g/depastille/resto", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    })
+      .then((r) => r.json())
+      .then((res) => {
+        if (res.status == "ok") {
+          swal({
+            title: "Bravo!",
+            text: "Restaurant dépastillé avec succès dans votre tribu G.",
+            icon: "success",
+          });
+
+          e.classList = "btn btn-success ms-1";
+          e.innerText = "Dépastillé";
+        }
+      });
+  }
+}
+
+/**
+ * @author Elie
+ * @constructor pastille resto into tribu G
+ * @param {node} e element of node
+ * @param {boolean} type oui si pastille, non si depastille
+ * @param {integer} id id_restaurant
+ * @param {string} name nom resto
+ */
+function pastilleGolfForTribuG(e, type, id, name) {
+  const data = {
+    name: name,
+    id: id,
+    tbl: document.querySelector("#my_tribu_g").textContent.trim(),
+  };
+  // For pastille
+  if (type == true) {
     fetch("/user/tribu_g/pastille/golf", {
       method: "POST",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data)
-    }).then(r => r.json())
-      .then(res => {
+      body: JSON.stringify(data),
+    })
+      .then((r) => r.json())
+      .then((res) => {
         if (res.status == "ok") {
           swal({
             title: "Bravo!",
             text: "Golf pastillé avec succès dans votre tribu G.",
             icon: "success",
           }).then(() => {
-             document.querySelector("#fetch_golf_tribug_jheo_js").click();
+            document.querySelector("#fetch_golf_tribug_jheo_js").click();
           });
 
-          e.classList = "btn btn-success ms-1"
-          e.innerText = "Pastillé"
+          e.classList = "btn btn-success ms-1";
+          e.innerText = "Pastillé";
         }
-      })
+      });
   }
   // For depastille
   else {
     fetch("/user/tribu_g/depastille/golf", {
       method: "POST",
       headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
+        Accept: "application/json",
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(data)
-    }).then(r => r.json())
-      .then(res => {
+      body: JSON.stringify(data),
+    })
+      .then((r) => r.json())
+      .then((res) => {
         if (res.status == "ok") {
           swal({
             title: "Bravo!",
@@ -6304,10 +6445,10 @@ function pastilleGolfForTribuG(e, type, id, name) {
             icon: "success",
           });
 
-          e.classList = "btn btn-success ms-1"
-          e.innerText = "Dépastillé"
+          e.classList = "btn btn-success ms-1";
+          e.innerText = "Dépastillé";
         }
-      })
+      });
   }
 }
 
@@ -6315,19 +6456,24 @@ function pastilleGolfForTribuG(e, type, id, name) {
  * Update 25-10-2023 : deplacement de myTribuT.js vers function.js
  * Utilisé dans tribu G et T
  * @constructor : Ouverture de modal detail resto
- * @param {*} nom_resto 
- * @param {*} adresse 
- * @param {*} nom_dep 
- * @param {*} id_dep 
- * @param {*} id_restaurant 
+ * @param {*} nom_resto
+ * @param {*} adresse
+ * @param {*} nom_dep
+ * @param {*} id_dep
+ * @param {*} id_restaurant
  */
 function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
-
-  fetch("/api/agenda/restaurant/" + nom_dep + "/" + id_dep + "/detail/" + id_restaurant)
-    .then(response => response.text())
-    .then(result => {
-
-      $("#modalDetailResto").modal("show")
+  fetch(
+    "/api/agenda/restaurant/" +
+      nom_dep +
+      "/" +
+      id_dep +
+      "/detail/" +
+      id_restaurant
+  )
+    .then((response) => response.text())
+    .then((result) => {
+      $("#modalDetailResto").modal("show");
 
       document.querySelector("#restoModalLabel").innerHTML = `
       <div>
@@ -6335,70 +6481,74 @@ function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
       <span>${adresse.toLowerCase()}</span>
       </div>
       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      `
+      `;
 
-      document.querySelector("#elie-resto-detail").innerHTML = result
-    })
+      document.querySelector("#elie-resto-detail").innerHTML = result;
+    });
 }
 
 /**
-* Update 25-10-2023 : deplacement de myTribuT.js vers function.js
-* Utilisé dans tribu G et T
-* @constructor Fonction d'ouverture d'un evenement
-* @author elie
-* @param {int} id : id resto
-* @param {string} nom : nom de resto
-* @param {string} adresse : adresse de resto
-* @param {string} action : action à faire pour le resto
-*/
+ * Update 25-10-2023 : deplacement de myTribuT.js vers function.js
+ * Utilisé dans tribu G et T
+ * @constructor Fonction d'ouverture d'un evenement
+ * @author elie
+ * @param {int} id : id resto
+ * @param {string} nom : nom de resto
+ * @param {string} adresse : adresse de resto
+ * @param {string} action : action à faire pour le resto
+ */
 function openOnEvent(id, nom, adresse, action) {
+  document.querySelector("#nomEtabEvent").value = nom;
 
-  document.querySelector("#nomEtabEvent").value = nom
-
-  document.querySelector("#lieuEvent").value = adresse.toLowerCase().trim()
+  document.querySelector("#lieuEvent").value = adresse.toLowerCase().trim();
 
   let date = new Date();
   let currentDate = date.toISOString().substring(0, 10);
 
-  document.getElementById('eventStart').value = currentDate;
-  document.getElementById('eventEnd').value = currentDate;
-  document.getElementById('timeStart').value = '00:00';
-  document.getElementById('timeEnd').value = '23:00';
-
+  document.getElementById("eventStart").value = currentDate;
+  document.getElementById("eventEnd").value = currentDate;
+  document.getElementById("timeStart").value = "00:00";
+  document.getElementById("timeEnd").value = "23:00";
 }
 
 /**
-* Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
-* Utilisé dans tribu G et T
-* @constructor
-* @param {*} val 
-* @param {*} localisation 
-*/
+ * Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
+ * Utilisé dans tribu G et T
+ * @constructor
+ * @param {*} val
+ * @param {*} localisation
+ */
 function findResto(val, localisation = "") {
+  const request = new Request(
+    `/api/search/restaurant?cles0=${val}&cles1=${localisation}`,
+    {
+      method: "GET",
+    }
+  );
 
-  const request = new Request(`/api/search/restaurant?cles0=${val}&cles1=${localisation}`, {
-    method: 'GET'
-  })
+  document.querySelector("#result_resto_past").style.display = "block;";
 
-  document.querySelector("#result_resto_past").style.display = "block;"
-
-
-  document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
-  document.querySelector("#elie-restou").innerHTML =
-    `<div class="d-flex justify-content-center">
+  document.querySelector("#extModalLabel").innerText = "Recherche en cours...";
+  document.querySelector(
+    "#elie-restou"
+  ).innerHTML = `<div class="d-flex justify-content-center">
       <div class="spinner-border" role="status">
           <span class="sr-only">Loading...</span>
       </div>
-      </div>`
+      </div>`;
 
+  fetch(request)
+    .then((response) => response.json())
+    .then((data) => {
+      let jsons = data.results[0];
 
-  fetch(request).then(response => response.json()).then(data => {
+      jsons.length > 1
+        ? (document.querySelector("#extModalLabel").innerText =
+            jsons.length + " restaurants trouvés")
+        : (document.querySelector("#extModalLabel").innerText =
+            jsons.length + " restaurant trouvé");
 
-    let jsons = data.results[0]
-
-    jsons.length > 1 ? document.querySelector("#extModalLabel").innerText = jsons.length + " restaurants trouvés" : document.querySelector("#extModalLabel").innerText = jsons.length + " restaurant trouvé"
-
-    let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
+      let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
       <thead>
           <tr>
               <th>Nom de restaurant</th>
@@ -6407,45 +6557,71 @@ function findResto(val, localisation = "") {
               <th>Action</th>
           </tr>
       </thead>
-      <tbody>`
+      <tbody>`;
 
-    let foot_table = `</tbody>
-      </table>`
+      let foot_table = `</tbody>
+      </table>`;
 
-    let body_table = "";
+      let body_table = "";
 
-    if (jsons.length > 0) {
+      if (jsons.length > 0) {
+        for (let json of jsons) {
+          const name = json.denominationF;
+          const dep = json.dep;
+          const depName = json.depName;
+          const commune = json.commune;
+          const codePost = json.codpost;
+          const nomvoie = json.nomvoie;
+          const numvoie = json.numvoie;
+          const typevoie = json.typevoie;
+          // const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
+          const adresse = json.add;
+          const bar =
+            json.bar != "0"
+              ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar </span></p>`
+              : "";
+          const boulangerie =
+            json.boulangerie != "0"
+              ? `<p><i class="fa-solid fa-bread-slice"> </i> <span> Boulangerie </span></p>`
+              : "";
+          const brasserie =
+            json.brasserie != "0"
+              ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span> Brasserie </span></p>`
+              : "";
+          const cafe =
+            json.cafe != "0"
+              ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>`
+              : "";
+          const cuisineMonde =
+            json.cuisineMonde != "0"
+              ? `<p><i class="fa-solid fa-utensils"> </i><span> Cuisine du Monde </span></p>`
+              : "";
+          const fastFood =
+            json.fastFood != "0"
+              ? `<p><i class="fa-solid fa-burger"></i><span> Fast food </span></p>`
+              : "";
+          const creperie =
+            json.creperie != "0"
+              ? `<p><i class="fa-solid fa-pancakes"> </i><span> Crêperie </span></p>`
+              : "";
+          const salonThe =
+            json.salonThe != "0"
+              ? `<p><i class="fa-solid fa-mug-saucer"> </i><span> Salon de thé </span></p>`
+              : "";
+          const pizzeria =
+            json.pizzeria != "0"
+              ? `<p><i class="fa-solid fa-pizza-slice"> </i><span> Pizzeria </span></p>`
+              : "";
 
+          let oncl = `pastillerPast(this, ${json.id},'${name}')`;
+          if (window.location.href.includes("/user/account")) {
+            const tbly = document
+              .querySelector(".tributG_profile_name")
+              .getAttribute("data-toggle-tribug-table");
+            oncl = `pastilleForTribuG(this, true,${json.id},'${name}')`;
+          }
 
-      for (let json of jsons) {
-
-        const name = json.denominationF;
-        const dep = json.dep;
-        const depName = json.depName;
-        const commune = json.commune;
-        const codePost = json.codpost;
-        const nomvoie = json.nomvoie;
-        const numvoie = json.numvoie;
-        const typevoie = json.typevoie;
-        // const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codePost} ${commune}`
-        const adresse = json.add;
-        const bar = json.bar != "0" ? `<p><i class="fa-solid fa-martini-glass-citrus"> </i><span> Bar </span></p>` : ''
-        const boulangerie = json.boulangerie != "0" ? `<p><i class="fa-solid fa-bread-slice"> </i> <span> Boulangerie </span></p>` : ''
-        const brasserie = json.brasserie != "0" ? `<p><i class="fa-solid fa-beer-mug-empty"> </i><span> Brasserie </span></p>` : ''
-        const cafe = json.cafe != "0" ? `<p><i class="fa-solid fa-mug-hot"> </i><span>Cafe</span></p>` : ''
-        const cuisineMonde = json.cuisineMonde != "0" ? `<p><i class="fa-solid fa-utensils"> </i><span> Cuisine du Monde </span></p>` : ''
-        const fastFood = json.fastFood != "0" ? `<p><i class="fa-solid fa-burger"></i><span> Fast food </span></p>` : ''
-        const creperie = json.creperie != "0" ? `<p><i class="fa-solid fa-pancakes"> </i><span> Crêperie </span></p>` : ''
-        const salonThe = json.salonThe != "0" ? `<p><i class="fa-solid fa-mug-saucer"> </i><span> Salon de thé </span></p>` : ''
-        const pizzeria = json.pizzeria != "0" ? `<p><i class="fa-solid fa-pizza-slice"> </i><span> Pizzeria </span></p>` : ''
-
-        let oncl = `pastillerPast(this, ${json.id},'${name}')`
-        if (window.location.href.includes("/user/account")) {
-          const tbly = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")
-          oncl = `pastilleForTribuG(this, true,${json.id},'${name}')`
-        }
-
-        body_table += `
+          body_table += `
                               <tr>
                                   <td>${name}</td>
                                   <td>
@@ -6468,97 +6644,106 @@ function findResto(val, localisation = "") {
                                       <button class="btn btn-primary ms-1" onclick="${oncl}">Pastillez</button>
                                   </td>
                               </tr>
-                          `
-      }
-
-      document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
-
-      // new DataTable('#resto-a-pastiller-list');
-      $('#resto-a-pastiller-list').DataTable({
-        "language": {
-          url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                          `;
         }
-      });
 
-    } else {
-      document.querySelector("#elie-restou").style.display = "block"
-      document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " + document.querySelector("#resto-rech").value + "</div>"
-    }
-  })
+        document.querySelector("#elie-restou").innerHTML =
+          head_table + body_table + foot_table;
 
+        // new DataTable('#resto-a-pastiller-list');
+        $("#resto-a-pastiller-list").DataTable({
+          language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+          },
+        });
+      } else {
+        document.querySelector("#elie-restou").style.display = "block";
+        document.querySelector("#elie-restou").innerHTML =
+          "<div class='container text-center'>Aucun restaurant qui correspond au recherche de " +
+          document.querySelector("#resto-rech").value +
+          "</div>";
+      }
+    });
 }
 
-
-
 /**
-* Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
-* Utilisé dans tribu G et T
-* @constructor
-*/
+ * Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
+ * Utilisé dans tribu G et T
+ * @constructor
+ */
 function listResto() {
-
-  document.querySelector("#elie-restou").innerHTML = ""
+  document.querySelector("#elie-restou").innerHTML = "";
   let inputName = document.querySelector("#resto-rech").value;
   let adresse = document.querySelector("#resto-rech-ou").value;
   if (adresse.trim() != "" || inputName.trim() != "") {
-    if ((document.querySelector(".golfNotHide > a") && document.querySelector(".golfNotHide > a").classList.contains("active"))
-      || (document.querySelector("#fetch_golf_tribug_jheo_js") && document.querySelector("#fetch_golf_tribug_jheo_js").classList.contains("active"))) {
-      findGolf(inputName, adresse)
-    } else if (document.querySelector(".restoNotHide > a") && document.querySelector(".restoNotHide > a").classList.contains("active")) {
-      findResto(inputName, adresse)
+    if (
+      (document.querySelector(".golfNotHide > a") &&
+        document
+          .querySelector(".golfNotHide > a")
+          .classList.contains("active")) ||
+      (document.querySelector("#fetch_golf_tribug_jheo_js") &&
+        document
+          .querySelector("#fetch_golf_tribug_jheo_js")
+          .classList.contains("active"))
+    ) {
+      findGolf(inputName, adresse);
+    } else if (
+      document.querySelector(".restoNotHide > a") &&
+      document.querySelector(".restoNotHide > a").classList.contains("active")
+    ) {
+      findResto(inputName, adresse);
     } else {
-      findResto(inputName, adresse)
+      findResto(inputName, adresse);
     }
 
-    $("#modalForExtension").modal("show")
+    $("#modalForExtension").modal("show");
   } else {
-
     swal({
       // title: "Succès",
       text: "Champ invalide!",
       icon: "error",
       button: "Ok",
     });
-
   }
 }
 
-
 /**
-* Update 26-10-2023 : Deplacement de myTribuT.js vers function.js
-* @author elie
-* @constructor Fonction d'ouverture de note de resto pastillé
-* @localisation : myTribuT.js
-* @utilisation dans le template tribuT.html.twig
-* @param {int} id_pastille : id resto
-* @param {string} action : action à faire pour le bouton
-*/
+ * Update 26-10-2023 : Deplacement de myTribuT.js vers function.js
+ * @author elie
+ * @constructor Fonction d'ouverture de note de resto pastillé
+ * @localisation : myTribuT.js
+ * @utilisation dans le template tribuT.html.twig
+ * @param {int} id_pastille : id resto
+ * @param {string} action : action à faire pour le bouton
+ */
 function openOnNote(id_pastille, action) {
+  document
+    .querySelector(".send_avis_jheo_js")
+    .setAttribute("data-action", action);
 
-  document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action)
-
-  document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")")
+  document
+    .querySelector(".send_avis_jheo_js")
+    .setAttribute("onclick", "setSendNote(this," + id_pastille + ")");
 }
 
-
 /**
-* Update 26-10-2023 : Deplacement de myTribuT.js vers function.js
-* @author elie
-* @constructor : fonction de parametrage d'id resto dans un template
-* @localisation : myTribuT.js
-* @utilisation dans le template tribuT.html.twig
-* @param {element} params : element ou le fonction se place
-* @param {int} id_pastille : id resto
-*/
+ * Update 26-10-2023 : Deplacement de myTribuT.js vers function.js
+ * @author elie
+ * @constructor : fonction de parametrage d'id resto dans un template
+ * @localisation : myTribuT.js
+ * @utilisation dans le template tribuT.html.twig
+ * @param {element} params : element ou le fonction se place
+ * @param {int} id_pastille : id resto
+ */
 function setSendNote(params, id_pastille) {
+  const action = params.getAttribute("data-action");
 
-  const action = params.getAttribute("data-action")
-
-  const avis = params.parentElement.previousElementSibling.querySelector("#message-text")
-  const note = params.parentElement.previousElementSibling.querySelector("#text-note")
+  const avis =
+    params.parentElement.previousElementSibling.querySelector("#message-text");
+  const note =
+    params.parentElement.previousElementSibling.querySelector("#text-note");
 
   if (action == "create") {
-
     if (parseFloat(note.value) > 4) {
       swal({
         title: "Erreur de saisie de note!",
@@ -6566,114 +6751,109 @@ function setSendNote(params, id_pastille) {
         icon: "error",
         button: "Ok",
       });
-
     } else {
-
       if (window.location.href.includes("/user/account")) {
-
-        sendNoteTribuG(parseFloat(note.value), avis.value, id_pastille)
-
+        sendNoteTribuG(parseFloat(note.value), avis.value, id_pastille);
       } else {
-
-        sendNote(parseFloat(note.value), avis.value, id_pastille)
-
+        sendNote(parseFloat(note.value), avis.value, id_pastille);
       }
     }
-
   }
-
 }
 
 /**
-* @author Elie
-* @constructor Envoie de paramettre de la mise à jour de note dans le template
-* @param {*} params 
-* @param {*} id 
-* @param {*} note 
-* @param {*} commentaire 
-* @param {*} id_resto 
-*/
+ * @author Elie
+ * @constructor Envoie de paramettre de la mise à jour de note dans le template
+ * @param {*} params
+ * @param {*} id
+ * @param {*} note
+ * @param {*} commentaire
+ * @param {*} id_resto
+ */
 function setUpdateNote(params, id, note, commentaire, id_resto) {
-  
-  $('#modalAvisRestaurant').modal('show')
+  $("#modalAvisRestaurant").modal("show");
 
-  document.querySelector("#text-note").value = note
-  document.querySelector("#message-text").value = commentaire
-  document.querySelector(".send_avis_jheo_js").setAttribute("data-action", "update")
+  document.querySelector("#text-note").value = note;
+  document.querySelector("#message-text").value = commentaire;
+  document
+    .querySelector(".send_avis_jheo_js")
+    .setAttribute("data-action", "update");
 
   if (window.location.href.includes("/user/account")) {
-
-    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "updateNoteTribuG(" + id + ", " + id_resto + ")")
-
+    document
+      .querySelector(".send_avis_jheo_js")
+      .setAttribute(
+        "onclick",
+        "updateNoteTribuG(" + id + ", " + id_resto + ")"
+      );
   } else {
-
-    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "updateNote(" + id + ", " + id_resto + ")")
-
+    document
+      .querySelector(".send_avis_jheo_js")
+      .setAttribute("onclick", "updateNote(" + id + ", " + id_resto + ")");
   }
-
 }
 
 /**
  * @constructor keyup detect for input
  * @author Elie
- * @param {*} target 
+ * @param {*} target
  */
 function detectNumber(target) {
-
   note = target.value.replace(/,/g, ".");
 
   try {
-    mustBeInferior4(note, document.querySelector("#text-note"), true)
+    mustBeInferior4(note, document.querySelector("#text-note"), true);
   } catch (e) {
-    msgErrorAlertAvis(e)
+    msgErrorAlertAvis(e);
   }
 
   setTimeout(() => {
     target.style = "border:2px solid black;";
     document.querySelectorAll(".flash-msg-ERREUR").forEach((i) => {
-      i.remove()
-      target.value = ""
+      i.remove();
+      target.value = "";
     });
   }, 2000);
-
 }
 
-
 /**
-* Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
-* Utilisé dans tribu G et T
-* @constructor
-*/
+ * Update 25-10-2023 : deplacement dans myTribuT.js dans function.js
+ * Utilisé dans tribu G et T
+ * @constructor
+ */
 function findGolf() {
-
-  document.querySelector("#elie-restou").innerHTML = ""
+  document.querySelector("#elie-restou").innerHTML = "";
   let inputName = document.querySelector("#golf-rech").value;
   let adresse = document.querySelector("#golf-rech-ou").value;
   if (adresse.trim() != "" || inputName.trim() != "") {
+    const request = new Request(
+      `/api/search/golf?cles0=${inputName}&cles1=${adresse}`,
+      {
+        method: "GET",
+      }
+    );
 
-    const request = new Request(`/api/search/golf?cles0=${inputName}&cles1=${adresse}`, {
-      method: 'GET'
-    })
+    document.querySelector("#result_resto_past").style.display = "block;";
 
-    document.querySelector("#result_resto_past").style.display = "block;"
-
-
-    document.querySelector("#extModalLabel").innerText = "Recherche en cours..."
-    document.querySelector("#elie-restou").innerHTML =
-      `<div class="d-flex justify-content-center">
+    document.querySelector("#extModalLabel").innerText =
+      "Recherche en cours...";
+    document.querySelector(
+      "#elie-restou"
+    ).innerHTML = `<div class="d-flex justify-content-center">
       <div class="spinner-border" role="status">
           <span class="sr-only">Loading...</span>
       </div>
-      </div>`
+      </div>`;
 
+    fetch(request)
+      .then((response) => response.json())
+      .then((data) => {
+        let jsons = data.results[0];
 
-    fetch(request).then(response => response.json()).then(data => {
+        document.querySelector("#extModalLabel").innerText =
+          jsons.length + " golf trouvés";
 
-      let jsons = data.results[0]
-
-      document.querySelector("#extModalLabel").innerText = jsons.length + " golf trouvés" 
-
-      let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
+        let head_table = `<table id="resto-a-pastiller-list" class="display" style="width:100%">
         <thead>
             <tr>
                 <th>Nom de golf</th>
@@ -6681,34 +6861,33 @@ function findGolf() {
                 <th>Action</th>
             </tr>
         </thead>
-      <tbody>`
+      <tbody>`;
 
-      let foot_table = `</tbody></table>`
+        let foot_table = `</tbody></table>`;
 
-      let body_table = "";
+        let body_table = "";
 
-      if (jsons.length > 0) {
+        if (jsons.length > 0) {
+          for (let json of jsons) {
+            console.log(json);
 
+            const name = json.nom.toUpperCase();
+            const dep = json.departement;
+            const depName = json.depName;
+            const commune = json.nom_commune;
+            const codePost = json.cp;
 
-        for (let json of jsons) {
+            const adresse = json.adresse;
 
-          console.log(json);
+            let oncl = `pastillerPast(this, ${json.id},'${name}')`;
+            if (window.location.href.includes("/user/account")) {
+              const tbly = document
+                .querySelector(".tributG_profile_name")
+                .getAttribute("data-toggle-tribug-table");
+              oncl = `pastilleGolfForTribuG(this, true,${json.id},'${name}')`;
+            }
 
-          const name = json.nom.toUpperCase();
-          const dep = json.departement;
-          const depName = json.depName;
-          const commune = json.nom_commune;
-          const codePost = json.cp;
-
-          const adresse = json.adresse;
-         
-          let oncl = `pastillerPast(this, ${json.id},'${name}')`
-          if (window.location.href.includes("/user/account")) {
-            const tbly = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")
-            oncl = `pastilleGolfForTribuG(this, true,${json.id},'${name}')`
-          }
-
-          body_table += `
+            body_table += `
                               <tr>
                                   <td>${name}</td>
                                   
@@ -6718,47 +6897,46 @@ function findGolf() {
                                       <button class="btn btn-primary ms-1" onclick="${oncl}">Pastillez</button>
                                   </td>
                               </tr>
-                          `
-        }
-
-        document.querySelector("#elie-restou").innerHTML = head_table + body_table + foot_table
-
-        // new DataTable('#resto-a-pastiller-list');
-        $('#resto-a-pastiller-list').DataTable({
-          "language": {
-            url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json',
+                          `;
           }
-        });
 
-      } else {
-        document.querySelector("#elie-restou").style.display = "block"
-        document.querySelector("#elie-restou").innerHTML = "<div class='container text-center'>Aucun golf qui correspond au recherche de " + document.querySelector("#golf-rech").value + "</div>"
-      }
-    })
+          document.querySelector("#elie-restou").innerHTML =
+            head_table + body_table + foot_table;
 
-    $("#modalForExtension").modal("show")
+          // new DataTable('#resto-a-pastiller-list');
+          $("#resto-a-pastiller-list").DataTable({
+            language: {
+              url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+            },
+          });
+        } else {
+          document.querySelector("#elie-restou").style.display = "block";
+          document.querySelector("#elie-restou").innerHTML =
+            "<div class='container text-center'>Aucun golf qui correspond au recherche de " +
+            document.querySelector("#golf-rech").value +
+            "</div>";
+        }
+      });
+
+    $("#modalForExtension").modal("show");
   } else {
-
     swal({
       // title: "Succès",
       text: "Champ invalide!",
       icon: "error",
       button: "Ok",
     });
-
   }
-
 }
 
 /**
-* @author tomm
-* @constructor : fonction du gallery trier par tags et date
-* @localisation : myTribuT.js,
-* @utilisation dans le myTribuT.js
-*/
+ * @author tomm
+ * @constructor : fonction du gallery trier par tags et date
+ * @localisation : myTribuT.js,
+ * @utilisation dans le myTribuT.js
+ */
 function galleryAll() {
-
-  let photosContainer = document.querySelector("#tribu_t_conteuneur")
+  let photosContainer = document.querySelector("#tribu_t_conteuneur");
 
   photosContainer.innerHTML = `<div class="mt-3 d-flex justify-content-center">
             <div class="spinner-border" role="status">
@@ -6766,16 +6944,20 @@ function galleryAll() {
             </div>
         </div>`;
 
-  const requete = new Request("/user/tribu/photos/" + tribu_t_name_0 + "_publication", {
-    method: "GET",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+  const request = new Request(
+    "/user/tribu/photos/" + tribu_t_name_0 + "_publication",
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
     }
-  })
-  fetch(requete).then(rqt => rqt.json()).then(data => {
-    console.log(data);
-    photosContainer.innerHTML = `
+  );
+  fetch(request)
+    .then((rqt) => rqt.json())
+    .then((data) => {
+      photosContainer.innerHTML = `
                 <div class="intro">
                     <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
                         Photo télechargé avec succès!
@@ -6784,50 +6966,166 @@ function galleryAll() {
                     
                 </div>`;
 
-    if (data.length > 0) {
-      let li_img_pub = ''
-      let li_img_agenda = ''
+      if (data.length > 0) {
+        let li_img_pub = "";
+        let li_img_agenda = "";
+        let li_img_imp = ""
+        let title = "";
+        // let dateFusion = ''
+        console.log(data);
+        let count = 0;
+        for (let photos of data) {
+          let globalPhoto = [];
+          const map1 = new Map();
+          let lastDateFussion = "";
+          title = "";
+          for (let photo of photos) {
+            let img_src = photo.photo; //replaceAll("/public","");
+            let cheminFichier = img_src;
+            let date = photo.createdAt.split(" ");
+            let dateFusion = date[0]; //new date fusison
+            let isPhotoSplit = "";
+            if (cheminFichier == null) {
+              isPhotoSplit = "";
+            } else {
+              isPhotoSplit = cheminFichier.split("/");
+              if (isPhotoSplit[4] == "photo") {
+                //TODO date for key and path array as value
 
-      for (let photo of data) {
-       
-        let img_src = photo.photo; //replaceAll("/public","");
-        let img_date = photo.dateCreate
-        let cheminFichier = img_src;
+                if (globalPhoto.length < 0) {
+                  map1.set(dateFusion, [img_src]);
+                } else {
+                  if (dateFusion == lastDateFussion) {
+                    //todo update object
 
-        let isPhotoSplit = cheminFichier.split('/');
+                    let value = map1.get(dateFusion);
+                    value.push(img_src);
+                    map1.set(dateFusion, value);
+                    // globalPhoto.push(object)
+                  } else {
+                    //todo add
+                    map1.set(dateFusion, [img_src]);
+                  }
+                }
 
-        console.log(img_date);
-        
-        if (isPhotoSplit[4] == 'photo') {
-          if (img_date) {
-            li_img_pub += `
-                <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
-                    <img
-                    src="${img_src}"
-                    class="w-100 shadow-1-strong  mb-4"
-                    alt="Boat on Calm Water"
-                    />
-                </div>
-                `
+                lastDateFussion = dateFusion;
+              } else if (isPhotoSplit[4] == "photos") {
+                if (photo.photoSplit[3] == "tribu_t") {
+                  //TODO date for key and path array as value
+
+                  if (globalPhoto.length < 0) {
+                    map1.set(dateFusion, [img_src]);
+                  } else {
+                    if (dateFusion == lastDateFussion) {
+                      //todo update object
+
+                      let value = map1.get(dateFusion);
+                      value.push(img_src);
+                      map1.set(dateFusion, value);
+                      // globalPhoto.push(object)
+                    } else {
+                      //todo add
+                      map1.set(dateFusion, [img_src]);
+                    }
+                  }
+
+                  lastDateFussion = dateFusion;
+                }
+              } else if (isPhotoSplit[4] == "photo_imp") {
+                //TODO date for key and path array as value
+
+                if (globalPhoto.length < 0) {
+                  map1.set(dateFusion, [img_src]);
+                } else {
+                  if (dateFusion == lastDateFussion) {
+                    //todo update object
+
+                    let value = map1.get(dateFusion);
+                    value.push(img_src);
+                    map1.set(dateFusion, value);
+                    // globalPhoto.push(object)
+                  } else {
+                    //todo add
+                    map1.set(dateFusion, [img_src]);
+                  }
+                }
+
+                lastDateFussion = dateFusion;
+              }
+            }
           }
-          
-        } else if (isPhotoSplit[4] == 'photos') {
-          if (img_date) {
-            li_img_agenda += `
-                  <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
-                      <img
-                      src="${img_src}"
-                      class="w-100 shadow-1-strong  mb-4"
-                      alt="Boat on Calm Water"
-                      />
-                  </div>
-                  `
+          globalPhoto.push(map1);
+          if (count == 0) {
+            //if gallery publication
+            for (let photo of globalPhoto) {
+              const iterator1 = photo[Symbol.iterator]();
+              for (const item of iterator1) {
+                title = item[0];
+                const datas = item[1];
+                li_img_pub += `<h6>${title}</h6>`;
+                for (let data of datas) {
+                  li_img_pub += `
+                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                        <img
+                        src="${data}"
+                        class="w-100 shadow-1-strong  mb-4"
+                        alt="Boat on Calm Water"
+                        />
+                    </div>
+                    `;
+                }
+              }
+            }
+          } else if (count == 1) {
+            //if gallery agenda
+            for (let photo of globalPhoto) {
+              const iterator1 = photo[Symbol.iterator]();
+              for (const item of iterator1) {
+                title = item[0];
+                const datas = item[1];
+                li_img_agenda += `<h6>${title}</h6>`;
+                for (let data of datas) {
+                  li_img_agenda += `
+                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                        <img
+                        src="${data}"
+                        class="w-100 shadow-1-strong  mb-4"
+                        alt="Boat on Calm Water"
+                        />
+                    </div>
+                    `;
+                }
+              }
+            }
+          } else if (count == 2) {
+            console.log(globalPhoto)
+            //if gallery import
+            for (let photo of globalPhoto) {
+              const iterator1 = photo[Symbol.iterator]();
+              for (const item of iterator1) {
+                title = item[0];
+                const datas = item[1];
+                li_img_imp += `<h6>${title}</h6>`;
+                for (let data of datas) {
+                  li_img_imp += `
+                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                        <img
+                        src="${data}"
+                        class="w-100 shadow-1-strong  mb-4"
+                        alt="Boat on Calm Water"
+                        />
+                    </div>
+                    `;
+                }
+              }
+            }
           }
+          count++;
         }
-        
-      }
-      setGallerie(document.querySelectorAll(".img_gal"))
-      photosContainer.innerHTML += `<div class="gallery-container">
+        //console.log(globalPhoto)
+
+        setGallerie(document.querySelectorAll(".img_gal"));
+        photosContainer.innerHTML += `<div class="gallery-container">
                   <div>
                       <span class="h2">Vos photo</span> 
                       <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
@@ -6838,24 +7136,80 @@ function galleryAll() {
                   </div>
                   <div id="gallery">
                     <div class="content-publication">
-                      <h5 class="mb-3">Publication</h5>
-                      <div class="row">
+                      <h5 class="mb-3">Publication <i class="fa-solid fa-minus  affiche-photo-pud-t-tomm-js"></i></h5>
+                      
+                      <div class="row photo-pud-t-tomm-js">
                         ${li_img_pub} 
                       </div>
                     </div>
                     <div class="content-agenda">
-                      <div class="row">
-                        <h5 class="mb-3">Agenda</h5>
+                        <h5 class="mb-3">Agenda <i class="fa-solid fa-minus  affiche-photo-agenda-t-tomm-js"></i></h5>
+                      
+                      <div class="row photo-agenda-t-tomm-js">
                         ${li_img_agenda} 
                       </div>
                     </div>
+                    <div class="content-agenda">
+                      <h5 class="mb-3">Téléchargement <i class="fa-solid fa-minus  affiche-photo-imp-t-tomm-js"></i></h5>
+                      
+                      <div class="row photo-imp-t-tomm-js">
+                        ${li_img_imp} 
+                      </div>
+                    </div>
                   </div>
-                </div>`
+                </div>`;
 
-      setGallerie(document.querySelectorAll("#gallery img"))
+        setGallerie(document.querySelectorAll("#gallery img"));
 
-    } else {
-      photosContainer.innerHTML += `<div class="gallery-container"><div>
+        if (document.querySelector(".affiche-photo-pud-t-tomm-js")) {
+          document
+            .querySelector(".affiche-photo-pud-t-tomm-js")
+            .addEventListener("click", () => {
+              document
+                .querySelector(".photo-pud-t-tomm-js")
+                .classList.toggle("d-none");
+              document
+                .querySelector(".affiche-photo-pud-t-tomm-js")
+                .classList.toggle("fa-plus");
+              document
+                .querySelector(".affiche-photo-pud-t-tomm-js")
+                .classList.toggle("fa-minus");
+            });
+        }
+
+        if (document.querySelector(".affiche-photo-agenda-t-tomm-js")) {
+          document
+            .querySelector(".affiche-photo-agenda-t-tomm-js")
+            .addEventListener("click", () => {
+              document
+                .querySelector(".photo-agenda-t-tomm-js")
+                .classList.toggle("d-none");
+              document
+                .querySelector(".affiche-photo-agenda-t-tomm-js")
+                .classList.toggle("fa-plus");
+              document
+                .querySelector(".affiche-photo-agenda-t-tomm-js")
+                .classList.toggle("fa-minus");
+            });
+        }
+
+         if (document.querySelector(".affiche-photo-imp-t-tomm-js")) {
+          document
+            .querySelector(".affiche-photo-imp-t-tomm-js")
+            .addEventListener("click", () => {
+              document
+                .querySelector(".photo-imp-t-tomm-js")
+                .classList.toggle("d-none");
+              document
+                .querySelector(".affiche-photo-imp-t-tomm-js")
+                .classList.toggle("fa-plus");
+              document
+                .querySelector(".affiche-photo-imp-t-tomm-js")
+                .classList.toggle("fa-minus");
+            });
+        }
+      } else {
+        photosContainer.innerHTML += `<div class="gallery-container"><div>
                     <span class="h2">Vos photo</span> 
                     <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
                         <i class="bi bi-camera-fill"></i> Importer
@@ -6864,7 +7218,6 @@ function galleryAll() {
                     </label>
                 </div>
                 <div id="gallery">Aucune photo</div></div>`;
-    }
-
-  });
+      }
+    });
 }

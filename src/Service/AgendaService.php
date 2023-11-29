@@ -569,6 +569,24 @@ class AgendaService extends PDOConnexionService
         
         return $agenda ;
     }
+    /**
+     * @author Tomm
+     * 
+     * @param string $table_agenda : name of the table agenda
+     * 
+     * @return array 
+     */
+    public function getOneAgendaPhoto($table_agenda)
+    {
+        $results = [];
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_agenda ");
+        $statement->execute();
+
+        $agenda = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $agenda;
+    }
 
 
 
@@ -596,6 +614,7 @@ class AgendaService extends PDOConnexionService
 
             array_push($results,$single_agenda);
         }
+        dd($results);
         return $results ;
     }
 
@@ -626,7 +645,8 @@ class AgendaService extends PDOConnexionService
             "`isGolfCMZ` tinyint(1) DEFAULT 0,".
             "`isRestoCMZ` tinyint(1) DEFAULT 0," .
             "`isVisioCMZ` tinyint(1) DEFAULT 0," .
-            "`user_id` int(11) DEFAULT NULL".
+            "`user_id` int(11) DEFAULT NULL,".
+            " `datetime` timestamp NOT NULL DEFAULT current_timestamp(),".
             " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
@@ -925,7 +945,6 @@ class AgendaService extends PDOConnexionService
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
         $tab_agenda=  $stmt->fetch(PDO::FETCH_ASSOC);
-
         return $tab_agenda;
     }
 

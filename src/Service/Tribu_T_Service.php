@@ -156,6 +156,7 @@ class Tribu_T_Service extends PDOConnexionService
 
 
                     $this->getPDO()->exec($sql);
+                        
 
 
 
@@ -257,7 +258,27 @@ class Tribu_T_Service extends PDOConnexionService
 
                       ) ENGINE=InnoDB";
 
-                    
+
+                    $sql = " CREATE TABLE " . $output . "_imp_img(
+
+                        `id` int(11) NOT NULL AUTO_INCREMENT,
+
+                        `user_id` int(11) NOT NULL,
+
+                        `path` varchar(255) NOT NULL ,
+
+                        `datetime` datetime NOT NULL DEFAULT current_timestamp(),
+
+                        PRIMARY KEY (`id`),
+
+                        FOREIGN KEY (`user_id`) REFERENCES `user` (`id`)
+
+                        ON DELETE CASCADE 
+
+                        ON UPDATE CASCADE
+
+                      ) ENGINE=InnoDB";
+
 
                     // $this->getPDO()->exec($sql);
                 }
@@ -1902,6 +1923,25 @@ class Tribu_T_Service extends PDOConnexionService
         return $publications;
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Get all publications in this table (brutes: entity).
+     * 
+     * @param string $table_name: name of the table
+     */
+    public function getAllPublicationBrutesPhoto($table_name)
+    {
+
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" . " ORDER BY datetime DESC LIMIT 6;");
+
+        $statement->execute();
+
+        $publications = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
+
+        return $publications;
+    }
+
 
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
@@ -1983,6 +2023,77 @@ class Tribu_T_Service extends PDOConnexionService
 
         return $resultats; 
     }
+
+    /**
+     * @author Tomm
+     * 
+     * Get all publications in this table.
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return array [[associative]]: [ 
+     *                              [ 
+     *                                "userOwnPub" => [ id => ..., profil => ..., fullName => ... ], 
+     *                                "publication" => [ id => ..., description => ..., image => ..., createdAt => ..., comments => ..., reactions => ... ], 
+     *                                "tribu" => [ type => ..., name => ..., description => ...,avatar => ... ],
+     *                              ],
+     *                              ...
+     *                            ]
+     */
+    public function getAllPublicationsPhotoUpdate($table_name)
+    {
+        $resultats = [];
+
+
+
+        $publications = $this->getAllPublicationBrutesPhoto($table_name); // [...publications]
+
+
+        if (count($publications) > 0) {
+            foreach ($publications as $d_pub) {
+
+                $publication_user_id = $d_pub["user_id"];
+
+                $statement_photos = $this->getPDO()->prepare("SELECT photo_profil FROM (SELECT photo_profil, user_id FROM consumer union SELECT photo_profil, user_id FROM supplier) as tab WHERE tab.user_id = $publication_user_id");
+                $statement_photos->execute();
+                $data = [
+                    "publication" => [
+                        "image" => $d_pub['photo'],
+                        "createdAt" => $d_pub["datetime"]
+                    ]
+                ];
+
+                array_push($resultats, $data);
+            }
+        }
+
+        return $resultats;
+    }
+
+    /**
+     * @author Tomm
+     * @param Creation image import dans tribu t
+     * @ultimately tributControllert
+     */
+    public function createImportPhotoGalery($table_name, $userId, $file_path, $datetime){
+        $sql = "INSERT INTO ". $table_name . "( user_id, path, datetime) VALUES (:user_id,:path,:datetime)";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->bindParam(':user_id', $userId, PDO::PARAM_STR);
+        $statement->bindParam(':path', $file_path, PDO::PARAM_STR);
+        $statement->bindParam(':datetime', $datetime, PDO::PARAM_STR);
+        $statement->execute();
+    }
+
+    public function getImportPhotoGalery($table_name){
+        $sql = "SELECT path , datetime FROM ". $table_name;
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+
 
     /**
      * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>

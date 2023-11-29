@@ -1840,17 +1840,19 @@ function loadFile(event) {
 
 
     const fileReader = new FileReader();
-    fileReader.onload = () => {
+    fileReader.onload = (event) => {
         const srcData = fileReader.result;
-
+        const extensionFile=(srcData.split(";")[0]).split("/")[1]
+        console.log(event)
+        console.log(extensionFile)
         ///public/uploads/tribu_t/photo/tribu_t_1_banane_publication/photo.jpg
         let data = {
-            publication: "",
-            image: srcData,
+            extensionFile: extensionFile,
+            base64: srcData,
             confidentiality: 1
         }
 
-        fetch(new Request("/user/tribu/add_photo/" + tribu_t_name_0 + "_publication", {
+        fetch(new Request("/user/tribu/add_img/" + tribu_t_name_0 + "_imp_img", {
             method: "POST",
             headers: {
                 'Accept': 'application/json',

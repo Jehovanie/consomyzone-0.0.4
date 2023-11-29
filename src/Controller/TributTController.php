@@ -40,6 +40,7 @@ use App\Service\StringTraitementService;
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Repository\DepartementRepository;
+use App\Service\SortResultService;
 
 use function PHPUnit\Framework\assertFalse;
 
@@ -1489,29 +1490,51 @@ class TributTController extends AbstractController
 
 
     #[Route('/user/tribu/photos/{table}', name: 'show_all_photos')]
-    public function showAllphotosTribut($table): Response
+    public function showAllphotosTribut(
+        $table, 
+        Tribu_T_Service $tribuTService,
+        AgendaService $agendaService,
+        SortResultService $sortResultService
+        ): Response
     {
         // $tribu_t = new Tribu_T_Service();
         // $photos = $tribu_t->showAllphotosTribut($table);
         // return $this->json($photos);
-        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photos/" . str_replace("_publication", "", $table) . "/";
-        $folder2 = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_t/photo/" . $table . "/";
-        $filemtime = file_exists($folder) ? filemtime($folder) : idate("t");
-        $filemtime2 =  file_exists($folder2) ? filemtime($folder2) : idate("t");
-        $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
-        $images2 = glob($folder2 . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
-        $tabPhoto = [];
-        foreach ($images2 as $image) {
-            $photo = explode("uploads/tribu_t", $image)[1];
-            $photo = "/public/uploads/tribu_t" . $photo;
-            array_push($tabPhoto, ["photo" => $photo, "dateCreate" => date("F d Y H:i:s.", $filemtime)]);
+        
+        $pulication = $tribuTService->getAllPublicationsPhotoUpdate($table);
+
+        $photoDatePub = [];
+        for($i = 0; $i < count($pulication) ; $i++) {
+            array_push($photoDatePub, [
+                "photo" => $pulication[$i]["publication"]["image"],
+                "createdAt" => $pulication[$i]["publication"]["createdAt"]
+            ]);
         }
-        foreach ($images as $image) {
-            $photo = explode("uploads/tribu_t", $image)[1];
-            $photo = "/public/uploads/tribu_t" . $photo;
-            array_push($tabPhoto, ["photo" => $photo, "dateCreate" => date("F d Y H:i:s.", $filemtime2)]);
+        $user = $this->getUser();
+        $table_agenda = $user->getNomTableAgenda();
+        $agendas = $agendaService->getOneAgendaPhoto($table_agenda);
+        $photoAgenda = [];
+        for($a = 0; $a < count($agendas); $a++){
+            array_push($photoAgenda, [
+                "photo" => $agendas[$a]["file_path"],
+                "photoSplit" =>  explode('/', $agendas[$a]["file_path"]),
+                "createdAt" => $agendas[$a]["datetime"]
+            ]);
         }
-        return $this->json($tabPhoto);
+        $photoDatePub = (count($photoDatePub) > 0) ? $sortResultService->sortTapByKey($photoDatePub, "createdAt") : $photoDatePub;
+        // dd($photoDatePub);
+
+        $importData = $tribuTService->getImportPhotoGalery($table);
+        $importPhoto = [];
+        for($a = 0; $a < count($importData); $a++){
+            array_push($importPhoto, [
+                "photo" => $importData[$a]["file_path"],
+                "createdAt" => $importData[$a]["datetime"]
+            ]);
+        }
+
+        
+        return $this->json([$photoDatePub, $photoAgenda, $importPhoto]);
     }
 
     #[Route('/user/tribu/restos-pastilles/{table_resto}', name: 'show_restos_pastilles')]
@@ -2549,6 +2572,33 @@ class TributTController extends AbstractController
         }
 
         return $this->json("Photo ajouté avec succès");
+    }
+
+    #[Route('/user/tribu/add_img/{table}', name: 'img_tribu_t_import')]
+    public function addImageImport(
+        $table, 
+        Request $request, 
+        Tribu_T_Service $tribuTService,
+        Filesystem $filesyst
+    ){
+        
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $jsonParsed = json_decode($request->getContent(), true);
+        $confid = $jsonParsed["confidentiality"];
+        $image = $jsonParsed["base64"];
+        $extension= $jsonParsed["extensionFile"];
+        $imageName = time() . "_imp_". uniqid(). "." .$extension;
+        $datetime = new \DateTime();
+        $datetime = $datetime->format('Y-m-d H:i:s');
+        $path = '/public/uploads/tribu_t/photo_imp/' .  $table . "/";
+        if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+            $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+        $fileUtils = new FilesUtils();
+        
+        $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
+        $result = $tribuTService->createImportPhotoGalery($table, $userId , str_replace('/public',"",$path), $datetime);
+         return $this->json(["ok" => true]);
     }
 
 
