@@ -866,7 +866,7 @@ class FermeGeomRepository extends ServiceEntityRepository
     }
 
     
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy, $taille= 200){
 
         $query =  $this->createQueryBuilder("r")
                     ->select(
@@ -880,7 +880,6 @@ class FermeGeomRepository extends ServiceEntityRepository
                         'r.departement as dep',
                         'r.departementName',
                         'r.departementName as depName',
-                        'r.produitFerme',
                         'r.email',
                         'r.engagementProd',
                         'r.fax',
@@ -922,12 +921,60 @@ class FermeGeomRepository extends ServiceEntityRepository
                     ->setParameter("maxx", floatval($maxy))
                     ->setParameter("miny", floatval($minx))
                     ->setParameter("maxy", floatval($maxx))
-                    ->setMaxResults(200)
+                    ->setMaxResults($taille)
                     ->orderBy('RAND()')
                     ->getQuery();
 
 
             return $query->getResult();;
+    }
+
+
+    public function getOneItemByID($id){
+        return $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.nomFerme',
+                        'r.nomFerme as nameFilter',
+                        'r.adresseFerme',
+                        'r.departement',
+                        'r.departementName',
+                        'r.produitFerme',
+                        'r.email',
+                        'r.engagementProd',
+                        'r.fax',
+                        'r.genre',
+                        'r.horairesVenteAFerme',
+                        'r.horairesVenteMagasinProd',
+                        'r.horairesVenteAuMarche',
+                        'r.accesHandicape',
+                        'r.accesHandicapAuditif',
+                        'r.accesHandicapMental',
+                        'r.accesHandicapMotrice',
+                        'r.accesHandicapVisuel',
+                        'r.accesVoiture',
+                        'r.adherentAdeve',
+                        'r.agricultureBio',
+                        'r.animauxAutoriser',
+                        'r.atelier',
+                        'r.carteBancaire',
+                        'r.chequeVacance',
+                        'r.degustation',
+                        'r.marcherProduit',
+                        'r.motDuFermier',
+                        'r.produitFerme',
+                        'r.produitFerme as ferme',
+                        'r.codePostal',
+                        'r.nomProprietaire',
+                        'r.motDuFermier',
+                        'r.ville',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
+                    ->where("r.id =:id")
+                    ->setParameter("id", $id)
+                    ->getQuery()
+                    ->getOneOrNullResult();
     }
 
     //    /**

@@ -1,5 +1,8 @@
 function getDetailFromListLeft(type, depart_name, depart_code, id) { 
-    OBJECT_MARKERS_SEARCH.clickOnMarker(id)
+    
+    if( OBJECT_MARKERS_SEARCH.checkIsExist(id, type)){
+        OBJECT_MARKERS_SEARCH.clickOnMarker(id, type)
+    }
 
     if (type === "resto") {
         getRestoSpecSearchMobile(depart_name, depart_code, id)

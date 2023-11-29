@@ -1,4 +1,4 @@
-const IS_DEV_MODE=false;
+const IS_DEV_MODE=true;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -756,8 +756,8 @@ function initCKEditor(idElement,callback){
                     '-',
                     'fontSize', 'fontFamily', 'fontColor', 'fontBackgroundColor', 'highlight', '|',
                     'alignment', '|',
-                    'link', 'blockQuote','|',
-                     'horizontalLine', 'pageBreak', '|',
+                    'link', 'blockQuote', '|',
+                    'horizontalLine', 'pageBreak', '|',
                     'textPartLanguage',
                 ],
                 shouldNotGroupWhenFull: true
@@ -786,6 +786,7 @@ function initCKEditor(idElement,callback){
             // https://ckeditor.com/docs/ckeditor5/latest/features/editor-placeholder.html#using-the-editor-configuration
             placeholder: 'Ecrivez içi votre message!',
             // https://ckeditor.com/docs/ckeditor5/latest/features/font.html#configuring-the-font-family-feature
+
             fontFamily: {
                 options: [
                     'default',
@@ -826,6 +827,15 @@ function initCKEditor(idElement,callback){
             link: {
                 decorators: {
                     addTargetToExternalLinks: true,
+                    openInNewTab: {
+                        mode: 'manual',
+                        label: 'Open in a new tab',
+                        defaultValue: true,			// This option will be selected by default.
+                        attributes: {
+                            target: '_blank',
+                            rel: 'noopener noreferrer'
+                        }
+                    },
                     defaultProtocol: 'https://',
                     toggleDownloadable: {
                         mode: 'manual',
@@ -889,8 +899,11 @@ function initCKEditor(idElement,callback){
             ]
         }).then( newEditor => {
             editor=newEditor
-            let html=callback()
-            editor.setData(html)
+
+            let html=callback();
+            editor.setData(html);
+
+            // console.log(editor)
         });
     }
     
@@ -952,6 +965,7 @@ function showModalEditor(isG, isListeInfile=false){
     <p id="free_place" > 
     Faites vite, car il ne reste plus que <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);"> ${agenda.place_libre} </span> place(s)</p>
     <img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js">
+    <p class="content_link content_link_jheo_js"></p>
     <p>Cordialement</p>
     <span id="fullnameCanEdit" contenteditable="true" style="background-color:cyan">
            ${fullname} 
@@ -1165,7 +1179,8 @@ function showPartenairAsk(){
 
 function showReponsePartenaire(){
     // let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
-const nameTribuT=document.querySelector("#tribu_t_name_main_head").textContent
+    const nameTribuT=document.querySelector("#tribu_t_name_main_head").textContent;
+
     return html=`
         <span>Madame, Monsieur,</span></br>
 

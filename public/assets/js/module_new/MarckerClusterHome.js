@@ -7,6 +7,19 @@ class MarckerClusterHome extends MapModule  {
         if( document.querySelector("#open-navleft")){
             document.querySelector("#open-navleft").parentElement.removeChild(document.querySelector("#open-navleft"));
         }
+
+        ///override because for each rubric
+        this.objectRatioAndDataMax= [
+            { zoomMin: 18, dataMax: 3, ratio: 3 },
+            { zoomMin: 16, dataMax: 2, ratio: 3 },
+            { zoomMin: 14, dataMax: 2, ratio: 3 },
+            { zoomMin: 13, dataMax: 2, ratio: 2 },
+            { zoomMin:  9, dataMax: 1, ratio: 2 },
+            { zoomMin:  6, dataMax: 1, ratio: 1 },
+            { zoomMin:  4, dataMax: 1, ratio: 0 },
+            { zoomMin:  1, dataMax: 1, ratio: 0 }
+        ];
+
     }
 
     async onInit(isAddControl=false) {
@@ -40,20 +53,20 @@ class MarckerClusterHome extends MapModule  {
     }
 
     getGeos() {
-        this.geos = [];
-        if (this.id_dep) {
-            if (this.id_dep === 20) {
-                for (let corse of ['2A', '2B']) {
-                    this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
-                }
-            } else {
-                this.geos.push(franceGeo.features.find(element => element.properties.code === this.id_dep))
-            }
-        } else {
-            for (let f of franceGeo.features) {
-                this.geos.push(f)
-            }
-        }
+        // this.geos = [];
+        // if (this.id_dep) {
+        //     if (this.id_dep === 20) {
+        //         for (let corse of ['2A', '2B']) {
+        //             this.geos.push(franceGeo.features.find(element => element.properties.code == corse))
+        //         }
+        //     } else {
+        //         this.geos.push(franceGeo.features.find(element => element.properties.code === this.id_dep))
+        //     }
+        // } else {
+        //     for (let f of franceGeo.features) {
+        //         this.geos.push(f)
+        //     }
+        // }
     }
 
     displayData() {
@@ -63,50 +76,78 @@ class MarckerClusterHome extends MapModule  {
     }
 
     createMarkersCluster() {
-        const that = this;
-        const temp= 200;
-        this.markers = L.markerClusterGroup({
+        this.markers = L.markerClusterGroup({ 
             chunkedLoading: true,
-            chunkInterval: temp * 5,
-            chunkDelay: temp,
-            removeOutsideVisibleBounds: true,
-            iconCreateFunction: function (cluster) {
-                if(that.marker_last_selected){
-                    let sepcMarmerIsExist = false;
-                    for (let g of  cluster.getAllChildMarkers()){
-                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
-                            if(that.marker_last_selected.options.hasOwnProperty('type')){
-                                if( that.marker_last_selected.options.type === g.options.type ){
-                                    sepcMarmerIsExist = true;
-                                }
-                            }else{
-                                sepcMarmerIsExist = true;
-                            }
-                            break;
-                        }
-                    }
-                    if(sepcMarmerIsExist){
-                        return L.divIcon({
-                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
-                            className: "spec_cluster",
-                            iconSize:L.point(35,35)
-                        });
-                    }else{
-                        return L.divIcon({
-                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                            className: "mycluster",
-                            iconSize:L.point(35,35)
-                        });
-                    }
-                }else{
-                    return L.divIcon({
-                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                        className: "mycluster",
-                        iconSize:L.point(35,35)
-                    });
-                }
-            },
+            animate: true,
+            animateAddingMarkers:true,
+            chunkedLoading: true,
+            spiderfyOnEveryZoom: true,
+            disableClusteringAtZoom: true,
+            // iconCreateFunction: function (cluster) {
+                // console.log(cluster.getAllChildMarkers())
+
+                // var pointA = new L.LatLng(28.635308, 77.22496);
+                // var pointB = new L.LatLng(28.984461, 77.70641);
+                // var pointList = [pointA, pointB];
+
+                // return L.polyline(pointList, {
+                //     color: 'red',
+                //     weight: 3,
+                //     opacity: 0.5,
+                //     smoothFactor: 1
+                // });
+                // return L.divIcon({
+                //     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                //     className: "mycluster",
+                //     iconSize:L.point(35,35)
+                // });
+            // },
         });
+
+        // const that = this;
+        // const temp= 200;
+        // this.markers = L.markerClusterGroup({
+        //     chunkedLoading: true,
+        //     chunkInterval: temp * 5,
+        //     chunkDelay: temp,
+        //     removeOutsideVisibleBounds: true,
+        //     iconCreateFunction: function (cluster) {
+        //         if(that.marker_last_selected){
+        //             let sepcMarmerIsExist = false;
+        //             for (let g of  cluster.getAllChildMarkers()){
+        //                 if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+        //                     if(that.marker_last_selected.options.hasOwnProperty('type')){
+        //                         if( that.marker_last_selected.options.type === g.options.type ){
+        //                             sepcMarmerIsExist = true;
+        //                         }
+        //                     }else{
+        //                         sepcMarmerIsExist = true;
+        //                     }
+        //                     break;
+        //                 }
+        //             }
+        //             if(sepcMarmerIsExist){
+        //                 return L.divIcon({
+        //                     html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+        //                     className: "spec_cluster",
+        //                     iconSize:L.point(35,35)
+        //                 });
+        //             }else{
+        //                 return L.divIcon({
+        //                     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+        //                     className: "mycluster",
+        //                     iconSize:L.point(35,35)
+        //                 });
+        //             }
+        //         }else{
+        //             return L.divIcon({
+        //                 html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+        //                 className: "mycluster",
+        //                 iconSize:L.point(35,35)
+        //             });
+        //         }
+        //     },
+        // });
     }
 
     addMarker(newData) {
@@ -138,75 +179,265 @@ class MarckerClusterHome extends MapModule  {
             }
 
             this.map.addLayer(this.markers);
+
+            ////count marker in map
+            this.countMarkerInCart()
         } else {
             console.log("ERREUR : L'erreur se produit par votre réseaux.")
         }
     }
 
     addStation(dataStation) {
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
 
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+        
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+        
         dataStation.forEach(item => {
-            this.settingSingleMarkerStation(item)
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
     }
 
     addFerme(dataFerme) {
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
         dataFerme.forEach(item => {
-            this.settingSingleMarkerFerme(item)
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
     }
 
     addResto(dataResto) {
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
         dataResto.forEach(item => {
-            this.settingSingleMarkerResto(item);
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
     }
 
     addGolf(dataGolf){
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
+
         dataGolf.forEach(item => {
-            this.settingSingleMarkerGolf(item)
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
     }
 
     addTabac(dataTabac){
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+        
         dataTabac.forEach(item => {
-            this.settingSingleMarkerTabac(item);
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
     }
 
 
-    settingSingleMarkerStation(item) {
+    getIcon(item, isSelected= false){
+        let icon_path= "";
+        let icon_size= isSelected ? 2: 0;
 
+        if( item.ferme !== undefined ){
+            icon_path= isSelected ? "assets/icon/NewIcons/icon-ferme-new-R.png" : "assets/icon/NewIcons/icon-ferme-new-B.png";
+
+        }else if( item.station !== undefined ){
+            icon_path= isSelected ? "assets/icon/NewIcons/icon-station-new-R.png" : "assets/icon/NewIcons/icon-station-new-B.png";
+
+        }else if( item.resto !== undefined ){
+            let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(item.id)) : [];
+            
+            let poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
+            let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
+            
+            icon_path= isSelected ? poi_icon_Selected : poi_icon;
+        }else if (item.golf !== undefined){
+            if( item.user_status.a_faire === null &&  item.user_status.fait === null && item.user_status.mon_golf === null && item.user_status.refaire === null ){
+                icon_path= isSelected ? "assets/icon/NewIcons/icon-rouge-golf-C.png" : "assets/icon/NewIcons/icon-blanc-golf-vertC.png";
+                icon_size= isSelected ? 2 : 0;
+            }else{
+                if( !!item.user_status.a_faire === true ){
+                    icon_path= isSelected ? "assets/icon/NewIcons/icon-vert-golf-orange.png" : "assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png";
+                }else if( !!item.user_status.fait === true ){
+                    icon_path= isSelected ? "assets/icon/NewIcons/icon-vert-golf-bleu.png" : "assets/icon/NewIcons/icon-blanc-golf-vert-bC.png";
+                }else if( !!item.user_status.mon_golf === true ){
+                    icon_path= isSelected ? "assets/icon/NewIcons/mon_golf_select.png" : "assets/icon/NewIcons/mon_golf.png";
+                } else if( !!item.user_status.refaire === true ){
+                    icon_path= isSelected ? "assets/icon/NewIcons/icon-vert-golf-refaire.png" : "assets/icon/NewIcons/icon-blanc-golf-refaire.png";
+                }else{
+                    icon_path= isSelected ? "assets/icon/NewIcons/icon-rouge-golf-C.png" : "assets/icon/NewIcons/icon-blanc-golf-vertC.png";
+                }
+                icon_size= isSelected ? 3 : 2;
+            }
+
+        }else if( item.tabac !== undefined){
+            icon_path= isSelected ? "assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
+        }
+
+        return { 'path': icon_path, 'size': icon_size };
+    }
+
+    settingSingleMarker(item, isSelected= false ){
+        if( item.ferme !== undefined ){
+            this.settingSingleMarkerFerme(item, isSelected)
+
+        }else if( item.station !== undefined ){
+            this.settingSingleMarkerStation(item, isSelected)
+
+        }else if( item.resto !== undefined ){
+            this.settingSingleMarkerResto(item, isSelected);
+
+        }else if (item.golf !== undefined){
+            this.settingSingleMarkerGolf(item, isSelected);
+
+        }else if( item.tabac !== undefined){
+            this.settingSingleMarkerTabac(item, isSelected);
+        }
+    }
+
+    settingSingleMarkerStation(item, isSelected= false) {
+        const zoom = this.map._zoom;
+        const icon = this.getIcon(item, isSelected);
+
+        var marker = L.marker(
+            L.latLng(parseFloat(item.lat), parseFloat(item.long)), 
+            { 
+                // icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png"),
+                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                id: item.id, 
+                type: "station" 
+            }
+        );
+        
         const miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-        var marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png") , id: item.id, type: "station" });
-
         marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
         
         this.handleClickStation(marker, item)
         this.markers.addLayer(marker);
     }
 
-    handleClickStation(stationMarker,dataStation){
+    handleClickStation(stationMarker, dataStation){
             
         stationMarker.on('click', (e) => {
             ////close right if this open
             this.closeRightSide();
 
-
             this.updateCenter( parseFloat(dataStation.lat ), parseFloat(dataStation.long ), this.zoomDetails);
             
-            const icon_R = L.Icon.extend({
-                options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
-                    iconSize: [32,50],
-                    iconAnchor: [11, 30],
-                    popupAnchor: [0, -20],
-                    shadowSize: [68, 95],
-                    shadowAnchor: [22, 94]
-                }
-            })
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(dataStation, true );
 
-            stationMarker.setIcon(new icon_R);
+            stationMarker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+
             this.updateLastMarkerSelected(stationMarker, "station");
             
             if (screen.width < 991) {
@@ -219,12 +450,22 @@ class MarckerClusterHome extends MapModule  {
 
     }
 
-    settingSingleMarkerFerme(item) {
-      
+    settingSingleMarkerFerme(item, isSelected= false) {
+        const zoom = this.map._zoom;
+        const icon = this.getIcon(item, isSelected);
+
+        const marker = L.marker(
+            L.latLng(parseFloat(item.lat), parseFloat(item.long)), 
+            { 
+                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                id: item.id, 
+                type: "ferme" 
+            }
+        );
+
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.adresseFerme;
         const title = "<span class='fw-bolder'>Ferme: </span>" + item.nomFerme + ".<span class='fw-bolder'> <br> Departement:</span>" + item.departement + "." + adress;
 
-        const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-ferme-new-B.png') , id: item.id, type: "ferme" });
         marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
         this.handleClickFerme(marker, item);
@@ -240,17 +481,12 @@ class MarckerClusterHome extends MapModule  {
             this.closeRightSide();
 
             this.updateCenter( parseFloat(dataFerme.lat ), parseFloat(dataFerme.long ), this.zoomDetails);
-            const icon_R = L.Icon.extend({
-                options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-ferme-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-ferme-new-R.png",
-                    iconSize: [32,50],
-                    iconAnchor: [11, 30],
-                    popupAnchor: [0, -20],
-                    shadowSize: [68, 95],
-                    shadowAnchor: [22, 94]
-                }
-            })
-            fermeMarker.setIcon(new icon_R);
+
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(dataFerme, true );
+
+            fermeMarker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+
             this.updateLastMarkerSelected(fermeMarker, "ferme")
 
             if (screen.width < 991) {
@@ -258,37 +494,38 @@ class MarckerClusterHome extends MapModule  {
             } else {
                 getDetailFerme(dataFerme.departement, dataFerme.departementName, dataFerme.id, true)
             }
-
         })
     }
 
-    settingSingleMarkerResto(item) {
+    settingSingleMarkerResto(item, isSelected= false) {
+        const zoom = this.map._zoom;
+        const icon = this.getIcon(item, isSelected);
+
+        let marker= null;
+        if(!item.moyenne_note){
+            marker = L.marker(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)), 
+                { 
+                    icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                    cleNom: item.denominationF,
+                    id: item.id, 
+                    type: "resto" 
+                }
+            );
+        }else{
+            // marker=this.setSpecialMarkerToShowNote(L.latLng(parseFloat(item.lat), parseFloat(item.long)),item, false, poi_icon, poi_icon, isPastille)
+            marker= this.setSpecialMarkerToShowNoteRefactor(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                item, 
+                icon.path, 
+                icon.size, 
+            )
+        }
 
         const departementName = item.depName + '<br>';
         const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
-
         const title = "<span class='fw-bolder'> Restaurant: </span>  " + item.denominationF + " <br><span class='fw-bolder'><br> Departement:</span>  " + departementName + "." + adress;
-
-        let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(item.id)) : [];
-
-        let poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
-        // let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
-        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
-
-        let marker
-
-        if(!item.moyenne_note){
-            marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), 
-                        { icon: 
-                            setIconn(poi_icon, "", isPastille), 
-                            id: item.id, 
-                            type: "resto" 
-                        }
-                    );
-        }else{
-            marker=this.setSpecialMarkerToShowNote(L.latLng(parseFloat(item.lat), parseFloat(item.long)),item, false, poi_icon, poi_icon, isPastille)
-        }
 
         marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
 
@@ -302,32 +539,20 @@ class MarckerClusterHome extends MapModule  {
             ////close right if this open
             this.closeRightSide();
 
-
             this.updateCenter( parseFloat(dataResto.lat ), parseFloat(dataResto.long ), this.zoomDetails);
-            
-            let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(restoMarker.options.id)) : [];
 
-            let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
-            let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
-
-            const icon_R = L.Icon.extend({
-                options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/" + poi_icon_Selected  : this.currentUrl.origin + "/public/" + poi_icon_Selected,
-                    iconSize: isPastille === 2 ? [45, 60] : [30,45] ,
-                    iconAnchor: [11, 30],
-                    popupAnchor: [0, -20],
-                    shadowSize: [68, 95],
-                    shadowAnchor: [22, 94]
-                }
-            })
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(dataResto, true );
 
             if(!dataResto.moyenne_note){
-                restoMarker.setIcon(new icon_R);
+                restoMarker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
             }else{
-                restoMarker.setIcon(this.setSpecialIcon(dataResto, true, poi_icon_Selected, poi_icon_Selected, isPastille));
+                // restoMarker.setIcon(this.setSpecialIcon(dataResto, true, poi_icon_Selected, poi_icon_Selected, isPastille));
+                restoMarker.setIcon(
+                    this.setSpecialIconRefactor(dataResto, icon.path, icon.size)
+                );
             }
             
-            // restoMarker.setIcon(this.setSpecialIcon(dataResto, true, poi_icon_Selected, poi_icon_Selected, isPastille));
             this.updateLastMarkerSelected(restoMarker, "resto")
             
             if (screen.width < 991) {
@@ -339,33 +564,38 @@ class MarckerClusterHome extends MapModule  {
 
     }
 
+    settingSingleMarkerGolf(item, isSelected= false ){
+        const zoom = this.map._zoom;
+        const icon = this.getIcon(item, isSelected);
 
-    settingSingleMarkerGolf(item){
+        let marker= null;
+        if(!item.moyenne_note){
+            marker = L.marker(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                {
+                    icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                    cleNom: item.denominationF,
+                    id: item.id,
+                    type: "golf"
+                }
+            );
+        }else{
+            // marker= this.setSpecialMarkerToShowNote( L.latLng(parseFloat(item.lat), parseFloat(item.long)), item,  isSelected,  poi_icon,  poi_icon_Selected,  isPastille,  zoom)
+            marker= this.setSpecialMarkerToShowNoteRefactor(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                item, 
+                icon.path, 
+                icon.size, 
+            )
+        }
+
         // console.log(item)
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.commune + " " + item.adress;
         let title = "<span class='fw-bolder'> Golf: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep +"." + adress;
-        
-        let pathIcon="";
-        let taille= 0 /// 0: min, 1: moyenne, 2 : grand
-
-        if( item.user_status.a_faire === null &&  item.user_status.fait === null ){
-            pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
-        }else{
-            if( item.user_status.a_faire == true ){
-                pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png";
-            }else if( item.user_status.fait == true ){
-                pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png";
-            }else{
-                pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
-            }
-            // pathIcon= item.user_status === null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
-            taille=1
-        }
-        let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id, type: "golf"});
-        
         marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
         this.handleClickGolf(marker, item);
+
         this.markers.addLayer(marker);
     }
 
@@ -373,59 +603,46 @@ class MarckerClusterHome extends MapModule  {
         golfMarker.on('click', (e) => {
             ////close right if this open
             this.closeRightSide();
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
 
-            const itemID= item.id
-            
-            const golfUpdate = this.data.golf.find(jtem =>parseInt(jtem.id) === itemID);
-            this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);
+            const zoom = this.map._zoom;
+            const icon = this.getIcon(item, true);
 
-
-            let pathIcon="";
-            if( golfUpdate.user_status.a_faire === null &&  golfUpdate.user_status.fait === null ){
-                pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
+            if(!item.moyenne_note){
+                golfMarker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
             }else{
-                if( golfUpdate.user_status.a_faire == true){
-                    pathIcon= "/assets/icon/NewIcons/icon-vert-golf-orange.png";
-                }else if(golfUpdate.user_status.fait == true ){
-                    pathIcon= "/assets/icon/NewIcons/icon-vert-golf-bleu.png"
-                }else{
-                    pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
-                }
-                // pathIcon= item.user_status === null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+                // marker.setIcon(this.setSpecialIcon(item, true, poi_icon, poi_icon_Selected, isPastille))
+                golfMarker.setIcon(
+                    this.setSpecialIconRefactor( item, icon.path, icon.size )
+                )
             }
-            
-            const icon_R = L.Icon.extend({
-                options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
-                    iconSize: [35,55],
-                    iconAnchor: [11, 30],
-                    popupAnchor: [0, -20],
-                    shadowSize: [68, 95],
-                    shadowAnchor: [22, 94]
-                }
-            })
-
-            golfMarker.setIcon(new icon_R);
 
             this.updateLastMarkerSelected(golfMarker, "golf")
             
             if (screen.width < 991) {
-                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
+                getDetailGolf(item.dep, item.nom_dep, item.id, true)
             } else {
-                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id, true)
+                getDetailGolf(item.dep, item.nom_dep, item.id, true)
             }
 
         })
     }
 
-    settingSingleMarkerTabac(item){
+    settingSingleMarkerTabac(item, isSelected= false ){
+        const zoom = this.map._zoom;
+        const icon = this.getIcon(item, isSelected);
+
+        let marker = L.marker(
+            L.latLng(parseFloat(item.lat), parseFloat(item.long )), 
+            {
+                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                id: item.id,
+                type: "tabac"
+            }
+        );
+        
         const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
         let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
-        
-        let pathIcon="assets/icon/NewIcons/tabac_black0.png";
-        let taille= 0 /// 0: min, 1: moyenne, 2 : grand
-
-        let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
         
         marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
 
@@ -440,19 +657,11 @@ class MarckerClusterHome extends MapModule  {
             this.closeRightSide();
 
             this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
-            let pathIcon='/assets/icon/NewIcons/tabac_red0.png';
             
-            const icon_R = L.Icon.extend({
-                options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
-                    iconSize: [35,55],
-                    iconAnchor: [11, 30],
-                    popupAnchor: [0, -20],
-                    shadowSize: [68, 95],
-                    shadowAnchor: [22, 94]
-                }
-            })
-            tabacMarker.setIcon(new icon_R);
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(item, true );
+
+            tabacMarker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
 
             this.updateLastMarkerSelected(tabacMarker, "tabac")
 
@@ -469,56 +678,38 @@ class MarckerClusterHome extends MapModule  {
 
         if (this.marker_last_selected && this.marker_last_selected !== marker ) {
 
-            let icon_marker = "";
+            let last_item= null;
             if (this.marker_last_selected_type === "station") {
-                icon_marker = IS_DEV_MODE ? `/assets/icon/NewIcons/icon-station-new-B.png` : `/public/assets/icon/NewIcons/icon-station-new-B.png`;
-
+                last_item= this.default_data.station.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
             } else if (this.marker_last_selected_type === "ferme") {
-                icon_marker = IS_DEV_MODE ? `/assets/icon/NewIcons/icon-ferme-new-B.png` : `/public/assets/icon/NewIcons/icon-ferme-new-B.png`;
+                last_item= this.default_data.ferme.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
 
             } else if (this.marker_last_selected_type === "resto") {
-                let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(this.marker_last_selected.options.id)) : [];
-                let poi_icon =  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-B-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-B-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-B.png' ) ;
-                
-                // icon_marker = IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`;
-                icon_marker = IS_DEV_MODE ? `${poi_icon}` : `public/${poi_icon}`;
+                last_item= this.default_data.resto.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
 
             } else if( this.marker_last_selected_type === "golf"){
 
-                const last_marker= this.data.golf.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
+                last_item= this.default_data.golf.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
 
-                if( last_marker.user_status.a_faire === null &&  last_marker.user_status.fait === null){
-                    icon_marker = IS_DEV_MODE ? `/assets/icon/NewIcons/icon-blanc-golf-vertC.png` : `/public/assets/icon/NewIcons/icon-blanc-golf-vertC.png`;
-                }else{
-                    if( last_marker.user_status.a_faire == true){
-                        icon_marker = IS_DEV_MODE ? `/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png` : `/public/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png`;
-                    }else if(last_marker.user_status.fait == true ){
-                        icon_marker = IS_DEV_MODE ? `/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png` : `/public/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png`;
-                    }else{
-                        icon_marker = IS_DEV_MODE ? `/assets/icon/NewIcons/icon-blanc-golf-vertC.png` : `/assets/icon/NewIcons/icon-blanc-golf-vertC.png`;
-                    }
-                }
             } else if( this.marker_last_selected_type === "tabac" ){
-                icon_marker = IS_DEV_MODE ? `/assets/icon/NewIcons/tabac_black0.png` : `/public/assets/icon/NewIcons/tabac_black0.png`;
+                last_item= this.default_data.tabac.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
             }
 
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(last_item, false );
 
-            const icon_B = L.Icon.extend({
-                options: {
-                    iconUrl: this.currentUrl.origin+icon_marker,
-                    iconSize: [32,50],
-                    iconAnchor: [11, 30],
-                    popupAnchor: [0, -20],
-                    shadowSize: [68, 95],
-                    shadowAnchor: [22, 94]
+            const array_content_moyenne= [ "resto", "golf" ];
+            if(array_content_moyenne.includes( this.marker_last_selected_type) ){
+                if(!last_item.moyenne_note){
+                    this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, zoom ))
+                }else{
+                    this.marker_last_selected.setIcon(
+                        // this.setSpecialIcon(oneResto, false, poi_icon, poi_icon_Selected, isPastille)
+                        this.setSpecialIconRefactor( last_item, icon.path, icon.size )
+                    )
                 }
-            })
-
-            if(this.marker_last_selected_type === "resto"){
-                let oneResto = this.default_data.resto.find(jtem => parseInt(this.marker_last_selected.options.id) === parseInt(jtem.id))
-                this.marker_last_selected.setIcon(this.setSpecialIcon(oneResto, false, icon_marker, icon_marker, 0))
             }else{
-                this.marker_last_selected.setIcon(new icon_B)
+                this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, zoom ));
             }
             
         }
@@ -536,7 +727,8 @@ class MarckerClusterHome extends MapModule  {
 
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
-            this.addPeripheriqueMarker(new_size)
+            this.updateMarkersDisplay(new_size);
+            this.addPeripheriqueMarker(new_size);
         })
     }
 
@@ -548,14 +740,23 @@ class MarckerClusterHome extends MapModule  {
             const response = await fetch(`/dataHome${param}`);
             let new_data = await response.json();
 
+            let all_data= [];
+            all_data= all_data.concat(new_data.ferme);
+            all_data= all_data.concat(new_data.station);
+            all_data= all_data.concat(new_data.resto);
+            all_data= all_data.concat(new_data.golf);
+            all_data= all_data.concat(new_data.tabac);
+
+            this.addMarkerNewPeripherique(all_data, new_size);
+
             new_data.ferme = new_data.ferme.filter(item => !this.default_data.ferme.some(j => j.id === item.id))
             new_data.station = new_data.station.filter(item => !this.default_data.station.some(j => j.id === item.id))
             new_data.resto = new_data.resto.filter(item => !this.default_data.resto.some(j => j.id === item.id))
             new_data.golf = new_data.golf.filter(item => !this.default_data.golf.some(j => j.id === item.id))
             new_data.tabac = new_data.tabac.filter(item => !this.default_data.tabac.some(j => j.id === item.id))
 
-            const result= this.checkeFilterType(new_data);
-            this.addMarker(result);
+            // const result= this.checkeFilterType(new_data);
+            // this.addMarker(result);
 
             this.default_data = {
                 ...this.default_data,
@@ -884,10 +1085,28 @@ class MarckerClusterHome extends MapModule  {
         injectListMarker(restoPastilleTab);
     }
 
+    /**
+     * @override for the MapModule
+     * 
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * 
+     * @param {*} idToCheck 
+     * 
+     * @returns 
+     */
     checkIsExist(idToCheck){
         return this.default_data.resto.some(({id}) => parseInt(id) === parseInt(idToCheck))
     }
-
+    
+    /**
+     * @override for the MapModule
+     * 
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * 
+     * @param {*} idToCheck 
+     * 
+     * @returns 
+     */
     clickOnMarker(id){
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === "resto" ) {
@@ -939,16 +1158,21 @@ class MarckerClusterHome extends MapModule  {
      * je veux: mettre à jour la note moyenne sur un POI
      * si une POI a une note, la note se montre en haut à gauche du POI
      */
-    showNoteMoyenneRealTime(idResto, note){
-        let resultRestoPastille= this.listRestoPastille.length > 0 ? this.listRestoPastille.filter(jtem => parseInt(jtem.id_resto) === parseInt(idResto)) : [];
-        let poi_icon_Selected=  resultRestoPastille.length > 1 ? 'assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png' : (resultRestoPastille.length === 1  ? 'assets/icon/NewIcons/icon-resto-new-Rr-org-single.png' : 'assets/icon/NewIcons/icon-resto-new-Rr.png' ) ;
-        let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
-
+    showNoteMoyenneRealTime(idItem, note, type){
         this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(idResto) && marker.options.type === "resto" ) {
-                let oneResto = this.default_data.resto.find(jtem => parseInt(idResto) === parseInt(jtem.id))
-                oneResto.moyenne_note = parseFloat(note).toFixed(2)
-                marker.setIcon(this.setSpecialIcon(oneResto, true, poi_icon_Selected, poi_icon_Selected, isPastille))
+            if (parseInt(marker.options.id) === parseInt(idItem)) {
+                let single_data = null;
+                if( type === "resto" ){
+                    single_data = this.default_data.resto.find(jtem => parseInt(idItem) === parseInt(jtem.id))
+                }else if( type === "golf" ){
+                    single_data = this.default_data.golf.find(jtem => parseInt(idItem) === parseInt(jtem.id));
+                }
+                single_data.moyenne_note = parseFloat(note).toFixed(2)
+
+                const icon= this.getIcon(single_data, true )
+                marker.setIcon(
+                    this.setSpecialIconRefactor( single_data, icon.path, icon.size )
+                )
             }
         });
 
@@ -963,7 +1187,7 @@ class MarckerClusterHome extends MapModule  {
      * si un utilisateur veut modifier une ou des informations
      * @param {} id 
      */
-      makeMarkerDraggable(id){
+    makeMarkerDraggable(id){
         this.markers.eachLayer((marker) => {
             if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === "resto" ) {
                 let initialPos=marker.getLatLng();
@@ -995,4 +1219,5 @@ class MarckerClusterHome extends MapModule  {
             }
         });
     }
+
 }

@@ -495,8 +495,8 @@ function getDetailFromListRight(nom_dep, id_dep, id_resto) {
  * Get global note avis resto  and setting
  * @param {*} id 
  */
-function showNoteGlobaleOnMarker(id, globalNote) { 
-    CURRENT_MAP_INSTANCE.showNoteMoyenneRealTime(id, globalNote)
+function showNoteGlobaleOnMarker(id, globalNote, type) { 
+    CURRENT_MAP_INSTANCE.showNoteMoyenneRealTime(id, globalNote, type)
 }
 
 
@@ -615,4 +615,10 @@ function makeUserModifResto(){
             }
         })
 
+}
+
+
+
+function updataMarkerIntCarte( idItem ){
+    
 }

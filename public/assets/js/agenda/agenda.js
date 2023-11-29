@@ -1708,13 +1708,13 @@ function tableActiveFilterPartisant(e) {
         document.querySelector("#agenda-emailing").style.display = "block"
         document.querySelector("#agenda-tribu-g").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "none"
-document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
         document.querySelector("#invitation-story").style.display = "none"
     }else if(e.classList.contains("agenda-tribu-g")){
         document.querySelector("#agenda-tribu-g").style.display = "block"
         document.querySelector("#agenda-emailing").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "none"
-document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
         document.querySelector("#invitation-story").style.display = "none"
     }else if(e.classList.contains("email_non_inscrit")){
         document.querySelector("#agenda-tribu-g").style.display = "none"
@@ -1732,7 +1732,7 @@ document.querySelector("#agenda-non-inscrit").style.display = "none"
     }else{
         document.querySelector("#agenda-tribu-g").style.display = "none"
         document.querySelector("#agenda-emailing").style.display = "none"
-document.querySelector("#agenda-non-inscrit").style.display = "none"
+        document.querySelector("#agenda-non-inscrit").style.display = "none"
         document.querySelector("#invitation-story").style.display = "none"
         document.querySelector("#agenda-tribu-t").style.display = "block"
 

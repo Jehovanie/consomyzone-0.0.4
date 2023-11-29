@@ -129,123 +129,142 @@ class MarckerClusterGolf extends MapModule {
         this.map.addLayer(this.markers);
     }
 
+    /**
+     * Goals object about markers icon.
+     * @param {*} item  this rubric item.
+     * @param {*} isSelected : true or false
+     * @returns object : { path: ..., size: }
+     */
+    getIcon(item, isSelected){
+        let icon_path= "";
+        let icon_size= isSelected ? 2 : 0; /// 0: min, 1: moyenne, 2 : grand
+
+        if( item.user_status.a_faire === null &&  item.user_status.fait === null && item.user_status.mon_golf === null && item.user_status.refaire === null ){
+            icon_path= isSelected ? "assets/icon/NewIcons/icon-rouge-golf-C.png" : "assets/icon/NewIcons/icon-blanc-golf-vertC.png";
+            icon_size= isSelected ? 3 : 0;
+        }else{
+            if( !!item.user_status.a_faire === true ){
+                icon_path= isSelected ? "assets/icon/NewIcons/icon-vert-golf-orange.png" : "assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png";
+            }else if( !!item.user_status.fait === true ){
+                icon_path= isSelected ? "assets/icon/NewIcons/icon-vert-golf-bleu.png" : "assets/icon/NewIcons/icon-blanc-golf-vert-bC.png";
+            }else if( !!item.user_status.mon_golf === true ){
+                icon_path= isSelected ? "assets/icon/NewIcons/mon_golf_select.png" : "assets/icon/NewIcons/mon_golf.png";
+            } else if( !!item.user_status.refaire === true ){
+                icon_path= isSelected ? "assets/icon/NewIcons/icon-vert-golf-refaire.png" : "assets/icon/NewIcons/icon-blanc-golf-refaire.png";
+            }else{
+                icon_path= isSelected ? "assets/icon/NewIcons/icon-rouge-golf-C.png" : "assets/icon/NewIcons/icon-blanc-golf-vertC.png";
+            }
+            // pathIcon= item.user_status === null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
+            icon_size= isSelected ? 3 : 2;
+        }
+
+        return { 'path': icon_path, 'size': icon_size };
+    }
+
     settingSingleMarker(item, isSelected=false){
         const zoom = this.map._zoom;
 
+        const icon = this.getIcon(item, isSelected);
+
         const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + item.commune + " " + item.adress;
         let title = "<span class='fw-bolder'> Golf: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep +"." + adress;
-        
-        let pathIcon="";
-        let taille= 0 /// 0: min, 1: moyenne, 2 : grand
-
-        if( item.user_status.a_faire === null &&  item.user_status.fait === null && item.user_status.mon_golf === null && item.user_status.refaire === null ){
-            pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
+       
+        let marker= null;
+        if(!item.moyenne_note){
+            marker = L.marker(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                {
+                    icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                    cleNom: item.denominationF,
+                    id: item.id,
+                }
+            );
         }else{
-            if( !!item.user_status.a_faire === true ){
-                pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png";
-            }else if( !!item.user_status.fait === true ){
-                pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png"
-            }else if( !!item.user_status.mon_golf === true ){
-                pathIcon= "/assets/icon/NewIcons/mon_golf.png"
-            } else if( !!item.user_status.refaire === true ){
-                pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-refaire.png"
-            }else{
-                pathIcon='assets/icon/NewIcons/icon-blanc-golf-vertC.png';
-            }
-            // pathIcon= item.user_status === null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
-            taille=1
+            // marker= this.setSpecialMarkerToShowNote( L.latLng(parseFloat(item.lat), parseFloat(item.long)), item,  isSelected,  poi_icon,  poi_icon_Selected,  isPastille,  zoom)
+            marker= this.setSpecialMarkerToShowNoteRefactor(
+                L.latLng(parseFloat(item.lat), parseFloat(item.long)),
+                item, 
+                icon.path, 
+                icon.size,
+                "golf"
+            )
         }
-        let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille, zoom), id: item.id});
         
         marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
+        
+        this.bindEventClick( marker, item );
 
+        this.markers.addLayer(marker);
+
+    }
+
+    bindEventClick( marker, item ){
         marker.on('click', (e) => {
             ////close right if this open
             this.closeRightSide();
 
             const itemID= item.id
             const golfUpdate = this.data.find(jtem =>parseInt(jtem.id) === itemID);
+
             this.updateCenter( parseFloat(golfUpdate.lat ), parseFloat(golfUpdate.long ), this.zoomDetails);
-
-
-            let pathIcon="";
-            if( golfUpdate.user_status.a_faire === null &&  golfUpdate.user_status.fait === null && golfUpdate.user_status.mon_golf === null &&  golfUpdate.user_status.refaire === null){
-                pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
-            }else{
-                if( !!golfUpdate.user_status.a_faire === true){
-                    pathIcon= "/assets/icon/NewIcons/icon-vert-golf-orange.png";
-                }else if( !!golfUpdate.user_status.fait === true ){
-                    pathIcon= "/assets/icon/NewIcons/icon-vert-golf-bleu.png"
-                } else if (!!golfUpdate.user_status.mon_golf === true) {
-                    pathIcon = "/assets/icon/NewIcons/mon_golf_select.png"
-                } else if( !!item.user_status.refaire === true ){
-                pathIcon= "/assets/icon/NewIcons/icon-vert-golf-refaire.png"
-                }else{
-                    pathIcon='/assets/icon/NewIcons/icon-rouge-golf-C.png';
-                }
-                // pathIcon= item.user_status === null ? 'assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png' : 'assets/icon/NewIcons/icon-blanc-golf-vert-bC.png';
-                taille=1
-            }
             
-            const icon_R = L.Icon.extend({
-                options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
-                    iconSize: [35,55],
-                    iconAnchor: [11, 30],
-                    popupAnchor: [0, -20],
-                    shadowSize: [68, 95],
-                    shadowAnchor: [22, 94]
-                }
-            })
-            marker.setIcon(new icon_R);
+            const zoom = this.map._zoom;
+            const icon = this.getIcon(item, true);
 
-            if (this.marker_last_selected && this.marker_last_selected != marker ) {
-
-                const last_marker= this.data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
-
-                let pathIcon="";
-                if( last_marker.user_status.a_faire === null &&  last_marker.user_status.fait === null && last_marker.user_status.mon_golf === null ){
-                    pathIcon='/assets/icon/NewIcons/icon-blanc-golf-vertC.png';
-                }else{
-                    if( last_marker.user_status.a_faire == true){
-                        pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-badgeC.png";
-                    }else if(last_marker.user_status.fait == true ){
-                        pathIcon= "/assets/icon/NewIcons/icon-blanc-golf-vert-bC.png"
-                    }else if(last_marker.user_status.mon_golf == true ){
-                        pathIcon= "/assets/icon/NewIcons/mon_golf.png"
-                    }else{
-                        pathIcon='/assets/icon/NewIcons/icon-blanc-golf-vertC.png';
-                    }
-                }
-
-                const icon_B = L.Icon.extend({
-                    options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + pathIcon : this.currentUrl.origin + "/public" + pathIcon ,
-                        iconSize: [32,50],
-                        iconAnchor: [11, 30],
-                        popupAnchor: [0, -20],
-                        //shadowUrl: 'my-icon-shadow.png',
-                        shadowSize: [68, 95],
-                        shadowAnchor: [22, 94]
-                    }
-                })
-                this.marker_last_selected.setIcon(new icon_B)
+            if(!item.moyenne_note){
+                marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+            }else{
+                // marker.setIcon(this.setSpecialIcon(item, true, poi_icon, poi_icon_Selected, isPastille))
+                marker.setIcon(
+                    this.setSpecialIconRefactor( item, icon.path, icon.size )
+                )
             }
-            this.marker_last_selected = marker;
+
+            this.updateLastMarkerSelected( marker, item );
 
             this.markers.refreshClusters();
 
-            
-            if (screen.width < 991) {
-                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id)
-            } else {
-                getDetailGolf(golfUpdate.dep, golfUpdate.nom_dep, golfUpdate.id)
-            }
-
+            this.renderFicheDetails(item);
         })
+    }
 
-        this.markers.addLayer(marker);
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * 
+     * Update the state icon for the last selected marker.
+     * 
+     * @param {*} marker current marker selected 
+     * @param {*} item  current item selected
+     */
+    updateLastMarkerSelected( marker, item ){
+        if (this.marker_last_selected && this.marker_last_selected != marker ) {
+            const last_marker= this.data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
 
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(last_marker, false );
+
+            if(!last_marker.moyenne_note){
+                this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, zoom ))
+            }else{
+                this.marker_last_selected.setIcon(
+                    // this.setSpecialIcon(oneResto, false, poi_icon, poi_icon_Selected, isPastille)
+                    this.setSpecialIconRefactor( last_marker, icon.path, icon.size )
+                )
+            }
+        }
+        this.marker_last_selected = marker;
+    }
+
+    /**
+     * Goal fetch fiche details 
+     * @param {*} item 
+     */
+    renderFicheDetails(item){
+        if (screen.width < 991) {
+            getDetailGolf(item.dep, item.nom_dep, item.id)
+        } else {
+            getDetailGolf(item.dep, item.nom_dep, item.id)
+        }
     }
 
     addEventOnMap(map) {
@@ -267,40 +286,7 @@ class MarckerClusterGolf extends MapModule {
 
 
     generateAllCard(){
-        if( this.nom_dep && this.id_dep ){
-            /// mise a jour de liste
-            const parent_elements= document.querySelector(".list_result")
-            const elements= document.querySelectorAll(".element")
-            elements.forEach(element => {
-                element.parentElement.removeChild(element);
-            })
-
-            this.data.forEach(new_element => {
-                // <div class="element" id="{{station.id}}">
-                const div_new_element = document.createElement("div");
-                div_new_element.setAttribute("class", "element")
-                div_new_element.setAttribute("id", new_element.id);
-
-                // <p> <span class="id_departement">{{station.nom }} </span> {{station.adresse}}</p>
-                const s_p = document.createElement("p");
-                s_p.innerHTML = "<span class='id_departement'>"+ new_element.nomFerme+" </span>" +  new_element.adresseFerme
-
-                // <a class="plus" href="{{path('station_details', {'depart_code':departCode, 'depart_name':departName,'id':station.id }) }}">
-                const a= document.createElement("a");
-                a.setAttribute("class", "plus")
-                a.setAttribute("href", "/ferme/departement/"+ this.nom_dep +"/"+ this.id_dep +"/details/" + new_element.id )
-                a.innerText = "Voir détails";
-
-                /// integre dom under the element
-                div_new_element.appendChild(s_p);
-                div_new_element.appendChild(a);
-                
-                ///integre new element in each element.
-                parent_elements.appendChild(div_new_element);
-            })
-            
-        }
-
+        console.log("Generating all cards...")
     }
 
 
@@ -322,13 +308,6 @@ class MarckerClusterGolf extends MapModule {
         this.addMarker(this.default_data)
     }
 
-    clickOnMarker(id){
-        this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(id) ) {
-                marker.fireEvent('click');  
-            }
-        });
-    }
 
     updateStateGolf(status, id){
         let user_status = { "a_faire" : false, "fait" : false, "mon_golf" : false,"refaire":false }
@@ -378,7 +357,10 @@ class MarckerClusterGolf extends MapModule {
     }
 
 
-
+    /**
+     * Fetch all related data from the boundaries...
+     * @param {*} new_size  { minx, miny, maxx, maxy }
+     */
     async addPeripheriqueMarker(new_size) {
         try {
             const { minx, miny, maxx, maxy }= new_size;
@@ -409,6 +391,30 @@ class MarckerClusterGolf extends MapModule {
 
     showNoteGlobaleOnMarker(idItem, globalNote){
         console.log(idItem, globalNote);
+    }
+
+
+    /**
+     * @Author Nantenaina
+     * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz, 
+     * localisation du fichier: dans MarkerClusterResto.js,
+     * je veux: mettre à jour la note moyenne sur un POI
+     * si une POI a une note, la note se montre en haut à gauche du POI 
+     */
+    showNoteMoyenneRealTime(idGolf, note){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(idGolf)) {
+                let oneGolf = this.default_data.find(jtem => parseInt(idGolf) === parseInt(jtem.id));
+                oneGolf.moyenne_note = parseFloat(note).toFixed(2)
+
+                const icon= this.getIcon(oneGolf, true )
+                marker.setIcon(
+                    this.setSpecialIconRefactor( oneGolf, icon.path, icon.size )
+                )
+            }
+        });
+
+        this.markers.refreshClusters();
     }
 
 }

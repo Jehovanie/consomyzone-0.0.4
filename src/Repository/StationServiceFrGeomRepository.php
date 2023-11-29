@@ -944,6 +944,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'r.prixSp95E10',
                         'r.prixSp98',
                         'r.prixGasoil',
+                        'r.prixGasoil as station',
                         'r.nom',
                         'r.latitude as lat',
                         'r.longitude as long'
@@ -972,6 +973,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'r.prixSp95E10',
                         'r.prixSp98',
                         'r.prixGasoil',
+                        'r.prixGasoil as station',
                         'r.nom',
                         'r.latitude as lat',
                         'r.longitude as long'
@@ -988,6 +990,34 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                     ->setMaxResults(200)
                     ->getQuery()
                     ->getResult();
+    }
+
+
+    public function getOneItemByID($id){
+        return $this->createQueryBuilder("r")
+                    ->select('r.id',
+                        'r.adresse',
+                        'r.departementCode',
+                        'r.departementName',
+                        'r.automate2424',
+                        'r.horaies',
+                        'r.services',
+                        // 'r.note',
+                        'r.prixE85',
+                        'r.prixGplc',
+                        'r.prixSp95',
+                        'r.prixSp95E10',
+                        'r.prixSp98',
+                        'r.prixGasoil',
+                        'r.prixGasoil as station',
+                        'r.nom',
+                        'r.latitude as lat',
+                        'r.longitude as long'
+                    )
+                    ->where("r.id =:id")
+                    ->setParameter("id", $id)
+                    ->getQuery()
+                    ->getOneOrNullResult();
     }
 //    /**
 //     * @return StationServiceFrGeom[] Returns an array of StationServiceFrGeom objects

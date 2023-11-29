@@ -8,6 +8,7 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
     const form_parent = document.querySelector(".content_form_send_invitation_email_js_jheo");
     const input_principal = form_parent.querySelector(".single_destination_js_jheo")
     const input_cc = form_parent.querySelector(".multiple_destination_js_jheo")
+    const input_cci = form_parent.querySelector(".multiple_destination_cci_js_jheo")
     const object = form_parent.querySelector(".object_js_jheo");
     const description = editor.getData()
 
@@ -35,8 +36,8 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
         object.style.border = "1px solid black";
     })
 
-
-
+    controlInputEmailToMultiple([ input_principal, input_cc, input_cci ])
+    
     /*input_cc.addEventListener("keyup", (e) => {
 
         console.log("Code : " + e.code);
@@ -74,52 +75,56 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
         let objectTitle = agenda.title
 
         let status = true;
-        
-        let data = {"principal": "", "cc": [], "object": objectTitle, "description": "", agendaId:agendaId}
+
+        let data = {
+            "principal": [], 
+            "cc": [],
+            "cci": [],
+            "object": "", 
+            "description": "", 
+            agendaId: agendaId
+        }
+
+      
 
         if (input_principal.value === "") {
             input_principal.style.border = "1px solid red";
             status = false;
             swal("Attention!", "Veuillez saisir un adresse email pour le destinataire.", "error")
         }else{
-            if (verifieEmailValid(input_principal.value)) {
 
-                data = { ...data, "principal": input_principal.value }
-
-                if (input_cc.value != "") {
-                    if(verifieEmailValid(input_cc.value)){
-                        cc_destinataire.push(input_cc.value)
-                        data = { ...data, "cc": cc_destinataire }
-
-                        ///object
-                        if (object.value === "") {
-                            object.style.border = "1px solid red";
-                            status = false;
-                            swal("Attention!", "Veuillez saisir l'objet.", "error")
-                        } else {
-                            data = { ...data, "object": objectTitle }
-                        }
-
-                    }else {
-                        input_cc.style.border = "1px solid red";
-                        status = false;
-                        swal("Attention!", "Veuillez saisir un adresse email valide pour le cc.", "error")
-                    }
-                }else{
-                    ///object
-                    if (object.value === "") {
-                        object.style.border = "1px solid red";
-                        status = false;
-                        swal("Attention!", "Veuillez saisir l'objet.", "error")
-                    } else {
-                        data = { ...data, "object": objectTitle }
-                    }
-                }
-
-            } else {
+            if( checkIfExistMailInValid(input_principal.value)){
                 input_principal.style.border = "1px solid red";
                 status = false;
                 swal("Attention!", "Veuillez saisir un adresse email valide pour le destinataire.", "error")
+            }
+
+            if (!!input_cc.value && checkIfExistMailInValid(input_cc.value)) {
+                input_cc.style.border = "1px solid red";
+                status = false;
+                swal("Attention!", "Veuillez saisir un adresse email valide pour le cc.", "error")
+            }
+    
+            if (!!input_cci.value && checkIfExistMailInValid(input_cci.value)) {
+                input_cci.style.border = "1px solid red";
+                status = false;
+                swal("Attention!", "Veuillez saisir un adresse email valide pour le cci.", "error")
+
+            }
+            
+            data = {
+                ...data,
+                "principal": formatEmailAdresseFromStringLong(input_principal.value), 
+                "cc": formatEmailAdresseFromStringLong(input_cc.value),
+                "cci": formatEmailAdresseFromStringLong(input_cci.value),
+            }
+
+            if (object.value === "") {
+                object.style.border = "1px solid red";
+                status = false;
+                swal("Attention!", "Veuillez saisir l'objet.", "error")
+            } else {
+                data = { ...data, "object": objectTitle }
             }
         }
 
@@ -158,7 +163,8 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                     btn_item.setAttribute("onclick", "");
                 });
             }
-
+            
+            console.log(data)
             //////fetch data
             fetch("/user/agenda/invitation/not/partisan", {
                 method: "POST",
@@ -207,18 +213,16 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
 
 }
 
-
 if( document.querySelector(".message_tooltip_piece_joint_jheo_js")){
 
-    const content_input_piece= document.querySelector(`.content_input_piece_joint_jheo_js`);
-    
-    content_input_piece.addEventListener('mouseover',() => {
-        content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.remove('d-none')
-    })
+    ///hover tooltip piece joint, ...
+    displayTooltipHelpMsg();
 
-    content_input_piece.addEventListener('mouseout',() => {
-        content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.add('d-none')
-    })
+    if( document.querySelector(".content_add_link_jheo_js")){
+        document.querySelector(".label_add_link_jheo_js").addEventListener("click", () => {
+            document.querySelector(".modal_addlink_invitation_jheo_js").click();
+        })
+    }
 }
 
 function verifieEmailValid(email) {
@@ -261,6 +265,67 @@ function addPieceJoint(input) {
 
         ///if the current extension is in the list not accepted.
         if( !listNotAccepted.some( item => item.toLowerCase() === extensions.toLowerCase() ) && extensions !== value ){
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+
+                /// get name the originila name of the file
+                const input_value= value.split("\\")
+                const name= input_value[input_value.length-1]; /// original name
+    
+                ///unique  to identify the file item
+                /// this not save in the database.
+                const id_unique= new Date().getTime();
+
+                ////create item piece joint.
+                createListItemPiece(name, id_unique);
+                
+                //// save the item in variable global list piece jointe.
+                email_piece_joint_list.push({id: id_unique,  name, base64File: e.target.result })
+            };
+    
+            reader.readAsDataURL(input.files[0]);
+        }else{ /// if the extension is not supported.
+            swal({
+                title: "Le format de fichier n'est pas pris en charge!",
+                icon: "error",
+                button: "OK",
+            });
+        }
+    }
+}
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ * 
+ * This function is use listen the input file event onchange
+ * on the input piece joint in mail invitation 
+ * 
+ * All add input image
+ * Object element
+ */
+function addPieceJointImage(input) {
+
+    if (input.files && input.files[0]){
+
+        /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants : 
+        /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+        const listNotAccepted = ["zip", "css", "html", "sql", "xml", "gz", "bz2", "tgz",'ade', 'adp', 'apk', 'appx', 'appxbundle', 'bat', 'cab', 'chm', 'cmd', 'com', 'cpl', 'diagcab', 'diagcfg', 'diagpack', 'dll', 'dmg', 'ex', 'ex_', 'exe', 'hta', 'img', 'ins', 'iso', 'isp', 'jar', 'jnlp', 'js', 'jse', 'lib', 'lnk', 'mde', 'msc', 'msi', 'msix', 'msixbundle', 'msp', 'mst', 'nsh', 'pif', 'ps1', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vhd', 'vxd', 'wsc', 'wsf', 'wsh', 'xll'];
+        const listAccepted= [ "png", "gif", "jpeg", "jpg" ];
+        
+        /// input value to get the original name of the file ( with the fake path )
+        const value= input.value;
+
+        //// to get the extension file
+        const  temp= value.split(".");
+        const extensions = temp[temp.length-1]; /// extension
+
+        ///if the current extension is in the list not accepted.
+        if( 
+            listAccepted.some(item => item === extensions ) 
+            && !listNotAccepted.some( item => item.toLowerCase() === extensions.toLowerCase() ) 
+            && extensions !== value 
+        ){
 
             var reader = new FileReader();
             reader.onload = function (e) {
@@ -340,4 +405,27 @@ function removeListeItem(e, id){
     e.parentElement.remove()
     ///remove one element in the piece global
     email_piece_joint_list= email_piece_joint_list.filter(item => item.id  != id )
+}
+
+
+function addLinkOnMailBody(){
+    const link_name= document.querySelector(".link_name_jheo_js").value.trim();
+    const link_value= encodeURI(document.querySelector(".link_value_jheo_js").value);
+
+    if( editor ){
+        // const old_data= editor.getData();
+        // const dom_parse= new DOMParser();
+        // const html= dom_parse.parseFromString(old_data,  "text/html");
+
+        // const content_link_jheo= html.body.querySelector(".content_link_jheo_js");
+        // content_link_jheo.innerHTML= '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' + link_value + '" >' + link_name + ' </a>'
+
+        // console.log(html.body)
+
+        editor.setData(
+            editor.getData() + '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' + link_value + '" >' + link_name + ' </a>'
+        )
+    }
+
+    cancelAddLink();
 }

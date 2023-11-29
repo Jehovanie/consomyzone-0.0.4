@@ -79,6 +79,8 @@ class TabacRepository extends ServiceEntityRepository
                     'r.clenum',
                     'r.denomination_f',
                     'r.denomination_f as name',
+                    'r.denomination_f as nameFilter',
+                    'r.denomination_f as tabac',
                     'r.numvoie',
                     'r.typevoie',
                     'r.nomvoie',
@@ -129,7 +131,7 @@ class TabacRepository extends ServiceEntityRepository
      * 
      * @return array Tabac
     */
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null){
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy , $idDep= null, $taille= 200){
         $results=[];
         $data=  $this->createQueryBuilder("r")
                 ->select(
@@ -137,6 +139,8 @@ class TabacRepository extends ServiceEntityRepository
                     'r.clenum',
                     'r.denomination_f',
                     'r.denomination_f as name',
+                    'r.denomination_f as nameFilter',
+                    'r.denomination_f as tabac',
                     'r.numvoie',
                     'r.typevoie',
                     'r.nomvoie',
@@ -172,17 +176,69 @@ class TabacRepository extends ServiceEntityRepository
                     'r.poi_x as long',
                     'r.poi_y as lat',
                 )
-                ->where("ABS(r.poi_x) >=ABS(:minx) ")
-                ->andWhere("ABS(r.poi_x) <= ABS(:maxx)")
-                ->andWhere("ABS(r.poi_y) >=ABS(:miny)")
-                ->andWhere("ABS(r.poi_y) <=ABS(:maxy)")
-                ->setParameter("minx", $minx)
-                ->setParameter("maxx", $maxx)
-                ->setParameter("miny", $miny)
-                ->setParameter("maxy", $maxy)
+                ->where( "r.poi_x >= :minx" )
+                ->andWhere( "r.poi_x <= :maxx" )
+                ->andWhere( "r.poi_y >= :miny" )
+                ->andWhere( "r.poi_y <= :maxy" )
+                ->setParameter( "minx", $minx )
+                ->setParameter( "maxx", $maxx )
+                ->setParameter( "miny", $miny )
+                ->setParameter( "maxy", $maxy )
                 ->orderBy('RAND()')
                 ->getQuery()
+                ->setMaxResults($taille)
                 ->getResult();
+       
+        return $data;
+    }
+
+    public function getOneItemByID($id){
+
+        $data=  $this->createQueryBuilder("r")
+                ->select(
+                    'r.id',
+                    'r.clenum',
+                    'r.denomination_f',
+                    'r.denomination_f as name',
+                    'r.denomination_f as nameFilter',
+                    'r.denomination_f as tabac',
+                    'r.numvoie',
+                    'r.typevoie',
+                    'r.nomvoie',
+                    'r.compvoie',
+                    'r.codpost',
+                    'r.villenorm',
+                    'r.commune',
+                    'r.codinsee',
+                    'r.siren',
+                    'r.tel',
+                    'r.tel as telephone',
+                    'r.bureau_tabac',
+                    'r.tabac_presse',
+                    'r.bar_tabac',
+                    'r.hotel_tabac',
+                    'r.cafe_tabac',
+                    'r.site_1',
+                    'r.site_2',
+                    'r.fonctionalite_1',
+                    'r.horaires_1',
+                    'r.prestation_1',
+                    'r.codens',
+                    'r.poi_qualitegeorue',
+                    'r.dcomiris',
+                    'r.dep',
+                    'r.dep_name',
+                    'r.dep_name as nom_dep',
+                    'r.dep_name as depName',
+                    'r.date_data',
+                    'r.date_inser',
+                    'r.poi_x as long',
+                    'r.poi_y as lat',
+                )
+                ->where("r.id =:id")
+                ->setParameter("id", $id)
+                ->getQuery()
+                ->getOneOrNullResult();
        
         return $data;
     }
@@ -199,6 +255,7 @@ class TabacRepository extends ServiceEntityRepository
                 r.denomination_f,
                 r.denomination_f as nom,
                 r.denomination_f as name,
+                r.denomination_f as nameFilter,   
                 r.numvoie,
                 r.typevoie,
                 r.nomvoie,
@@ -252,6 +309,7 @@ class TabacRepository extends ServiceEntityRepository
                 r.denomination_f,
                 r.denomination_f as nom,
                 r.denomination_f as name,
+                r.denomination_f as nameFilter,
                 r.numvoie,
                 r.typevoie,
                 r.nomvoie,
@@ -308,6 +366,7 @@ class TabacRepository extends ServiceEntityRepository
                 r.denomination_f,
                 r.denomination_f as nom,
                 r.denomination_f as name,
+                r.denomination_f as nameFilter,
                 r.numvoie,
                 r.typevoie,
                 r.nomvoie,
@@ -360,6 +419,7 @@ class TabacRepository extends ServiceEntityRepository
                 'r.clenum',
                 'r.denomination_f',
                 'r.denomination_f as nom',
+                'r.denomination_f as nameFilter',
                 'r.numvoie',
                 'r.typevoie',
                 'r.nomvoie',
@@ -447,6 +507,7 @@ class TabacRepository extends ServiceEntityRepository
                         p.nomvoie,
                         p.compvoie,
                         p.denomination_f as name,
+                        p.denomination_f as nameFilter,
                         p.dep as id_dep,
                         p.dep_name as departement,
                         CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as adresse,
@@ -561,6 +622,7 @@ class TabacRepository extends ServiceEntityRepository
                         p.nomvoie,
                         p.compvoie,
                         p.denomination_f as name,
+                        p.denomination_f as nameFilter,
                         p.dep as id_dep,
                         p.dep_name as departement,
                         CONCAT(p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm) as adresse,

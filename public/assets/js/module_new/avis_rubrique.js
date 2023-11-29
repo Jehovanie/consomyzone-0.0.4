@@ -150,8 +150,11 @@ function addAvis(idItemRubrique=null){
         body:JSON.stringify(requestParam)
     })
 
-    fetch(request).then(r => {
-        if (r.ok && r.status === 200) {
+    fetch(request)
+        .then(r => r.json())
+        .then(response => {
+
+            console.log(response)
 
             ///// generate list avis in modal
             showModifArea(idItem, newUserId)
@@ -170,8 +173,14 @@ function addAvis(idItemRubrique=null){
                 document.querySelector(".content_avis_person_hidden_jheo_js").setAttribute("data-avis-note", note )
                 document.querySelector(".content_avis_person_hidden_jheo_js").setAttribute("data-avis-text", avis )
             }
-        }
-    })
+
+            const state= response.state;
+
+            let total_note= 0
+            state.forEach(item => { total_note+= parseFloat(item.note) });
+
+            showNoteGlobaleOnMarker( idItem, total_note/state.length, type);
+        })
 }
 
 

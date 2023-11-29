@@ -600,4 +600,14 @@ class SortResultService extends StringTraitementService
         return $results;
     }
 
+    /**
+     * @author Nantenaina <email>
+     * où= dans la fonction getAllRestCoor
+     * location=RestaurantController.phpo
+     * je veux avoir les id des  resto recupéré apres  appel de la fonction getDataBetweenAnd()
+     * pour avoir les notes
+     */
+    static function getIdFromData($data){
+        return $data["id"];
+    }
 }

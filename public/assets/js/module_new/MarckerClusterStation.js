@@ -166,11 +166,30 @@ class MarckerClusterStation extends MapModule  {
         this.map.addLayer(this.markers);
     }
 
+    /**
+     * Goals object about markers icon.
+     * @param {*} item  this rubric item.
+     * @param {*} isSelected : true or false
+     * @returns object : { path: ..., size: }
+     */
+    getIcon(item, isSelected= false ){
+        const icon_path= isSelected ? "assets/icon/NewIcons/icon-station-new-R.png" : "assets/icon/NewIcons/icon-station-new-B.png";
+        const icon_size= isSelected ? 2 : 1; /// 0: normal, 2: selected
+
+        return { 'path': icon_path, 'size': icon_size };
+    }
+
     settingSingleMarker(item, isSelected= false){
         const zoom = this.map._zoom;
+        const icon = this.getIcon(item, isSelected);
 
-        let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-        let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), { icon: setIconn("assets/icon/NewIcons/icon-station-new-B.png", "", 0, zoom), id: item.id });
+        let marker = L.marker(
+            L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), 
+            { 
+                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                id: item.id 
+            }
+        );
         
         ////================ POPUP WHEN OPEN =================================================================
         // marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
@@ -179,53 +198,52 @@ class MarckerClusterStation extends MapModule  {
         //     marker.openPopup();
         // });
         
-        marker.on('click', (e) => {
-            ////close right if this open
-            this.closeRightSide();
-            
-            this.updateCenter( parseFloat(item.latitude ), parseFloat(item.longitude ), this.zoomDetails);
-            
-            const icon_R = L.Icon.extend({
-                options: {
-                    iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
-                    iconSize: [32,50],
-                    iconAnchor: [11, 30],
-                    popupAnchor: [0, -20],
-                    shadowSize: [68, 95],
-                    shadowAnchor: [22, 94]
-                }
-            })
-            marker.setIcon(new icon_R);
+        this.bindEventClick( marker, item );
 
-            if (this.marker_last_selected && this.marker_last_selected != marker ) {
-                const icon_B = L.Icon.extend({
-                    options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
-                        iconSize: [32,50],
-                        iconAnchor: [11, 30],
-                        popupAnchor: [0, -20],
-                        shadowSize: [68, 95],
-                        shadowAnchor: [22, 94]
-                    }
-                })
-                this.marker_last_selected.setIcon(new icon_B)
-            }
-            this.marker_last_selected = marker;
-            this.markers.refreshClusters();
-
-            if (screen.width < 991) {
-                getDetailStation( item.departementName.trim().replace("?", ""), item.departementCode.toString().trim(), item.id, false)
-            } else {
-                getDetailStation( item.departementName.trim().replace("?", ""), item.departementCode.toString().trim(), item.id, false)
-            }
-        })
-
+        let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
         marker.on("mouseover", () => {
             marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip()
             marker.closePopup();
         })
 
         this.markers.addLayer(marker);
+    }
+
+    bindEventClick( marker, item ){
+        marker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+            this.updateCenter( parseFloat(item.latitude ), parseFloat(item.longitude ), this.zoomDetails);
+            
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(item, true );
+
+            marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+
+            this.updateLastMarkerSelected( marker, item )
+
+            this.markers.refreshClusters();
+
+            this.renderFicheDetails( item )
+        })
+    }
+
+    updateLastMarkerSelected( marker, item ){
+        if (this.marker_last_selected && this.marker_last_selected != marker ) {
+            const last_marker= this.data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
+            const icon= this.getIcon(last_marker, false );
+            
+            this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, 9 ));
+        }
+        this.marker_last_selected = marker;
+    }
+
+    renderFicheDetails( item ){
+        if (screen.width < 991) {
+            getDetailStation( item.departementName.trim().replace("?", ""), item.departementCode.toString().trim(), item.id, false)
+        } else {
+            getDetailStation( item.departementName.trim().replace("?", ""), item.departementCode.toString().trim(), item.id, false)
+        }
     }
 
     addEventOnMap(map) {

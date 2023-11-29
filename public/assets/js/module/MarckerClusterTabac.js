@@ -27,7 +27,7 @@ class MarckerClusterTabac extends MapModule {
     bindAction(){
         this.addMarker(this.data);
         // this.setNumberOfMarker();
-        // this.addEventOnMap(this.map);
+        this.addEventOnMap(this.map);
     }
 
     
@@ -89,74 +89,87 @@ class MarckerClusterTabac extends MapModule {
     }
 
     addMarker(newData){
-
         newData.forEach(item => {
-            const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
-            let title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
-            
-            let pathIcon="assets/icon/NewIcons/tabac_black0.png";
-            let taille= 0 /// 0: min, 1: moyenne, 2 : grand
-
-            let marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long )), {icon: setIconn(pathIcon,'content_badge', taille), id: item.id});
-            
-            marker.bindTooltip(title,{ direction:"top", offset: L.point(0,-30)}).openTooltip();
-
-            marker.on('click', (e) => {
-                ////close right if this open
-                this.closeRightSide();
-
-                // hideRightSide();
-
-                this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
-
-                pathIcon='/assets/icon/NewIcons/tabac_red0.png';
-               
-                const icon_R = L.Icon.extend({
-                    options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin +  pathIcon: this.currentUrl.origin + "/public" + pathIcon,
-                        iconSize: [35,55],
-                        iconAnchor: [11, 30],
-                        popupAnchor: [0, -20],
-                        shadowSize: [68, 95],
-                        shadowAnchor: [22, 94]
-                    }
-                })
-                marker.setIcon(new icon_R);
-
-                if (this.marker_last_selected && this.marker_last_selected != marker ) {
-
-                    let pathIcon='/assets/icon/NewIcons/tabac_map.png';
-
-                    const icon_B = L.Icon.extend({
-                        options: {
-                            iconUrl: IS_DEV_MODE ? this.currentUrl.origin + pathIcon : this.currentUrl.origin + "/public" + pathIcon ,
-                            iconSize: [32,50],
-                            iconAnchor: [11, 30],
-                            popupAnchor: [0, -20],
-                            //shadowUrl: 'my-icon-shadow.png',
-                            shadowSize: [68, 95],
-                            shadowAnchor: [22, 94]
-                        }
-                    })
-                    this.marker_last_selected.setIcon(new icon_B)
-                }
-                this.marker_last_selected = marker;
-
-                this.markers.refreshClusters();
-
-                
-                if (screen.width < 991) {
-                    getDetailTabac(item.dep, item.nom_dep, item.id)
-                } else {
-                    getDetailTabac(item.dep, item.nom_dep, item.id)
-                }
-
-            })
-
-            this.markers.addLayer(marker);
-
+            this.settingSingleMarker(item, false);
         })
         this.map.addLayer(this.markers);
+    }
+
+    /**
+     * Goals object about markers icon.
+     * @param {*} item  this rubric item.
+     * @param {*} isSelected : true or false
+     * @returns object : { path: ..., size: }
+     */
+    getIcon(item, isSelected){
+        const icon_path= isSelected ? "assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
+        const icon_size= isSelected ? 2 : 0; /// 0: normal, 2: selected
+
+        return { 'path': icon_path, 'size': icon_size };
+    }
+
+    settingSingleMarker(item, isSelected=false ){
+        const zoom = this.map._zoom;
+        const icon = this.getIcon(item, isSelected);
+
+        let marker = L.marker( 
+            L.latLng( parseFloat( item.lat ), parseFloat( item.long ) ), 
+            {
+                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                id: item.id
+            }
+        );
+
+        const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
+        const title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
+
+        marker.bindTooltip(title, { direction: "top", offset: L.point( 0, -30 )}).openTooltip();
+
+        this.bindEventClick( marker, item );
+
+        this.markers.addLayer(marker);
+    }
+
+
+    bindEventClick( marker, item ){
+        marker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+
+            ///set in the center
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(item, true );
+
+            marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+
+            this.updateLastMarkerSelected( marker, item );
+
+            this.markers.refreshClusters();
+
+            this.renderFicheDetails(item);
+        })
+    }
+
+    updateLastMarkerSelected(marker, item){
+        if (this.marker_last_selected && this.marker_last_selected != marker ) {
+            const last_marker= this.data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(last_marker, false );
+            
+            this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+        }
+
+        this.marker_last_selected = marker;
+    }
+
+    renderFicheDetails(item){
+        if (screen.width < 991) {
+            getDetailTabac(item.dep, item.nom_dep, item.id)
+        } else {
+            getDetailTabac(item.dep, item.nom_dep, item.id)
+        }
     }
 
     addEventOnMap(map) {
@@ -166,7 +179,7 @@ class MarckerClusterTabac extends MapModule {
 
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
-            this.addPeripheriqueMarker(new_size)
+            this.addPeripheriqueMarker(new_size);
         })
     }
 
@@ -177,7 +190,7 @@ class MarckerClusterTabac extends MapModule {
 
 
     generateAllCard(){
-      
+      console.log("Generating all cards...")
     }
 
 
@@ -198,10 +211,31 @@ class MarckerClusterTabac extends MapModule {
         });
     }
 
+    /**
+     * Fetch all related data from the boundaries...
+     * @param {*} new_size  { minx, miny, maxx, maxy }
+     */
     async addPeripheriqueMarker(new_size) {
-       console.log(new_size)
-    }
+        try {
+            const { minx, miny, maxx, maxy }= new_size;
+            const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
 
+            const link =( this.nom_dep && this.id_dep) ? `/api/tabac/departement/${this.nom_dep}/${this.id_dep}` : `/api/tabac`;
+            const response= await fetch(`${link}${param}`);
+            const results = await response.json();
+            // console.log(results)
+            
+            let new_data= results.data;
+            // console.log(new_data);
+            
+            new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
+            this.addMarker(new_data);
+         
+            this.default_data= this.default_data.concat(new_data);
+        } catch (e) {
+            console.log(e)
+        }
+    }
     
     checkeFilterType(data) {
         return data;

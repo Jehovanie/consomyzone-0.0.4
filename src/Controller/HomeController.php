@@ -9,8 +9,10 @@ use App\Service\MessageService;
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
+use App\Service\GolfFranceService;
 use App\Service\SortResultService;
 use App\Repository\TabacRepository;
+use App\Repository\AvisGolfRepository;
 use App\Repository\BddRestoRepository;
 use App\Repository\FermeGeomRepository;
 use App\Repository\GolfFranceRepository;
@@ -193,6 +195,8 @@ class HomeController extends AbstractController
         MessageService $messageService,
         CommuneGeoCoderRepository $communeGeoCoderRepository,
         GolfFranceRepository $golfFranceRepository,
+        AvisGolfRepository $avisGolfRepository,
+        GolfFranceService $golfFranceService,
         TabacRepository $tabacRepository,
         RestaurantController $restaurantController,
         AvisRestaurantRepository $avisRestaurantRepository
@@ -231,7 +235,6 @@ class HomeController extends AbstractController
         $size = 20;
 
         $otherResult = false;
-
         switch (strtolower($type)){
             case "ferme":
                 $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
@@ -288,6 +291,11 @@ class HomeController extends AbstractController
                         $otherResult = true;
                     }
                 }
+
+                $ids_golf= array_map('App\Service\SortResultService::getIdFromData', $golf[0]);
+                $moyenne_golfs= $avisGolfRepository->getAllNoteById($ids_golf);
+                $golf[0] = $golfFranceService->mergeDatasAndAvis($golf[0], $moyenne_golfs);
+
                 $results = $golf;
                 break;
             case "tabac":
@@ -380,6 +388,10 @@ class HomeController extends AbstractController
                             $otherGolf = true;
                         }
                     }
+
+                    $ids_golf= array_map('App\Service\SortResultService::getIdFromData', $golf[0]);
+                    $moyenne_golfs= $avisGolfRepository->getAllNoteById($ids_golf);
+                    $golf[0] = $golfFranceService->mergeDatasAndAvis($golf[0], $moyenne_golfs);
 
                     if($otherGolf){
                         $otherResult = true;
@@ -498,6 +510,13 @@ class HomeController extends AbstractController
                         }
                     }
 
+                    if( count($golf[0])>0 ){
+                        $ids_golf= array_map('App\Service\SortResultService::getIdFromData', $golf[0]);
+                        $moyenne_golfs= $avisGolfRepository->getAllNoteById($ids_golf);
+                        $golf[0] = $golfFranceService->mergeDatasAndAvis($golf[0], $moyenne_golfs);
+                    }
+
+
                     $tabac = $tabacRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($tabac[0])>0){
                         $tabac = $tabacRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
@@ -610,6 +629,42 @@ class HomeController extends AbstractController
             "cles1" => $cles1,
             "page" => $page,
             "amisTributG" => $amis_in_tributG,
+        ]);
+    }
+
+    #[Route("/api/get_one/{type}/{id}", name: "api_get_one_item", methods: "GET")]
+    public function getOneItem(
+        $type, $id,
+        BddRestoRepository $bddRestoRepository,
+        AvisRestaurantRepository $avisRestaurantRepository,
+        
+        FermeGeomRepository $fermeGeomRepository,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository,
+        GolfFranceRepository $golfFranceRepository,
+        TabacRepository $tabacRepository
+    ){
+        $result= null;
+
+        if( $type === "resto"){
+            $data = $bddRestoRepository->getOneItemByID($id);
+            $moyenneNote = $avisRestaurantRepository->getNoteById($id);
+            if( $moyenneNote !== null ){
+                $data["moyenne_note"]= $moyenneNote["moyenne_note"];
+            }
+        }else if( $type === "ferme" ){
+            $result = $fermeGeomRepository->getOneItemByID($id);
+        }else if( $type === "station" ){
+            $result = $stationServiceFrGeomRepository->getOneItemByID($id);
+        }else if( $type === "golf" ){
+            $result = $golfFranceRepository->getOneItemByID($id);
+        }else if( $type === "tabac" ){
+            $result = $tabacRepository->getOneItemByID($id);
+        }else{
+            $result = null;
+        }
+
+        return $this->json([
+            "result" => $result
         ]);
     }
 

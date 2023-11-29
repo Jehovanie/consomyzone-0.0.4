@@ -140,7 +140,7 @@ class AvisGolfRepository extends ServiceEntityRepository
      */
     public function getAllNoteById(array $a){
         return $this->createQueryBuilder("r")
-                    ->select("AVG(r.note) as moyenne_note, IDENTITY(r.golf) as id_resto")
+                    ->select("AVG(r.note) as moyenne_note, IDENTITY(r.golf) as id_golf")
                     ->where("r.golf IN (:u)")
                     ->setParameter("u", $a)
                     ->groupBy("r.golf")
