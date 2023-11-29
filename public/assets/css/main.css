@@ -2520,3 +2520,8 @@ textarea {
     height: 50px;
     clip-path: circle();
 }
+
+.info_multiple_mail{
+    font-size: 0.8rem;
+    color: #00acff;
+}

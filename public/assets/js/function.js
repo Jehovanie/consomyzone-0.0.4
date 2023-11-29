@@ -6986,3 +6986,55 @@ function formatEmailAdresseFromStringLong(stringLong){
 
     return tab_email;
 }
+
+
+function displayTooltipHelpMsg(){
+
+    //// bind event hover on tooltip piece joint jheo
+    if( document.querySelector(".message_tooltip_piece_joint_jheo_js")){
+
+        const content_input_piece= document.querySelector(`.content_input_piece_joint_jheo_js`);
+        
+        content_input_piece.addEventListener('mouseover',() => {
+            content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.remove('d-none')
+        })
+    
+        content_input_piece.addEventListener('mouseout',() => {
+            content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.add('d-none')
+        })
+    }
+
+    /// bint event hover on toolitp add link  ckeditor
+    if( document.querySelector(".add_link_jheo_js")){
+
+        const content_input_piece= document.querySelector(`.content_add_link_jheo_js`);
+        
+        content_input_piece.addEventListener('mouseover',() => {
+            content_input_piece.querySelector('.add_link_jheo_js').classList.remove('d-none')
+        })
+    
+        content_input_piece.addEventListener('mouseout',() => {
+            content_input_piece.querySelector('.add_link_jheo_js').classList.add('d-none')
+        })
+    }
+
+    /// bind event hover on tooltip add image.
+    if( document.querySelector(".add_image_jheo_js")){
+
+        const content_input_piece= document.querySelector(`.content_add_image_js`);
+        
+        content_input_piece.addEventListener('mouseover',() => {
+            content_input_piece.querySelector('.add_image_jheo_js').classList.remove('d-none')
+        })
+    
+        content_input_piece.addEventListener('mouseout',() => {
+            content_input_piece.querySelector('.add_image_jheo_js').classList.add('d-none')
+        })
+    }
+}
+
+function cancelAddLink(){
+    document.querySelector(".link_name_jheo_js").value= null;
+    document.querySelector(".link_value_jheo_js").value= null;
+
+}

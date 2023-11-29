@@ -205,7 +205,7 @@
                                                     Invitation envoyée avec succès !
                                                 </div>
                                                 <div class="form-group content_cc_css_jheo mt-3">
-                                                    <label for="exampleFormControlInput1">Destinataire</label>
+                                                    <label for="exampleFormControlInput1">Destinataire <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs destinations.)</span></label>
                                                     <input type="text" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="nom@exemple.com">
                                                     {# <a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
                                                         <span class="me-2 mt-2">Cc/Cci</span>
@@ -214,7 +214,7 @@
                                                 {# collapse #}
                                                 <div class="mt-3" id="tribut-collapse">
                                                     <div class="form-group multiple_destination_css">
-                                                        <label for="exampleFormControlInput1">Ajouter de Cc</label>
+                                                        <label for="exampleFormControlInput1">Ajouter de Cc <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cc.)</span></label>
                                                         <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de copie">
                                                         <div class="content_chip content_chip_js_jheo">
                                                             
@@ -224,7 +224,7 @@
 
                                                 <div class="mt-3" id="tribut-collapse">
                                                     <div class="form-group multiple_destination_css">
-                                                        <label for="exampleFormControlInput1">Ajouter de Cci</label>
+                                                        <label for="exampleFormControlInput1">Ajouter de Cci <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cci.)</span></label>
                                                         <input type="text" class="form-control  multiple_destination_cci_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email en Cci">
                                                     </div>
                                                 </div>
@@ -352,5 +352,6 @@
 	{% include 'shard/modal/partage_agenda.html.twig' %}
 	{% include 'shard/modal/partage_agenda_tribu_t.html.twig' %}
 	{% include 'shard/modal/alert_flash.html.twig' %}
+    {% include 'shard/modal/addLinkInvitation.html.twig' %}
 {% endblock %}
 

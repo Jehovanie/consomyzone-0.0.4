@@ -215,15 +215,14 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
 
 if( document.querySelector(".message_tooltip_piece_joint_jheo_js")){
 
-    const content_input_piece= document.querySelector(`.content_input_piece_joint_jheo_js`);
-    
-    content_input_piece.addEventListener('mouseover',() => {
-        content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.remove('d-none')
-    })
+    ///hover tooltip piece joint, ...
+    displayTooltipHelpMsg();
 
-    content_input_piece.addEventListener('mouseout',() => {
-        content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.add('d-none')
-    })
+    if( document.querySelector(".content_add_link_jheo_js")){
+        document.querySelector(".label_add_link_jheo_js").addEventListener("click", () => {
+            document.querySelector(".modal_addlink_invitation_jheo_js").click();
+        })
+    }
 }
 
 function verifieEmailValid(email) {
@@ -406,4 +405,27 @@ function removeListeItem(e, id){
     e.parentElement.remove()
     ///remove one element in the piece global
     email_piece_joint_list= email_piece_joint_list.filter(item => item.id  != id )
+}
+
+
+function addLinkOnMailBody(){
+    const link_name= document.querySelector(".link_name_jheo_js").value.trim();
+    const link_value= encodeURI(document.querySelector(".link_value_jheo_js").value);
+
+    if( editor ){
+        // const old_data= editor.getData();
+        // const dom_parse= new DOMParser();
+        // const html= dom_parse.parseFromString(old_data,  "text/html");
+
+        // const content_link_jheo= html.body.querySelector(".content_link_jheo_js");
+        // content_link_jheo.innerHTML= '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' + link_value + '" >' + link_name + ' </a>'
+
+        // console.log(html.body)
+
+        editor.setData(
+            editor.getData() + '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' + link_value + '" >' + link_name + ' </a>'
+        )
+    }
+
+    cancelAddLink();
 }

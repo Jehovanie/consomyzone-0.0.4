@@ -1908,7 +1908,7 @@ function showInvitations() {
                                 Invitation envoyée avec succès !
                             </div>
                             <div class="form-group content_cc_css_jheo mt-3">
-                                <label for="exampleFormControlInput1">Destinataires</label>
+                                <label for="exampleFormControlInput1">Destinataires  <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs destinations.)</span></label>
                                 <input type="text" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email du destinataire">
                                 <!--<a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
                                     <span class="me-2 mt-2">Cc/Cci</span>
@@ -1917,7 +1917,7 @@ function showInvitations() {
 
                             <div class="mt-3" id="tribut-collapse">
                                 <div class="form-group multiple_destination_css">
-                                    <label for="exampleFormControlInput1">Ajouter de Cc</label>
+                                    <label for="exampleFormControlInput1">Ajouter de Cc <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cc.)</span></label>
                                     <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de copie">
                                     <div class="content_chip content_chip_js_jheo">
                                         
@@ -1926,7 +1926,7 @@ function showInvitations() {
                             </div>
                             <div class="mt-3" id="tribut-collapse">
                                 <div class="form-group multiple_destination_css">
-                                    <label for="exampleFormControlInput1">Ajouter de Cci</label>
+                                    <label for="exampleFormControlInput1">Ajouter de Cci <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cci.)</span></label>
                                     <input type="text" class="form-control  multiple_destination_cci_js_jheo" id="exampleFormControlInput2" placeholder="Saisir l'adresse email en Cci">
                                     <div class="content_chip content_chip_js_jheo">
                                         
@@ -2234,77 +2234,6 @@ function showInvitations() {
     /** END JEHOVANNIE*/
 }
 
-
-
-
-function displayTooltipHelpMsg(){
-
-    //// bind event hover on tooltip piece joint jheo
-    if( document.querySelector(".message_tooltip_piece_joint_jheo_js")){
-
-        const content_input_piece= document.querySelector(`.content_input_piece_joint_jheo_js`);
-        
-        content_input_piece.addEventListener('mouseover',() => {
-            content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.remove('d-none')
-        })
-    
-        content_input_piece.addEventListener('mouseout',() => {
-            content_input_piece.querySelector('.message_tooltip_piece_joint_jheo_js').classList.add('d-none')
-        })
-    }
-
-    /// bint event hover on toolitp add link  ckeditor
-    if( document.querySelector(".add_link_jheo_js")){
-
-        const content_input_piece= document.querySelector(`.content_add_link_jheo_js`);
-        
-        content_input_piece.addEventListener('mouseover',() => {
-            content_input_piece.querySelector('.add_link_jheo_js').classList.remove('d-none')
-        })
-    
-        content_input_piece.addEventListener('mouseout',() => {
-            content_input_piece.querySelector('.add_link_jheo_js').classList.add('d-none')
-        })
-
-        document.querySelector(".label_add_link_jheo_js").addEventListener('click',() => {
-            editor.fire("set:link", "http://localhost.com")
-        })
-    }
-
-    /// bind event hover on tooltip add image.
-    if( document.querySelector(".add_image_jheo_js")){
-
-        const content_input_piece= document.querySelector(`.content_add_image_js`);
-        
-        content_input_piece.addEventListener('mouseover',() => {
-            content_input_piece.querySelector('.add_image_jheo_js').classList.remove('d-none')
-        })
-    
-        content_input_piece.addEventListener('mouseout',() => {
-            content_input_piece.querySelector('.add_image_jheo_js').classList.add('d-none')
-        })
-    }
-}
-
-function cancelAddLink(){
-    document.querySelector(".link_name_jheo_js").value= null;
-    document.querySelector(".link_value_jheo_js").value= null;
-
-}
-
-function addLinkOnMailBody(){
-    const link_name= document.querySelector(".link_name_jheo_js").value.trim();
-    const link_value= encodeURI(document.querySelector(".link_value_jheo_js").value);
-
-    if( editor ){
-        editor.setData(
-            editor.getData() + `<a href="${link_value}" class="stretched-link">${link_name}</a>`
-        )
-        // editor.insertHtml( `<a href="${link_value}" class="stretched-link">${link_name}</a>`);
-    }
-
-    cancelAddLink();
-}
 
 function setActiveTab(elem, param) {
 
@@ -3464,4 +3393,18 @@ function removeListeItem(e, id){
     e.parentElement.remove()
     ///remove one element in the piece global
     email_piece_joint_list= email_piece_joint_list.filter(item => item.id  != id )
+}
+
+
+function addLinkOnMailBody(){
+    const link_name= document.querySelector(".link_name_jheo_js").value.trim();
+    const link_value= encodeURI(document.querySelector(".link_value_jheo_js").value);
+
+    if( editor ){
+        editor.setData(
+            editor.getData() + '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' + link_value + '" >' + link_name + ' </a>'
+        )
+    }
+
+    cancelAddLink();
 }

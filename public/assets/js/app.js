@@ -965,6 +965,7 @@ function showModalEditor(isG, isListeInfile=false){
     <p id="free_place" > 
     Faites vite, car il ne reste plus que <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);"> ${agenda.place_libre} </span> place(s)</p>
     <img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js">
+    <p class="content_link content_link_jheo_js"></p>
     <p>Cordialement</p>
     <span id="fullnameCanEdit" contenteditable="true" style="background-color:cyan">
            ${fullname} 
