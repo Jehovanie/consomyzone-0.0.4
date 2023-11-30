@@ -2028,7 +2028,6 @@ function updatePublicationInHome() {
 
   let imgSrc = null;
   let oldSrc = "";
-
   if (
     document.querySelector(".image-upload-content").style.display == "block"
   ) {
@@ -7400,14 +7399,13 @@ function rejectPhoto(id_rubrique, id_gallery, file_path, rubrique) {
 }
 
 /**
-* @author tomm
-* @constructor : fonction du gallery trier par tags et date
-* @localisation : myTribuT.js,
-* @utilisation dans le myTribuT.js
-*/
+ * @author tomm
+ * @constructor : fonction du gallery trier par tags et date
+ * @localisation : myTribuT.js,
+ * @utilisation dans le myTribuT.js
+ */
 function galleryAll() {
-
-  let photosContainer = document.querySelector("#tribu_t_conteuneur")
+  let photosContainer = document.querySelector("#tribu_t_conteuneur");
 
   photosContainer.innerHTML = `<div class="mt-3 d-flex justify-content-center">
             <div class="spinner-border" role="status">
@@ -7415,16 +7413,20 @@ function galleryAll() {
             </div>
         </div>`;
 
-  const requete = new Request("/user/tribu/photos/" + tribu_t_name_0 + "_publication", {
-    method: "GET",
-    headers: {
-      'Accept': 'application/json',
-      'Content-Type': 'application/json'
+  const request = new Request(
+    "/user/tribu/photos/" + tribu_t_name_0 + "_publication",
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
     }
-  })
-  fetch(requete).then(rqt => rqt.json()).then(data => {
-    console.log(data);
-    photosContainer.innerHTML = `
+  );
+  fetch(request)
+    .then((rqt) => rqt.json())
+    .then((data) => {
+      photosContainer.innerHTML = `
                 <div class="intro">
                     <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
                         Photo télechargé avec succès!
@@ -7432,88 +7434,372 @@ function galleryAll() {
                     
                     
                 </div>`;
+      console.log(data);
+      if (data.length > 0) {
+        let li_img_pub = "";
+        let li_img_agenda = "";
+        let li_img_imp = "";
+        let title = "";
+        // let dateFusion = ''
+        console.log(data);
+        let count = 0;
+        for (let photos of data) {
+          let globalPhoto = [];
+          const map1 = new Map();
+          let lastDateFussion = "";
+          title = "";
+          for (let photo of photos) {
+            let img_src = photo.photo; //replaceAll("/public","");
+            let cheminFichier = img_src;
+            let date = photo.createdAt.split(" ");
+            let dateFusion = date[0]; //new date fusison
+            let isPhotoSplit = "";
+            if (cheminFichier == null) {
+              isPhotoSplit = "";
+            } else {
+              if (cheminFichier.indexOf("/photo/") > -1) {
+                //TODO date for key and path array as value
 
-    if (data.length > 0) {
-      let li_img_pub = ''
-      let li_img_agenda = ''
+                if (globalPhoto.length < 0) {
+                  map1.set(dateFusion, [img_src]);
+                } else {
+                  if (dateFusion == lastDateFussion) {
+                    //todo update object
 
-      for (let photo of data) {
-       
-        let img_src = photo.photo; //replaceAll("/public","");
-        let img_date = photo.dateCreate
-        let cheminFichier = img_src;
+                    let value = map1.get(dateFusion);
+                    value.push(img_src);
+                    map1.set(dateFusion, value);
+                    // globalPhoto.push(object)
+                  } else {
+                    //todo add
+                    map1.set(dateFusion, [img_src]);
+                  }
+                }
 
-        let isPhotoSplit = cheminFichier.split('/');
+                lastDateFussion = dateFusion;
+              } else if (cheminFichier.indexOf("/photos/") > -1) {
+                if (cheminFichier.indexOf("/tribu_t/") > -1) {
+                  //TODO date for key and path array as value
 
-        console.log(img_date);
-        
-        if (isPhotoSplit[4] == 'photo') {
-          if (img_date) {
-            li_img_pub += `
-                <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
-                    <img
-                    src="${img_src}"
-                    class="w-100 shadow-1-strong  mb-4"
-                    alt="Boat on Calm Water"
-                    />
-                </div>
-                `
+                  if (globalPhoto.length < 0) {
+                    map1.set(dateFusion, [img_src]);
+                  } else {
+                    if (dateFusion == lastDateFussion) {
+                      //todo update object
+
+                      let value = map1.get(dateFusion);
+                      value.push(img_src);
+                      map1.set(dateFusion, value);
+                      // globalPhoto.push(object)
+                    } else {
+                      //todo add
+                      map1.set(dateFusion, [img_src]);
+                    }
+                  }
+
+                  lastDateFussion = dateFusion;
+                }
+              } else if (cheminFichier.indexOf("/photo_imp/") > -1) {
+                //TODO date for key and path array as value
+
+                if (globalPhoto.length < 0) {
+                  map1.set(dateFusion, [img_src]);
+                } else {
+                  if (dateFusion == lastDateFussion) {
+                    //todo update object
+
+                    let value = map1.get(dateFusion);
+                    value.push(img_src);
+                    map1.set(dateFusion, value);
+                    // globalPhoto.push(object)
+                  } else {
+                    //todo add
+                    map1.set(dateFusion, [img_src]);
+                  }
+                }
+
+                lastDateFussion = dateFusion;
+              }
+            }
           }
-          
-        } else if (isPhotoSplit[4] == 'photos') {
-          if (img_date) {
-            li_img_agenda += `
-                  <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
-                      <img
-                      src="${img_src}"
-                      class="w-100 shadow-1-strong  mb-4"
-                      alt="Boat on Calm Water"
-                      />
-                  </div>
-                  `
+          globalPhoto.push(map1);
+          if (count == 0) {
+            //if gallery publication
+            for (let photo of globalPhoto) {
+              const iterator1 = photo[Symbol.iterator]();
+              for (const item of iterator1) {
+                title = item[0];
+                const datas = item[1];
+                li_img_pub += `<h6>${title}</h6>`;
+                for (let data of datas) {
+                  li_img_pub += `
+                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 pub"  onclick="openGalleriesPhotoTribuT(this)">
+                        <img
+                        src="${data}"
+                        class="w-100 shadow-1-strong mb-4 pub"
+                        alt="Boat on Calm Water"
+                        />
+                    </div>
+                    `;
+                }
+              }
+            }
+          } else if (count == 1) {
+            //if gallery agenda
+            for (let photo of globalPhoto) {
+              const iterator1 = photo[Symbol.iterator]();
+              for (const item of iterator1) {
+                title = item[0];
+                const datas = item[1];
+                li_img_agenda += `<h6>${title}</h6>`;
+                for (let data of datas) {
+                  li_img_agenda += `
+                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 galer" onclick="openGalleriesPhotoTribuT(this)">
+                        <img
+                        src="${data}"
+                        class="w-100 shadow-1-strong mb-4 galer"
+                        alt="Boat on Calm Water"
+                        />
+                    </div>
+                    `;
+                }
+              }
+            }
+          } else if (count == 2) {
+            //if gallery import
+            for (let photo of globalPhoto) {
+              const iterator1 = photo[Symbol.iterator]();
+              for (const item of iterator1) {
+                title = item[0];
+                const datas = item[1];
+                li_img_imp += `<h6>${title}</h6>`;
+                for (let data of datas) {
+                  li_img_imp += `
+                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 imp_img"  onclick="openGalleriesPhotoTribuT(this)">
+                        <img
+                        src="${data}"
+                        class="w-100 shadow-1-strong mb-4 imp_img"
+                        alt="Boat on Calm Water"
+                        />
+                    </div>
+                    `;
+                }
+              }
+            }
+            console.log(globalPhoto);
           }
+          count++;
         }
-        
-      }
-      setGallerie(document.querySelectorAll(".img_gal"))
-      photosContainer.innerHTML += `<div class="gallery-container">
+        //console.log(globalPhoto)
+
+        setGallerie(document.querySelectorAll(".img_gal"));
+        photosContainer.innerHTML += `<div class="gallery-container">
                   <div>
-                      <span class="h2">Vos photo</span> 
+                      <span class="h2 text-dark text-center" >Bienvenue dans la galerie.</span> 
                       <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
                           <i class="bi bi-camera-fill"></i> Importer
-                          <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                          <input onchange="loadFile(event)" type="file" accept="image/*" name="photo" style="display:none;">
                           <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
                       </label>
                   </div>
+                  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <div class="container-fluid">
+                      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                        <div class="navbar-nav">
+                          <a class="nav-link" id="gal-publication-t" data-status-nav="gal-publication-t" style="color: #0101DF">Publication</a>
+                          <a class="nav-link" id="gal-agenda-t" data-status-nav="gal-agenda-t">Agenda</a>
+                          <a class="nav-link" id="gal-telechargement-t" data-status-nav="gal-telechargement-t">Téléchargement</a>
+                        </div>
+                      </div>
+                    </div>
+                  </nav>
                   <div id="gallery">
-                    <div class="content-publication">
-                      <h5 class="mb-3">Publication</h5>
-                      <div class="row">
+                    <div class="content-publication-tomm-js" data-status="gal-publication-t">
+                      
+                      <div class="row photo-pud-t-tomm-js" >
                         ${li_img_pub} 
                       </div>
                     </div>
-                    <div class="content-agenda">
-                      <div class="row">
-                        <h5 class="mb-3">Agenda</h5>
+                    <div class="content-agenda-tomm-js d-none" data-status="gal-agenda-t">
+                      
+                      <div class="row photo-agenda-t-tomm-js">
                         ${li_img_agenda} 
                       </div>
                     </div>
+                    <div class="content-telechargement-tomm-js d-none" data-status="gal-telechargement-t">
+                      
+                      <div class="row photo-imp-t-tomm-js">
+                        ${li_img_imp} 
+                      </div>
+                    </div>
                   </div>
-                </div>`
+                </div>`;
 
-      setGallerie(document.querySelectorAll("#gallery img"))
+        document
+          .querySelector("#gal-publication-t")
+          .addEventListener("click", () => {
+            if (
+              document
+                .querySelector("#gal-publication-t")
+                .getAttribute("data-status-nav") ==
+              document
+                .querySelector(".content-publication-tomm-js")
+                .getAttribute("data-status")
+            ) {
+              document
+                .querySelector(".content-publication-tomm-js")
+                .classList.remove("d-none");
+              document
+                .querySelector(".content-agenda-tomm-js")
+                .classList.add("d-none");
+              document
+                .querySelector(".content-telechargement-tomm-js")
+                .classList.add("d-none");
+              document.querySelector("#gal-publication-t").style =
+                "color: #0101DF";
+              document.querySelector("#gal-agenda-t").removeAttribute("style");
+              document
+                .querySelector("#gal-telechargement-t")
+                .removeAttribute("style");
+            }
+          });
+        document
+          .querySelector("#gal-agenda-t")
+          .addEventListener("click", () => {
+            if (
+              document
+                .querySelector("#gal-agenda-t")
+                .getAttribute("data-status-nav") ==
+              document
+                .querySelector(".content-agenda-tomm-js")
+                .getAttribute("data-status")
+            ) {
+              document
+                .querySelector(".content-agenda-tomm-js")
+                .classList.remove("d-none");
+              document
+                .querySelector(".content-publication-tomm-js")
+                .classList.add("d-none");
+              document
+                .querySelector(".content-telechargement-tomm-js")
+                .classList.add("d-none");
+              document.querySelector("#gal-agenda-t").style = "color: #0101DF";
+              document
+                .querySelector("#gal-publication-t")
+                .removeAttribute("style");
+              document
+                .querySelector("#gal-telechargement-t")
+                .removeAttribute("style");
+            }
+          });
+        document
+          .querySelector("#gal-telechargement-t")
+          .addEventListener("click", () => {
+            if (
+              document
+                .querySelector("#gal-telechargement-t")
+                .getAttribute("data-status-nav") ==
+              document
+                .querySelector(".content-telechargement-tomm-js")
+                .getAttribute("data-status")
+            ) {
+              document
+                .querySelector(".content-agenda-tomm-js")
+                .classList.add("d-none");
+              document
+                .querySelector(".content-publication-tomm-js")
+                .classList.add("d-none");
+              document
+                .querySelector(".content-telechargement-tomm-js")
+                .classList.remove("d-none");
+              document.querySelector("#gal-telechargement-t").style =
+                "color: #0101DF";
+              document
+                .querySelector("#gal-publication-t")
+                .removeAttribute("style");
+              document.querySelector("#gal-agenda-t").removeAttribute("style");
+            }
+          });
 
-    } else {
-      photosContainer.innerHTML += `<div class="gallery-container"><div>
-                    <span class="h2">Vos photo</span> 
+        setGallerie(document.querySelectorAll("#gallery img"));
+      } else {
+        photosContainer.innerHTML += `<div class="gallery-container"><div>
+                    <span class="h2">Bienvenue dans la galerie.</span> 
                     <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
                         <i class="bi bi-camera-fill"></i> Importer
-                        <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                        <input onchange="loadFile(event)" type="file" accept="image/*" name="photo" style="display:none;">
                         <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
                     </label>
                 </div>
                 <div id="gallery">Aucune photo</div></div>`;
-    }
+      }
+    });
+}
 
+/**
+ * @constructor show gallery photo for detail
+ * @author Elie , modif by tom
+ * @param {*} elem
+ */
+function openGalleriesPhotoTribuT(elem) {
+  $("#modalGalleryPhoto").modal("show");
+  let container = null;
+  if (elem.classList.contains("pub")) {
+    container = document.querySelector(".photo-pud-t-tomm-js");
+  }
+
+  if (elem.classList.contains("galer")) {
+    container = document.querySelector(".photo-agenda-t-tomm-js");
+  }
+
+  if (elem.classList.contains("imp_img")) {
+    container = document.querySelector(".photo-imp-t-tomm-js");
+  }
+  let imgs = [];
+  Array.from(container.querySelectorAll("img")).forEach((img) => {
+    imgs.push(img.cloneNode(true));
   });
+  // console.log(imgs);
+
+  const nb_images = imgs.length;
+  const last_image = imgs[nb_images - 1];
+  last_image.setAttribute("data-length", nb_images - 1);
+
+  const previous = document.createElement("button");
+  previous.classList = "btn-previous-photo";
+  previous.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
+  previous.setAttribute("onclick", "previousPhotoGallery(this)");
+
+  const next = document.createElement("button");
+  next.classList = "btn-next-photo";
+  next.innerHTML = '<i class="fa-solid fa-angle-right"></i>';
+  next.setAttribute("onclick", "nextPhotoGallery(this)");
+
+  document.querySelector("#bodyGalleryPhoto").appendChild(previous);
+
+  document.querySelector("#bodyGalleryPhoto").appendChild(last_image);
+
+  document.querySelector("#bodyGalleryPhoto").appendChild(next);
+
+  for (let i = 0; i < nb_images - 1; i++) {
+    let img = imgs[i];
+    img.setAttribute("class", "image-miniature miniature-" + i);
+    img.setAttribute("data-length", i);
+    img.setAttribute("onclick", "setUp(this)");
+    document.querySelector("#footerGalleryPhoto").appendChild(img);
+  }
+
+  let instance = document.createElement("img");
+  instance.setAttribute(
+    "class",
+    "image-miniature current-gallery-photo miniature-" +
+      last_image.dataset.length
+  );
+  instance.setAttribute("data-length", last_image.dataset.length);
+  instance.src = last_image.src;
+  instance.setAttribute("onclick", "setUp(this)");
+
+  document.querySelector("#footerGalleryPhoto").appendChild(instance);
+
+  // console.log(imgs);
 }
