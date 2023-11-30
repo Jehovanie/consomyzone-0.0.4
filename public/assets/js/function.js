@@ -300,8 +300,8 @@ function fetchDetails(selector, linkGetDetail) {
 }
 
 function fetchAvies(idRestaurant, select_dem) {
-  console.log("idRestaurant");
-  console.log(idRestaurant);
+  // console.log("idRestaurant");
+  // console.log(idRestaurant);
   let currentUserId = 0;
 
   if (select_dem) {
@@ -848,20 +848,20 @@ function deleteMap() {
 
 function setGallerie(imgs) {
   imgs.forEach((img) => {
-    console.log(img);
+    // console.log(img);
     //console.log(img);
     const h = img.naturalHeight;
     const w = img.naturalWidth;
 
-    console.log("img.naturalHeight : " + img.naturalHeight);
-    console.log("img.naturalWidth : " + img.naturalWidth);
+    // console.log("img.naturalHeight : " + img.naturalHeight);
+    // console.log("img.naturalWidth : " + img.naturalWidth);
     const ratio = w / h;
     let closestRatioValue = Math.abs(1 - ratio);
-    console.log("closestRatioValue " + closestRatioValue);
+    // console.log("closestRatioValue " + closestRatioValue);
     let closestRatio = 1;
     var a = Math.abs(16 / 9 - ratio);
     var b = Math.abs(9 / 16 - ratio);
-    console.log("a " + a + " b" + b);
+    // console.log("a " + a + " b" + b);
     if (a < closestRatioValue) {
       closestRatioValue = a;
       closestRatio = 16 / 9;
@@ -880,10 +880,10 @@ function setGallerie(imgs) {
     }
 
     if (closestRatio == 16 / 9) {
-      console.log("16/9");
+      // console.log("16/9");
       img.style.gridColumn = "span 2";
     } else if (closestRatio == 9 / 16) {
-      console.log("9/16");
+      // console.log("9/16");
       img.style.gridRow = "1 / span 2";
     }
   });
@@ -1134,7 +1134,7 @@ function pagginationModule(parentSelector, childSelector, numberPerPage) {
 
       const startStep = (current_page - 2) * numberPerPage;
       const endStep = (current_page - 1) * numberPerPage;
-      console.log(startStep, endStep);
+      // console.log(startStep, endStep);
       updateList(startStep, endStep, allChildHtml);
 
       if (current_page - 1 === 1) {
@@ -1198,7 +1198,7 @@ function pagginationModule(parentSelector, childSelector, numberPerPage) {
         }
       }
     } else {
-      console.log("tatara hafa");
+      // console.log("tatara hafa");
       const alphabet_active = document
         .querySelector(".alphabet_active")
         .innerText.toLowerCase();
@@ -1299,7 +1299,7 @@ function openMenu() {
       // document.querySelector(".card-body").style = "margin-left:0px !important; margin-top:60px !important"
     }
   } else {
-    console.log("margin-left : 0px");
+    // console.log("margin-left : 0px");
     leftInvitation.style = "margin-left :70px !important;";
     if (document.querySelector(".invitation-conf")) {
       document.querySelector(".invitation-conf").style =
@@ -2071,7 +2071,7 @@ function updatePublicationInHome() {
 function bindDataUpdatePub(table, id) {
   const publication = document.querySelector(`.pub_${table}_${id}_jheo_js`);
   if (!publication) {
-    console.log(`Selector not found: pub_${table}_${id}_jheo_js`);
+    // console.log(`Selector not found: pub_${table}_${id}_jheo_js`);
     return false;
   }
 
@@ -3297,7 +3297,7 @@ function getRestoSpecSearchMobile(nom_dep, id_dep, idResto) {
     .then((res) => res.json())
 
     .then((response) => {
-      console.log(response);
+      // console.log(response);
       let listSpecMobile = document.querySelector(
         ".item-detail-recherche-tomm-js"
       );
@@ -3609,7 +3609,7 @@ function getFermeSpecSearchMobile(nom_dep, id_dep, idFerme) {
     .then((res) => res.json())
 
     .then((response) => {
-      console.log(response);
+      // console.log(response);
       let listSpecMobile = document.querySelector(
         ".item-detail-recherche-tomm-js"
       );
@@ -3883,7 +3883,7 @@ function getGolfSpecSearchMobile(nom_dep, id_dep, idGolf) {
     .then((res) => res.json())
 
     .then((response) => {
-      console.log(response);
+      // console.log(response);
       let listSpecMobile = document.querySelector(
         ".item-detail-recherche-tomm-js"
       );
@@ -4004,7 +4004,7 @@ function getTabacSpecSearchMobile(nom_dep, id_dep, idTabac) {
     .then((res) => res.json())
 
     .then((response) => {
-      console.log(response);
+      // console.log(response);
       let listSpecMobile = document.querySelector(
         ".item-detail-recherche-tomm-js"
       );
@@ -4733,7 +4733,7 @@ function getDataSpecTabacMobile(nom_dep, id_dep) {
       if (document.querySelector(".loading-tomm-js")) {
         document.querySelector(".loading-tomm-js").innerHTML = "";
       }
-      console.log(responses);
+      // console.log(responses);
       let listSpecMobile = document.querySelector(
         ".list-specific-tabac-mobile-tomm-js"
       );
@@ -7396,5 +7396,124 @@ function rejectPhoto(id_rubrique, id_gallery, file_path, rubrique) {
         }
       });
     }
+  });
+}
+
+/**
+* @author tomm
+* @constructor : fonction du gallery trier par tags et date
+* @localisation : myTribuT.js,
+* @utilisation dans le myTribuT.js
+*/
+function galleryAll() {
+
+  let photosContainer = document.querySelector("#tribu_t_conteuneur")
+
+  photosContainer.innerHTML = `<div class="mt-3 d-flex justify-content-center">
+            <div class="spinner-border" role="status">
+            <span class="sr-only">Loading...</span>
+            </div>
+        </div>`;
+
+  const requete = new Request("/user/tribu/photos/" + tribu_t_name_0 + "_publication", {
+    method: "GET",
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  })
+  fetch(requete).then(rqt => rqt.json()).then(data => {
+    console.log(data);
+    photosContainer.innerHTML = `
+                <div class="intro">
+                    <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
+                        Photo télechargé avec succès!
+                    </div>
+                    
+                    
+                </div>`;
+
+    if (data.length > 0) {
+      let li_img_pub = ''
+      let li_img_agenda = ''
+
+      for (let photo of data) {
+       
+        let img_src = photo.photo; //replaceAll("/public","");
+        let img_date = photo.dateCreate
+        let cheminFichier = img_src;
+
+        let isPhotoSplit = cheminFichier.split('/');
+
+        console.log(img_date);
+        
+        if (isPhotoSplit[4] == 'photo') {
+          if (img_date) {
+            li_img_pub += `
+                <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                    <img
+                    src="${img_src}"
+                    class="w-100 shadow-1-strong  mb-4"
+                    alt="Boat on Calm Water"
+                    />
+                </div>
+                `
+          }
+          
+        } else if (isPhotoSplit[4] == 'photos') {
+          if (img_date) {
+            li_img_agenda += `
+                  <div class="col-lg-4 col-md-12 mb-4 mb-lg-0">
+                      <img
+                      src="${img_src}"
+                      class="w-100 shadow-1-strong  mb-4"
+                      alt="Boat on Calm Water"
+                      />
+                  </div>
+                  `
+          }
+        }
+        
+      }
+      setGallerie(document.querySelectorAll(".img_gal"))
+      photosContainer.innerHTML += `<div class="gallery-container">
+                  <div>
+                      <span class="h2">Vos photo</span> 
+                      <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
+                          <i class="bi bi-camera-fill"></i> Importer
+                          <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                          <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
+                      </label>
+                  </div>
+                  <div id="gallery">
+                    <div class="content-publication">
+                      <h5 class="mb-3">Publication</h5>
+                      <div class="row">
+                        ${li_img_pub} 
+                      </div>
+                    </div>
+                    <div class="content-agenda">
+                      <div class="row">
+                        <h5 class="mb-3">Agenda</h5>
+                        ${li_img_agenda} 
+                      </div>
+                    </div>
+                  </div>
+                </div>`
+
+      setGallerie(document.querySelectorAll("#gallery img"))
+
+    } else {
+      photosContainer.innerHTML += `<div class="gallery-container"><div>
+                    <span class="h2">Vos photo</span> 
+                    <label class="input-file text-center float-end"  style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;"> 
+                        <i class="bi bi-camera-fill"></i> Importer
+                        <input onchange="loadFile(event)" type="file" name="photo" style="display:none;">
+                        <img src="" alt="" id="photo-file" class="w-100" style="display:none;">
+                    </label>
+                </div>
+                <div id="gallery">Aucune photo</div></div>`;
+    }
+
   });
 }

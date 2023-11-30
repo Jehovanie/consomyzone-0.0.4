@@ -1505,9 +1505,9 @@ class TributTController extends AbstractController
             array_push($tabPhoto, ["photo"=>$photo]);
         }
         foreach ($images as $image) {
-            $photo = explode("uploads/tribu_t",$image)[1];
-            $photo = "/public/uploads/tribu_t".$photo;
-            array_push($tabPhoto, ["photo"=>$photo]);
+            $photo = explode("uploads/tribu_t", $image)[1];
+            $photo = "/public/uploads/tribu_t" . $photo;
+            array_push($tabPhoto, ["photo" => $photo, "dateCreate" => date("F d Y H:i:s.", $filemtime2)]);
         }
         return $this->json($tabPhoto);
     }
