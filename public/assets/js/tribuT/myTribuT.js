@@ -437,6 +437,7 @@ function updatePdpTribu_T(files) {
  *  je veux : ajouter une photo par media screen navigateur
  */
 function sendPublication(formData) {
+  console.log(formData.values());
   const fR = new FileReader();
 
   /**
@@ -478,6 +479,7 @@ function sendPublication(formData) {
     );
   } else {
     fR.addEventListener("load", (evt) => {
+      console.log("evt"+evt)
       let param = {
         base64: evt.target.result,
         photoName: formData.get("photo").name,

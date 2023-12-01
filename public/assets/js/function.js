@@ -1465,7 +1465,7 @@ function removeUpload() {
       i.classList.remove("d-none");
     }
   });
-  $(".image-upload-input").replaceWith($(".image-upload-input").clone());
+  // $(".image-upload-input").replaceWith($(".image-upload-input").clone()); //il ne faut pas decommenter cette ligne, car ça crée des erreur
   $(".image-upload-content").hide();
   $(".image-upload-wrap").show();
 
@@ -1477,7 +1477,7 @@ function removeUpload() {
     `);
   $(".remove_image_upload_jheo_js").text("Change l'image");
 
-  document.querySelector(".image_upload_input_jheo_js").value = null;
+  document.querySelector(".image_upload_input_jheo_js").value = "";
 
   $(".image_upload_input_jheo_js").click();
 }

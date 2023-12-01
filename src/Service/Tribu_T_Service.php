@@ -1585,7 +1585,7 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
 
-    public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T, $tableTribuTImageImported,$idMin, $limits)
+    public function getPartisantPublicationOld($table_publication_Tribu_T, $table_commentaire_Tribu_T, $tableTribuTImageImported,$idMin, $limits)
     {
         $resultF = [];
         if ($idMin == 0) {
@@ -1627,6 +1627,53 @@ class Tribu_T_Service extends PDOConnexionService
             $result["publication"] = $this->convertUnicodeToUtf8($result["publication"]);
             $result["user_profil"] = $user_profil;
             array_push($resultF, $result);
+        }
+        return $resultF;
+    }
+    public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits, $userId){
+        $resultF=[];
+        $regex = "/\_publication+$/";
+
+        $tableReaction = preg_replace($regex, "_reaction", $table_publication_Tribu_T);
+  
+        if($idMin == 0){
+            //id,user_id,confidentiality,photo,userfullname,datetime, publication 
+
+            $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)".
+            " as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id".  
+            " ORDER BY t1.id DESC LIMIT :limits) as tb1 " .
+            " LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react,". 
+            " reaction FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId"
+            ;
+           
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            
+        }else{
+            $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)".
+            " as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id and t1.id <". 
+            " :idmin ORDER BY id DESC LIMIT :limits) as tb1 " .
+            " LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react, reaction ". 
+            " FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId";
+            $stmt = $this->getPDO()->prepare($sql);
+            $stmt->bindValue(':idmin', $idMin, PDO::PARAM_INT); 
+            $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
+            $stmt->execute();
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+           
+        }
+
+        foreach($results as $result){
+            $userSentPub=$result['user_id'];
+            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil,firstname,lastname FROM (SELECT photo_profil, user_id,firstname,lastname FROM consumer union SELECT photo_profil, user_id,firstname,lastname FROM supplier) as tab WHERE tab.user_id = $userSentPub");
+            $statement_photos->execute();
+            $user_profil = $statement_photos->fetch(PDO::FETCH_ASSOC);
+            $result["publication"]=$this->convertUnicodeToUtf8($result["publication"]);
+            $result["user_profil"]=$user_profil;
+            array_push($resultF,$result);
         }
         return $resultF;
     }

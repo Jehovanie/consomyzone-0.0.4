@@ -1,6 +1,6 @@
 
-const user_id = parseInt(document.querySelector(".main_user_id").getAttribute("id"));
-const fullname = document.querySelector(".main_user_id").getAttribute("data-toggle-full-name");
+const user_id = parseInt(document.querySelector(".main_user_id")?.getAttribute("id"));
+const fullname = document.querySelector(".main_user_id")?.getAttribute("data-toggle-full-name");
 
 if( document.querySelector(".content_publication_js_jheo")){
 
