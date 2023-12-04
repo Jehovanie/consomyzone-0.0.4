@@ -1665,7 +1665,7 @@ class Tribu_T_Service extends PDOConnexionService
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
            
         }
-
+        
         foreach($results as $result){
             $userSentPub=$result['user_id'];
             $statement_photos = $this->getPDO()->prepare("SELECT photo_profil,firstname,lastname FROM (SELECT photo_profil, user_id,firstname,lastname FROM consumer union SELECT photo_profil, user_id,firstname,lastname FROM supplier) as tab WHERE tab.user_id = $userSentPub");

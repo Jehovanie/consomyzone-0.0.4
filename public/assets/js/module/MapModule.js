@@ -1,432 +1,490 @@
-/// dependecies: 
+/// dependecies:
 ///         - franceGeometry ( franceGeoJson.js )
 ///         - API openstreetmap
 
-class MapModule{
+class MapModule {
+	constructor(idDep = null, nomDep, map_for_type = "tous") {
+		///currently url
+		this.currentUrl = new URL(window.location.href);
 
-    constructor(idDep= null,nomDep, map_for_type="tous"){
-        this.currentUrl= new URL(window.location.href);
+		////default values but these distroy when we get the user position
+		this.latitude = 46.61171462536897;
+		this.longitude = 1.8896484375000002;
 
-        ////default values but these distroy when we get the user position
-        this.latitude= 46.61171462536897;
-        this.longitude= 1.8896484375000002;
+		/// the copy of the default value of lat and long
+		/// we use these for the function to reset the view to Paris overview.
+		this.defautLatitude = this.latitude;
+		this.defaultLongitude = this.longitude;
+		this.defaultZoom = 6;
 
-        this.defautLatitude= this.latitude;
-        this.defaultLongitude= this.longitude;
+		this.maxZoom = 19;
+		this.zoomDetails = this.maxZoom;
 
+		/// we use this for contour geography for each space
+		this.geos = [];
 
-        this.defaultZoom= 6;
+		/// this like home, resto, station, etc...
+		this.mapForType = map_for_type;
 
-        this.zoomDetails= 20;
-        this.geos= [];
+		/// we use this for specific departement.
+		this.id_dep = idDep ? parseInt(idDep) : null;
+		this.nom_dep = nomDep ? nomDep : null;
 
-        this.mapForType=map_for_type;
-        this.id_dep= idDep ? parseInt(idDep) : null;
-        this.nom_dep= nomDep ? nomDep : null;
-        this.map= null;
+		/// object map
+		this.map = null;
+		this.polylines = [];
 
+		/// we use this for help in right section
+		this.isRightSideAlreadyOpen = false;
 
-        this.isRightSideAlreadyOpen = false;
+		this.objectGeoJson = [];
+		this.listRestoPastille = [];
 
-        this.objectGeoJson = [];
-        this.listRestoPastille = [];
+		this.tab_tales = [];
 
-        this.tab_tales = [];
-        this.listTales= [
-            { name: "Esri WorldStreetMap", link : "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}", id: "osm_esri_jheo_js", isCurrent: true },
-            { name: "Openstreetmap.org", link : "https://tile.openstreetmap.org/{z}/{x}/{y}.png", id: "osm_org_jheo_js", isCurrent: false },
-            { name: "Openstreetmap.fr Osmfr", link : "//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png" , id: "osm_fr_jheo_js", isCurrent: false },
-        ];
+		this.listTales = [
+			{
+				name: "Esri WorldStreetMap",
+				link: "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+				id: "osm_esri_jheo_js",
+				isCurrent: true,
+			},
+			{
+				name: "Openstreetmap.org",
+				link: "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+				id: "osm_org_jheo_js",
+				isCurrent: false,
+			},
+			{
+				name: "Openstreetmap.fr Osmfr",
+				link: "//{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png",
+				id: "osm_fr_jheo_js",
+				isCurrent: false,
+			},
+		];
 
-        // REFERENCES : https://gist.github.com/frankrowe/9007567
-        this.contourOption = [
-            { couche : "canton", arrayColor :["#1b9e77","#d95f02","#7570b3"], properties: ["cv", "dep","nom_cv", "nom_dep", "nom_reg", "reg"]},         /// Dark2
-            { couche : "commune", arrayColor :["#e0f3db","#a8ddb5","#43a2ca"], properties: []},        /// GnBu
-            { couche : "departement", arrayColor : ["#7fc97f","#beaed4","#fdc086"], properties: ["dep", "nom_dep", "nom_reg","reg"]},   /// Accent
-            { couche : "iris", arrayColor : ["#fde0dd","#fa9fb5","#c51b8a"], properties: []},          /// RdPu
-            { couche : "quartier", arrayColor :["red","#feb24c","#f03b20"], properties: ["nom_qv", "code_qv", "nom_pole", "pole" ]},       /// YlOrRd
-            { couche : "region", arrayColor : ["#f1a340","#f7f7f7","#998ec3"] , properties: ["nom_reg", "reg"]},       /// PuOr
-        ];
+		// REFERENCES : https://gist.github.com/frankrowe/9007567
+		this.contourOption = [
+			{
+				couche: "canton",
+				arrayColor: ["#1b9e77", "#d95f02", "#7570b3"],
+				properties: ["cv", "dep", "nom_cv", "nom_dep", "nom_reg", "reg"],
+			}, /// Dark2
+			{ couche: "commune", arrayColor: ["#e0f3db", "#a8ddb5", "#43a2ca"], properties: [] }, /// GnBu
+			{
+				couche: "departement",
+				arrayColor: ["#7fc97f", "#beaed4", "#fdc086"],
+				properties: ["dep", "nom_dep", "nom_reg", "reg"],
+			}, /// Accent
+			{ couche: "iris", arrayColor: ["#fde0dd", "#fa9fb5", "#c51b8a"], properties: [] }, /// RdPu
+			{
+				couche: "quartier",
+				arrayColor: ["red", "#feb24c", "#f03b20"],
+				properties: ["nom_qv", "code_qv", "nom_pole", "pole"],
+			}, /// YlOrRd
+			{ couche: "region", arrayColor: ["#f1a340", "#f7f7f7", "#998ec3"], properties: ["nom_reg", "reg"] }, /// PuOr
+		];
 
-        /* i use this to store the current caracter to filter. */
-        this.filterLetter= "";
+		/* i use this to store the current caracter to filter. */
+		this.filterLetter = "";
 
-        //// this variable use for the historique navigation in the carte
-        this.listPositionBeforAndAfter= [];
+		//// this variable use for the historique navigation in the carte
+		this.listPositionBeforAndAfter = [];
 
-        /// this use for to know the current index in the history navigation in the carte
-        /// by default it is the length of the this.listPositionBeforAndAfter.
-        this.indexCurrentOnLisPositionBeforeAndAfter=0
+		/// this use for to know the current index in the history navigation in the carte
+		/// by default it is the length of the this.listPositionBeforAndAfter.
+		this.indexCurrentOnLisPositionBeforeAndAfter = 0;
 
-        //// this is the shape of the item in the variable this.listPositionBeforAndAfter
-        this.currentPositionOnMap= { zoom : 0, lat: 0, lng: 0 }
+		//// this is the shape of the item in the variable this.listPositionBeforAndAfter
+		this.currentPositionOnMap = { zoom: 0, lat: 0, lng: 0 };
 
-        // this is the base of filter data in map based on the user zooming. 
-        /// ratio is the number precisious for the float on latitude ( ex lat= 47.5125400012145  if ratio= 3 => lat = 47.512
-        //// dataMax is the number maximun of the data to show after grouping the all data by lat with ratio.
-        ///// this must objectRatioAndDataMax is must be order by zoomMin DESC
-        this.objectRatioAndDataMax= [
-            { zoomMin: 18, dataMax: 20, ratio: 3 },
-            { zoomMin: 16, dataMax: 15, ratio: 3 },
-            { zoomMin: 14, dataMax:  8, ratio: 3 },
-            { zoomMin: 13, dataMax:  5, ratio: 2 },
-            { zoomMin:  9, dataMax:  3, ratio: 2 },
-            { zoomMin:  6, dataMax:  2, ratio: 1 },
-            { zoomMin:  4, dataMax:  1, ratio: 0 },
-            { zoomMin:  1, dataMax:  1, ratio: 0 }
-        ];
+		// this is the base of filter data in map based on the user zooming.
+		/// ratio is the number precisious for the float on latitude ( ex lat= 47.5125400012145  if ratio= 3 => lat = 47.512
+		//// dataMax is the number maximun of the data to show after grouping the all data by lat with ratio.
+		///// this must objectRatioAndDataMax is must be order by zoomMin DESC
+		this.objectRatioAndDataMax = [
+			{ zoomMin: 18, dataMax: 20, ratio: 3 },
+			{ zoomMin: 16, dataMax: 15, ratio: 3 },
+			{ zoomMin: 14, dataMax: 8, ratio: 3 },
+			{ zoomMin: 13, dataMax: 5, ratio: 2 },
+			{ zoomMin: 9, dataMax: 3, ratio: 2 },
+			{ zoomMin: 6, dataMax: 2, ratio: 1 },
+			{ zoomMin: 4, dataMax: 1, ratio: 0 },
+			{ zoomMin: 1, dataMax: 1, ratio: 0 },
+		];
+	}
 
-    }
+	initTales() {
+		this.tiles = L.tileLayer(this.listTales[0].link, {
+			// attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
+			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+			minZoom: 1,
+			maxZoom: this.maxZoom,
+		});
+	} /// - //{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png
 
-    
-    initTales(){
-        this.tiles = L.tileLayer(this.listTales[0].link, {
-            // attribution: 'donn&eacute;es &copy; <a href="//osm.org/copyright">OpenStreetMap</a>/ODbL - rendu <a href="//openstreetmap.fr">OSM France</a>',
-            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            minZoom: 1,
-            maxZoom: 19
-        })
-    } /// - //{s}.tile.openstreetmap.fr/osmfr/{z}/{x}/{y}.png
+	getUserLocation() {
+		if (!localStorage.getItem("userLocate")) {
+			localStorage.setItem("userLocate", false);
+			if (confirm("Souhaitez-vous que nous utilisions votre position ?")) {
+				localStorage.setItem("userLocate", true);
+				return new Promise((resolve, reject) =>
+					navigator.geolocation.getCurrentPosition(resolve, reject, {
+						maximumAge: 2000,
+						enableHighAccuracy: true,
+						timeout: 3000,
+					})
+				);
+			}
+		} else if (localStorage.getItem("userLocate").toString() === "true") {
+			return new Promise((resolve, reject) =>
+				navigator.geolocation.getCurrentPosition(resolve, reject, {
+					maximumAge: 2000,
+					enableHighAccuracy: true,
+					timeout: 3000,
+				})
+			);
+		}
+		return false;
+	}
 
+	async createMap(lat = null, long = null, zoom = null) {
+		if (lat != null && long != null && zoom != null) {
+			this.latitude = lat;
+			this.longitude = long;
+			this.defaultZoom = zoom;
+		}
 
-    getUserLocation(){
-        if( !localStorage.getItem("userLocate")){
-            localStorage.setItem("userLocate", false)
-            if( confirm("Souhaitez-vous que nous utilisions votre position ?") ){
-                localStorage.setItem("userLocate", true);
-                return new Promise((resolve, reject) =>
-                    navigator.geolocation.getCurrentPosition(resolve, reject,{maximumAge: 2000, enableHighAccuracy: true,timeout: 3000} )
-                );
-            }
-        }else if( localStorage.getItem("userLocate").toString() === "true"){
-            return new Promise((resolve, reject) =>
-                navigator.geolocation.getCurrentPosition(resolve, reject,{maximumAge: 2000, enableHighAccuracy: true,timeout: 3000} )
-            );
-        }
-        return false;
-    }
+		const memoryCenter = getDataInSessionStorage("memoryCenter")
+			? JSON.parse(getDataInSessionStorage("memoryCenter"))
+			: null;
+		this.initTales();
 
-    async createMap(lat= null, long=null, zoom= null){
-        if( lat !=null && long != null && zoom != null ){
-            this.latitude = lat;
-            this.longitude= long;
-            this.defaultZoom= zoom;
-        }
+		/// if there is departementSpecified
+		this.settingLatLong();
 
-        const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
-        this.initTales();
+		// ( this.id_dep || (lat !=null && long != null && zoom != null) ||  !memoryCenter )
+		// si on est dans une departement specifique, ou on est dans le recherch, et memory Center est vide...
+		this.map = L.map("map", {
+			zoomControl: false,
+			center:
+				this.id_dep || (lat != null && long != null && zoom != null) || !memoryCenter
+					? L.latLng(this.latitude, this.longitude)
+					: L.latLng(memoryCenter.coord.lat, memoryCenter.coord.lng),
+			zoom: this.id_dep
+				? this.defaultZoom
+				: lat && long && zoom
+				? zoom
+				: memoryCenter
+				? memoryCenter.zoom
+				: this.defaultZoom,
+			// zoom: memoryCenter ?  memoryCenter.zoom : this.defaultZoom,
+			layers: [this.tiles],
+		});
 
-        /// if there is departementSpecified
-        this.settingLatLong();
+		if (lat && long && zoom) {
+			this.updateDataInSessionStorage(lat, long, zoom);
+		}
 
-        // ( this.id_dep || (lat !=null && long != null && zoom != null) ||  !memoryCenter )
-        // si on est dans une departement specifique, ou on est dans le recherch, et memory Center est vide... 
-        this.map = L.map('map', {
-                zoomControl: false,
-                center: ( this.id_dep || (lat !=null && long != null && zoom != null) ||  !memoryCenter ) ? L.latLng(this.latitude, this.longitude) : L.latLng(memoryCenter.coord.lat,memoryCenter.coord.lng),
-                zoom: this.id_dep ? this.defaultZoom : ( ( lat && long && zoom ) ? zoom :  ( memoryCenter ?  memoryCenter.zoom : this.defaultZoom ) ),
-                // zoom: memoryCenter ?  memoryCenter.zoom : this.defaultZoom,
-                layers: [this.tiles] 
-            }
-        );
+		const position = "topright";
+		L.control
+			.zoom({
+				position: position,
+			})
+			.addTo(this.map);
 
-        if( lat && long && zoom ){
-            this.updateDataInSessionStorage(lat, long, zoom);
-        }
+		this.leafletControlExtend(position);
+		// let position = null, coords= null;
+		// try{
+		//     position = await this.getUserLocation();
+		//     coords = position.coords;
+		//     this.latitude = coords.latitude;
+		//     this.longitude= coords.longitude;
+		// }catch(err){
+		//     console.log(err.message)
+		// }finally{
+		// }
+		////object of the current position
+		// this.currentPositionOnMap={ /// { zoom : 0, lat: 0, lng: 0 }
+		//     ...this.currentPositionOnMap,
+		//     zoom : this.map.getZoom(),
+		//     ...this.map.getCenter()
+		// }
 
+		// ////array contains history current position...
+		// this.listPositionBeforAndAfter.push(this.currentPositionOnMap); /// [ { zoom : 0, lat: 0, lng: 0 }, ... ]
 
-        const position = "topright";
-        L.control.zoom({
-            position: position
-        }).addTo(this.map);
+		// this.indexCurrentOnLisPositionBeforeAndAfter= this.listPositionBeforAndAfter.length;
 
-        this.leafletControlExtend(position);
-        // let position = null, coords= null;
-        // try{
-        //     position = await this.getUserLocation();
-        //     coords = position.coords;
-        //     this.latitude = coords.latitude;
-        //     this.longitude= coords.longitude;
-        // }catch(err){
-        //     console.log(err.message)
-        // }finally{
-        // }
-        ////object of the current position
-        // this.currentPositionOnMap={ /// { zoom : 0, lat: 0, lng: 0 }
-        //     ...this.currentPositionOnMap,
-        //     zoom : this.map.getZoom(), 
-        //     ...this.map.getCenter()
-        // }
+		// console.log(this.listPositionBeforAndAfter)
+	}
 
-        // ////array contains history current position...
-        // this.listPositionBeforAndAfter.push(this.currentPositionOnMap); /// [ { zoom : 0, lat: 0, lng: 0 }, ... ]
+	handleEventOnMap() {
+		if (!this.map) {
+			console.log("Map not initialized");
+			return false;
+		}
 
-        // this.indexCurrentOnLisPositionBeforeAndAfter= this.listPositionBeforAndAfter.length;
+		this.map.doubleClickZoom.disable();
+	}
 
-        // console.log(this.listPositionBeforAndAfter)
-    }
+	settingGeos() {
+		let geos = [];
 
-    handleEventOnMap(){
-        if(!this.map){
-            console.log("Map not initialized")
-            return false;
-        }
+		if (this.id_dep || this.nom_dep) {
+			if (this.id_dep === 20) {
+				for (let corse of ["2A", "2B"]) {
+					this.geos.push(franceGeo.features.find((element) => element.properties.code === corse));
+				}
+			} else {
+				geos.push(franceGeo.features.find((element) => parseInt(element.properties.code) === this.id_dep));
+			}
+		} else {
+			for (let f of franceGeo.features) {
+				geos.push(f);
+			}
+		}
 
-        this.map.doubleClickZoom.disable();
-    }
+		return geos;
+	}
 
-    settingGeos(){
-        let geos= [];
-    
-        if(this.id_dep || this.nom_dep ){
-            if( this.id_dep === 20 ){
-                for( let corse of ["2A", "2B"]){
-                    this.geos.push(franceGeo.features.find(element => element.properties.code === corse))
-                }
-            }else{
-                geos.push(franceGeo.features.find(element => parseInt(element.properties.code) === this.id_dep))
-            }
-        }else {
-            for (let f of franceGeo.features) {
-                geos.push(f)
-            }
-        }
+	settingLatLong() {
+		if (this.id_dep) {
+			this.latitude = centers[this.id_dep].lat;
+			this.longitude = centers[this.id_dep].lng;
+			this.defaultZoom = centers[this.id_dep].zoom;
+		}
+	}
 
-        return geos;
-    }
+	addGeoJsonToMap() {
+		if (!this.map) {
+			console.log("Map not initialized");
+			return false;
+		}
 
+		let geos = this.settingGeos();
+		this.geoJSONLayer = L.geoJson().addTo(this.map);
+		// this.geoJSONLayer = L.geoJson(geos, {
+		//     style: {
+		//         weight: 2,
+		//         opacity: 1,
+		//         color: (this.id_dep) ? "red" : "#63A3F6",
+		//         dashArray: '3',
+		//         fillOpacity: 0
+		//     },
+		//     onEachFeature: function (feature, layer) {
+		//         layer.bindTooltip(feature.properties.nom);
+		//     }
+		// }).addTo(this.map);
+	}
 
-    settingLatLong(){
-        if( this.id_dep ){
-            this.latitude= centers[this.id_dep].lat;
-            this.longitude= centers[this.id_dep].lng;
-            this.defaultZoom= centers[this.id_dep].zoom;
-        }
-    }
+	eventSetPositionOnMap() {
+		const cta_setCurrentPosition = document.createElement("a");
+		cta_setCurrentPosition.setAttribute("href", "#");
+		cta_setCurrentPosition.setAttribute("title", "Ma position");
+		cta_setCurrentPosition.setAttribute("role", "button");
+		cta_setCurrentPosition.setAttribute("aria-label", "Ma position");
+		cta_setCurrentPosition.setAttribute("aria-disabled", "false");
 
-    addGeoJsonToMap(){
-        if(!this.map){
-            console.log("Map not initialized")
-            return false;
-        }
+		cta_setCurrentPosition.className = "cta_setCurrentPosition cta_setCurrentPosition_jheo_js";
 
-        let geos= this.settingGeos();
-        this.geoJSONLayer = L.geoJson().addTo(this.map);
-        // this.geoJSONLayer = L.geoJson(geos, {
-        //     style: {
-        //         weight: 2,
-        //         opacity: 1,
-        //         color: (this.id_dep) ? "red" : "#63A3F6",
-        //         dashArray: '3',
-        //         fillOpacity: 0
-        //     },
-        //     onEachFeature: function (feature, layer) {
-        //         layer.bindTooltip(feature.properties.nom);
-        //     }
-        // }).addTo(this.map);
-    }
-
-    eventSetPositionOnMap(){
-        const cta_setCurrentPosition = document.createElement('a');
-        cta_setCurrentPosition.setAttribute('href',"#");
-        cta_setCurrentPosition.setAttribute('title',"Ma position");
-        cta_setCurrentPosition.setAttribute('role',"button");
-        cta_setCurrentPosition.setAttribute('aria-label', "Ma position");
-        cta_setCurrentPosition.setAttribute('aria-disabled', "false");
-
-        cta_setCurrentPosition.className= "cta_setCurrentPosition cta_setCurrentPosition_jheo_js";
-
-        cta_setCurrentPosition.innerHTML= `
+		cta_setCurrentPosition.innerHTML = `
             <i class="fa-solid fa-street-view ma_position"></i>
-        `
+        `;
 
-        if( document.querySelector(".leaflet-control-zoom-out")){
-            document.querySelector(".leaflet-control-zoom-out").after(cta_setCurrentPosition)
-        }
+		if (document.querySelector(".leaflet-control-zoom-out")) {
+			document.querySelector(".leaflet-control-zoom-out").after(cta_setCurrentPosition);
+		}
 
-        ////handle event set to the current position
-        document.querySelector(".cta_setCurrentPosition_jheo_js").addEventListener("click" ,async (e)=>{
-            e.preventDefault();
-            try{
-                const position = await this.getUserLocation();
-                const { coords } = position ;
+		////handle event set to the current position
+		document.querySelector(".cta_setCurrentPosition_jheo_js").addEventListener("click", async (e) => {
+			e.preventDefault();
+			try {
+				const position = await this.getUserLocation();
+				const { coords } = position;
 
-                this.updateCenter(coords.latitude,coords.longitude, 6)
-            }catch(e){
-                alert("Votre position est bloquée, vous devez l'autoriser sur votre navigateur.")
-            }
-        })
-    }
+				this.updateCenter(coords.latitude, coords.longitude, 6);
+			} catch (e) {
+				alert("Votre position est bloquée, vous devez l'autoriser sur votre navigateur.");
+			}
+		});
+	}
 
-    settingMemoryCenter(){
-        this.map.on("moveend", (e) => {
-            const center= e.target.getCenter()
-            const coordAndZoom = {
-                zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
-                coord: center
-            }
-            setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom));
+	settingMemoryCenter() {
+		this.map.on("moveend", (e) => {
+			const center = e.target.getCenter();
+			const coordAndZoom = {
+				zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
+				coord: center,
+			};
+			setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom));
 
-            if(getDataInSessionStorage("lastSearchPosition")){
-                const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
-                const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
-                const lastSearchPosition = {
-                    zoom: 13,
-                    position : { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
-                }
-                setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition))
-            }
-        })
+			if (getDataInSessionStorage("lastSearchPosition")) {
+				const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+				const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+				const lastSearchPosition = {
+					zoom: 13,
+					position: { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max },
+				};
+				setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition));
+			}
 
+			this.customSpiderfy();
+		});
 
-        this.map.on("movestart", (e) => {
-            const center= e.target.getCenter()
-            const coordAndZoom = {
-                zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
-                coord: center
-            }
+		this.map.on("movestart", (e) => {
+			const center = e.target.getCenter();
+			const coordAndZoom = {
+				zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
+				coord: center,
+			};
 
-            if( document.querySelector(".icon_close_nav_left_jheo_js")){
-                if(!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")){
-                    document.querySelector(".content_navleft_jheo_js").classList.add("d-none")
-                    iconsChange()
-                };
-            }
+			if (document.querySelector(".icon_close_nav_left_jheo_js")) {
+				if (!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")) {
+					document.querySelector(".content_navleft_jheo_js").classList.add("d-none");
+					iconsChange();
+				}
+			}
 
-            ////object of the current position
-            this.currentPositionOnMap={ /// { zoom : 0, lat: 0, lng: 0 }
-                zoom : coordAndZoom.zoom, 
-                ...center,
-            }
+			////object of the current position
+			this.currentPositionOnMap = {
+				/// { zoom : 0, lat: 0, lng: 0 }
+				zoom: coordAndZoom.zoom,
+				...center,
+			};
 
-            ////array contains history current position...
-            this.listPositionBeforAndAfter.push(this.currentPositionOnMap); /// [ { zoom : 0, lat: 0, lng: 0 }, ... ]
+			////array contains history current position...
+			this.listPositionBeforAndAfter.push(this.currentPositionOnMap); /// [ { zoom : 0, lat: 0, lng: 0 }, ... ]
 
-            if( this.listPositionBeforAndAfter.length > 10 ){
-                this.listPositionBeforAndAfter.shift()
-            }
+			if (this.listPositionBeforAndAfter.length > 10) {
+				this.listPositionBeforAndAfter.shift();
+			}
 
+			this.indexCurrentOnLisPositionBeforeAndAfter = this.listPositionBeforAndAfter.length;
+			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
+			if (!parentIconControlAfter.classList.contains("d-none")) {
+				parentIconControlAfter.classList.add("d-none");
+			}
+			// if( this.indexCurrentOnLisPositionBeforeAndAfter === this.listPositionBeforAndAfter.length - 1 ){
+			// }
 
-            this.indexCurrentOnLisPositionBeforeAndAfter= this.listPositionBeforAndAfter.length;
-            const parentIconControlAfter= document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
-            if( !parentIconControlAfter.classList.contains("d-none")){
-                parentIconControlAfter.classList.add("d-none")
-            }
-            // if( this.indexCurrentOnLisPositionBeforeAndAfter === this.listPositionBeforAndAfter.length - 1 ){
-            // }
+			if (this.listPositionBeforAndAfter.length > 1) {
+				const parentIconControl = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
+				if (parentIconControl.classList.contains("d-none")) {
+					parentIconControl.classList.remove("d-none");
+				}
+			}
 
-            if( this.listPositionBeforAndAfter.length > 1 ){
-                const parentIconControl= document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
-                if( parentIconControl.classList.contains("d-none")){
-                    parentIconControl.classList.remove("d-none")
-                }
-            }
+			// console.log(this.listPositionBeforAndAfter)
+			// console.log(this.indexCurrentOnLisPositionBeforeAndAfter)
+		});
+	}
 
-            // console.log(this.listPositionBeforAndAfter)
-            // console.log(this.indexCurrentOnLisPositionBeforeAndAfter)
-        })
-    }
+	updateDataInSessionStorage(lat, lng, zoom) {
+		const coordAndZoom = {
+			zoom: zoom,
+			coord: { lat, lng },
+		};
+		setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom));
+	}
 
-    updateDataInSessionStorage(lat, lng, zoom){
-        const coordAndZoom = {
-            zoom: zoom,
-            coord: { lat, lng }
-        }
-        setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom))
-    }
+	updateCenter(lat, long, zoom) {
+		this.map.setView(L.latLng(lat, long), zoom, { animation: true });
+	}
 
-    updateCenter(lat, long, zoom){
-        this.map.setView(L.latLng(lat, long), zoom, { animation: true });
-    }
+	resetZoom() {
+		const memoryCenter = getDataInSessionStorage("memoryCenter")
+			? JSON.parse(getDataInSessionStorage("memoryCenter"))
+			: null;
+		if (memoryCenter.zoom !== 6) {
+			this.lastMemoryCenter = memoryCenter;
+			this.map.setView(L.latLng(this.defautLatitude, this.defaultLongitude), 6, { animation: true });
+		} else {
+			this.map.setView(
+				L.latLng(this.lastMemoryCenter.coord.lat, this.lastMemoryCenter.coord.lng),
+				this.lastMemoryCenter.zoom,
+				{ animation: true }
+			);
+		}
+	}
 
-    resetZoom(){
-        const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
-        if( memoryCenter.zoom !== 6 ){
-            this.lastMemoryCenter= memoryCenter;
-            this.map.setView(L.latLng(this.defautLatitude, this.defaultLongitude), 6, { animation: true });
-        }else{
-            this.map.setView(L.latLng(this.lastMemoryCenter.coord.lat,this.lastMemoryCenter.coord.lng), this.lastMemoryCenter.zoom, { animation: true });
-        }
-    }
+	goBackOrAfterPosition(backOrAfter) {
+		if (backOrAfter === "back") {
+			this.indexCurrentOnLisPositionBeforeAndAfter--;
+		} else if (backOrAfter === "after") {
+			this.indexCurrentOnLisPositionBeforeAndAfter++;
+		}
 
-    goBackOrAfterPosition(backOrAfter){
-        if( backOrAfter === "back" ){
-            this.indexCurrentOnLisPositionBeforeAndAfter--;
-        }else if ( backOrAfter === "after" ){
-            this.indexCurrentOnLisPositionBeforeAndAfter++;
-        }
+		const before = this.listPositionBeforAndAfter[this.indexCurrentOnLisPositionBeforeAndAfter - 1];
 
-        const before= this.listPositionBeforAndAfter[this.indexCurrentOnLisPositionBeforeAndAfter-1];
+		this.map.flyTo(L.latLng(before.lat, before.lng), before.zoom, { animation: true, noMoveStart: true });
 
-        this.map.flyTo(L.latLng(before.lat, before.lng), before.zoom, { animation: true, noMoveStart: true });
-        
-        // console.log(`I ${backOrAfter} here ${this.indexCurrentOnLisPositionBeforeAndAfter}`);
-        // console.log(before)
+		// console.log(`I ${backOrAfter} here ${this.indexCurrentOnLisPositionBeforeAndAfter}`);
+		// console.log(before)
 
-        if(this.indexCurrentOnLisPositionBeforeAndAfter === 1 ){
-            const parentIconControl= document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
-            if( !parentIconControl.classList.contains("d-none")){
-                parentIconControl.classList.add("d-none")
-            }
+		if (this.indexCurrentOnLisPositionBeforeAndAfter === 1) {
+			const parentIconControl = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
+			if (!parentIconControl.classList.contains("d-none")) {
+				parentIconControl.classList.add("d-none");
+			}
 
-            const parentIconControlAfter= document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
-            if( parentIconControlAfter.classList.contains("d-none")){
-                parentIconControlAfter.classList.remove("d-none")
-            }
-        }
+			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
+			if (parentIconControlAfter.classList.contains("d-none")) {
+				parentIconControlAfter.classList.remove("d-none");
+			}
+		}
 
-        if(this.indexCurrentOnLisPositionBeforeAndAfter === this.listPositionBeforAndAfter.length ){
-            const parentIconControl= document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
-            if( !parentIconControl.classList.contains("d-none")){
-                parentIconControl.classList.add("d-none")
-            }
+		if (this.indexCurrentOnLisPositionBeforeAndAfter === this.listPositionBeforAndAfter.length) {
+			const parentIconControl = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
+			if (!parentIconControl.classList.contains("d-none")) {
+				parentIconControl.classList.add("d-none");
+			}
 
-            const parentIconControlBefore= document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
-            if( parentIconControlBefore.classList.contains("d-none")){
-                parentIconControlBefore.classList.remove("d-none")
-            }
-        }
+			const parentIconControlBefore = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
+			if (parentIconControlBefore.classList.contains("d-none")) {
+				parentIconControlBefore.classList.remove("d-none");
+			}
+		}
 
+		if (
+			this.indexCurrentOnLisPositionBeforeAndAfter > 1 &&
+			this.indexCurrentOnLisPositionBeforeAndAfter < this.listPositionBeforAndAfter.length
+		) {
+			const parentIconControlBefore = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
+			if (parentIconControlBefore.classList.contains("d-none")) {
+				parentIconControlBefore.classList.remove("d-none");
+			}
 
-        if( this.indexCurrentOnLisPositionBeforeAndAfter > 1 && this.indexCurrentOnLisPositionBeforeAndAfter < this.listPositionBeforAndAfter.length){
-            
-            const parentIconControlBefore= document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
-            if( parentIconControlBefore.classList.contains("d-none")){
-                parentIconControlBefore.classList.remove("d-none")
-            }
+			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
+			if (parentIconControlAfter.classList.contains("d-none")) {
+				parentIconControlAfter.classList.remove("d-none");
+			}
+		}
+	}
 
-            const parentIconControlAfter= document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
-            if( parentIconControlAfter.classList.contains("d-none")){
-                parentIconControlAfter.classList.remove("d-none")
-            }
-        }
-    }
+	addControlPlaceholders(map) {
+		const corners = map._controlCorners;
+		const leaflet = "leaflet-";
+		const container = map._controlContainer;
 
-    addControlPlaceholders(map) {
-        const corners = map._controlCorners
-        const leaflet = 'leaflet-'
-        const container = map._controlContainer;
-    
-        function createCorner(vSide, hSide) {
-            var className = leaflet + vSide + ' ' + leaflet + hSide;
-    
-            corners[vSide] = L.DomUtil.create('div', className, container);
-        }
-    
-        createCorner('verticalcenterl', 'left swipe-me-reverse');
-        createCorner('verticalcenter', 'right');
-        createCorner('horizontalmiddle', 'center');
-    
-    }
+		function createCorner(vSide, hSide) {
+			var className = leaflet + vSide + " " + leaflet + hSide;
 
-    bindControlOnLeaflet(map){
+			corners[vSide] = L.DomUtil.create("div", className, container);
+		}
 
-        addControlPlaceholders(map);
-        
-        L.Control.DockPannel = L.Control.extend({
-            onAdd: function (map) {
-                var el = L.DomUtil.create('button', 'leaflet-bar my-control responsif-none-pc');
-                el.innerHTML = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+		createCorner("verticalcenterl", "left swipe-me-reverse");
+		createCorner("verticalcenter", "right");
+		createCorner("horizontalmiddle", "center");
+	}
+
+	bindControlOnLeaflet(map) {
+		addControlPlaceholders(map);
+
+		L.Control.DockPannel = L.Control.extend({
+			onAdd: function (map) {
+				var el = L.DomUtil.create("button", "leaflet-bar my-control responsif-none-pc");
+				el.innerHTML = `<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                                 width="32.000000pt" height="32.000000pt" viewBox="0 0 32.000000 32.000000"
                                 preserveAspectRatio="xMidYMid meet">
 
@@ -436,39 +494,36 @@ class MapModule{
                                         90 0 43 -47 90 -90 90 -22 0 -41 -9 -61 -29z"/>
                                     </g>
                                 </svg>`;
-                el.setAttribute("draggable", "true")
-                return el;
-            },
-            onRemove: function (map) {
+				el.setAttribute("draggable", "true");
+				return el;
+			},
+			onRemove: function (map) {},
+			onClick: () => {},
+			onDragend: () => {},
+		});
 
-            },
-            onClick: () => {
-            },
-            onDragend: () => {
+		L.control.myControl = function (opts) {
+			return new L.Control.DockPannel(opts);
+		};
 
-            }
-        });
+		L.control
+			.myControl({
+				position: "verticalcenter", //right
+			})
+			.addTo(map);
 
-        L.control.myControl = function (opts) {
-            return new L.Control.DockPannel(opts);
-        }
+		var draggable = new L.Draggable(L.DomUtil.get(document.querySelector(".my-control")));
+		draggable.enable();
 
-        L.control.myControl({
-            position: 'verticalcenter'//right
-        }).addTo(map);
+		L.DomUtil.get(document.querySelector(".my-control")).addEventListener("click", () => {
+			document.querySelector("#card").classList.toggle("hide");
+			L.DomUtil.get(document.querySelector(".my-control")).classList.toggle("hide");
+		});
 
-        var draggable = new L.Draggable(L.DomUtil.get(document.querySelector(".my-control")));
-        draggable.enable();
-
-        L.DomUtil.get(document.querySelector(".my-control")).addEventListener('click', () => {
-            document.querySelector("#card").classList.toggle("hide")
-            L.DomUtil.get(document.querySelector(".my-control")).classList.toggle("hide")
-        })
-
-        L.Control.DockPannel2 = L.Control.extend({
-            onAdd: function (map) {
-                var el = L.DomUtil.create('div', 'leaflet-bar my-controller');
-                el.innerHTML = ` 
+		L.Control.DockPannel2 = L.Control.extend({
+			onAdd: function (map) {
+				var el = L.DomUtil.create("div", "leaflet-bar my-controller");
+				el.innerHTML = ` 
                     <div class="card-options-home hide responsif-none-pc" id="card">
                     <div class="options-container ">
                             <ul>
@@ -746,30 +801,32 @@ class MapModule{
                     </div>
                     </div>`;
 
-                return el;
-            },
-            onRemove: function (map) { },
-            onClick: () => { },
-            onDragend: () => { }
-        });
+				return el;
+			},
+			onRemove: function (map) {},
+			onClick: () => {},
+			onDragend: () => {},
+		});
 
-        L.control.myControl2 = function (opt2) {
-            return new L.Control.DockPannel2(opt2);
-        }
+		L.control.myControl2 = function (opt2) {
+			return new L.Control.DockPannel2(opt2);
+		};
 
-        L.control.myControl2({
-            position: 'horizontalmiddle'//center
-        }).addTo(map);
+		L.control
+			.myControl2({
+				position: "horizontalmiddle", //center
+			})
+			.addTo(map);
 
-        L.DomUtil.get(document.querySelector("#retoure")).addEventListener('click', () => {
-            document.querySelector("#card").classList.toggle("hide")
-            L.DomUtil.get(document.querySelector(".my-control")).classList.toggle("hide")
-        })
+		L.DomUtil.get(document.querySelector("#retoure")).addEventListener("click", () => {
+			document.querySelector("#card").classList.toggle("hide");
+			L.DomUtil.get(document.querySelector(".my-control")).classList.toggle("hide");
+		});
 
-        L.Control.DockPannel3 = L.Control.extend({
-            onAdd: function (map) {
-                var el = L.DomUtil.create('div', 'leaflet-bar my-list');
-                el.innerHTML = ` 
+		L.Control.DockPannel3 = L.Control.extend({
+			onAdd: function (map) {
+				var el = L.DomUtil.create("div", "leaflet-bar my-list");
+				el.innerHTML = ` 
                     <svg class="close responsif-none-pc" id="close" version="1.0" xmlns="http://www.w3.org/2000/svg"
                     width="20px" height="20px" viewBox="0 0 980.000000 982.000000"
                     preserveAspectRatio="xMidYMid meet">
@@ -785,342 +842,396 @@ class MapModule{
                         </g>
                     </svg>
                 
-                `     ;
+                `;
 
-                return el;
-            },
-            onRemove: function (map) {
+				return el;
+			},
+			onRemove: function (map) {},
+			onClick: () => {
+				console.log("toto");
+			},
+			onDragend: () => {},
+		});
 
-            },
-            onClick: () => {
-                console.log("toto")
-            },
-            onDragend: () => {
+		L.control.myControl3 = function (opt3) {
+			return new L.Control.DockPannel3(opt3);
+		};
 
-            }
-        });
+		L.control
+			.myControl3({
+				position: "verticalcenterl", //left
+			})
+			.addTo(map);
+	}
 
-        L.control.myControl3 = function (opt3) {
-            return new L.Control.DockPannel3(opt3);
-        }
+	bindEventLocationForMobile() {
+		document.getElementById("mobile_station_js_jheo").addEventListener("click", () => {
+			location.assign("/station");
+		});
+		document.getElementById("home-mobile").addEventListener("click", () => {
+			location.assign("/");
+		});
+		document.getElementById("mobil-ferme").addEventListener("click", () => {
+			location.assign("/ferme");
+		});
+		document.getElementById("mobil-resto").addEventListener("click", () => {
+			location.assign("/restaurant");
+		}); //home-mobile
 
-        L.control.myControl3({
-            position: 'verticalcenterl'//left
-        }).addTo(map);
-    }
+		document.getElementById("home-mobile-connexion").addEventListener("click", () => {
+			location.assign("/connexion");
+		});
 
-    bindEventLocationForMobile(){
+		document.getElementById("mobile-golf").addEventListener("click", () => {
+			location.assign("/golf");
+		});
 
-        document.getElementById("mobile_station_js_jheo").addEventListener("click", () => {
-            location.assign("/station");
-        });
-        document.getElementById("home-mobile").addEventListener('click', () => {
-            location.assign('/')
-        });
-        document.getElementById("mobil-ferme").addEventListener('click', () => {
-            location.assign('/ferme')
-        });
-        document.getElementById("mobil-resto").addEventListener('click', () => {
-            location.assign('/restaurant')
-        });//home-mobile
-    
-        document.getElementById("home-mobile-connexion").addEventListener('click', () => {
-            location.assign('/connexion')
-        });
+		document.getElementById("mobile-tabac").addEventListener("click", () => {
+			location.assign("/tabac");
+		});
+	}
 
-        document.getElementById("mobile-golf").addEventListener('click', () => {
-            location.assign('/golf')
-        });
+	/// fonction create map: ( init map, init geojson, add event on memoire zooming)
+	initMap(lat = null, long = null, zoom = null, isAddControl = false) {
+		const content_map = document.querySelector(".cart_map_js");
 
-        document.getElementById("mobile-tabac").addEventListener('click', () => {
-            location.assign('/tabac')
-        });
-    }
+		if (document.querySelector("#toggle_chargement")) {
+			content_map.removeChild(document.querySelector("#toggle_chargement"));
+		}
 
+		if (!document.querySelector("#map")) {
+			const map = document.createElement("div");
+			map.setAttribute("id", "map");
+			map.setAttribute("class", "map");
 
-    /// fonction create map: ( init map, init geojson, add event on memoire zooming)
-    initMap(lat= null,long= null, zoom= null , isAddControl=false){
-        const content_map= document.querySelector(".cart_map_js");
+			content_map.appendChild(map);
+		}
 
-        if( document.querySelector("#toggle_chargement")){
-            content_map.removeChild(document.querySelector("#toggle_chargement"))
-        }
-        
-        if( !document.querySelector("#map")){
-            const map= document.createElement("div");
-            map.setAttribute("id", "map");
-            map.setAttribute("class", "map");
+		///init map
+		this.createMap(lat, long, zoom);
+		// this.eventSetPositionOnMap();
 
-            content_map.appendChild(map);
-        }
+		////init geojson
+		this.addGeoJsonToMap();
 
-        ///init map
-        this.createMap(lat, long, zoom);
-        // this.eventSetPositionOnMap();
+		///inject event to save memoir zoom
+		this.settingMemoryCenter();
 
-        ////init geojson
-        this.addGeoJsonToMap();
+		if (isAddControl) {
+			/// bind controller in the right
+			//// bind all fonctionnality on the right
+			this.bindOtherControles();
 
-        ///inject event to save memoir zoom
-        this.settingMemoryCenter();
+			//// prepare right container
+			this.createRightSideControl();
+		}
 
-        if( isAddControl ){ /// bind controller in the right
-            //// bind all fonctionnality on the right
-            this.bindOtherControles();
+		// this.bindControlOnLeaflet(this.map);
+		// this.bindEventLocationForMobile();
+	}
 
-            //// prepare right container
-            this.createRightSideControl();
-        }
+	//// get Max
+	getMax(max, min) {
+		if (max < min) return { max: min, min: max };
+		else return { max: max, min: min };
+	}
 
-
-        // this.bindControlOnLeaflet(this.map);
-        // this.bindEventLocationForMobile();
-    }
-    
-    //// get Max
-    getMax( max, min ){
-        if( max < min )
-            return { max:min, min:max } 
-        else
-           return { max:max, min:min }
-    }
-
-    ///bind and add control on the right side of the map
-    bindOtherControles(){
-        // let htmlControl = `
-        //     <button class="btn btn-warning right_control_jheo_js" data-type="tiles_type_jheo_js"  style="font-size: 1.1rem;">
-        //         <i class="fa-solid fa-layer-group" data-type="tiles_type_jheo_js"></i>
-        //     </button>
-        //     <button class="btn btn-primary" data-type="couche_tabac_jheo_js" style="font-size: 1.1rem;">
-        //         <i class="fa-brands fa-connectdevelop" data-type="couche_tabac_jheo_js"></i>
-        //     </button>
-        // `;
-        let htmlControl = `
-            ${this.createBtnControl("tiles_type_jheo_js","fa-solid fa-layer-group","btn btn-warning", "Sélectionner un type de carte.")}
-            ${this.createBtnControl("couche_tabac_jheo_js","fa-brands fa-connectdevelop","btn btn-primary", "Listes des contours géographiques.")}
+	///bind and add control on the right side of the map
+	bindOtherControles() {
+		// let htmlControl = `
+		//     <button class="btn btn-warning right_control_jheo_js" data-type="tiles_type_jheo_js"  style="font-size: 1.1rem;">
+		//         <i class="fa-solid fa-layer-group" data-type="tiles_type_jheo_js"></i>
+		//     </button>
+		//     <button class="btn btn-primary" data-type="couche_tabac_jheo_js" style="font-size: 1.1rem;">
+		//         <i class="fa-brands fa-connectdevelop" data-type="couche_tabac_jheo_js"></i>
+		//     </button>
+		// `;
+		let htmlControl = `
+            ${this.createBtnControl(
+				"tiles_type_jheo_js",
+				"fa-solid fa-layer-group",
+				"btn btn-warning",
+				"Sélectionner un type de carte."
+			)}
+            ${this.createBtnControl(
+				"couche_tabac_jheo_js",
+				"fa-brands fa-connectdevelop",
+				"btn btn-primary",
+				"Listes des contours géographiques."
+			)}
         `;
-        if( this.mapForType === "golf"){
-            htmlControl += `
-                ${this.createBtnControl("info_golf_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
-            `
-        //     <button class="btn btn-info" data-type="info_golf_jheo_js" style="font-size: 1.1rem;">
-        //         <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
-        //     </button>
-        }else if( this.mapForType === "resto" ){ 
-            htmlControl += `
-                ${this.createBtnControl("info_resto_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
-                ${this.createBtnControl("resto_pastille_jheo_js","fa-solid fa-location-dot fa-flip text-danger","btn btn-light", "Liste des restaurants pastilles.")}
-            `
-            // <button class="btn btn-info" data-type="info_resto_jheo_js" style="font-size: 1.1rem;">
-            //     <i class="fa-solid fa-circle-question" data-type="info_resto_jheo_js"></i>
-            // </button>
-            // <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
-            //     <i  class="fa-solid fa-location-dot fa-flip text-danger" data-type="resto_pastille_jheo_js"></i>
-            // </button>
-        }else if( this.mapForType === "tous"){
-            htmlControl += `
-                ${this.createBtnControl("info_tous_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
-                ${this.createBtnControl("resto_pastille_jheo_js","fa-solid fa-location-dot fa-flip text-danger","btn btn-light", "Liste des restaurants pastilles.")}
-            `
-            // <button class="btn btn-info" data-type="info_tous_jheo_js" style="font-size: 1.1rem;">
-            //     <i class="fa-solid fa-circle-question" data-type="info_tous_jheo_js"></i>
-            // </button>
-            // <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
-            //     <i  class="fa-solid fa-location-dot fa-flip text-danger" data-type="resto_pastille_jheo_js"></i>
-            // </button>
-        }else if( this.mapForType === "station"){
-            htmlControl += `
-                ${this.createBtnControl("info_station_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
-            `
-            // <button class="btn btn-info" data-type="info_station_jheo_js" style="font-size: 1.1rem;">
-            //     <i class="fa-solid fa-circle-question" data-type="info_station_jheo_js"></i>
-            // </button>
-        }else if( this.mapForType === "ferme"){
-            htmlControl += `
-                ${this.createBtnControl("info_ferme_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
-            `
-            // <button class="btn btn-info" data-type="info_ferme_jheo_js" style="font-size: 1.1rem;">
-            //     <i class="fa-solid fa-circle-question" data-type="info_ferme_jheo_js"></i>
-            // </button>
-        }else if( this.mapForType === "tabac"){
-            htmlControl += `
-                ${this.createBtnControl("info_tabac_jheo_js","fa-solid fa-circle-question","btn btn-info", "Légende des icônes sur la carte.")}
-            `
-            // <button class="btn btn-info" data-type="info_tabac_jheo_js" style="font-size: 1.1rem;">
-            //     <i class="fa-solid fa-circle-question" data-type="info_tabac_jheo_js"></i>
-            // </button>
-        }
+		if (this.mapForType === "golf") {
+			htmlControl += `
+                ${this.createBtnControl(
+					"info_golf_jheo_js",
+					"fa-solid fa-circle-question",
+					"btn btn-info",
+					"Légende des icônes sur la carte."
+				)}
+            `;
+			//     <button class="btn btn-info" data-type="info_golf_jheo_js" style="font-size: 1.1rem;">
+			//         <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
+			//     </button>
+		} else if (this.mapForType === "resto") {
+			htmlControl += `
+                ${this.createBtnControl(
+					"info_resto_jheo_js",
+					"fa-solid fa-circle-question",
+					"btn btn-info",
+					"Légende des icônes sur la carte."
+				)}
+                ${this.createBtnControl(
+					"resto_pastille_jheo_js",
+					"fa-solid fa-location-dot fa-flip text-danger",
+					"btn btn-light",
+					"Liste des restaurants pastilles."
+				)}
+            `;
+			// <button class="btn btn-info" data-type="info_resto_jheo_js" style="font-size: 1.1rem;">
+			//     <i class="fa-solid fa-circle-question" data-type="info_resto_jheo_js"></i>
+			// </button>
+			// <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
+			//     <i  class="fa-solid fa-location-dot fa-flip text-danger" data-type="resto_pastille_jheo_js"></i>
+			// </button>
+		} else if (this.mapForType === "tous") {
+			htmlControl += `
+                ${this.createBtnControl(
+					"info_tous_jheo_js",
+					"fa-solid fa-circle-question",
+					"btn btn-info",
+					"Légende des icônes sur la carte."
+				)}
+                ${this.createBtnControl(
+					"resto_pastille_jheo_js",
+					"fa-solid fa-location-dot fa-flip text-danger",
+					"btn btn-light",
+					"Liste des restaurants pastilles."
+				)}
+            `;
+			// <button class="btn btn-info" data-type="info_tous_jheo_js" style="font-size: 1.1rem;">
+			//     <i class="fa-solid fa-circle-question" data-type="info_tous_jheo_js"></i>
+			// </button>
+			// <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
+			//     <i  class="fa-solid fa-location-dot fa-flip text-danger" data-type="resto_pastille_jheo_js"></i>
+			// </button>
+		} else if (this.mapForType === "station") {
+			htmlControl += `
+                ${this.createBtnControl(
+					"info_station_jheo_js",
+					"fa-solid fa-circle-question",
+					"btn btn-info",
+					"Légende des icônes sur la carte."
+				)}
+            `;
+			// <button class="btn btn-info" data-type="info_station_jheo_js" style="font-size: 1.1rem;">
+			//     <i class="fa-solid fa-circle-question" data-type="info_station_jheo_js"></i>
+			// </button>
+		} else if (this.mapForType === "ferme") {
+			htmlControl += `
+                ${this.createBtnControl(
+					"info_ferme_jheo_js",
+					"fa-solid fa-circle-question",
+					"btn btn-info",
+					"Légende des icônes sur la carte."
+				)}
+            `;
+			// <button class="btn btn-info" data-type="info_ferme_jheo_js" style="font-size: 1.1rem;">
+			//     <i class="fa-solid fa-circle-question" data-type="info_ferme_jheo_js"></i>
+			// </button>
+		} else if (this.mapForType === "tabac") {
+			htmlControl += `
+                ${this.createBtnControl(
+					"info_tabac_jheo_js",
+					"fa-solid fa-circle-question",
+					"btn btn-info",
+					"Légende des icônes sur la carte."
+				)}
+            `;
+			// <button class="btn btn-info" data-type="info_tabac_jheo_js" style="font-size: 1.1rem;">
+			//     <i class="fa-solid fa-circle-question" data-type="info_tabac_jheo_js"></i>
+			// </button>
+		}
 
-        htmlControl += `
-            ${this.createBtnControl("reset_zoom_jheo_js", "fa-solid fa-arrows-rotate","btn btn-dark", "Réstaure le niveau de zoom en position initiale.")}
-            ${this.createBtnControl("cart_before_jheo_js", "fa-solid fa-backward fa-fade cart_before_jheo_js", "btn btn-outline-danger", "Voir la carte en position précedente.")}
-            ${this.createBtnControl("cart_after_jheo_js", "fa-solid fa-forward fa-fade cart_after_jheo_js", "btn btn-outline-danger", "Voir la carte en position avant.")}
-            `
-        L.control.custom({
-            // position: 'topright',
-            content : htmlControl,
-            classes : 'btn-group-vertical btn-group-sm btn_group_vertical',
-            // style   :
-            // {
-            //     margin: '10px',
-            //     padding: '0px 0 0 0',
-            //     cursor: 'pointer',
-            // },
-            datas   :{
-                'foo': 'bar',
-            },
-            events:{
-                click: (data) => {
-                    if (screen.width < 991) { 
-                        this.openRightSideMobile(data.srcElement.dataset.type);
-                        
-                    } else {
-                        this.openRightSide(data.srcElement.dataset.type);
-                    }
-                    
-                },
-                dblclick: function(){
-                    console.log("click")
-                    // closeRightSide();
-                },
-                contextmenu: function(data){
-                    console.log('wrapper div element contextmenu');
-                    console.log(data);
-                },
-            }
-        }).addTo(this.map);
+		htmlControl += `
+            ${this.createBtnControl(
+				"reset_zoom_jheo_js",
+				"fa-solid fa-arrows-rotate",
+				"btn btn-dark",
+				"Réstaure le niveau de zoom en position initiale."
+			)}
+            ${this.createBtnControl(
+				"cart_before_jheo_js",
+				"fa-solid fa-backward fa-fade cart_before_jheo_js",
+				"btn btn-outline-danger",
+				"Voir la carte en position précedente."
+			)}
+            ${this.createBtnControl(
+				"cart_after_jheo_js",
+				"fa-solid fa-forward fa-fade cart_after_jheo_js",
+				"btn btn-outline-danger",
+				"Voir la carte en position avant."
+			)}
+            `;
+		L.control
+			.custom({
+				// position: 'topright',
+				content: htmlControl,
+				classes: "btn-group-vertical btn-group-sm btn_group_vertical",
+				// style   :
+				// {
+				//     margin: '10px',
+				//     padding: '0px 0 0 0',
+				//     cursor: 'pointer',
+				// },
+				datas: {
+					foo: "bar",
+				},
+				events: {
+					click: (data) => {
+						if (screen.width < 991) {
+							this.openRightSideMobile(data.srcElement.dataset.type);
+						} else {
+							this.openRightSide(data.srcElement.dataset.type);
+						}
+					},
+					dblclick: function () {
+						console.log("click");
+						// closeRightSide();
+					},
+					contextmenu: function (data) {
+						console.log("wrapper div element contextmenu");
+						console.log(data);
+					},
+				},
+			})
+			.addTo(this.map);
 
+		//// bint event hover on btn control.
+		this.bindTooltipsOnHover();
+	}
 
-        //// bint event hover on btn control.
-        this.bindTooltipsOnHover();
-    }
-
-    /**
-     * @author Jehovanie RAMANDRIJOEL
-     * Cette fonction est irrittér dans tous les rubriques, 
-     * localisation du fichier: cette meme fichier seulement.,
-     * je veux: faire construire une template dynamique des btn controles à adroite
-     * si une btn controle, on trouve une icon, couleur unique, message tooltip, action qui ouvre la partie droite.
-     */
-    createBtnControl(dataType, faSolidIcon, classBtn, messageTooltip){
-        const fontSize = (dataType === "resto_pastille_jheo_js") ? '1.3rem' : '1.1rem';
-        const isHidden= (dataType === "cart_before_jheo_js" || dataType === "cart_after_jheo_js" ) ? "d-none" : "";
-        return `
+	/**
+	 * @author Jehovanie RAMANDRIJOEL
+	 * Cette fonction est irrittér dans tous les rubriques,
+	 * localisation du fichier: cette meme fichier seulement.,
+	 * je veux: faire construire une template dynamique des btn controles à adroite
+	 * si une btn controle, on trouve une icon, couleur unique, message tooltip, action qui ouvre la partie droite.
+	 */
+	createBtnControl(dataType, faSolidIcon, classBtn, messageTooltip) {
+		const fontSize = dataType === "resto_pastille_jheo_js" ? "1.3rem" : "1.1rem";
+		const isHidden = dataType === "cart_before_jheo_js" || dataType === "cart_after_jheo_js" ? "d-none" : "";
+		return `
             <div class="content_message_tooltip content_message_tooltip_jheo_js ${isHidden}" data-type="${dataType}">
                 <div class="message_tooltip d-none message_tooltip_jheo_js">${messageTooltip}</div>
                 <button class="${classBtn} right_control_jheo_js" data-type="${dataType}"  style="font-size: ${fontSize};">
                     <i class="${faSolidIcon}" data-type="${dataType}"></i>
                 </button>
             </div>
-        `
-    }
+        `;
+	}
 
-    /**
-     * @author Jehovanie RAMANDRIJOEL
-     * Cette fonction est irrittér dans tous les rubriques, 
-     * localisation du fichier: cette meme fichier seulement.,
-     * je veux: faire afficher ou cache un message tooltip sur une btn control
-     */
-    bindTooltipsOnHover(){
-        const all_control= document.querySelectorAll(`.content_message_tooltip_jheo_js`);
+	/**
+	 * @author Jehovanie RAMANDRIJOEL
+	 * Cette fonction est irrittér dans tous les rubriques,
+	 * localisation du fichier: cette meme fichier seulement.,
+	 * je veux: faire afficher ou cache un message tooltip sur une btn control
+	 */
+	bindTooltipsOnHover() {
+		const all_control = document.querySelectorAll(`.content_message_tooltip_jheo_js`);
 
-        all_control.forEach(item_control => {
-            item_control.addEventListener('mouseover',() => {
-                item_control.querySelector('.message_tooltip_jheo_js').classList.remove('d-none')
-            })
+		all_control.forEach((item_control) => {
+			item_control.addEventListener("mouseover", () => {
+				item_control.querySelector(".message_tooltip_jheo_js").classList.remove("d-none");
+			});
 
-            item_control.addEventListener('mouseout',() => {
-                item_control.querySelector('.message_tooltip_jheo_js').classList.add('d-none')
-            })
-        })
-    }
+			item_control.addEventListener("mouseout", () => {
+				item_control.querySelector(".message_tooltip_jheo_js").classList.add("d-none");
+			});
+		});
+	}
 
+	leafletControlExtend(position = "topright") {
+		L.Control.Custom = L.Control.extend({
+			version: "1.0.1",
+			options: {
+				position: position,
+				id: "",
+				title: "",
+				classes: "",
+				content: "",
+				style: {},
+				datas: {},
+				events: {},
+			},
+			container: "container_lefleat_jheo_js",
 
+			onAdd: function (map) {
+				this.container = L.DomUtil.create("div");
+				this.container.id = this.options.id;
+				this.container.title = this.options.title;
+				this.container.className = this.options.classes;
+				this.container.innerHTML = this.options.content;
 
-    leafletControlExtend(position= 'topright'){
-        
-        L.Control.Custom = L.Control.extend({
-            version: '1.0.1',
-            options: {
-                position: position,
-                id: '',
-                title: '',
-                classes: '',
-                content: '',
-                style: {},
-                datas: {},
-                events: {},
-            },
-            container: "container_lefleat_jheo_js",
+				for (var option in this.options.style) {
+					this.container.style[option] = this.options.style[option];
+				}
 
-            onAdd: function (map) {
-                this.container = L.DomUtil.create('div');
-                this.container.id = this.options.id;
-                this.container.title = this.options.title;
-                this.container.className = this.options.classes;
-                this.container.innerHTML = this.options.content;
-    
-                for (var option in this.options.style){
-                    this.container.style[option] = this.options.style[option];
-                }
-    
-                for (var data in this.options.datas){
-                    this.container.dataset[data] = this.options.datas[data];
-                }
-    
-    
-                /* Prevent click events propagation to map */
-                L.DomEvent.disableClickPropagation(this.container);
-    
-                /* Prevent right click event propagation to map */
-                L.DomEvent.on(this.container, 'contextmenu', function (ev){
-                    L.DomEvent.stopPropagation(ev);
-                });
-    
-                /* Prevent scroll events propagation to map when cursor on the div */
-                L.DomEvent.disableScrollPropagation(this.container);
-    
-                for (var event in this.options.events){
-                    L.DomEvent.on(this.container, event, this.options.events[event], this.container);
-                }
-    
-                return this.container;
-            },
-    
-            onRemove: function (map) {
-                for (var event in this.options.events){
-                    L.DomEvent.off(this.container, event, this.options.events[event], this.container);
-                }
-            },
-        });
-    
-        L.control.custom = function (options) {
-            return new L.Control.Custom(options);
-        };
-    }
+				for (var data in this.options.datas) {
+					this.container.dataset[data] = this.options.datas[data];
+				}
 
-    updateListRestoPastille( idResto, tribuName){
-        this.listRestoPastille.push({id_resto: idResto, tableName: tribuName })
-        this.updateStateResto(idResto)
-    }
+				/* Prevent click events propagation to map */
+				L.DomEvent.disableClickPropagation(this.container);
 
-    updateListRestoDepastille(idResto, tribuName){
-        this.listRestoPastille = this.listRestoPastille.filter(item=>{ return (parseInt(item.id_resto) != parseInt(idResto) || item.tableName != tribuName)})
-        this.updateStateResto(idResto)
-    }
+				/* Prevent right click event propagation to map */
+				L.DomEvent.on(this.container, "contextmenu", function (ev) {
+					L.DomEvent.stopPropagation(ev);
+				});
 
+				/* Prevent scroll events propagation to map when cursor on the div */
+				L.DomEvent.disableScrollPropagation(this.container);
 
+				for (var event in this.options.events) {
+					L.DomEvent.on(this.container, event, this.options.events[event], this.container);
+				}
 
-    createRightSideControl(){
-        if( !document.querySelector(".content_cart_map_jheo_js")){
-            console.log("Selector not found : 'content_cart_map_jheo_js'");
-            return null;
-        }
+				return this.container;
+			},
 
-        const container = document.createElement("div");
-        container.className = "content_legende content_legende_jheo_js";
-        
-        container.innerHTML = `
+			onRemove: function (map) {
+				for (var event in this.options.events) {
+					L.DomEvent.off(this.container, event, this.options.events[event], this.container);
+				}
+			},
+		});
+
+		L.control.custom = function (options) {
+			return new L.Control.Custom(options);
+		};
+	}
+
+	updateListRestoPastille(idResto, tribuName) {
+		this.listRestoPastille.push({ id_resto: idResto, tableName: tribuName });
+		this.updateStateResto(idResto);
+	}
+
+	updateListRestoDepastille(idResto, tribuName) {
+		this.listRestoPastille = this.listRestoPastille.filter((item) => {
+			return parseInt(item.id_resto) != parseInt(idResto) || item.tableName != tribuName;
+		});
+		this.updateStateResto(idResto);
+	}
+
+	createRightSideControl() {
+		if (!document.querySelector(".content_cart_map_jheo_js")) {
+			console.log("Selector not found : 'content_cart_map_jheo_js'");
+			return null;
+		}
+
+		const container = document.createElement("div");
+		container.className = "content_legende content_legende_jheo_js";
+
+		container.innerHTML = `
             <div class="content_header_right_side">
                 <div class="header_right_side">
                     <div class="title_right_side text-black title_right_side_jheo_js">
@@ -1137,203 +1248,187 @@ class MapModule{
             <div class="content_right_side_body content_right_side_body_jheo_js">
                 
             </div>
-        `
+        `;
 
-        document.querySelector(".content_cart_map_jheo_js").appendChild(container);
-    }
+		document.querySelector(".content_cart_map_jheo_js").appendChild(container);
+	}
 
-    openRightSide(rightSideContentType){
+	openRightSide(rightSideContentType) {
+		if (rightSideContentType === "reset_zoom_jheo_js") {
+			this.resetZoom();
+		} else if (rightSideContentType === "cart_before_jheo_js") {
+			this.goBackOrAfterPosition("back");
+		} else if (rightSideContentType === "cart_after_jheo_js") {
+			this.goBackOrAfterPosition("after");
+		} else {
+			if (document.querySelector(".close_details_jheo_js")) {
+				document.querySelector(".close_details_jheo_js").click();
+			}
 
-        if(rightSideContentType === "reset_zoom_jheo_js" ){
-            this.resetZoom()
-        }else if( rightSideContentType === "cart_before_jheo_js" ){
-            this.goBackOrAfterPosition("back")
-        }else if( rightSideContentType === "cart_after_jheo_js" ){
-            this.goBackOrAfterPosition("after")
-        }else{
-            if( document.querySelector(".close_details_jheo_js")){
-                document.querySelector(".close_details_jheo_js").click();
-            }
-    
-            if( document.querySelector('.icon_close_nav_left_jheo_js')){
-                document.querySelector(".icon_close_nav_left_jheo_js").click();
-            }
-    
-            const cart_width= '75%';
-            const cont_legent_width= '25%';
-            
-            if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
-    
-                if( !document.querySelector(".title_right_side_jheo_js")){
-                    console.log("Selector not found: '.title_right_side_jheo_js'")
-                    return false;
-                }
-        
-                if( rightSideContentType === "info_golf_jheo_js"){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusGolf(); 
-    
-                }else if( rightSideContentType === "resto_pastille_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurants pastilles.";
-                    this.injectListRestoPastille();
-    
-                }else if( rightSideContentType === "info_resto_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusResto();
-    
-                }else if( rightSideContentType === "info_ferme_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusFerme();
-    
-                }else if( rightSideContentType === "info_station_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusStation();
-    
-                }else if( rightSideContentType === "info_tabac_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusTabac();
-    
-                }else if( rightSideContentType === "info_tous_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusTous();
-    
-                }else if( rightSideContentType === "couche_tabac_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.";
-                    this.injectChooseCouche();
-    
-                }else{ //// default tiles type
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
-                    this.injectTilesType();
-                }
-        
-                document.querySelector(".cart_map_jheo_js").style.width= cart_width;
-                document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
-                document.querySelector(".content_legende_jheo_js").style.padding= '25px';
-            }else{
-                console.log("Selector not found")
-                console.log("cart_map_jheo_js", "content_legende_jheo_js")
-            }
-        
-        
-            if(!this.isRightSideAlreadyOpen && document.querySelector('.close_right_side_jheo_js')){
-                document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
-                    this.closeRightSide();
-                })
-            }
-        }
-    }
+			if (document.querySelector(".icon_close_nav_left_jheo_js")) {
+				document.querySelector(".icon_close_nav_left_jheo_js").click();
+			}
 
-    openRightSideMobile(rightSideContentType){
-        if(rightSideContentType === "reset_zoom_jheo_js" ){
-            this.resetZoom()
-        }else if( rightSideContentType === "cart_before_jheo_js" ){
-            this.goBackOrAfterPosition("back")
-        }else if( rightSideContentType === "cart_after_jheo_js" ){
-            this.goBackOrAfterPosition("after")
-        }else{
-            if( document.querySelector(".close_details_jheo_js")){
-                document.querySelector(".close_details_jheo_js").click();
-            }
+			const cart_width = "75%";
+			const cont_legent_width = "25%";
 
-            if( document.querySelector('.icon_close_nav_left_jheo_js')){
-                document.querySelector(".icon_close_nav_left_jheo_js").click();
-            }
+			if (document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js")) {
+				if (!document.querySelector(".title_right_side_jheo_js")) {
+					console.log("Selector not found: '.title_right_side_jheo_js'");
+					return false;
+				}
 
-            const cart_width= '100%';
-            const cont_legent_width= '200%';
-            
-            if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
+				if (rightSideContentType === "info_golf_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusGolf();
+				} else if (rightSideContentType === "resto_pastille_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurants pastilles.";
+					this.injectListRestoPastille();
+				} else if (rightSideContentType === "info_resto_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusResto();
+				} else if (rightSideContentType === "info_ferme_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusFerme();
+				} else if (rightSideContentType === "info_station_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusStation();
+				} else if (rightSideContentType === "info_tabac_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusTabac();
+				} else if (rightSideContentType === "info_tous_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusTous();
+				} else if (rightSideContentType === "couche_tabac_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText =
+						"Listes des contours géographiques.";
+					this.injectChooseCouche();
+				} else {
+					//// default tiles type
+					document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
+					this.injectTilesType();
+				}
 
-                if( !document.querySelector(".title_right_side_jheo_js")){
-                    console.log("Selector not found: '.title_right_side_jheo_js'")
-                    return false;
-                }
-        
-                if( rightSideContentType === "info_golf_jheo_js"){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusGolf(); 
-    
-                }else if( rightSideContentType === "resto_pastille_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurants pastilles.";
-                    this.injectListRestoPastille();
-    
-                }else if( rightSideContentType === "info_resto_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusResto();
-    
-                }else if( rightSideContentType === "info_ferme_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusFerme();
-    
-                }else if( rightSideContentType === "info_station_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusStation();
-    
-                }else if( rightSideContentType === "info_tabac_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusTabac();
-    
-                }else if( rightSideContentType === "info_tous_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-                    injectStatusTous();
-    
-                }else if( rightSideContentType === "couche_tabac_jheo_js" ){
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Listes des contours géographiques.";
-                    this.injectChooseCouche();
-                }else{ //// default tiles type
-                    document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
-                    this.injectTilesType();
-                }
-                
-                document.querySelector(".cart_map_jheo_js").style.width= cart_width;
-                document.querySelector(".content_legende_jheo_js").style.width= cont_legent_width;
-                document.querySelector(".content_legende_jheo_js").style.padding= '25px';
-            }else{
-                console.log("Selector not found")
-                console.log("cart_map_jheo_js", "content_legende_jheo_js")
-            }
-        
-        
-            if(!this.isRightSideAlreadyOpen && document.querySelector('.close_right_side_jheo_js')){
-                document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
-                    this.closeRightSide();
-                })
-            }
+				document.querySelector(".cart_map_jheo_js").style.width = cart_width;
+				document.querySelector(".content_legende_jheo_js").style.width = cont_legent_width;
+				document.querySelector(".content_legende_jheo_js").style.padding = "25px";
+			} else {
+				console.log("Selector not found");
+				console.log("cart_map_jheo_js", "content_legende_jheo_js");
+			}
 
-            
-        }
-    }
+			if (!this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
+				document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+					this.closeRightSide();
+				});
+			}
+		}
+	}
 
-    closeRightSide(){
-        if(document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js") ){
-            document.querySelector(".cart_map_jheo_js").style.width= '100%';
-            document.querySelector(".content_legende_jheo_js").style.width= '0%';
-            document.querySelector(".content_legende_jheo_js").style.padding= '0';
-        }else{
-            console.log("Selector not found")
-            console.log("cart_map_jheo_js", "content_legende_jheo_js")
-        }
-    }
+	openRightSideMobile(rightSideContentType) {
+		if (rightSideContentType === "reset_zoom_jheo_js") {
+			this.resetZoom();
+		} else if (rightSideContentType === "cart_before_jheo_js") {
+			this.goBackOrAfterPosition("back");
+		} else if (rightSideContentType === "cart_after_jheo_js") {
+			this.goBackOrAfterPosition("after");
+		} else {
+			if (document.querySelector(".close_details_jheo_js")) {
+				document.querySelector(".close_details_jheo_js").click();
+			}
 
-    injectTilesType(){
-        if( !document.querySelector(".content_right_side_body_jheo_js")){
-            console.log("Selector not found : '.content_right_side_body_body'")
-            return false;
-        }
+			if (document.querySelector(".icon_close_nav_left_jheo_js")) {
+				document.querySelector(".icon_close_nav_left_jheo_js").click();
+			}
 
-        let tilesSelectHTML = "";
-        
-        this.listTales.forEach(item => {
-            tilesSelectHTML +=  `
+			const cart_width = "100%";
+			const cont_legent_width = "200%";
+
+			if (document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js")) {
+				if (!document.querySelector(".title_right_side_jheo_js")) {
+					console.log("Selector not found: '.title_right_side_jheo_js'");
+					return false;
+				}
+
+				if (rightSideContentType === "info_golf_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusGolf();
+				} else if (rightSideContentType === "resto_pastille_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurants pastilles.";
+					this.injectListRestoPastille();
+				} else if (rightSideContentType === "info_resto_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusResto();
+				} else if (rightSideContentType === "info_ferme_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusFerme();
+				} else if (rightSideContentType === "info_station_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusStation();
+				} else if (rightSideContentType === "info_tabac_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusTabac();
+				} else if (rightSideContentType === "info_tous_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					injectStatusTous();
+				} else if (rightSideContentType === "couche_tabac_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText =
+						"Listes des contours géographiques.";
+					this.injectChooseCouche();
+				} else {
+					//// default tiles type
+					document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
+					this.injectTilesType();
+				}
+
+				document.querySelector(".cart_map_jheo_js").style.width = cart_width;
+				document.querySelector(".content_legende_jheo_js").style.width = cont_legent_width;
+				document.querySelector(".content_legende_jheo_js").style.padding = "25px";
+			} else {
+				console.log("Selector not found");
+				console.log("cart_map_jheo_js", "content_legende_jheo_js");
+			}
+
+			if (!this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
+				document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+					this.closeRightSide();
+				});
+			}
+		}
+	}
+
+	closeRightSide() {
+		if (document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js")) {
+			document.querySelector(".cart_map_jheo_js").style.width = "100%";
+			document.querySelector(".content_legende_jheo_js").style.width = "0%";
+			document.querySelector(".content_legende_jheo_js").style.padding = "0";
+		} else {
+			console.log("Selector not found");
+			console.log("cart_map_jheo_js", "content_legende_jheo_js");
+		}
+	}
+
+	injectTilesType() {
+		if (!document.querySelector(".content_right_side_body_jheo_js")) {
+			console.log("Selector not found : '.content_right_side_body_body'");
+			return false;
+		}
+
+		let tilesSelectHTML = "";
+
+		this.listTales.forEach((item) => {
+			tilesSelectHTML += `
                 <div class="form-check">
                     <span class="leaflet-minimap-label">
-                        <input type="radio" id="${item.id}" class="leaflet-control-layers-selector ID_${item.id}" name="leaflet-base-layers" ${item.isCurrent ? 'checked' : '' }>
-                        <label class="" for="${item.id}">${item.name.toUpperCase() }</label>
+                        <input type="radio" id="${item.id}" class="leaflet-control-layers-selector ID_${
+				item.id
+			}" name="leaflet-base-layers" ${item.isCurrent ? "checked" : ""}>
+                        <label class="" for="${item.id}">${item.name.toUpperCase()}</label>
                     </span>
                 </div>
-            `
-        })
-        document.querySelector(".content_right_side_body_jheo_js").innerHTML= `
+            `;
+		});
+		document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
             <div class="right_side_body right_side_body_jheo_js">
                 ${tilesSelectHTML}
             </div>
@@ -1344,16 +1439,16 @@ class MapModule{
                     <div class="word word-3">Z</div>
                 </div>
             </div>
-        `
-        this.bindEventChangeTiles();
-    }
+        `;
+		this.bindEventChangeTiles();
+	}
 
-    injectChooseCouche(){
-        if( !document.querySelector(".content_right_side_body_jheo_js")){
-            console.log("Selector not found : '.content_right_side_body_body'")
-            return false;
-        }
-        document.querySelector(".content_right_side_body_jheo_js").innerHTML= `
+	injectChooseCouche() {
+		if (!document.querySelector(".content_right_side_body_jheo_js")) {
+			console.log("Selector not found : '.content_right_side_body_body'");
+			return false;
+		}
+		document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
             <div class="right_side_body right_side_body_jheo_js">
                 <div class="form-check">
                     <div class="content_input">
@@ -1424,758 +1519,944 @@ class MapModule{
                     <div class="word word-3">Z</div>
                 </div>
             </div>
-        `
-        this.handleEventOnCheckBox();
-    }
+        `;
+		this.handleEventOnCheckBox();
+	}
 
-    handleEventOnCheckBox(){
-        const allCheckBox= [
-            "check_tabac_region_jheo_js", 
-            "check_tabac_commune_jheo_js",
-            "check_tabac_departement_jheo_js",
-            "check_tabac_iris_jheo_js",
-            "check_tabac_quartier_jheo_js",
-            "check_tabac_canton_jheo_js"
-        ];
+	handleEventOnCheckBox() {
+		const allCheckBox = [
+			"check_tabac_region_jheo_js",
+			"check_tabac_commune_jheo_js",
+			"check_tabac_departement_jheo_js",
+			"check_tabac_iris_jheo_js",
+			"check_tabac_quartier_jheo_js",
+			"check_tabac_canton_jheo_js",
+		];
 
-        allCheckBox.forEach(inputCheck => {
-            if(!document.querySelector(`.${inputCheck}`)){
-               throw new Error(`Selector not found : ${inputCheck}`);
-            }
-            
-            ///// event handlers
-            const inputCheck_HTML= document.querySelector(`.${inputCheck}`)
-            inputCheck_HTML.addEventListener("change", (e) => {
-                const couche= inputCheck_HTML.getAttribute("id")
-                if( e.target.checked){
-                    showChargementRightSide()
-                    this.addCoucheOnLeaflet(couche) //// param couche name
-                }else{
-                    const list = document.querySelector(`.select_${couche.toLowerCase()}_jheo_js`)
-                    
-                    this.removeCoucheOnLeafled(couche)
+		allCheckBox.forEach((inputCheck) => {
+			if (!document.querySelector(`.${inputCheck}`)) {
+				throw new Error(`Selector not found : ${inputCheck}`);
+			}
 
-                    if(list && !list.classList.contains("d-none") ){
-                        list.classList.add("d-none")
+			///// event handlers
+			const inputCheck_HTML = document.querySelector(`.${inputCheck}`);
+			inputCheck_HTML.addEventListener("change", (e) => {
+				const couche = inputCheck_HTML.getAttribute("id");
+				if (e.target.checked) {
+					showChargementRightSide();
+					this.addCoucheOnLeaflet(couche); //// param couche name
+				} else {
+					const list = document.querySelector(`.select_${couche.toLowerCase()}_jheo_js`);
 
-                        while (list.firstChild) {
-                          list.removeChild(list.firstChild);
-                        }
-                    }
-                }
-            })
-        })
-    }
+					this.removeCoucheOnLeafled(couche);
 
-    async addCoucheOnLeaflet(COUCHE){
-        try{
-            ///// check if this is already get...
-            const currentCouche = this.objectGeoJson.find( item => item.couche.toLowerCase() === COUCHE.toLowerCase());
-            if(!currentCouche){
-                const link = IS_DEV_MODE ? `/assets/shapefile/${COUCHE.toUpperCase()}.zip` : `/public/assets/shapefile/${COUCHE.toUpperCase()}.zip`;
-                const response= await fetch(link)
-                const blob= await response.blob()
-                const file=new File([blob], "xxx.zip",{type:"application/x-zip-compressed"})
+					if (list && !list.classList.contains("d-none")) {
+						list.classList.add("d-none");
 
-                const reader = new FileReader();
-                reader.onload = () => {
-                    shp(reader.result)
-                        .then((geoJson) =>{
-                            hideChargementRightSide() 
-                            ///// couche Option, colors, properties
-                            const coucheOption= this.contourOption.find(item => item.couche === COUCHE.toLowerCase());
+						while (list.firstChild) {
+							list.removeChild(list.firstChild);
+						}
+					}
+				}
+			});
+		});
+	}
 
-                            this.objectGeoJson.push({ couche: COUCHE, data : geoJson.features, color : coucheOption.arrayColor , child : []})
-                            if( COUCHE !== "quartier"){
-                                generateSelectContoursGeographie(COUCHE, geoJson.features) //// function in data_tabac
-                            }else{
-                                this.updateGeoJson(COUCHE, -1 ) //// if -1 all seen, other single
-                            }
+	async addCoucheOnLeaflet(COUCHE) {
+		try {
+			///// check if this is already get...
+			const currentCouche = this.objectGeoJson.find((item) => item.couche.toLowerCase() === COUCHE.toLowerCase());
+			if (!currentCouche) {
+				const link = IS_DEV_MODE
+					? `/assets/shapefile/${COUCHE.toUpperCase()}.zip`
+					: `/public/assets/shapefile/${COUCHE.toUpperCase()}.zip`;
+				const response = await fetch(link);
+				const blob = await response.blob();
+				const file = new File([blob], "xxx.zip", { type: "application/x-zip-compressed" });
 
-                        })
-                        .catch(error => {
-                            hideChargementRightSide()
-                            console.log(error)
-                        })
-                };
+				const reader = new FileReader();
+				reader.onload = () => {
+					shp(reader.result)
+						.then((geoJson) => {
+							hideChargementRightSide();
+							///// couche Option, colors, properties
+							const coucheOption = this.contourOption.find(
+								(item) => item.couche === COUCHE.toLowerCase()
+							);
 
-                reader.readAsArrayBuffer(file)
-            }else{
-                hideChargementRightSide()
-                //// generate
-                if( COUCHE !== "quartier"){
-                    generateSelectContoursGeographie(COUCHE, currentCouche.data , currentCouche.child) //// function in data_tabac
-                }else{
-                    this.updateGeoJson(COUCHE, -1 ) //// if -1 all seen, other single
-                }
-            }
-        }catch(e){
-            hideChargementRightSide()
-            console.log(e.message)
-        }
+							this.objectGeoJson.push({
+								couche: COUCHE,
+								data: geoJson.features,
+								color: coucheOption.arrayColor,
+								child: [],
+							});
+							if (COUCHE !== "quartier") {
+								generateSelectContoursGeographie(COUCHE, geoJson.features); //// function in data_tabac
+							} else {
+								this.updateGeoJson(COUCHE, -1); //// if -1 all seen, other single
+							}
+						})
+						.catch((error) => {
+							hideChargementRightSide();
+							console.log(error);
+						});
+				};
 
-    }
+				reader.readAsArrayBuffer(file);
+			} else {
+				hideChargementRightSide();
+				//// generate
+				if (COUCHE !== "quartier") {
+					generateSelectContoursGeographie(COUCHE, currentCouche.data, currentCouche.child); //// function in data_tabac
+				} else {
+					this.updateGeoJson(COUCHE, -1); //// if -1 all seen, other single
+				}
+			}
+		} catch (e) {
+			hideChargementRightSide();
+			console.log(e.message);
+		}
+	}
 
-    updateGeoJson(couche,indexInJson){
-        // this.geoJSONLayer.clearLayers();
+	updateGeoJson(couche, indexInJson) {
+		// this.geoJSONLayer.clearLayers();
 
-        const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === couche);
-        const styles={
-            color: data_spec.color[0],
-            // fillColor: data_spec.color[1],
-            fillOpacity: 0,
-            weight: 1,
-        }
+		const data_spec = this.objectGeoJson.find((item) => item.couche.toLowerCase() === couche);
+		const styles = {
+			color: data_spec.color[0],
+			// fillColor: data_spec.color[1],
+			fillOpacity: 0,
+			weight: 1,
+		};
 
-        const data = indexInJson === -1 ? data_spec.data : data_spec.data[parseInt(indexInJson)];
-        const geoJson = L.geoJson( data, {
-            style: styles,
-            onEachFeature : (feature, layer)  => {
-                const lng= (feature.geometry.bbox[0] + feature.geometry.bbox[2]) / 2 ;
-                const lat= (feature.geometry.bbox[1] + feature.geometry.bbox[3]) / 2 ;
-                
-                if(couche !== "quartier"){
-                    this.updateCenter(lat, lng, 8);
-                    this.updateDataInSessionStorage(lat, lng, 8);
-                }
+		const data = indexInJson === -1 ? data_spec.data : data_spec.data[parseInt(indexInJson)];
+		const geoJson = L.geoJson(data, {
+			style: styles,
+			onEachFeature: (feature, layer) => {
+				const lng = (feature.geometry.bbox[0] + feature.geometry.bbox[2]) / 2;
+				const lat = (feature.geometry.bbox[1] + feature.geometry.bbox[3]) / 2;
 
-                const coucheOption= this.contourOption.find(item => item.couche === couche.toLowerCase());
+				if (couche !== "quartier") {
+					this.updateCenter(lat, lng, 8);
+					this.updateDataInSessionStorage(lat, lng, 8);
+				}
 
-                let description = "";
-                coucheOption.properties.forEach(propertie => {
-                    const desc = feature.properties[propertie].split(" ").map(item => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase()).join(" ")
-                    description += propertie.toUpperCase() + " : " + desc + " </br>";
-                })
+				const coucheOption = this.contourOption.find((item) => item.couche === couche.toLowerCase());
 
-                layer.bindPopup(description);
+				let description = "";
+				coucheOption.properties.forEach((propertie) => {
+					const desc = feature.properties[propertie]
+						.split(" ")
+						.map((item) => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase())
+						.join(" ");
+					description += propertie.toUpperCase() + " : " + desc + " </br>";
+				});
 
-                layer.on('mouseover', function (e) {
-                    this.openPopup();
-                });
-                
-                layer.on('mouseout', function (e) {
-                    this.closePopup();
-                });
-            }
-        }).addTo(this.map);
+				layer.bindPopup(description);
 
-        this.objectGeoJson= this.objectGeoJson.map((item, index) => { 
-            if( item.couche.toLowerCase() === couche ){
-                if(indexInJson !== -1 ){
-                    item.child.push({ index : indexInJson, geoJson : geoJson})
-                }else{
-                    item.child.push({ index : index, geoJson : geoJson})
-                }
-            }
-            return item;
-        })
-    }
+				layer.on("mouseover", function (e) {
+					this.openPopup();
+				});
 
-    
-    removeSpecGeoJson(couche,indexInJson){
-        
-        const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === couche);
-        const jsonIndex = data_spec.child.find(jtem => jtem.index === indexInJson );
+				layer.on("mouseout", function (e) {
+					this.closePopup();
+				});
+			},
+		}).addTo(this.map);
 
-        //// remove this child
-        jsonIndex.geoJson.clearLayers()
+		this.objectGeoJson = this.objectGeoJson.map((item, index) => {
+			if (item.couche.toLowerCase() === couche) {
+				if (indexInJson !== -1) {
+					item.child.push({ index: indexInJson, geoJson: geoJson });
+				} else {
+					item.child.push({ index: index, geoJson: geoJson });
+				}
+			}
+			return item;
+		});
+	}
 
-        this.objectGeoJson= this.objectGeoJson.map(item => { 
-            item.child = ( item.couche.toLowerCase() === couche ) ?  item.child.filter(ktem => ktem.index !== indexInJson) : item.child;
-            return item;
-        })
-    }
+	removeSpecGeoJson(couche, indexInJson) {
+		const data_spec = this.objectGeoJson.find((item) => item.couche.toLowerCase() === couche);
+		const jsonIndex = data_spec.child.find((jtem) => jtem.index === indexInJson);
 
-    removeCoucheOnLeafled(COUCHE){
-        const data_spec = this.objectGeoJson.find(item => item.couche.toLowerCase() === COUCHE.toLowerCase());
+		//// remove this child
+		jsonIndex.geoJson.clearLayers();
 
-        //// remove geoJsom
-        data_spec.child.forEach(jtem => jtem.geoJson.clearLayers());
+		this.objectGeoJson = this.objectGeoJson.map((item) => {
+			item.child =
+				item.couche.toLowerCase() === couche
+					? item.child.filter((ktem) => ktem.index !== indexInJson)
+					: item.child;
+			return item;
+		});
+	}
 
-        ///// update data remove all children selected in this
-        // this.objectGeoJson= this.objectGeoJson.map(item => { 
-        //     item.child = (item.couche.toLowerCase() === COUCHE ) ? [] : item.child;
-        //     return item;
-        // })
-        this.objectGeoJson= this.objectGeoJson.filter(item => item.couche.toLowerCase() !== COUCHE )
-    }
+	removeCoucheOnLeafled(COUCHE) {
+		const data_spec = this.objectGeoJson.find((item) => item.couche.toLowerCase() === COUCHE.toLowerCase());
 
-    bindEventChangeTiles(){
-        this.listTales.forEach(item => {
-            document.querySelector(`.ID_${item.id}`).addEventListener('change', () => {
-                this.changeTiles(item.id)
-            })
-        })
-    }
+		//// remove geoJsom
+		data_spec.child.forEach((jtem) => jtem.geoJson.clearLayers());
 
-    changeTiles(tilesID){
-        const newTiles= this.listTales.find(item => item.id === tilesID);
-        this.tiles.setUrl(newTiles.link, false)
+		///// update data remove all children selected in this
+		// this.objectGeoJson= this.objectGeoJson.map(item => {
+		//     item.child = (item.couche.toLowerCase() === COUCHE ) ? [] : item.child;
+		//     return item;
+		// })
+		this.objectGeoJson = this.objectGeoJson.filter((item) => item.couche.toLowerCase() !== COUCHE);
+	}
 
-        this.listTales= this.listTales.map(item => {
-            item.isCurrent = item.id === tilesID ? true : false
-            return item
-        });
-    }
+	bindEventChangeTiles() {
+		this.listTales.forEach((item) => {
+			document.querySelector(`.ID_${item.id}`).addEventListener("change", () => {
+				this.changeTiles(item.id);
+			});
+		});
+	}
 
-    /**
-     * @Author Nantenaina
-     * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz, 
-     * localisation du fichier: dans MapModule.js,
-     * je veux: faire apparaitre la note en haut à gauche du poi resto
-     * si une POI a une note, la note se montre en haut à gauche du POI 
-     */
-    setSpecialMarkerToShowNote(latLng, item, isSelected=false, poi_icon, poi_icon_Selected, taille){
-        // isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille)
-        // const iconUrlNanta="/assets/icon/NewIcons/icon-resto-new-B.png"; ///on dev
-        // const taille=0
-        let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
-        let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
+	changeTiles(tilesID) {
+		const newTiles = this.listTales.find((item) => item.id === tilesID);
+		this.tiles.setUrl(newTiles.link, false);
 
-        const path_icon= IS_DEV_MODE ? `/public/${isSelected ? poi_icon_Selected : poi_icon}` : `/${isSelected ? poi_icon_Selected : poi_icon}`
-        return new L.Marker(latLng, {
-            icon: new L.DivIcon({
-                className: 'my-div-icon',
-                html: ` 
+		this.listTales = this.listTales.map((item) => {
+			item.isCurrent = item.id === tilesID ? true : false;
+			return item;
+		});
+	}
+
+	/**
+	 * @Author Nantenaina
+	 * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz,
+	 * localisation du fichier: dans MapModule.js,
+	 * je veux: faire apparaitre la note en haut à gauche du poi resto
+	 * si une POI a une note, la note se montre en haut à gauche du POI
+	 */
+	setSpecialMarkerToShowNote(latLng, item, isSelected = false, poi_icon, poi_icon_Selected, taille) {
+		// isSelected ? setIconn(poi_icon_Selected,"" , isPastille) : setIconn(poi_icon, "", isPastille)
+		// const iconUrlNanta="/assets/icon/NewIcons/icon-resto-new-B.png"; ///on dev
+		// const taille=0
+		let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0;
+		let [w, h] = taille === 0 ? [30, 45] : taille === 1 ? [35, 55] : [45, 60];
+
+		const path_icon = IS_DEV_MODE
+			? `/public/${isSelected ? poi_icon_Selected : poi_icon}`
+			: `/${isSelected ? poi_icon_Selected : poi_icon}`;
+		return new L.Marker(latLng, {
+			icon: new L.DivIcon({
+				className: "my-div-icon",
+				html: ` 
                         <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
-                        background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
+                        background-color:${noteMoyenne < 2 ? "red" : noteMoyenne == 2 ? "orange" : "green"};color:white;
                         border-radius: 50%;">${noteMoyenne}</span>
                       <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
                        `,
-                //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
-                iconAnchor: [11, 30],
-                popupAnchor: [0, -20],
-                shadowSize: [68, 95],
-                shadowAnchor: [22, 94],
-            }),
-            cleNom:item.denominationF,
-            id:item.id,
-            type:"resto"
-        });
-    }
+				//iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
+				iconAnchor: [11, 30],
+				popupAnchor: [0, -20],
+				shadowSize: [68, 95],
+				shadowAnchor: [22, 94],
+			}),
+			cleNom: item.denominationF,
+			id: item.id,
+			type: "resto",
+		});
+	}
 
-    setSpecialMarkerToShowNoteRefactor(latLng, item, poi_icon, taille, type= "resto" ){
-        let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0
-        let [w,h]= (taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
+	setSpecialMarkerToShowNoteRefactor(latLng, item, poi_icon, taille, type = "resto") {
+		let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0;
+		let [w, h] = taille === 0 ? [30, 45] : taille === 1 ? [35, 55] : [45, 60];
 
-        const path_icon= IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`
-        return new L.Marker(
-            latLng, 
-            {
-                icon: new L.DivIcon({
-                    className: 'my-div-icon',
-                    html: ` 
+		const path_icon = IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`;
+		return new L.Marker(latLng, {
+			icon: new L.DivIcon({
+				className: "my-div-icon",
+				html: ` 
                             <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
-                            background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
+                            background-color:${
+								noteMoyenne < 2 ? "red" : noteMoyenne == 2 ? "orange" : "green"
+							};color:white;
                             border-radius: 50%;">${noteMoyenne}</span>
                         <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
                         `,
-                    //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
-                    iconAnchor: [11, 30],
-                    popupAnchor: [0, -20],
-                    shadowSize: [68, 95],
-                    shadowAnchor: [22, 94],
-                }),
-                // cleNom:item.denominationF,
-                id:item.id,
-                type: type
-            });
-    }
+				//iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
+				iconAnchor: [11, 30],
+				popupAnchor: [0, -20],
+				shadowSize: [68, 95],
+				shadowAnchor: [22, 94],
+			}),
+			// cleNom:item.denominationF,
+			id: item.id,
+			type: type,
+		});
+	}
 
-    /**
-     * @Author Nantenaina
-     * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz, 
-     * localisation du fichier: dans MapModule.js,
-     * je veux: modifier l'icone du poi resto
-     * si une POI a une note, la note se montre en haut à gauche du POI 
-     */
-    setSpecialIcon(item, isSelected=false, poi_icon, poi_icon_Selected, taille){
-        let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0;
-        let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
-        
-        return new L.DivIcon({
-            className: 'my-div-icon',
-            html: noteMoyenne > 0 ? ` 
+	/**
+	 * @Author Nantenaina
+	 * où: On utilise cette fonction dans la rubrique restaurant, restaurant specifique dép, arrondissement et tous de la carte cmz,
+	 * localisation du fichier: dans MapModule.js,
+	 * je veux: modifier l'icone du poi resto
+	 * si une POI a une note, la note se montre en haut à gauche du POI
+	 */
+	setSpecialIcon(item, isSelected = false, poi_icon, poi_icon_Selected, taille) {
+		let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0;
+		let [w, h] = taille === 0 ? [30, 45] : taille === 1 ? [35, 55] : [45, 60];
+
+		return new L.DivIcon({
+			className: "my-div-icon",
+			html:
+				noteMoyenne > 0
+					? ` 
                     <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
-                    background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
+                    background-color:${noteMoyenne < 2 ? "red" : noteMoyenne == 2 ? "orange" : "green"};color:white;
                     border-radius: 50%;">${noteMoyenne}</span>
-                  <img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
-                   `:`<img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon}"/>
+                  <img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${
+							isSelected ? poi_icon_Selected : poi_icon
+					  }"/>
+                   `
+					: `<img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${
+							isSelected ? poi_icon_Selected : poi_icon
+					  }"/>
                    `,
-            //iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
-            iconAnchor: [11, 30],
-            popupAnchor: [0, -20],
-            shadowSize: [68, 95],
-            shadowAnchor: [22, 94],
-        })
-    }
+			//iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
+			iconAnchor: [11, 30],
+			popupAnchor: [0, -20],
+			shadowSize: [68, 95],
+			shadowAnchor: [22, 94],
+		});
+	}
 
-    setSpecialIconRefactor(item, poi_icon, taille){
-        let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0;
-        let [w,h]=(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60];
-        
-        const path_icon= IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`
-        return new L.DivIcon({
-            className: 'my-div-icon',
-            html: noteMoyenne > 0 ? ` 
+	setSpecialIconRefactor(item, poi_icon, taille) {
+		let noteMoyenne = item.moyenne_note ? parseFloat(item.moyenne_note).toFixed(2) : 0;
+		let [w, h] = taille === 0 ? [30, 45] : taille === 1 ? [35, 55] : [45, 60];
+
+		const path_icon = IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`;
+		return new L.DivIcon({
+			className: "my-div-icon",
+			html:
+				noteMoyenne > 0
+					? ` 
                     <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
-                    background-color:${noteMoyenne < 2 ? "red" : (noteMoyenne == 2 ? "orange" : "green")};color:white;
+                    background-color:${noteMoyenne < 2 ? "red" : noteMoyenne == 2 ? "orange" : "green"};color:white;
                     border-radius: 50%;">${noteMoyenne}</span>
                   <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
-                   `:`<img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
+                   `
+					: `<img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
                    `,
-            iconAnchor: [11, 30],
-            popupAnchor: [0, -20],
-            shadowSize: [68, 95],
-            shadowAnchor: [22, 94],
-        })
-    }
+			iconAnchor: [11, 30],
+			popupAnchor: [0, -20],
+			shadowSize: [68, 95],
+			shadowAnchor: [22, 94],
+		});
+	}
 
+	generateTableDataFiltered(ratioMin, ratioMax, ratio) {
+		const dataFiltered = [];
 
-    generateTableDataFiltered(ratioMin, ratioMax, ratio){
-        const dataFiltered= [];
+		let iterate_ratio = 1 / 10 ** ratio;
 
-        let iterate_ratio= 1/(10**ratio)
+		let init_iterate_ratio = ratioMin;
+		while (
+			parseFloat(init_iterate_ratio.toFixed(ratio)) <
+			parseFloat(parseFloat(ratioMax + iterate_ratio).toFixed(ratio))
+		) {
+			if (!dataFiltered.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat))) {
+				dataFiltered.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)), data: [] });
+			}
 
-        let init_iterate_ratio = ratioMin;
-        while(parseFloat(init_iterate_ratio.toFixed(ratio)) < parseFloat(parseFloat(ratioMax+iterate_ratio).toFixed(ratio))){
-            if( !dataFiltered.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat) )){
-                dataFiltered.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)),  data: [] })
-            }
+			init_iterate_ratio += iterate_ratio;
+		}
 
-            init_iterate_ratio +=iterate_ratio;
-        }
+		return dataFiltered;
+	}
 
-        return dataFiltered;
-    }
+	synchronizeAllIconSize() {
+		this.markers.eachLayer((marker) => {
+			if (!this.marker_last_selected || this.marker_last_selected != marker) {
+				this.synchronizeSingeIconSize(marker);
+			}
+		});
+	}
 
-    synchronizeAllIconSize(){
-        this.markers.eachLayer(marker => {
-            if (!this.marker_last_selected || this.marker_last_selected != marker ) {
-                this.synchronizeSingeIconSize(marker)
-            }
-        })
-    }
+	synchronizeSingeIconSize(marker) {
+		const depart = 15;
+		const zoom = this.map._zoom;
+		if (
+			marker.options.icon.options.hasOwnProperty("iconUrl") ||
+			marker.options.icon.options.__proto__.hasOwnProperty("iconUrl")
+		) {
+			const prototype = marker.options.icon.options.hasOwnProperty("iconUrl")
+				? marker.options.icon.options
+				: marker.options.icon.options.__proto__;
+			const icon = prototype;
+			marker.setIcon(
+				L.icon({
+					...icon,
+					iconSize: [depart + zoom, depart + zoom + 9],
+				})
+			);
+		} else {
+			const divIcon = marker.options.icon.options;
+			const lastDivIcon = divIcon.html;
 
-    synchronizeSingeIconSize(marker){
-        const depart= 15;
-        const zoom = this.map._zoom;
-        if (marker.options.icon.options.hasOwnProperty('iconUrl') || marker.options.icon.options.__proto__.hasOwnProperty('iconUrl')){
-            const prototype= marker.options.icon.options.hasOwnProperty('iconUrl') ? marker.options.icon.options : marker.options.icon.options.__proto__;
-            const icon= prototype;
-            marker.setIcon(
-                L.icon({
-                    ...icon,
-                    iconSize : [depart+zoom, depart+zoom +9],
-                })
-            )
-        }else{
-            const divIcon= marker.options.icon.options;
-            const lastDivIcon= divIcon.html;
+			const parser = new DOMParser();
+			const htmlDocument = parser.parseFromString(lastDivIcon, "text/html");
+			const span = htmlDocument.querySelector(".my-div-span");
+			const image = htmlDocument.querySelector(".my-div-image");
+			image.setAttribute("style", `width:${depart + zoom}px ; height:${depart + zoom + 9}px`);
 
-            const parser = new DOMParser();
-            const htmlDocument = parser.parseFromString(lastDivIcon, "text/html");
-            const span= htmlDocument.querySelector(".my-div-span");
-            const image= htmlDocument.querySelector(".my-div-image");
-            image.setAttribute("style", `width:${depart+zoom}px ; height:${depart+zoom +9}px`)
+			marker.setIcon(
+				new L.DivIcon({
+					...divIcon,
+					html: `${span.outerHTML} ${image.outerHTML}`,
+					iconSize: [depart + zoom, depart + zoom + 9],
+				})
+			);
+		}
+	}
 
-            marker.setIcon(
-                new L.DivIcon({
-                    ...divIcon,
-                    html : `${span.outerHTML} ${image.outerHTML}`,
-                    iconSize : [depart+ zoom, depart+ zoom +9],
-                })
-            )
-        }
-    }
+	/**
+	 * @author Jehovanie RAMANDRIJOEL
+	 * où: on Utilise cette fonction dans le mapModule,
+	 * localisation du fichier: dans MapModule.js,
+	 * je veux: supprimer les markers qui sont en dehors de notre vue sur la carte
+	 *
+	 * @param {} newSize  { minx, maxx, miny, maxy }
+	 *
+	 * - remove markers outside the box
+	 */
+	removeMarkerOutSideTheBox(newSize) {
+		const zoom = this.map._zoom;
+		const { minx, maxx, miny, maxy } = newSize;
 
-    /**
-     * @author Jehovanie RAMANDRIJOEL
-     * où: on Utilise cette fonction dans le mapModule, 
-     * localisation du fichier: dans MapModule.js,
-     * je veux: supprimer les markers qui sont en dehors de notre vue sur la carte
-     * 
-     * @param {} newSize  { minx, maxx, miny, maxy }
-     * 
-     * - remove markers outside the box
-     */
-    removeMarkerOutSideTheBox(newSize){
+		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		const { dataMax } = current_object_dataMax;
 
-        const zoom = this.map._zoom;
-        const { minx, maxx, miny, maxy } = newSize;
+		let countMarkers = 0;
+		//// REMOVE the outside the box
+		this.markers.eachLayer((marker) => {
+			const { lat, lng } = marker.getLatLng();
+			const isInDisplay =
+				lat > parseFloat(miny) && lat < parseFloat(maxy) && lng > parseFloat(minx) && lng < parseFloat(maxx);
+			if (!isInDisplay || countMarkers > dataMax) {
+				this.markers.removeLayer(marker);
+			} else {
+				countMarkers++;
+			}
+		});
+	}
 
-        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
-        const { dataMax } = current_object_dataMax;
+	/**
+	 * @author Jheo
+	 *
+	 * I use this to remove the line in the map, sypder of the line.
+	 */
+	removePolyline() {
+		if (this.polylines.length > 0) {
+			this.polylines.forEach((polyline) => {
+				this.map.removeLayer(polyline);
+			});
+		}
+	}
 
-        let countMarkers= 0;
-        //// REMOVE the outside the box
-        this.markers.eachLayer((marker) => {
-            const { lat, lng } = marker.getLatLng();
-            const isInDisplay = ( lat > parseFloat(miny) && lat < parseFloat(maxy)) && ( lng > parseFloat(minx) && lng < parseFloat(maxx) );
-            if( !isInDisplay || countMarkers > dataMax ){
-                this.markers.removeLayer(marker);
-            }else{
-                countMarkers++;
-            }
-        });
-    }
+	/**
+	 * @author Jehovanie RAMANDRIJOEL
+	 * où: on Utilise cette fonction dans la rubrique resto,
+	 * localisation du fichier: dans MarkerClusterResto.js,
+	 * je veux: mise a jour les données sur la carte,
+	 * @param {} newSize  { minx, maxx, miny, maxy }
+	 *
+	 * - remove markers outside the box
+	 * - Add some markers ( via latitude, ratio, dataMax )
+	 * -
+	 */
+	updateMarkersDisplay(newSize) {
+		///REMOVE THE OUTSIDE THE BOX
+		this.removeMarkerOutSideTheBox(newSize);
 
+		const zoom = this.map._zoom;
+		const { minx, maxx, miny, maxy } = newSize;
 
-    /**
-     * @author Jehovanie RAMANDRIJOEL
-     * où: on Utilise cette fonction dans la rubrique resto, 
-     * localisation du fichier: dans MarkerClusterResto.js,
-     * je veux: mise a jour les données sur la carte,
-     * @param {} newSize  { minx, maxx, miny, maxy }
-     * 
-     * - remove markers outside the box
-     * - Add some markers ( via latitude, ratio, dataMax )
-     * - 
-     */
-    updateMarkersDisplay(newSize){
-        ///REMOVE THE OUTSIDE THE BOX
-        this.removeMarkerOutSideTheBox(newSize);
+		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		const { dataMax, ratio } = current_object_dataMax;
 
-        const zoom = this.map._zoom;
-        const { minx, maxx, miny, maxy } = newSize;
+		///get default data to array
+		let default_data = this.transformDataStructure();
 
-        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
-        const { dataMax, ratio }= current_object_dataMax;
+		/// add same data must be show
+		if (zoom > 6) {
+			/** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
+			/** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
+			/** objectif: [ { lat: 47.2 (si ratio === 1 ), data: [ {item }, ... ] } ] */
 
-        ///get default data to array
-        let default_data= this.transformDataStructure();
+			let dataFilteredDerive = []; //// pour stocker les données filtres [ { lat: ... , data: [ { ... },  ... ] } ]
 
-        /// add same data must be show
-        if( zoom > 6 ){
+			//// first data filter from this.markers ( lat min to lat max ( with current ration ))
+			this.markers.eachLayer((marker) => {
+				dataFilteredDerive = this.getSpecificRelatedOnRatio(marker, ratio, dataMax, dataFilteredDerive);
+			});
 
-            /** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
-            /** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
-            /** objectif: [ { lat: 47.2 (si ratio === 1 ), data: [ {item }, ... ] } ] */
+			//// COMPLETE DATA FILTER FOR ALL DATA ( lat min to lat max ( with current ration ))
+			dataFilteredDerive = this.completeSpecificRelatedOnRatio(dataFilteredDerive, miny, maxy, ratio);
 
-            let dataFilteredDerive= [ ]; //// pour stocker les données filtres [ { lat: ... , data: [ { ... },  ... ] } ]
+			///inject data in dataFilteredDerive related on the lat with the ratio and add it to the cart map
+			default_data.forEach((item) => {
+				////check if this item is in the current bounding box map.
+				const isCanDisplay =
+					parseFloat(item.lat) > parseFloat(miny) &&
+					parseFloat(item.lat) < parseFloat(maxy) &&
+					parseFloat(item.long) > parseFloat(minx) &&
+					parseFloat(item.long) < parseFloat(maxx);
+				const isRelatedWithRatio = dataFilteredDerive.some(
+					(jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio)) === parseFloat(jtem.lat)
+				);
+				if (isCanDisplay && isRelatedWithRatio) {
+					let isAlreadyDisplay = false; ///check if this already displayed on the map (already in the markers)
+					this.markers.eachLayer((marker) => {
+						if (parseInt(marker.options.id) === parseInt(item.id)) {
+							isAlreadyDisplay = true;
+						}
+					});
 
-            //// first data filter from this.markers ( lat min to lat max ( with current ration ))
-            this.markers.eachLayer((marker) => {
-                dataFilteredDerive= this.getSpecificRelatedOnRatio( marker, ratio, dataMax, dataFilteredDerive )
-            });
+					if (!isAlreadyDisplay) {
+						/// is not already displayed
 
-            //// COMPLETE DATA FILTER FOR ALL DATA ( lat min to lat max ( with current ration ))
-            dataFilteredDerive= this.completeSpecificRelatedOnRatio( dataFilteredDerive, miny, maxy, ratio )
-            
-            ///inject data in dataFilteredDerive related on the lat with the ratio and add it to the cart map
-            default_data.forEach(item => {
-                ////check if this item is in the current bounding box map.
-                const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
-                const isRelatedWithRatio= dataFilteredDerive.some((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === parseFloat(jtem.lat) )
-                if( isCanDisplay && isRelatedWithRatio ){
+						const itemDataDerive = dataFilteredDerive.find(
+							(single) => parseFloat(single.lat) === parseFloat(parseFloat(item.lat).toFixed(ratio))
+						);
 
-                    let isAlreadyDisplay= false; ///check if this already displayed on the map (already in the markers)
-                    this.markers.eachLayer((marker) => {
-                        if( parseInt(marker.options.id) === parseInt(item.id)){
-                            isAlreadyDisplay = true;
-                        }
-                    })
-    
-                    if( !isAlreadyDisplay ){ /// is not already displayed
+						if (itemDataDerive && itemDataDerive.data.length < dataMax) {
+							////check if there is filter by carractère appear or not...
+							if (
+								this.filterLetter === "" ||
+								item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase()
+							) {
+								const isSelected =
+									this.marker_last_selected && this.marker_last_selected.options.id === item.id;
+								this.settingSingleMarker(item, isSelected);
 
-                        const itemDataDerive= dataFilteredDerive.find((single) => parseFloat(single.lat) === parseFloat(parseFloat(item.lat).toFixed(ratio)))
+								dataFilteredDerive.forEach((ktem) => {
+									if (parseFloat(parseFloat(item.lat).toFixed(ratio)) === parseFloat(ktem.lat)) {
+										ktem.data.push(item);
+									}
+								});
+							}
+						}
+					}
+				}
+			});
+		} else {
+			/** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
+			/** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
+			/** objectif: [ { lat: 47.2 (si ratio === 1 ), data: [ {item }, ... ] } ] */
+			const dataFiltered = [];
 
-                        if( itemDataDerive && itemDataDerive.data.length < dataMax ){
+			default_data.forEach((item) => {
+				////check if there is filter by carractère appear
+				if (
+					this.filterLetter === "" ||
+					(this.filterLetter !== "" &&
+						item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
+				) {
+					if (!dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio)) === jtem.lat)) {
+						dataFiltered.push({ lat: parseFloat(parseFloat(item.lat).toFixed(ratio)), data: [item] });
+					} else {
+						dataFiltered.forEach((ktem) => {
+							if (
+								parseFloat(parseFloat(item.lat).toFixed(ratio)) === ktem.lat &&
+								ktem.data.length < dataMax
+							) {
+								ktem.data.push(item);
+							}
+						});
+					}
+				}
+			});
 
-                            ////check if there is filter by carractère appear or not...
-                            if( this.filterLetter === "" || item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase()){
+			const dateFilteredPrime = [];
 
-                                const isSelected= this.marker_last_selected && this.marker_last_selected.options.id === item.id;
-                                this.settingSingleMarker(item, isSelected)
-                                
-                                dataFilteredDerive.forEach(ktem => {
-                                    if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
-                                        ktem.data.push(item)
-                                    }
-                                })
-                            }
-                        }
-                    }
-                }
-            })
+			this.markers.eachLayer((marker) => {
+				const temp = marker.getLatLng();
 
-        }else{
-            
-            /** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
-            /** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
-            /** objectif: [ { lat: 47.2 (si ratio === 1 ), data: [ {item }, ... ] } ] */
-            const dataFiltered= [ ];
+				if (!dateFilteredPrime.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio)) === jtem.lat)) {
+					const data_temp = default_data.find((item) => parseInt(item.id) === parseInt(marker.options.id));
 
-            default_data.forEach(item => {
-                ////check if there is filter by carractère appear
-                if( this.filterLetter === "" || (  this.filterLetter !== ""  && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
-                    if( !dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio))  === jtem.lat )){
-                            dataFiltered.push({ lat: parseFloat(parseFloat(item.lat).toFixed(ratio)),  data: [item] })
-                    }else{
-                        dataFiltered.forEach(ktem => {
-                            if(parseFloat(parseFloat(item.lat).toFixed(ratio)) === ktem.lat && ktem.data.length < dataMax ){
-                                ktem.data.push(item)
-                            }
-                        })
-                    }
-                }
-            })
+					////check if there is filter by carractère appear
+					if (
+						this.filterLetter === "" ||
+						(this.filterLetter !== "" &&
+							data_temp.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
+					) {
+						dateFilteredPrime.push({
+							lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),
+							data: [data_temp],
+						});
+					}
+				} else {
+					dateFilteredPrime.forEach((ktem) => {
+						if (parseFloat(parseFloat(temp.lat).toFixed(ratio)) === ktem.lat) {
+							if (ktem.data.length < dataMax) {
+								const data_temp = default_data.find(
+									(item) => parseInt(item.id) === parseInt(marker.options.id)
+								);
 
-            const dateFilteredPrime= [];
+								////check if there is filter by carractère appear
+								if (
+									this.filterLetter === "" ||
+									(this.filterLetter !== "" &&
+										data_temp.nameFilter.toLowerCase().charAt(0) ===
+											this.filterLetter.toLowerCase())
+								) {
+									ktem.data.push(
+										default_data.find((item) => parseInt(item.id) === parseInt(marker.options.id))
+									);
+								}
+							} else {
+								this.markers.removeLayer(marker);
+							}
+						} else {
+							this.markers.removeLayer(marker);
+						}
+					});
+				}
+			});
 
-            this.markers.eachLayer((marker) => {
-                const temp= marker.getLatLng();
+			dataFiltered.forEach((item) => {
+				if (dateFilteredPrime.some((jtem) => item.lat === jtem.lat && item.data.length > jtem.data.length)) {
+					const dataPrime = dateFilteredPrime.find((jtem) => item.lat === jtem.lat);
+					item.data.forEach((ktem) => {
+						if (!dataPrime.data.some((ptem) => parseInt(ptem.id) === parseInt(ktem.id))) {
+							this.settingSingleMarker(ktem, false);
+						}
+					});
+				} else {
+					item.data.forEach((ktem) => {
+						////check if there is filter by carractère appear
+						if (
+							this.filterLetter === "" ||
+							(this.filterLetter !== "" &&
+								ktem.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
+						) {
+							this.settingSingleMarker(ktem, false);
+						}
+					});
+				}
+			});
+		}
 
-                if( !dateFilteredPrime.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio)) === jtem.lat )){
+		//// Update icon size while zoom in or zoom out
+		// const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
+		this.synchronizeAllIconSize();
 
-                    const data_temp= default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
+		// this.markers.refreshClusters();
 
-                    ////check if there is filter by carractère appear
-                    if(  this.filterLetter === "" || (  this.filterLetter !== ""  && data_temp.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
-                        dateFilteredPrime.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [ data_temp ]})
-                    }
+		////count marker in map
+		this.countMarkerInCart();
+	}
 
-                }else{
-                    dateFilteredPrime.forEach(ktem => {
-                        if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === ktem.lat){
-                            if( ktem.data.length < dataMax ){
-                                const data_temp= default_data.find(item => parseInt(item.id) === parseInt(marker.options.id));
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+	 * The goal of this function to transform object data { ferme :[ ], ... } in to one array.
+	 *
+	 * @returns [ { item }, ...]
+	 */
+	transformDataStructure() {
+		let default_data = [];
+		if (Array.isArray(this.default_data)) {
+			default_data = this.default_data;
+		} else if (this.default_data.hasOwnProperty("ferme") && this.default_data.hasOwnProperty("resto")) {
+			default_data = default_data.concat(this.default_data.ferme);
+			default_data = default_data.concat(this.default_data.station);
+			default_data = default_data.concat(this.default_data.resto);
+			default_data = default_data.concat(this.default_data.golf);
+			default_data = default_data.concat(this.default_data.tabac);
+		} else if (
+			this.default_data.hasOwnProperty("results") &&
+			this.default_data.hasOwnProperty("cles0") &&
+			this.default_data.hasOwnProperty("cles1")
+		) {
+			default_data = this.default_data.results[0];
+		}
 
-                                ////check if there is filter by carractère appear
-                                if(  this.filterLetter === "" || (  this.filterLetter !== ""  && data_temp.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
-                                    ktem.data.push(default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)))
-                                }
-                            }else{
-                                this.markers.removeLayer(marker);
-                            }
-                        }else{
-                            this.markers.removeLayer(marker);
-                        }
-                    })
-                }
-            });
+		return default_data;
+	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * Get template form data related with the ratio
+	 * call recursive
+	 * @param {*} marker
+	 * @param {*} ratio
+	 * @param {*} dataMax
+	 * @returns array :  [ { lat: ... , data: [ { ... }, ... ] }, ... ]
+	 */
+	getSpecificRelatedOnRatio(marker, ratio, dataMax, dataFilteredDerive = []) {
+		///get default data to array
+		let default_data = this.transformDataStructure();
 
-            dataFiltered.forEach(item => {
-                if(dateFilteredPrime.some(jtem => item.lat === jtem.lat && item.data.length > jtem.data.length )){
-                    const dataPrime= dateFilteredPrime.find(jtem => item.lat === jtem.lat)
-                    item.data.forEach(ktem => {
-                        if(!dataPrime.data.some(ptem => parseInt(ptem.id) === parseInt(ktem.id))){
-                            this.settingSingleMarker(ktem, false)
-                        }
-                    })
-                }else{
-                    item.data.forEach(ktem => {
-                        ////check if there is filter by carractère appear
-                        if(  this.filterLetter === "" || (  this.filterLetter !== ""  && ktem.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )){
-                            this.settingSingleMarker(ktem, false)
-                        }
-                    })
-                }
-                
-            })
-        }
+		const temp = marker.getLatLng();
+		if (
+			!dataFilteredDerive.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio)) === parseFloat(jtem.lat))
+		) {
+			////check if there is filter by carractère appear
+			if (this.filterLetter !== "") {
+				dataFilteredDerive.push({
+					lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),
+					data: [
+						default_data.find(
+							(item) =>
+								parseInt(item.id) === parseInt(marker.options.id) &&
+								item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase()
+						),
+					],
+				});
+			} else {
+				dataFilteredDerive.push({
+					lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),
+					data: [default_data.find((item) => parseInt(item.id) === parseInt(marker.options.id))],
+				});
+			}
+		} else {
+			dataFilteredDerive.forEach((ktem) => {
+				if (parseFloat(parseFloat(temp.lat).toFixed(ratio)) === parseFloat(ktem.lat)) {
+					if (ktem.data.length < dataMax) {
+						if (this.filterLetter !== "") {
+							ktem.data.push(
+								default_data.find(
+									(item) =>
+										parseInt(item.id) === parseInt(marker.options.id) &&
+										item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase()
+								)
+							);
+						} else {
+							ktem.data.push(
+								default_data.find((item) => parseInt(item.id) === parseInt(marker.options.id))
+							);
+						}
+					}
+				}
+			});
+		}
 
-        //// Update icon size while zoom in or zoom out
-        // const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
-        this.synchronizeAllIconSize()
+		return dataFilteredDerive;
+	}
 
-        // this.markers.refreshClusters();
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * Get template form data related with the ratio
+	 *
+	 * @param {*} dataFilteredDerive
+	 * @param {*} miny
+	 * @param {*} maxy
+	 * @param {*} ratio
+	 * @returns array :  [ { lat: ... , data: [ { ... }, ... ] }, ... ]
+	 */
+	completeSpecificRelatedOnRatio(dataFilteredDerive = [], miny, maxy, ratio) {
+		const ratioMin = parseFloat(parseFloat(miny).toFixed(ratio));
+		const ratioMax = parseFloat(parseFloat(maxy).toFixed(ratio));
 
-        ////count marker in map
-        this.countMarkerInCart()
-    }
+		let iterate_ratio = 1 / 10 ** ratio; /// calcule iteration
+		let init_iterate_ratio = ratioMin; /// lat min corresponding with the ratio
+		while (
+			parseFloat(init_iterate_ratio.toFixed(ratio)) <
+			parseFloat(parseFloat(ratioMax + iterate_ratio).toFixed(ratio))
+		) {
+			if (
+				!dataFilteredDerive.some(
+					(jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat)
+				)
+			) {
+				dataFilteredDerive.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)), data: [] });
+			}
+			init_iterate_ratio += iterate_ratio;
+		}
 
-    /**
-     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
-     * The goal of this function to transform object data { ferme :[ ], ... } in to one array.
-     * 
-     * @returns [ { item }, ...]
-     */
-    transformDataStructure(){
-        let default_data= [];
-        if( Array.isArray(this.default_data)){
-            default_data= this.default_data;
-        }else if ( this.default_data.hasOwnProperty("ferme") && this.default_data.hasOwnProperty("resto") ){
-            default_data= default_data.concat(this.default_data.ferme);
-            default_data= default_data.concat(this.default_data.station);
-            default_data= default_data.concat(this.default_data.resto);
-            default_data= default_data.concat(this.default_data.golf);
-            default_data= default_data.concat(this.default_data.tabac);
-        }else if( this.default_data.hasOwnProperty("results") && this.default_data.hasOwnProperty("cles0") && this.default_data.hasOwnProperty("cles1")){
-            default_data= this.default_data.results[0];
-        }
+		return dataFilteredDerive;
+	}
 
-        return default_data;
-    }
+	/**
+	 * @author Jehovanie RAMANDRIJOEL
+	 * où: on Utilise cette fonction dans la rubrique resto,
+	 * localisation du fichier: dans MarkerClusterResto.js,
+	 * je veux: mise a jour les données sur la carte,
+	 * @param {} new_data : dataList to show
+	 * @param {} newSize  { minx, maxx, miny, maxy }
+	 *
+	 */
+	addMarkerNewPeripherique(new_data, newSize) {
+		const { minx, maxx, miny, maxy } = newSize;
+		// console.log("new_data: " + new_data.length)
 
-    /**
-     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-     * 
-     * Get template form data related with the ratio
-     * call recursive
-     * @param {*} marker 
-     * @param {*} ratio 
-     * @param {*} dataMax 
-     * @returns array :  [ { lat: ... , data: [ { ... }, ... ] }, ... ]
-     */
-    getSpecificRelatedOnRatio(marker, ratio, dataMax, dataFilteredDerive= [] ){
-        
-        ///get default data to array
-        let default_data= this.transformDataStructure();
+		let countMarkers = 0;
+		this.markers.eachLayer((marker) => {
+			countMarkers++;
+		});
 
-        const temp= marker.getLatLng();
-        if( !dataFilteredDerive.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio))  === parseFloat(jtem.lat) )){
-            ////check if there is filter by carractère appear
-            if( this.filterLetter !== ""){
-                dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
-                    default_data.find(item => parseInt(item.id) === parseInt(marker.options.id) && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
-                ] })
-            }else{
-                dataFilteredDerive.push({ lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),  data: [
-                    default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
-                ] })
-            }
+		if (countMarkers < 50 && new_data.length > 0) {
+			let data = [];
+			data = new_data.length > 50 ? shuffle(new_data) : new_data;
+			data = data.filter((item, index) => index < 50);
 
-        }else{
-            dataFilteredDerive.forEach(ktem => {
-                if(parseFloat(parseFloat(temp.lat).toFixed(ratio)) === parseFloat( ktem.lat)){
-                    if( ktem.data.length < dataMax ){
-                        
-                        if( this.filterLetter !== "" ){
-                            ktem.data.push(
-                                default_data.find(item => parseInt(item.id) === parseInt(marker.options.id)  && item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase() )
-                            )
-                        }else{
-                            ktem.data.push(
-                                default_data.find(item => parseInt(item.id) === parseInt(marker.options.id))
-                            )
-                        }
-                    }
-                }
-            })
-        }
+			data.forEach((item) => {
+				const isCanDisplay =
+					parseFloat(item.lat) > parseFloat(miny) &&
+					parseFloat(item.lat) < parseFloat(maxy) &&
+					parseFloat(item.long) > parseFloat(minx) &&
+					parseFloat(item.long) < parseFloat(maxx);
 
-        return dataFilteredDerive
-    }
+				if (isCanDisplay) {
+					let isAlreadyDisplay = false;
+					this.markers.eachLayer((marker) => {
+						if (parseInt(marker.options.id) === parseInt(item.id)) {
+							isAlreadyDisplay = true;
+						}
+					});
 
-    /**
-     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-     * 
-     * Get template form data related with the ratio
-     * 
-     * @param {*} dataFilteredDerive 
-     * @param {*} miny 
-     * @param {*} maxy 
-     * @param {*} ratio 
-     * @returns array :  [ { lat: ... , data: [ { ... }, ... ] }, ... ]
-     */
-    completeSpecificRelatedOnRatio(dataFilteredDerive=[], miny, maxy, ratio ){
-        const ratioMin= parseFloat(parseFloat(miny).toFixed(ratio))
-        const ratioMax= parseFloat(parseFloat(maxy).toFixed(ratio))
-        
-        let iterate_ratio= 1/(10**ratio) /// calcule iteration
-        let init_iterate_ratio = ratioMin; /// lat min corresponding with the ratio
-        while(parseFloat(init_iterate_ratio.toFixed(ratio)) < parseFloat(parseFloat(ratioMax+iterate_ratio).toFixed(ratio))){
-            if( !dataFilteredDerive.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat) )){
-                dataFilteredDerive.push({ lat: parseFloat(init_iterate_ratio.toFixed(ratio)),  data: [] })
-            }
-            init_iterate_ratio +=iterate_ratio;
-        }
+					if (!isAlreadyDisplay) {
+						const isSelected =
+							this.marker_last_selected && this.marker_last_selected.options.id === item.id;
+						this.settingSingleMarker(item, isSelected);
+						// console.log("new add : "+ item.id)
+					}
+				}
+			});
+		}
+	}
 
-        return dataFilteredDerive;
-    }
-    
-    
-    /**
-     * @author Jehovanie RAMANDRIJOEL
-     * où: on Utilise cette fonction dans la rubrique resto, 
-     * localisation du fichier: dans MarkerClusterResto.js,
-     * je veux: mise a jour les données sur la carte,
-     * @param {} new_data : dataList to show
-     * @param {} newSize  { minx, maxx, miny, maxy }
-     * 
-     */
-    addMarkerNewPeripherique(new_data, newSize){
-        const { minx, maxx, miny, maxy } = newSize;
-        // console.log("new_data: " + new_data.length)
-        
-        let countMarkers= 0;
-        this.markers.eachLayer((marker) => {  countMarkers++; });
+	countMarkerInCart() {
+		let countMarkerst = 0;
+		this.markers.eachLayer((marker) => {
+			countMarkerst++;
+		});
+		console.log("Total marker afficher: " + countMarkerst);
 
-        if( countMarkers < 50 && new_data.length > 0 ){
-            let data= [];
-            data= ( new_data.length > 50 ) ?  shuffle(new_data) : new_data;
-            data= data.filter((item , index ) => index < 50 )
+		const default_data = this.transformDataStructure();
+		console.log("Total default data: " + default_data.length);
+	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehoavaneirama@gmail.com>
+	 *
+	 * Check if the item related with this ID is in the marker or in the data
+	 *
+	 * @param {*} idToCheck
+	 *
+	 * @returns true if exists, false if not
+	 */
+	checkIsExist(idToCheck) {
+		if (this.default_data.some(({ id }) => parseInt(id) === parseInt(idToCheck))) {
+			let isAlreadyExist = false;
+			this.markers.eachLayer((marker) => {
+				if (parseInt(marker.options.id) === parseInt(idToCheck)) {
+					isAlreadyExist = true;
+				}
+			});
 
-            data.forEach(item => {
-                const isCanDisplay = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
-                
-                if( isCanDisplay ){
-                    let isAlreadyDisplay= false;
-                    this.markers.eachLayer((marker) => {
-                        if( parseInt(marker.options.id) === parseInt(item.id)){
-                            isAlreadyDisplay = true;
-                        }
-                    })
-    
-                    if( !isAlreadyDisplay ){
-                        const isSelected= this.marker_last_selected && this.marker_last_selected.options.id === item.id;
-                        this.settingSingleMarker(item, isSelected)
-                        // console.log("new add : "+ item.id)
-                    }
-                }
-            })
+			if (!isAlreadyExist) {
+				const data = this.default_data.find(({ id }) => parseInt(id) === parseInt(idToCheck));
+				this.settingSingleMarker(data, false);
+			}
+		}
+		return this.default_data.some(({ id }) => parseInt(id) === parseInt(idToCheck));
+	}
 
-        }
-    }
+	/**
+	 *
+	 * fire event click on marker
+	 * @param {*} id
+	 */
+	clickOnMarker(id) {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(id)) {
+				marker.fireEvent("click");
+			}
+		});
+	}
 
-    countMarkerInCart(){
-        let countMarkerst= 0;
-        this.markers.eachLayer((marker) => {  countMarkerst++; });
-        console.log("Total marker afficher: " + countMarkerst);
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * This custom spiderfy data on the map when there is marker supperposing.
+	 */
+	customSpiderfy() {
+		console.log("This below is the marker...");
 
-        const default_data= this.transformDataStructure();
-        console.log("Total default data: " + default_data.length)
-    }
+		///REMOVE THE POLYLINE
+		this.removePolyline();
 
-    /**
-     * @author Jehovanie RAMANDRIJOEL <jehoavaneirama@gmail.com>
-     * 
-     * Check if the item related with this ID is in the marker or in the data
-     * 
-     * @param {*} idToCheck 
-     * 
-     * @returns true if exists, false if not 
-     */
-    checkIsExist(idToCheck){
-        if(this.default_data.some(({id}) => parseInt(id) === parseInt(idToCheck))){
-            let isAlreadyExist= false;
-            this.markers.eachLayer(( marker ) => {
-                if (parseInt(marker.options.id) === parseInt(idToCheck) ) {
-                    isAlreadyExist= true;
-                }
-            })
+		const tab_nearbound_marker = [];
 
-            if( !isAlreadyExist ){
-                const data= this.default_data.find(({id}) => parseInt(id) === parseInt(idToCheck));
-                this.settingSingleMarker(data, false)
-            }
-        }
-        return this.default_data.some(({id}) => parseInt(id) === parseInt(idToCheck))
-    }
+		this.markers.eachLayer((marker) => {
+			if (!tab_nearbound_marker.some((item) => item.name === marker.getLatLng().toString())) {
+				tab_nearbound_marker.push({ name: marker.getLatLng().toString(), data: [marker] });
+			} else {
+				const item = tab_nearbound_marker.find((item) => item.name === marker.getLatLng().toString());
+				item.data.push(marker);
+			}
+		});
+		console.log(tab_nearbound_marker);
 
-    /**
-     * 
-     * fire event click on marker
-     * @param {*} id 
-     */
-    clickOnMarker(id){
-        this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(id) ) {
-                marker.fireEvent('click');  
-            }
-        });
-    }
+		tab_nearbound_marker.forEach((nearbound_marker) => {
+			if (nearbound_marker.data.length > 1) {
+				const single_one = nearbound_marker.data[0];
+				const center_pos = single_one.getLatLng();
+				console.log(center_pos);
+
+				var offset = parseFloat(Math.PI / nearbound_marker.data.length);
+				for (let i = 0; i < nearbound_marker.data.length; i++) {
+					const marker_to_move = nearbound_marker.data[i];
+
+					const [lat, lng] = this.cirlce_trajet(
+						marker_to_move.getLatLng().lat,
+						marker_to_move.getLatLng().lng,
+						offset
+					);
+					// Offset the position of the second marker
+					var newLatLng = L.latLng(lat, lng);
+					marker_to_move.setLatLng(newLatLng);
+
+					offset += 3.14 / nearbound_marker.data.length;
+				}
+
+				var center = [center_pos.lat, center_pos.lng];
+				for (let i = 0; i < nearbound_marker.data.length; i++) {
+					const temp = nearbound_marker.data[i];
+					const element = temp.getLatLng();
+					const point = [element.lat, element.lng];
+
+					const polyline = L.polyline([center, point], { color: "gray", opacity: 0.7, border: "1px" });
+					polyline.addTo(this.map);
+
+					this.polylines.push(polyline);
+				}
+			}
+		});
+
+		// Your logic to determine if clustering should be disabled at this zoom level
+		const zoom = this.map._zoom;
+
+		// Update disableClusteringAtZoom based on the condition
+		this.markers.options.disableClusteringAtZoom = zoom > 15 ? false : true;
+
+		// this.markers.options.iconCreateFunction = this.customIconCreateFunction;
+	}
+
+	customIconCreateFunction() {
+		return L.divIcon({
+			html: '<div class="markers_tommy_js">' + cluster.getChildCount() + "</div>",
+			className: "mycluster",
+			iconSize: L.point(35, 35),
+		});
+	}
+
+	cirlce_trajet(lat, lng, offset) {
+		var radius = 0.00008;
+		var angle = 0 + offset;
+
+		var lat = lat + radius * Math.sin(angle);
+		var lng = lng + radius * Math.cos(angle);
+
+		return [lat, lng];
+	}
 }

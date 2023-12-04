@@ -19,6 +19,7 @@ onmessage = (e) => {
         
     })
     fetch(request).then((response) => response.json()).then((json) => { 
+        console.log(json)
         postMessage(json)
     })
 }

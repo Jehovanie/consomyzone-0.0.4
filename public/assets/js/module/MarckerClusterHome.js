@@ -76,50 +76,78 @@ class MarckerClusterHome extends MapModule  {
     }
 
     createMarkersCluster() {
-        const that = this;
-        const temp= 200;
-        this.markers = L.markerClusterGroup({
+        this.markers = L.markerClusterGroup({ 
             chunkedLoading: true,
-            chunkInterval: temp * 5,
-            chunkDelay: temp,
-            removeOutsideVisibleBounds: true,
-            iconCreateFunction: function (cluster) {
-                if(that.marker_last_selected){
-                    let sepcMarmerIsExist = false;
-                    for (let g of  cluster.getAllChildMarkers()){
-                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
-                            if(that.marker_last_selected.options.hasOwnProperty('type')){
-                                if( that.marker_last_selected.options.type === g.options.type ){
-                                    sepcMarmerIsExist = true;
-                                }
-                            }else{
-                                sepcMarmerIsExist = true;
-                            }
-                            break;
-                        }
-                    }
-                    if(sepcMarmerIsExist){
-                        return L.divIcon({
-                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
-                            className: "spec_cluster",
-                            iconSize:L.point(35,35)
-                        });
-                    }else{
-                        return L.divIcon({
-                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                            className: "mycluster",
-                            iconSize:L.point(35,35)
-                        });
-                    }
-                }else{
-                    return L.divIcon({
-                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-                        className: "mycluster",
-                        iconSize:L.point(35,35)
-                    });
-                }
-            },
+            animate: true,
+            animateAddingMarkers:true,
+            chunkedLoading: true,
+            spiderfyOnEveryZoom: true,
+            disableClusteringAtZoom: true,
+            // iconCreateFunction: function (cluster) {
+                // console.log(cluster.getAllChildMarkers())
+
+                // var pointA = new L.LatLng(28.635308, 77.22496);
+                // var pointB = new L.LatLng(28.984461, 77.70641);
+                // var pointList = [pointA, pointB];
+
+                // return L.polyline(pointList, {
+                //     color: 'red',
+                //     weight: 3,
+                //     opacity: 0.5,
+                //     smoothFactor: 1
+                // });
+                // return L.divIcon({
+                //     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                //     className: "mycluster",
+                //     iconSize:L.point(35,35)
+                // });
+            // },
         });
+
+        // const that = this;
+        // const temp= 200;
+        // this.markers = L.markerClusterGroup({
+        //     chunkedLoading: true,
+        //     chunkInterval: temp * 5,
+        //     chunkDelay: temp,
+        //     removeOutsideVisibleBounds: true,
+        //     iconCreateFunction: function (cluster) {
+        //         if(that.marker_last_selected){
+        //             let sepcMarmerIsExist = false;
+        //             for (let g of  cluster.getAllChildMarkers()){
+        //                 if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+        //                     if(that.marker_last_selected.options.hasOwnProperty('type')){
+        //                         if( that.marker_last_selected.options.type === g.options.type ){
+        //                             sepcMarmerIsExist = true;
+        //                         }
+        //                     }else{
+        //                         sepcMarmerIsExist = true;
+        //                     }
+        //                     break;
+        //                 }
+        //             }
+        //             if(sepcMarmerIsExist){
+        //                 return L.divIcon({
+        //                     html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+        //                     className: "spec_cluster",
+        //                     iconSize:L.point(35,35)
+        //                 });
+        //             }else{
+        //                 return L.divIcon({
+        //                     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+        //                     className: "mycluster",
+        //                     iconSize:L.point(35,35)
+        //                 });
+        //             }
+        //         }else{
+        //             return L.divIcon({
+        //                 html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+        //                 className: "mycluster",
+        //                 iconSize:L.point(35,35)
+        //             });
+        //         }
+        //     },
+        // });
     }
 
     addMarker(newData) {
@@ -160,32 +188,157 @@ class MarckerClusterHome extends MapModule  {
     }
 
     addStation(dataStation) {
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+        
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+        
         dataStation.forEach(item => {
-            this.settingSingleMarker(item, false);
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
     }
 
     addFerme(dataFerme) {
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
         dataFerme.forEach(item => {
-            this.settingSingleMarker(item, false);
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
     }
 
     addResto(dataResto) {
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
         dataResto.forEach(item => {
-            this.settingSingleMarker(item, false);
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
     }
 
     addGolf(dataGolf){
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
+
         dataGolf.forEach(item => {
-            this.settingSingleMarker(item, false);
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
     }
 
     addTabac(dataTabac){
+        const zoom = this.map._zoom;
+        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+
+        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
+        const { dataMax, ratio }= current_object_dataMax;
+
+        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
+        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+
+        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+        
         dataTabac.forEach(item => {
-            this.settingSingleMarker(item, false);
+            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
+            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+
+            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+
+                this.settingSingleMarker(item, false);
+
+                dataFiltered.forEach(ktem => {
+                    if(parseFloat(ktem.lat) === item_with_ratio ){
+                        ktem.data.push(item)
+                    }
+                })
+            }
         })
     }
 
@@ -574,6 +727,7 @@ class MarckerClusterHome extends MapModule  {
 
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
+            this.updateMarkersDisplay(new_size);
             this.addPeripheriqueMarker(new_size);
         })
     }
@@ -586,14 +740,23 @@ class MarckerClusterHome extends MapModule  {
             const response = await fetch(`/dataHome${param}`);
             let new_data = await response.json();
 
+            let all_data= [];
+            all_data= all_data.concat(new_data.ferme);
+            all_data= all_data.concat(new_data.station);
+            all_data= all_data.concat(new_data.resto);
+            all_data= all_data.concat(new_data.golf);
+            all_data= all_data.concat(new_data.tabac);
+
+            this.addMarkerNewPeripherique(all_data, new_size);
+
             new_data.ferme = new_data.ferme.filter(item => !this.default_data.ferme.some(j => j.id === item.id))
             new_data.station = new_data.station.filter(item => !this.default_data.station.some(j => j.id === item.id))
             new_data.resto = new_data.resto.filter(item => !this.default_data.resto.some(j => j.id === item.id))
             new_data.golf = new_data.golf.filter(item => !this.default_data.golf.some(j => j.id === item.id))
             new_data.tabac = new_data.tabac.filter(item => !this.default_data.tabac.some(j => j.id === item.id))
 
-            const result= this.checkeFilterType(new_data);
-            this.addMarker(result);
+            // const result= this.checkeFilterType(new_data);
+            // this.addMarker(result);
 
             this.default_data = {
                 ...this.default_data,
