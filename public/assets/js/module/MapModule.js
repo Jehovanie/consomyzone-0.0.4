@@ -113,8 +113,9 @@ class MapModule {
 			{ zoomMin: 1, dataMax: 1, ratio: 0 },
 		];
 
-		this.epsilone = 1e-5;
-		this.ratio_float = 6;
+		/// i use this variable to calculate the distance between the two markers
+		this.epsilone = 1e-4;
+		this.ratio_float = 8;
 	}
 
 	initTales() {
@@ -1954,15 +1955,28 @@ class MapModule {
 	 *
 	 * I use this to remove the line in the map, sypder of the line.
 	 */
-	removePolyline(key_name) {
-		const { lat, lng } = this.splitLatLong(key_name);
+	removePolyline(key_name_from_over_map) {
+		const { lat, lng } = this.splitLatLong(key_name_from_over_map);
 
-		// if (this.polylines.length > 0) {
-		// 	this.polylines.forEach((polyline) => {
-		// 		this.map.removeLayer(polyline);
-		// 		console.log(polyline.getLatLngs());
-		// 	});
-		// }
+		if (this.polylines.length > 0) {
+			const first_element = this.polylines[0];
+			const latlngs = first_element.getLatLngs()[0];
+			const latLngCenter = L.latLng(latlngs.lat, latlngs.lng);
+
+			this.closeToEachOther.forEach((marker) => {
+				marker.setLatLng(latLngCenter);
+			});
+
+			this.closeToEachOther = [];
+
+			this.polylines.forEach((polyline) => {
+				this.map.removeLayer(polyline);
+			});
+
+			this.polylines = [];
+		}
+
+		///reset marker spyderfy
 	}
 
 	/**
@@ -2392,11 +2406,7 @@ class MapModule {
 	 * Goal: check and sypderfy the marker is there is more marker on supperpose.
 	 */
 	customSpiderfy(key_name_from_over_map) {
-		console.log("This below is the marker...");
-
 		///to store all marker view in the map.
-		const tab_nearbound_marker = [];
-
 		const closeToEachOther = [];
 
 		this.markers.eachLayer((marker) => {
@@ -2406,23 +2416,17 @@ class MapModule {
 			/// generate the key used for custmoSpyderfy
 			const key_name = this.formatKeyCle(marker_lat, marker_lng); /// lat( with ratio_length ) _ lng( with ratio_length )
 
-			/// check is close to each other ( current position on mouse )
+			/// check if there is an one, close to each other ( current position on mouse )
 			if (this.isEquivalentEpsilone(key_name_from_over_map, key_name)) {
 				/// recolte data.
 				closeToEachOther.push(marker);
-
-				if (!tab_nearbound_marker.some((item) => item.name === key_name)) {
-					tab_nearbound_marker.push({ name: key_name, data: [marker] });
-				} else {
-					const item = tab_nearbound_marker.find((item) => item.name === key_name);
-					item.data.push(marker);
-				}
 			}
 		});
 
 		/// must more than one, is not none supperposed.
 		if (closeToEachOther.length > 1) {
 			this.customOpenClusterGroup(closeToEachOther);
+			this.closeToEachOther = closeToEachOther;
 		}
 	}
 
@@ -2459,21 +2463,34 @@ class MapModule {
 			/// this is event fire when the mouse is move on the map
 			this.map.on("mousemove", (e) => {
 				/// current mouse position
-				const lat = e.latlng.lat;
-				const lng = e.latlng.lng;
+				if (this.map._zoom >= 18) {
+					const lat = e.latlng.lat;
+					const lng = e.latlng.lng;
 
-				/// generate the key used for custmoSpyderfy
-				const key_name = this.formatKeyCle(lat, lng); /// lat( with ratio_length ) _ lng( with ratio_length )
+					/// generate the key used for custmoSpyderfy
+					const key_name = this.formatKeyCle(lat, lng); /// lat( with ratio_length ) _ lng( with ratio_length )
 
-				/// fire my custom spyderfy marker when there is supperpose on this current position.
-				this.customSpiderfy(key_name);
+					///REMOVE THE POLYLINE
+					this.removePolyline(key_name);
 
-				///REMOVE THE POLYLINE
-				this.removePolyline(key_name);
+					/// fire my custom spyderfy marker when there is supperpose on this current position.
+					this.customSpiderfy(key_name);
+				}
 			});
 		}
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieramed@gmail.com>
+	 *
+	 * Goal: calculate the distance between two position
+	 * use variables epsilone to evaluate the distance
+	 *
+	 * @param {*} str_latlng_left, key latLng generater from "formatKeyCle"
+	 * @param {*} str_latlng_right  key latLng generater from "formatKeyCle"
+	 *
+	 * @returns boolean
+	 */
 	isEquivalentEpsilone(str_latlng_left, str_latlng_right) {
 		const epsilone = this.epsilone;
 
@@ -2499,7 +2516,6 @@ class MapModule {
 
 		/// use for the center position
 		const center_pos = single_one.getLatLng();
-		console.log("center_pos:" + center_pos.toString());
 
 		/// distance for each other when spyderfy.
 		let offset = parseFloat(Math.PI / tabDataToOpen.length);
