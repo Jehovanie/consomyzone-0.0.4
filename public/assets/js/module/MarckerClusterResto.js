@@ -259,8 +259,9 @@ class MarckerClusterResto extends MapModule {
 
 	bindEventClick(marker, item) {
 		marker.on("click", (e) => {
-			console.log("marker clicked: ");
-			console.log(marker.getLatLng().toString());
+			// console.log("marker clicked: ");
+			// console.log(marker.getLatLng().toString());
+
 			////close right if this open
 			this.closeRightSide();
 

@@ -112,6 +112,9 @@ class MapModule {
 			{ zoomMin: 4, dataMax: 1, ratio: 0 },
 			{ zoomMin: 1, dataMax: 1, ratio: 0 },
 		];
+
+		this.epsilone = 1e-5;
+		this.ratio_float = 6;
 	}
 
 	initTales() {
@@ -194,6 +197,8 @@ class MapModule {
 			.addTo(this.map);
 
 		this.leafletControlExtend(position);
+
+		this.handleEventOnMap();
 		// let position = null, coords= null;
 		// try{
 		//     position = await this.getUserLocation();
@@ -226,6 +231,7 @@ class MapModule {
 		}
 
 		this.map.doubleClickZoom.disable();
+		this.bindEventMouseOverOnMap();
 	}
 
 	settingGeos() {
@@ -328,8 +334,6 @@ class MapModule {
 				};
 				setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition));
 			}
-
-			this.customSpiderfy();
 		});
 
 		this.map.on("movestart", (e) => {
@@ -1950,12 +1954,15 @@ class MapModule {
 	 *
 	 * I use this to remove the line in the map, sypder of the line.
 	 */
-	removePolyline() {
-		if (this.polylines.length > 0) {
-			this.polylines.forEach((polyline) => {
-				this.map.removeLayer(polyline);
-			});
-		}
+	removePolyline(key_name) {
+		const { lat, lng } = this.splitLatLong(key_name);
+
+		// if (this.polylines.length > 0) {
+		// 	this.polylines.forEach((polyline) => {
+		// 		this.map.removeLayer(polyline);
+		// 		console.log(polyline.getLatLngs());
+		// 	});
+		// }
 	}
 
 	/**
@@ -2377,79 +2384,58 @@ class MapModule {
 	/**
 	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
 	 *
-	 * This custom spiderfy data on the map when there is marker supperposing.
+	 * @param key_name_from_over_map: string from the current position of the mouse.
+	 * like this: lat.toFixed(this.ration_float).toString() + "_" + lng.toFixed(this.ration_float).toString()
+	 * function create this form: this.formatKeyCle()
+	 * get the current position of the mouse in the map.
+	 *
+	 * Goal: check and sypderfy the marker is there is more marker on supperpose.
 	 */
-	customSpiderfy() {
+	customSpiderfy(key_name_from_over_map) {
 		console.log("This below is the marker...");
 
-		///REMOVE THE POLYLINE
-		this.removePolyline();
-
+		///to store all marker view in the map.
 		const tab_nearbound_marker = [];
 
+		const closeToEachOther = [];
+
 		this.markers.eachLayer((marker) => {
-			if (!tab_nearbound_marker.some((item) => item.name === marker.getLatLng().toString())) {
-				tab_nearbound_marker.push({ name: marker.getLatLng().toString(), data: [marker] });
-			} else {
-				const item = tab_nearbound_marker.find((item) => item.name === marker.getLatLng().toString());
-				item.data.push(marker);
-			}
-		});
-		console.log(tab_nearbound_marker);
+			const marker_lat = marker.getLatLng().lat;
+			const marker_lng = marker.getLatLng().lng;
 
-		tab_nearbound_marker.forEach((nearbound_marker) => {
-			if (nearbound_marker.data.length > 1) {
-				const single_one = nearbound_marker.data[0];
-				const center_pos = single_one.getLatLng();
-				console.log(center_pos);
+			/// generate the key used for custmoSpyderfy
+			const key_name = this.formatKeyCle(marker_lat, marker_lng); /// lat( with ratio_length ) _ lng( with ratio_length )
 
-				var offset = parseFloat(Math.PI / nearbound_marker.data.length);
-				for (let i = 0; i < nearbound_marker.data.length; i++) {
-					const marker_to_move = nearbound_marker.data[i];
+			/// check is close to each other ( current position on mouse )
+			if (this.isEquivalentEpsilone(key_name_from_over_map, key_name)) {
+				/// recolte data.
+				closeToEachOther.push(marker);
 
-					const [lat, lng] = this.cirlce_trajet(
-						marker_to_move.getLatLng().lat,
-						marker_to_move.getLatLng().lng,
-						offset
-					);
-					// Offset the position of the second marker
-					var newLatLng = L.latLng(lat, lng);
-					marker_to_move.setLatLng(newLatLng);
-
-					offset += 3.14 / nearbound_marker.data.length;
-				}
-
-				var center = [center_pos.lat, center_pos.lng];
-				for (let i = 0; i < nearbound_marker.data.length; i++) {
-					const temp = nearbound_marker.data[i];
-					const element = temp.getLatLng();
-					const point = [element.lat, element.lng];
-
-					const polyline = L.polyline([center, point], { color: "gray", opacity: 0.7, border: "1px" });
-					polyline.addTo(this.map);
-
-					this.polylines.push(polyline);
+				if (!tab_nearbound_marker.some((item) => item.name === key_name)) {
+					tab_nearbound_marker.push({ name: key_name, data: [marker] });
+				} else {
+					const item = tab_nearbound_marker.find((item) => item.name === key_name);
+					item.data.push(marker);
 				}
 			}
 		});
 
-		// Your logic to determine if clustering should be disabled at this zoom level
-		const zoom = this.map._zoom;
-
-		// Update disableClusteringAtZoom based on the condition
-		this.markers.options.disableClusteringAtZoom = zoom > 15 ? false : true;
-
-		// this.markers.options.iconCreateFunction = this.customIconCreateFunction;
+		/// must more than one, is not none supperposed.
+		if (closeToEachOther.length > 1) {
+			this.customOpenClusterGroup(closeToEachOther);
+		}
 	}
 
-	customIconCreateFunction() {
-		return L.divIcon({
-			html: '<div class="markers_tommy_js">' + cluster.getChildCount() + "</div>",
-			className: "mycluster",
-			iconSize: L.point(35, 35),
-		});
-	}
-
+	/**
+	 * @author Jehovanei RAMANDRIJOEL <jehovanierama@gmail.com>
+	 *
+	 * Goal: calculate the new position lat, lng for the marker.
+	 *
+	 * @param {*} lat
+	 * @param {*} lng
+	 * @param {*} offset
+	 * @returns [ lat , lng ]
+	 */
 	cirlce_trajet(lat, lng, offset) {
 		var radius = 0.00008;
 		var angle = 0 + offset;
@@ -2458,5 +2444,145 @@ class MapModule {
 		var lng = lng + radius * Math.cos(angle);
 
 		return [lat, lng];
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovaneiram@gmail.com>
+	 *
+	 * Bind event mouse move on map;
+	 * Goal: check the position of the mouse if it's on marker possible exist supperposition.
+	 *
+	 * @return void.
+	 */
+	bindEventMouseOverOnMap() {
+		if (this.map) {
+			/// this is event fire when the mouse is move on the map
+			this.map.on("mousemove", (e) => {
+				/// current mouse position
+				const lat = e.latlng.lat;
+				const lng = e.latlng.lng;
+
+				/// generate the key used for custmoSpyderfy
+				const key_name = this.formatKeyCle(lat, lng); /// lat( with ratio_length ) _ lng( with ratio_length )
+
+				/// fire my custom spyderfy marker when there is supperpose on this current position.
+				this.customSpiderfy(key_name);
+
+				///REMOVE THE POLYLINE
+				this.removePolyline(key_name);
+			});
+		}
+	}
+
+	isEquivalentEpsilone(str_latlng_left, str_latlng_right) {
+		const epsilone = this.epsilone;
+
+		const latlng_left = this.splitLatLong(str_latlng_left);
+		const latlng_right = this.splitLatLong(str_latlng_right);
+
+		const rate_lat = Math.abs(latlng_left.lat - latlng_right.lat);
+		const rate_lng = Math.abs(latlng_left.lng - latlng_right.lng);
+
+		return rate_lat < epsilone && rate_lng < epsilone;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * Goal: spyderfy the marker supperpose.
+	 *
+	 * @param {*} tabDataToOpen: list of the marker suppeport
+	 */
+	customOpenClusterGroup(tabDataToOpen) {
+		/// always exist, tabDataToOpen length mush > 1;
+		const single_one = tabDataToOpen[0];
+
+		/// use for the center position
+		const center_pos = single_one.getLatLng();
+		console.log("center_pos:" + center_pos.toString());
+
+		/// distance for each other when spyderfy.
+		let offset = parseFloat(Math.PI / tabDataToOpen.length);
+
+		/// MOVE THE MARKER
+		for (let i = 0; i < tabDataToOpen.length; i++) {
+			const marker_to_move = tabDataToOpen[i];
+
+			/// get the new lag lng with offset.
+			const [lat, lng] = this.cirlce_trajet(
+				marker_to_move.getLatLng().lat,
+				marker_to_move.getLatLng().lng,
+				offset
+			);
+
+			// Offset the position of the second marker
+			const newLatLng = L.latLng(lat, lng);
+
+			///move the marker
+			marker_to_move.setLatLng(newLatLng);
+
+			///increase the offset
+			offset += 3.14 / tabDataToOpen.length;
+		}
+
+		/// GENERATE THE LINE FROM THE CENTER TO THE MARKER
+		this.generatePolyLine(center_pos, tabDataToOpen);
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * Goal: Create line from the marker to the center.
+	 *
+	 * @param {*} center_pos : { lat, lng } center
+	 * @param {*} tabDataToOpen :  array of the marker.
+	 */
+	generatePolyLine(center_pos, tabDataToOpen) {
+		const center = [center_pos.lat, center_pos.lng];
+
+		for (let i = 0; i < tabDataToOpen.length; i++) {
+			const temp = tabDataToOpen[i];
+
+			const element = temp.getLatLng();
+			const point = [element.lat, element.lng];
+
+			const polyline = L.polyline([center, point], { color: "gray", opacity: 0.7, border: "1px" });
+
+			polyline.addTo(this.map);
+
+			this.polylines.push(polyline);
+		}
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * Goal: Generate key from the lat, lng to enumerate.
+	 * this use the variables ratio_float to fixe number decimal on the lat/lng
+	 * use on the function [ "bindEventMouseOverOnMap", "customSpiderfy" ]
+	 * @param {*} lat
+	 * @param {*} lng
+	 * @returns
+	 */
+	formatKeyCle(lat, lng) {
+		const current_lat = lat.toFixed(this.ratio_float);
+		const current_lng = lng.toFixed(this.ratio_float);
+
+		return current_lat.toString() + "_" + current_lng.toString();
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * Goal: Get the lat, lng arrondi from the key.
+	 * use on the function [ "bindEventMouseOverOnMap", "customSpiderfy" ]
+	 * @param {*} str_latlng key string return from the "formatKeyCle"
+	 * @returns { lat: , lng }
+	 */
+	splitLatLong(str_latlng) {
+		const temp = str_latlng.split("_");
+		const [lat, lng] = temp;
+
+		return { lat: +lat, lng: +lng };
 	}
 }
