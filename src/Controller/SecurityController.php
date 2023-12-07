@@ -666,13 +666,12 @@ class SecurityController extends AbstractController
         $flash = [];
 
         $form = $this->createForm(InscriptionType::class);
-
+      
         $form->handleRequest($request);
         if ($form->isSubmitted()) {
             ///get the data
             extract($form->getData());
-
-
+         
             if( $consumerRepository->findOneBy(["userId" => $this->getUser() ]) ||  $supplierRepository->findOneBy(["userId" => $this->getUser() ]) ){
                 return $authenticator->authenticateUser( $userToVerifie, $loginAuth, $request );
             }
@@ -876,7 +875,10 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute("app_home");
         }
 
+        if($userRepository->findOneBy(["email" =>$request->query->get("email") ])){
 
+            return $this->redirectToRoute("app_accpeted_invitations");
+        }
         //// check if this table tribu T exist
         if(!$tribuTService->isTableExist($request->query->get("tribu"))){
             return $this->redirectToRoute("app_home");

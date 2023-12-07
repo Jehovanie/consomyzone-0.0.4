@@ -109,3 +109,47 @@ var loadFile = (event) => {
 
 
 }
+/**
+ * @author Tommy
+ * gère la navigation entre les onglets de la gallerie photos dans les tribu-G.
+ * onglet pub tribu-g
+ */
+function galPubG() {
+  if (
+    document
+      .querySelector("#gal-publication-g")
+      .getAttribute("data-status-nav") ==
+    document
+      .querySelector(".content-publication-tomm-js")
+      .getAttribute("data-status")
+  ) {
+    document
+      .querySelector(".content-publication-tomm-js")
+      .classList.remove("d-none");
+    document.querySelector(".content-agenda-tomm-js").classList.add("d-none");
+    document.querySelector("#gal-publication-g").style = "color: #0101DF";
+    document.querySelector("#gal-agenda-g").removeAttribute("style");
+  }
+}
+/**
+ * @author Tommy
+ * gère la navigation entre les onglets de la gallerie photos dans les tribu-G.
+ * onglet agenda
+ */
+function galAgendaG() {
+  if (
+    document.querySelector("#gal-agenda-g").getAttribute("data-status-nav") ==
+    document
+      .querySelector(".content-agenda-tomm-js")
+      .getAttribute("data-status")
+  ) {
+    document
+      .querySelector(".content-agenda-tomm-js")
+      .classList.remove("d-none");
+    document
+      .querySelector(".content-publication-tomm-js")
+      .classList.add("d-none");
+    document.querySelector("#gal-agenda-g").style = "color: #0101DF";
+    document.querySelector("#gal-publication-g").removeAttribute("style");
+  }
+}

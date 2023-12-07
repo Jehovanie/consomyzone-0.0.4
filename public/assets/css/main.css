@@ -2523,7 +2523,7 @@ textarea {
     /* top: 5px; */
     /* left: 40px; */
 
-    top: 40px;
+    top: -40px;
     left: -66px;
     width: 200px;
     text-align: center;
@@ -2541,11 +2541,11 @@ textarea {
     border-left: 5px solid transparent;
     */
     
-    top: -15px;
+    bottom: -15px;
     left: 69px;
-    border-top: 10px solid transparent;
+    border-top: 5px solid lightgreen; 
     border-right: 10px solid transparent;
-    border-bottom: 5px solid lightgreen;
+    border-bottom: 10px solid transparent;
     border-left: 10px solid transparent;
 }
 
@@ -2602,6 +2602,7 @@ textarea {
     z-index: 1;
 }
 
+/* css modal carousel*/
 .modal-body-pastille-golf {
     overflow-y: scroll;
     height: 270px;
@@ -2677,9 +2678,13 @@ textarea {
     min-height: 130px;
     cursor: pointer;
 }
-
+/* .modal_footer_tribu{
+    justify-content: flex-start !important;
+    height: 160px;
+    overflow-x: auto;
+} */
 .footer-gallery {
-    justify-content: space-between !important;
+    justify-content: flex-start !important;
     height: 160px;
     overflow-x: auto;
 }
@@ -2766,4 +2771,15 @@ textarea {
 }
 .bi-heart-fill {
     color: red;
+}
+/*end*/
+
+.user-pdp-reaction{
+    width: 40px;
+    height: 40px;
+    clip-path: circle();
+}
+
+.nbr_reaction_elie_js{
+    cursor: pointer;
 }

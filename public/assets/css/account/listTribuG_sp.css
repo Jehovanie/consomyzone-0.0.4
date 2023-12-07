@@ -151,3 +151,16 @@ table.dataTable thead th, table.dataTable tfoot th {
     background-color: white;
     padding-top: 15px;
 }
+
+.content_chargement_liste_partenaire_nanta_js > .spinner-border, .content_list_infoAvalider_js > .spinner-border{
+    margin-left: 45%;
+    margin-bottom: 10px;
+}
+
+#current-map, #new-map{
+    height: 300px;
+}
+
+.leaflet-popup-pane{
+    margin-top: -10px;
+}

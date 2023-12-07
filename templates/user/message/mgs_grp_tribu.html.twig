@@ -162,7 +162,8 @@
                                                         {% if message.images|length > 0 %}
                                                             {% for image in message.images %}
                                                                 <div class="file_item">
-                                                                    <img class="message_image_item" src="{{image}}" alt="image">
+                                                                    <img class="message_image_item" src="{{image}}" alt="image"
+                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
                                                                     <a class="icon_download_file" href="{{image}}" download>
                                                                         <i class="fa-solid fa-download"  style="color:black"></i>
                                                                     </a>
@@ -177,7 +178,8 @@
                                                         <div class="content_image_msg">    
                                                             {% for file in message.files %}
                                                                 <div class="file_item">
-                                                                    <img class="message_image_item" src="{{defaultFile}}" alt="File">
+                                                                    <img class="message_image_item" src="{{defaultFile}}" alt="File"
+                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
                                                                     <a class="icon_download_file" href="{{file}}" download>
                                                                         <i class="fa-solid fa-download"  style="color:black"></i>
                                                                     </a>
@@ -204,7 +206,8 @@
                                                         {% if message.images|length > 0 %}
                                                             {% for image in message.images %}
                                                                 <div class="file_item">
-                                                                    <img class="message_image_item" src="{{image}}" alt="image">
+                                                                    <img class="message_image_item" src="{{image}}" alt="image"
+                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
                                                                     <a class="icon_download_file" href="{{image}}" download>
                                                                         <i class="fa-solid fa-download" style="color:black"></i>
                                                                     </a>
@@ -219,7 +222,8 @@
                                                         <div class="content_image_msg">    
                                                             {% for file in message.files %}
                                                                 <div class="file_item">
-                                                                    <img class="message_image_item" src="{{defaultFile}}" alt="File">
+                                                                    <img class="message_image_item" src="{{defaultFile}}" alt="File"
+                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
                                                                     <a class="icon_download_file" href="{{file}}" download>
                                                                         <i class="fa-solid fa-download"  style="color:black"></i>
                                                                     </a>
@@ -321,6 +325,18 @@
     </main>
 </div>
 <div class="spid_js_faniry {{app.user.id}}" ></div>
+<!-- Modal pour visioner les  photos -->
+    <div class="modal fade" id="modal_show_photo_mess_grp" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <img id="img_modal_mess_grp_photo" style="width:100%">
+                </div>
+
+            </div>
+        </div>
+    </div>
 {# {{include('user/message/visio_message_modal.html.twig')}}
 
 

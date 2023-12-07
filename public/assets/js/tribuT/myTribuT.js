@@ -275,11 +275,11 @@ function showPartisan() {
       response.json().then((jsons) => {
         console.log(jsons);
 
-        let head_table = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Liste des partisans</h5><table id="table_partisan_elie_js" class="display m-2 p-2" style="width:100%">
+        let head_table = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Liste des Fans</h5><table id="table_partisan_elie_js" class="display m-2 p-2" style="width:100%">
                     <thead>
                         <tr>
                             <th>Profil</th>
-                            <th>Nom du partisan</th>
+                            <th>Nom du fan</th>
                             <th>Tribu G</th>
                         </tr>
                     </thead>
@@ -479,7 +479,7 @@ function sendPublication(formData) {
     );
   } else {
     fR.addEventListener("load", (evt) => {
-      console.log("evt"+evt)
+      console.log("evt" + evt);
       let param = {
         base64: evt.target.result,
         photoName: formData.get("photo").name,
@@ -509,11 +509,10 @@ function sendPublication(formData) {
  * @param {*} type
  * @param {*} tribu_t_name
  */
-function showdDataContent(data, type, tribu_t_name, id_c_u) {
+function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
   let detailsTribuT = null;
-
-  if (type === "owned") detailsTribuT = data.tribu_t_owned;
-  else detailsTribuT = data.tribu_t_joined;
+  if (type === "owned") detailsTribuT = dataFirst.tribu_t_owned;
+  else detailsTribuT = dataFirst.tribu_t_joined;
 
   // console.log(JSON.parse(detailsTribuT).tribu_t)
 
@@ -526,60 +525,64 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
   descriptionTribuT = tribu_t[0].description;
   let restExtension = "";
   let golfExtension = "";
-
-  // extension 'on' correspond à extension
-  //restaurant dans les anciens version
-  // ce bout de code est là pour assurer une prise en charge recurssive
-  if (tribu_t[0].extension == "on" || tribu_t[0].extension == "restaurant") {
-    restExtension = ` <li class="listNavBarTribu restoNotHide">
+  if (lastId == 0) {
+   
+    // extension 'on' correspond à extension
+    //restaurant dans les anciens version
+    // ce bout de code est là pour assurer une prise en charge recurssive
+    if (tribu_t[0].extension == "on" || tribu_t[0].extension == "restaurant") {
+      restExtension = ` <li class="listNavBarTribu restoNotHide">
                         <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
                     </li>`;
-  } else {
-    if (tribu_t[0].extension != null && tribu_t[0].extension.restaurant == 1) {
-      restExtension = ` <li class="listNavBarTribu restoNotHide">
+    } else {
+      if (
+        tribu_t[0].extension != null &&
+        tribu_t[0].extension.restaurant == 1
+      ) {
+        restExtension = ` <li class="listNavBarTribu restoNotHide">
                                 <a style="cursor:pointer;" data-value="restaurant">Restaurants</a>
                             </li>`;
-    }
-    if (tribu_t[0].extension != null && tribu_t[0].extension.golf == 1) {
-      golfExtension = ` <li class="listNavBarTribu golfNotHide">
+      }
+      if (tribu_t[0].extension != null && tribu_t[0].extension.golf == 1) {
+        golfExtension = ` <li class="listNavBarTribu golfNotHide">
                                 <a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="showGolf('${tribu_t_name_0}')" data-value="golf">Mon Golf</a>
                             </li>`;
+      }
     }
-  }
 
-  if (tribu_t[0].logo_path) {
-    // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
-    //public
-    image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">`; //PROD
-    // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
-  } else {
-    image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="123">`;
-  }
+    if (tribu_t[0].logo_path) {
+      // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
+      //public
+      image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">`; //PROD
+      // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
+    } else {
+      image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="123">`;
+    }
 
-  let canChangeTribuPicture = "";
-  if (document.querySelector("#activeTribu")) {
-    // data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
-    canChangeTribuPicture = !document
-      .querySelector("#activeTribu")
-      .classList.contains("other")
-      ? `<div class="col-lg-6 col-6" style="height:100px;">
+    let canChangeTribuPicture = "";
+    if (document.querySelector("#activeTribu")) {
+      // data-bs-toggle="modal" data-bs-target="#addPictureModalTribu"
+      canChangeTribuPicture = !document
+        .querySelector("#activeTribu")
+        .classList.contains("other")
+        ? `<div class="col-lg-6 col-6" style="height:100px;">
                                     <label style="margin-left:50%;margin-top:50%" for="fileInputModifTribuT" data-bs-placement="top" title="Modifier le logo de la tribu">
                                         <i class="bi bi-camera-fill" style="font-size: 20px; margin-top:5px;margin-left: 15px;cursor:pointer; background-position: 0px -130px; background-size: auto; width: 20px; height: 20px; background-repeat: no-repeat; display: inline-block;"></i>
                                     </label>
                                     <input type="file" name="fileInputModifTribuT" id="fileInputModifTribuT" style="display:none;visibility:none;" accept="image/*">
                                 </div>`
-      : "";
-  }
+        : "";
+    }
 
-  let canUpdateTribuInfo = !document
-    .querySelector("#activeTribu")
-    .classList.contains("other")
-    ? `<li class="listNavBarTribu">
+    let canUpdateTribuInfo = !document
+      .querySelector("#activeTribu")
+      .classList.contains("other")
+      ? `<li class="listNavBarTribu">
                                 <a style="cursor:pointer;" id="settingTribuT" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
                             </li>`
-    : "";
+      : "";
 
-  document.querySelector("#content-pub-js").innerHTML = `
+    document.querySelector("#content-pub-js").innerHTML = `
             <div class="card-couverture-pub-tribu-t ">
                 <div class="content-couverture mt-3">
                     <div class="row content-tribu-t">
@@ -595,10 +598,10 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                             <h1 class="titre-tribu-t" id="tribu_t_name_main_head" data-tribu="${
                               tribu_t[0].name
                             }">${
-    tribu_t[0].name_tribu_t_muable
-      ? tribu_t[0].name_tribu_t_muable
-      : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
-  }</h1>
+      tribu_t[0].name_tribu_t_muable
+        ? tribu_t[0].name_tribu_t_muable
+        : tribu_t[0].name.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
+    }</h1>
                             <p class="text-white descrp-tribu-t">
                             ${tribu_t[0].description.replace(/"/gi, "")}
                             </p>
@@ -608,7 +611,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                 </div>
                 <div class="container-fluid" style="height: 30px; background-color: #1ABA12;">
                      <p class="text-light">Tribu-t fondée par <span class="fw-bold">${
-                       data.pseudo
+                       dataFirst.pseudo
                      }</span></p>
                 </div>
                 <nav class=" mx-auto">
@@ -625,7 +628,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                             <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
                         </li>
                         <li class="listNavBarTribu partisantT">
-                            <a style="cursor:pointer;">Partisans</a>
+                            <a style="cursor:pointer;">Fans</a>
                         </li>
                         <li class="listNavBarTribu">
                             <a style="cursor:pointer;" id="see-gallery">Photos</a>
@@ -670,17 +673,19 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
             </div>
             
     `;
+  }
+
   //
-  worker.postMessage([tribu_t_name_0, 0, 20]);
+  worker.postMessage([tribu_t_name_0, lastId, 20]);
   // console.log('Message envoyé au worker');
   worker.onmessage = (event) => {
     // console.log(event.data)
     let data = event.data;
-    // console.log(data);
+    console.log(data);
 
     /*---------show 5 pub par defaut-----------------*/
     if (data.length > 0) var limits = data.length > 5 ? 5 : data.length;
-
+    let new_reaction_show ;
     for (let i = 0; i < limits; i++) {
       let dataNbr;
       if (data[i].nbr === null) {
@@ -689,6 +694,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
         dataNbr = data[i].nbr + " ";
       }
 
+      new_reaction_show= data[i].nbr_reaction? (data[i].nbr_reaction + (data[i].nbr_reaction > 1?" réactions":" réaction")) : "0 réaction";
       let pub_photo = data[i].photo
         ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${
             data[i].photo /*.replace("/public","")*/
@@ -715,7 +721,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 <i class="fa-solid fa-earth-oceania"></i>
                                             </span>
                                             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
+                                                <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
                                                 <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
                                             </div>
                                         </div>
@@ -730,11 +736,12 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                             </span>
                                             <ul class="dropdown-menu">
                                                 <li>
-                                                    <button onclick="setHiddenValue(this, 'Update')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+                                                <button onclick="setHiddenValue('${tribu_t_name_0}', 'Update', '${data[i].id}')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+
                                                 </li>
                                                 <li>
 
-                                                    <button onclick="setHiddenValue(this)" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
+                                                    <button onclick="setHiddenValue('${tribu_t_name_0}', '', '${data[i].id}')" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
                                                         <i class="bi bi-trash3" aria-hidden="true"></i>
                                                         Supprimer
                                                     </button>
@@ -794,13 +801,35 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js" onclick="">
-                                                        <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s)</span>
+                                                                 <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${
+                                                                   tribu_t[0]
+                                                                     .name
+                                                                                                                        }_${
+                                                                  data.id
+                                                                }" onclick="getAllReaction('${data.id}', 
+                                                        '${tribu_t[0].name}', '${
+                                                                  data.user_id
+                                                                }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
+                                                                                                                <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s)</span>
+                                               
                                                     </p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i style="cursor:pointer;" class="${data[i].reaction == 1 ? "bi-heart-fill" : "bi-heart" } like reaction_${tribu_t[0].name}_${data[i].id}" onclick="isLike('${data[i].id}', '${data[i].user_id}', '${tribu_t[0].name}')"></i>
-                                                        <i style="cursor:pointer;" class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                            onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')"></i>
-                                                    </div>
+                                                        <i style="cursor:pointer;" class="${
+                                                          data[i].reaction == 1
+                                                            ? "bi-heart-fill"
+                                                            : "bi-heart"
+                                                        } like reaction_${
+                              tribu_t[0].name
+                            }_${data[i].id}" onclick="isLike('${data[i].id}', '${
+                              data[i].user_id
+                            }', '${tribu_t[0].name}')"></i>
+                                                                            <i style="cursor:pointer;" class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
+                                                            onclick="getAllComment('${
+                                                              data[i].id
+                                                                                          }', '${
+                                        tribu_t[0].name
+                                      }', '${data[i].user_id}')"></i>
+                                                                                  </div>
                                                 </div>
                                                 
                                             </div>
@@ -885,7 +914,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                                           data[
                                                                             i
                                                                           ].id
-                                                                        }" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
+                                                                        }" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
                                                                         <a data-id="${
                                                                           data[
                                                                             i
@@ -904,11 +933,16 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                             </span>
                                                             <ul class="dropdown-menu">
                                                                 <li>
-                                                                    <button onclick="setHiddenValue(this, 'Update')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+                                                                <button onclick="setHiddenValue('${tribu_t_name_0}', 'Update', '${
+            data[i].id
+          }')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+
                                                                 </li>
                                                                 <li>
 
-                                                                    <button onclick="setHiddenValue(this)" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
+                                                                    <button onclick="setHiddenValue('${tribu_t_name_0}', '', '${
+            data[i].id
+          }')" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
                                                                         <i class="bi bi-trash3" aria-hidden="true"></i>
                                                                         Supprimer
                                                                     </button>
@@ -932,16 +966,32 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js" onclick="">
-                                                        <span class="nbr_comment_jheo_js">  ${dataNbr} commentaire(s) </span>
+                                                        <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${
+                                                          tribu_t[0].name
+                                                        }_${
+                                                    data.id
+                                                  }" onclick="getAllReaction('${data.id}', 
+                                        '${tribu_t[0].name}', '${
+                                                    data.user_id
+                                                  }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
+                                                                                                <span class="nbr_comment_jheo_js">  ${dataNbr} commentaire(s) </span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
-                                                        <i style="cursor:pointer;" class="${data[i].reaction == 1 ? "bi-heart-fill" : "bi-heart" } like reaction_${tribu_t[0].name}_${data[i].id}" onclick="isLike('${data[i].id}', '${data[i].user_id}', '${tribu_t[0].name}')"></i>
-                                                        <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
+                                                        <i style="cursor:pointer;" class="${
+                                                          data[i].reaction == 1
+                                                            ? "bi-heart-fill"
+                                                            : "bi-heart"
+                                                        } like reaction_${
+                                      tribu_t[0].name
+                                    }_${data[i].id}" onclick="isLike('${data[i].id}', '${
+                                      data[i].user_id
+                                    }', '${tribu_t[0].name}')"></i>
+                                                                                  <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
                                                         onclick="getAllComment('${
                                                           data[i].id
                                                         }', '${
-            tribu_t[0].name
-          }', '${data[i].user_id}')"></i>
+                                              tribu_t[0].name
+                                            }', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -989,45 +1039,72 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
       showComment();
 
-      //---------after shwo in each scroll ---------------
-      const gen = genDataPubOfAllPartisans(data, 5);
-      const gen_length = data.length - 5;
-      //const gen_length = (data.length)
-      // console.log("gen_length : "+gen_length)
+      
+    }
 
-      let lastId = 0;
-
-      let genCursorPos = 0;
-
-      if (gen_length > 0) {
-        window.addEventListener("scroll", (e) => {
-          const scrollable =
-            document.documentElement.scrollHeight - window.innerHeight;
-          const scrolled = window.scrollY;
-          if (Math.ceil(scrolled) === scrollable) {
-            if (data) {
-              lastId = data.id;
-              console.log(genCursorPos);
-              if (genCursorPos === gen_length) {
-                //worker.postMessage([tribu_t_name_0, lastId, 20]);
-                //TODO appel recurcive
-                showdDataContent(id_c_u, lastId);
-              } else {
-                lastId = data.id;
-                // console.log(data)
-                // console.log("last id " + lastId)
-                data = gen.next().value;
-              }
-
-              data = gen.next().value;
-              console.log(data);
-              if (data) {
-                console.log("data N°: " + i);
-                console.log(data[i]);
+    //---------after shwo in each scroll ---------------
+    const gen = genDataPubOfAllFans(data, 5);
+    const gen_length = data.length - 5;
+    let lastIdf = 0;
+    let genCursorPos = 0;
+    if (gen_length > 0) {
+      window.addEventListener("scroll", (e) => {
+        const scrollable =
+          document.documentElement.scrollHeight - window.innerHeight;
+        const scrolled = window.scrollY;
+        if (Math.ceil(scrolled) === scrollable) {
+          //if (data) {
+            
+            // console.log("data id" + data.id);
+            // lastIdf = data.length > 0 ?  parseInt(data.id) : 0;
+            console.log("new c" + genCursorPos);
+            console.log("last id" + lastIdf);
+            if (genCursorPos === gen_length && genCursorPos > 0) {
+             
+              //TODO appel recurcive
+              showdDataContent(
+                dataFirst,
+                type,
+                tribu_t_name,
+                id_c_u,
+                lastIdf
+              );
+            } else{
+              
+              // console.log(data)
+              // console.log("last id " + lastId)
+              let dataG = gen.next().value;
+             
+              if (dataG !== undefined ) {
+                let dataNbr;
+                if (dataG.nbr === null) {
+                  dataNbr = 0 + " ";
+                } else {
+                  dataNbr = dataG.nbr + " ";
+                }
+          
+                new_reaction_show= dataG.nbr_reaction? (dataG.nbr_reaction + (dataG.nbr_reaction > 1?" réactions":" réaction")) : "0 réaction";
+                let pub_photo = dataG.photo
+                  ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${
+                    dataG.photo /*.replace("/public","")*/
+                    }" alt="">`
+                  : `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;display:none;" onclick="setPhotoTribu(this)" src="" alt="">`;
+          
+                let confidentiality = parseInt(dataG.confidentiality, 10);
+                
+                let _fullName =
+                  dataG.user_profil.firstname + " " + dataG.user_profil.lastname;
+                let _profilImg = dataG.user_profil.photo_profil
+                  ? "/public" + dataG.user_profil.photo_profil
+                  : "/public/assets/image/img_avatar3.png";
+                lastIdf = dataG?.id;
+                new_reaction_show= dataG.nbr_reaction? (dataG.nbr_reaction + (dataG.nbr_reaction > 1?" réactions":" réaction")) : "0 réaction"
+                //console.log("data N°: " + i);
+                console.log(dataG);
                 const contentPublication = `
                                     <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${
                                       tribu_t[0].name
-                                    }_${data[i].id}_jheo_js">
+                                    }_${dataG.id}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -1049,23 +1126,21 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${
-                                                              data[i].datetime
+                                                              dataG.datetime
                                                             }</p>
                                                             <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                                                                 
                                                                 <div class="btn-group" role="group">
                                                                     
-                                                                    <span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </span>
+                                                                    <span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" 
+                                                                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fa-solid fa-earth-oceania"></i> </span>
                                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                                         <a data-id="${
-                                                                          data[
-                                                                            i
-                                                                          ].id
-                                                                        }" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
+                                                                          dataG.id
+                                                                        }" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)"
+                                                                         href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
                                                                         <a data-id="${
-                                                                          data[
-                                                                            i
-                                                                          ].id
+                                                                          dataG.id
                                                                         }" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
                                                                     </div>
                                                                 </div>
@@ -1097,9 +1172,7 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                                                 </div>
                                                     
                                                 <div class="card-pub-actu">
-                                                    <p class="text-pub"> ${data[
-                                                      i
-                                                    ].publication.replace(
+                                                    <p class="text-pub"> ${dataG.publication.replace(
                                                       /"/gi,
                                                       ""
                                                     )}</p>
@@ -1108,17 +1181,30 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js" onclick="">
-                                                        <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s) </span>
+                                                        <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${
+                                                          tribu_t[0].name}_${
+                                                            dataG.id
+                                                          }" onclick="getAllReaction('${dataG.id}', '${tribu_t[0].name}', '${dataG.user_id
+                                                          }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
+                                                                                                  <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s) </span>
                                                     </p>
 
                                                     <div class="reaction-icon d-flex">
-                                                        <i style="cursor:pointer;" class="${data[i].reaction == 1 ? "bi-heart-fill" : "bi-heart" } like reaction_${tribu_t[0].name}_${data[i].id}" onclick="isLike('${data[i].id}', '${data[i].user_id}', '${tribu_t[0].name}')"></i>
+                                                        <i style="cursor:pointer;" class="${
+                                                          dataG.reaction == 1
+                                                            ? "bi-heart-fill"
+                                                            : "bi-heart"
+                                                        } like reaction_${
+                  tribu_t[0].name
+                }_${dataG.id}" onclick="isLike('${dataG.id}', '${
+                  dataG.user_id
+                }', '${tribu_t[0].name}')"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
                                                         onclick="getAllComment('${
-                                                          data[i].id
+                                                          dataG.id
                                                         }', '${
                   tribu_t[0].name
-                }', '${data[i].user_id}')"></i>
+                }', '${dataG.user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -1130,15 +1216,20 @@ function showdDataContent(data, type, tribu_t_name, id_c_u) {
                   "#list-publicatiotion-tribu-t"
                 ).innerHTML += contentPublication;
               }
-              genCursorPos++;
             }
-          }
-        });
-      }
+
+            //data = gen.next().value;
+            //console.log(data);
+           
+            genCursorPos++;
+          //}
+        }
+      });
     }
   };
   //showComment();
 }
+
 
 function showCommentaireTribu_T(event, idmin = 0, b) {
   event.preventDefault();
@@ -1278,7 +1369,7 @@ function putComment(event) {
   console.log(pubId, commentaire);
 }
 
-function* genDataPubOfAllPartisans(data, index) {
+function* genDataPubOfAllFans(data, index) {
   for (let i = index; i < data.length; i++) if (i < data.length) yield data[i];
 }
 
@@ -2091,7 +2182,7 @@ function showInvitations() {
                         </li>
                     </ul>
                     <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
-                        <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre partisan par E-mail</h5>
+                        <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre fan par E-mail</h5>
 <h6 class="modal-title text-primary" >Vous pouvez modifier le corps du email comme vous le voulez.</h6>
                         <h6 class="modal-title text-primary" >Le lien d'invitation sera généré par l'application CMZ automatiquement.</h6>
                         <h6 class="modal-title text-primary" >L'email envoyé sera automatiquement signé à votre nom.</h6>
@@ -2107,24 +2198,7 @@ function showInvitations() {
                                 </a>-->
                             </div>
 
-                            <div class="mt-3" id="tribut-collapse">
-                                <div class="form-group multiple_destination_css">
-                                    <label for="exampleFormControlInput1">Ajouter de Cc <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cc.)</span></label>
-                                    <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de copie">
-                                    <div class="content_chip content_chip_js_jheo">
-                                        
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="mt-3" id="tribut-collapse">
-                                <div class="form-group multiple_destination_css">
-                                    <label for="exampleFormControlInput1">Ajouter de Cci <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cci.)</span></label>
-                                    <input type="text" class="form-control  multiple_destination_cci_js_jheo" id="exampleFormControlInput2" placeholder="Saisir l'adresse email en Cci">
-                                    <div class="content_chip content_chip_js_jheo">
-                                        
-                                    </div>
-                                </div>
-                            </div>
+                            
                             <div class="form-group content_objet_css_jheo mt-3">
                                 <label for="exampleFormControlInput2">Objet</label>
                                 <input type="text" class="form-control object_js_jheo" id="exampleFormControlInput2" placeholder="Objet">
@@ -2191,7 +2265,7 @@ function showInvitations() {
                                 <tr>
                                     <th>Email</th>
                                     <th scope="col">Date</th>
-                                    <th scope="col">Partisan</th>
+                                    <th scope="col">Fan</th>
                                     <th scope="col">Status</th>
                                 </tr>
                             </thead>
@@ -2201,32 +2275,57 @@ function showInvitations() {
                         </table>
                     </div>
                 </div>
-        `
-    initCKEditor("exampleFormControlTextarea1", showReponsePartenaire);
-    // editor_invitation = document.querySelector("#editorInvitationElie")
-    // // console.log(editor);
-    // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
-    // document.querySelector("#editorInvitationElie").classList.remove("d-none")
-    
-    fetchAllTribuGMember();
+        `;
+  // <div class="mt-3" id="tribut-collapse">
+  //     <div class="form-group multiple_destination_css">
+  //         <label for="exampleFormControlInput1">Ajouter de Cc <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cc.)</span></label>
+  //         <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de copie">
+  //         <div class="content_chip content_chip_js_jheo">
 
-    ///hover tooltip piece joint, ...
-    displayTooltipHelpMsg();
+  //         </div>
+  //     </div>
+  // </div>
+  // <div class="mt-3" id="tribut-collapse">
+  //     <div class="form-group multiple_destination_css">
+  //         <label for="exampleFormControlInput1">Ajouter de Cci <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cci.)</span></label>
+  //         <input type="text" class="form-control  multiple_destination_cci_js_jheo" id="exampleFormControlInput2" placeholder="Saisir l'adresse email en Cci">
+  //         <div class="content_chip content_chip_js_jheo">
 
-    if( document.querySelector(".content_add_link_jheo_js")){
-        document.querySelector(".label_add_link_jheo_js").addEventListener("click", () => {
-            document.querySelector(".modal_addlink_invitation_jheo_js").click();
-        })
-    }
+  //         </div>
+  //     </div>
+  // </div>
+  initCKEditor("exampleFormControlTextarea1", showReponsePartenaire);
+  // editor_invitation = document.querySelector("#editorInvitationElie")
+  // // console.log(editor);
+  // document.querySelector("#exampleFormControlTextarea32").appendChild(editor_invitation);
+  // document.querySelector("#editorInvitationElie").classList.remove("d-none")
 
-    /** JEHOVANNIE SEND INVITATION BY EMAIL */
-    const form_parent = document.querySelector(".content_form_send_invitation_email_js_jheo");
-    const input_principal = form_parent.querySelector(".single_destination_js_jheo")
-    const input_cc = form_parent.querySelector(".multiple_destination_js_jheo")
-    const input_cci = form_parent.querySelector(".multiple_destination_cci_js_jheo")
-    const object = form_parent.querySelector(".object_js_jheo");
-    const description = form_parent.querySelector(".invitation_description_js_jheo");
+  fetchAllTribuGMember();
 
+  ///hover tooltip piece joint, ...
+  displayTooltipHelpMsg();
+
+  if (document.querySelector(".content_add_link_jheo_js")) {
+    document
+      .querySelector(".label_add_link_jheo_js")
+      .addEventListener("click", () => {
+        document.querySelector(".modal_addlink_invitation_jheo_js").click();
+      });
+  }
+
+  /** JEHOVANNIE SEND INVITATION BY EMAIL */
+  const form_parent = document.querySelector(
+    ".content_form_send_invitation_email_js_jheo"
+  );
+  const input_principal = form_parent.querySelector(
+    ".single_destination_js_jheo"
+  );
+  // const input_cc = form_parent.querySelector(".multiple_destination_js_jheo")
+  // const input_cci = form_parent.querySelector(".multiple_destination_cci_js_jheo")
+  const object = form_parent.querySelector(".object_js_jheo");
+  const description = form_parent.querySelector(
+    ".invitation_description_js_jheo"
+  );
 
   document
     .querySelector("#blockSendEmailInvitation")
@@ -2239,17 +2338,15 @@ function showInvitations() {
     input_principal.style.border = "1px solid black";
   });
 
-  input_cc.addEventListener("input", () => {
-    input_cc.style.border = "1px solid black";
-  });
+  // input_cc.addEventListener("input", () => {
+  //   input_cc.style.border = "1px solid black";
+  // });
 
   object.addEventListener("input", () => {
     object.style.border = "1px solid black";
   });
 
-  controlInputEmailToMultiple([ input_principal, input_cc, input_cci ])
-
-
+  controlInputEmailToMultiple([input_principal]);
 
   // input_cc.addEventListener("keyup", (e) => {
 
@@ -2264,29 +2361,34 @@ function showInvitations() {
   //             div.appendChild(span);
   //             div.innerHTML += `<i class="fa-solid fa-delete-left" onclick="ondeleteUser(this)"></i>`
   //             document.querySelector(".content_chip_js_jheo").appendChild(div);
-      // document.querySelectorAll(".chip span").forEach(item => {
-            //     cc_destinataire.push(item.innerText)
-        // })
+  // document.querySelectorAll(".chip span").forEach(item => {
+  //     cc_destinataire.push(item.innerText)
+  // })
   //             input_cc.value = null
   //         } else {
   //             input_cc.style.border = "1px solid red";
   //         }
   //     }
   // })
-    form_parent.querySelector(".btn_send_invitation_js_jheo").addEventListener("click", (e) => {
-        e.preventDefault();
-        form_parent.querySelector(".btn_send_invitation_js_jheo").setAttribute("disabled", true)
-        form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "En cours..."
+  form_parent
+    .querySelector(".btn_send_invitation_js_jheo")
+    .addEventListener("click", (e) => {
+      e.preventDefault();
+      form_parent
+        .querySelector(".btn_send_invitation_js_jheo")
+        .setAttribute("disabled", true);
+      form_parent.querySelector(".btn_send_invitation_js_jheo").textContent =
+        "En cours...";
 
-       ////get cc
+      ////get cc
       let cc_destinataire = [];
       // document.querySelectorAll(".chip span").forEach(item => {
       //     cc_destinataire.push(item.innerText)
       // })
 
-      if (input_cc.value != "") {
-        cc_destinataire.push(input_cc.value);
-      }
+      // if (input_cc.value != "") {
+      //   cc_destinataire.push(input_cc.value);
+      // }
 
       let status = true;
 
@@ -2297,38 +2399,39 @@ function showInvitations() {
       }
 
       if (checkIfExistMailInValid(input_principal.value)) {
-            input_principal.style.border = "1px solid red";
-            status = false;
-        }
+        input_principal.style.border = "1px solid red";
+        status = false;
+      }
 
-        if (!!input_cc.value && checkIfExistMailInValid(input_cc.value)) {
-            input_cc.style.border = "1px solid red";
-            status = false;
-        }
+      // if (!!input_cc.value && checkIfExistMailInValid(input_cc.value)) {
+      //     input_cc.style.border = "1px solid red";
+      //     status = false;
+      // }
 
-        if (!!input_cci.value && checkIfExistMailInValid(input_cci.value)) {
-            input_cci.style.border = "1px solid red";
-            status = false;
-        }
+      // if (!!input_cci.value && checkIfExistMailInValid(input_cci.value)) {
+      //     input_cci.style.border = "1px solid red";
+      //     status = false;
+      // }
 
+      // "cc": formatEmailAdresseFromStringLong(input_cc.value),
+      // "cci": formatEmailAdresseFromStringLong(input_cci.value),
+      let data = {
+        table: document
+          .querySelector("#blockSendEmailInvitation")
+          .getAttribute("data-table"),
+        principal: formatEmailAdresseFromStringLong(input_principal.value),
+        object: "",
+        description: "",
+      };
 
-        let data= { 
-            "table": document.querySelector("#blockSendEmailInvitation").getAttribute("data-table"), 
-            "principal": formatEmailAdresseFromStringLong(input_principal.value), 
-            "cc": formatEmailAdresseFromStringLong(input_cc.value),
-            "cci": formatEmailAdresseFromStringLong(input_cci.value),
-            "object": "", 
-            "description": "" 
-        }
-    
-         ///object
-        if (object.value === "") {
-            console.log("Veillez entre un Object.")
-            object.style.border = "1px solid red";
-            status= false;
-        } else {
-            data = { ...data, "object": object.value }
-        }
+      ///object
+      if (object.value === "") {
+        console.log("Veillez entre un Object.");
+        object.style.border = "1px solid red";
+        status = false;
+      } else {
+        data = { ...data, object: object.value };
+      }
       //Changing description check editor by Elie
       data = { ...data, description: editor.getData() };
 
@@ -2378,7 +2481,7 @@ function showInvitations() {
             btn_item.setAttribute("onclick", "");
           });
         }
-          console.log(data)
+        console.log(data);
         //////fetch data
         fetch("/user/tribu/email/invitation", {
           method: "POST",
@@ -2409,11 +2512,11 @@ function showInvitations() {
               .getAttribute("data-table");
 
             // sauvegarde de l'invitation
-            saveInvitationStory(table_trib, input_principal.value);
-            saveInvitationStory(table_trib, input_cc.value);
+            saveInvitationStory(table_trib, result.data);
+            //saveInvitationStory(table_trib, input_cc.value);
 
             input_principal.value = null;
-            input_cc.value = null;
+            // input_cc.value = null;
             email_piece_joint_list = [];
 
             document.querySelectorAll(".chip").forEach((item) => {
@@ -2458,7 +2561,6 @@ function showInvitations() {
 
   /** END JEHOVANNIE*/
 }
-
 
 function setActiveTab(elem, param) {
   document.querySelectorAll(".tab_invite_elie").forEach((it) => {
@@ -2634,21 +2736,21 @@ function removePublication() {
     .then((data) => console.log(data));
 }
 
-function setHiddenValue(element, update = "") {
-  if (update != "") {
-    document.querySelector("#publication_update_confidentiality").value =
-      element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.confid;
-    document.getElementById("publication_update_legend").value =
-      element.parentElement.parentElement.parentElement.parentElement.parentElement.nextElementSibling.children[0].innerText;
-  }
-  let hiddenElement = document.querySelector("#hiddenElement" + update);
-  hiddenElement.dataset.id =
-    element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.id;
-  hiddenElement.dataset.name =
-    element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.name;
-  hiddenElement.value =
-    element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.id;
-}
+// function setHiddenValue(element, update = "") {
+//   if (update != "") {
+//     document.querySelector("#publication_update_confidentiality").value =
+//       element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.confid;
+//     document.getElementById("publication_update_legend").value =
+//       element.parentElement.parentElement.parentElement.parentElement.parentElement.nextElementSibling.children[0].innerText;
+//   }
+//   let hiddenElement = document.querySelector("#hiddenElement" + update);
+//   hiddenElement.dataset.id =
+//     element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.id;
+//   hiddenElement.dataset.name =
+//     element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.name;
+//   hiddenElement.value =
+//     element.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.parentElement.dataset.id;
+// }
 
 function updatePublication() {
   let hiddenElement = document.querySelector("#hiddenElementUpdate");
@@ -3711,65 +3813,129 @@ function addPieceJoint(input) {
 
 /**
  * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
- * 
+ *
  * This function is use listen the input file event onchange
- * on the input piece joint in mail invitation 
- * 
+ * on the input piece joint in mail invitation
+ *
  * All add input image
  * Object element
  */
 function addPieceJointImage(input) {
+  if (input.files && input.files[0]) {
+    /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants :
+    /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+    const listNotAccepted = [
+      "zip",
+      "css",
+      "html",
+      "sql",
+      "xml",
+      "gz",
+      "bz2",
+      "tgz",
+      "ade",
+      "adp",
+      "apk",
+      "appx",
+      "appxbundle",
+      "bat",
+      "cab",
+      "chm",
+      "cmd",
+      "com",
+      "cpl",
+      "diagcab",
+      "diagcfg",
+      "diagpack",
+      "dll",
+      "dmg",
+      "ex",
+      "ex_",
+      "exe",
+      "hta",
+      "img",
+      "ins",
+      "iso",
+      "isp",
+      "jar",
+      "jnlp",
+      "js",
+      "jse",
+      "lib",
+      "lnk",
+      "mde",
+      "msc",
+      "msi",
+      "msix",
+      "msixbundle",
+      "msp",
+      "mst",
+      "nsh",
+      "pif",
+      "ps1",
+      "scr",
+      "sct",
+      "shb",
+      "sys",
+      "vb",
+      "vbe",
+      "vbs",
+      "vhd",
+      "vxd",
+      "wsc",
+      "wsf",
+      "wsh",
+      "xll",
+    ];
+    const listAccepted = ["png", "gif", "jpeg", "jpg"];
 
-    if (input.files && input.files[0]){
+    /// input value to get the original name of the file ( with the fake path )
+    const value = input.value;
 
-        /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants : 
-        /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
-        const listNotAccepted = ["zip", "css", "html", "sql", "xml", "gz", "bz2", "tgz",'ade', 'adp', 'apk', 'appx', 'appxbundle', 'bat', 'cab', 'chm', 'cmd', 'com', 'cpl', 'diagcab', 'diagcfg', 'diagpack', 'dll', 'dmg', 'ex', 'ex_', 'exe', 'hta', 'img', 'ins', 'iso', 'isp', 'jar', 'jnlp', 'js', 'jse', 'lib', 'lnk', 'mde', 'msc', 'msi', 'msix', 'msixbundle', 'msp', 'mst', 'nsh', 'pif', 'ps1', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vhd', 'vxd', 'wsc', 'wsf', 'wsh', 'xll'];
-        const listAccepted= [ "png", "gif", "jpeg", "jpg" ];
-        
-        /// input value to get the original name of the file ( with the fake path )
-        const value= input.value;
+    //// to get the extension file
+    const temp = value.split(".");
+    const extensions = temp[temp.length - 1]; /// extension
 
-        //// to get the extension file
-        const  temp= value.split(".");
-        const extensions = temp[temp.length-1]; /// extension
+    ///if the current extension is in the list not accepted.
+    if (
+      listAccepted.some((item) => item === extensions) &&
+      !listNotAccepted.some(
+        (item) => item.toLowerCase() === extensions.toLowerCase()
+      ) &&
+      extensions !== value
+    ) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        /// get name the originila name of the file
+        const input_value = value.split("\\");
+        const name = input_value[input_value.length - 1]; /// original name
 
-        ///if the current extension is in the list not accepted.
-        if( 
-            listAccepted.some(item => item === extensions ) 
-            && !listNotAccepted.some( item => item.toLowerCase() === extensions.toLowerCase() ) 
-            && extensions !== value 
-        ){
+        ///unique  to identify the file item
+        /// this not save in the database.
+        const id_unique = new Date().getTime();
 
-            var reader = new FileReader();
-            reader.onload = function (e) {
+        ////create item piece joint.
+        createListItemPiece(name, id_unique);
 
-                /// get name the originila name of the file
-                const input_value= value.split("\\")
-                const name= input_value[input_value.length-1]; /// original name
-    
-                ///unique  to identify the file item
-                /// this not save in the database.
-                const id_unique= new Date().getTime();
+        //// save the item in variable global list piece jointe.
+        email_piece_joint_list.push({
+          id: id_unique,
+          name,
+          base64File: e.target.result,
+        });
+      };
 
-                ////create item piece joint.
-                createListItemPiece(name, id_unique);
-                
-                //// save the item in variable global list piece jointe.
-                email_piece_joint_list.push({id: id_unique,  name, base64File: e.target.result })
-            };
-    
-            reader.readAsDataURL(input.files[0]);
-        }else{ /// if the extension is not supported.
-            swal({
-                title: "Le format de fichier n'est pas pris en charge!",
-                icon: "error",
-                button: "OK",
-            });
-        }
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      /// if the extension is not supported.
+      swal({
+        title: "Le format de fichier n'est pas pris en charge!",
+        icon: "error",
+        button: "OK",
+      });
     }
+  }
 }
-
 
 /**
  * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
@@ -3815,23 +3981,31 @@ function createListItemPiece(name, id) {
  *
  * @return void
  */
-function removeListeItem(e, id){
-    ///remove html element
-    e.parentElement.remove()
-    ///remove one element in the piece global
-    email_piece_joint_list= email_piece_joint_list.filter(item => item.id  != id )
+function removeListeItem(e, id) {
+  ///remove html element
+  e.parentElement.remove();
+  ///remove one element in the piece global
+  email_piece_joint_list = email_piece_joint_list.filter(
+    (item) => item.id != id
+  );
 }
 
+function addLinkOnMailBody() {
+  const link_name = document.querySelector(".link_name_jheo_js").value.trim();
+  const link_value = encodeURI(
+    document.querySelector(".link_value_jheo_js").value
+  );
 
-function addLinkOnMailBody(){
-    const link_name= document.querySelector(".link_name_jheo_js").value.trim();
-    const link_value= encodeURI(document.querySelector(".link_value_jheo_js").value);
+  if (editor) {
+    editor.setData(
+      editor.getData() +
+        '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' +
+        link_value +
+        '" >' +
+        link_name +
+        " </a>"
+    );
+  }
 
-    if( editor ){
-        editor.setData(
-            editor.getData() + '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' + link_value + '" >' + link_name + ' </a>'
-        )
-    }
-
-    cancelAddLink();
+  cancelAddLink();
 }

@@ -290,6 +290,68 @@ class MailService extends AbstractController {
         $customMailer->send($email);
 
     }
+    public function sendLinkOnEmailAboutTribuTInvitation($email_to=[], $fullName_to, $context, $sender="ConsoMyZone", $cc= [], $cci= [] ):void
+    {
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender ,$sender)) 
+                ->subject($context["object_mail"]);
+        if( count( $email_to ) > 0 ){
+            $email = $email->to(new Address($email_to[0], "Future Fans"));
+
+            for( $i= 1; $i < count($email_to); $i++ ){
+                $email = $email->addTo(new Address($email_to[$i], "Future Fans"));
+            }
+        }    
+                // to(new Address($email_to, $fullName_to ))
+               
+        
+        if( count( $cc ) > 0 ){
+            $email = $email->cc(new Address($cc[0], "Future Fans"));
+
+            for( $i= 1; $i < count($cc); $i++ ){
+                $email = $email->addCc(new Address($cc[$i], "Future Fans"));
+            }
+        }
+
+        if( count( $cci ) > 0 ){
+            $email = $email->bcc(new Address($cci[0], "Future Fans"));
+
+            for( $i= 1; $i < count($cci); $i++ ){
+                $email = $email->addBcc(new Address($cci[$i], "Future Fans"));
+            }
+        }
+
+        if(isset($context["piece_joint"])){
+            $all_pieces_joint= $context["piece_joint"];
+
+            if( count($all_pieces_joint) > 0 ){
+                foreach ($all_pieces_joint as $item) {
+                    $file= $item["path"];
+                    
+                    if(file_exists($file)){
+                        $email= $email->attach(fopen($file, 'r'), $item["name"] );
+                    }
+                }
+            }
+        }
+
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
+        $email =  $email->html($this->renderView($context["template_path"],[
+            'email' => new WrappedTemplatedEmail($this->twig, $email),
+            'today' => $date_fr,
+            'fullNameTo' => $fullName_to,
+            'link' => $context["link_confirm"],
+            'content' => $context["content_mail"],
+        ]));
+
+        $customMailer->send($email);
+    }
 
 }
 

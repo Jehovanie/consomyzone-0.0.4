@@ -683,7 +683,7 @@ class MessageController extends AbstractController
 
         ///get all id the user in the same tribut G for me
         $id_amis_tributG = $tributGService->getAllTributG($userConnected['tableTribuG']);  /// [ ["user_id" => ...], ... ]
-
+   
 
         ///to contains profil user information
         $amis_in_tributG = [];
@@ -801,7 +801,7 @@ class MessageController extends AbstractController
             "messages" => $old_message,
             "status" => strtoupper($user_to->getType())
         ];
-
+        
         return $this->render('user/message/liste_amis.html.twig', [
             "userConnected" => $userConnected,
             "profil" => $profil,
@@ -1067,6 +1067,11 @@ class MessageController extends AbstractController
             $user_to->getId(),
             $user->getTableMessage()
         );
+
+        // $old_message = $messageService->getAllOldMessage(
+        //     $user->getId(),
+        //     $user_to->getTableMessage()
+        // );
 
         foreach ($old_message as &$message) {
             $message["content"] = json_decode($message["content"], true);

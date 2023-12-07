@@ -124,7 +124,11 @@
 													<p class="font-italic mb-1">
 														<i class="bi bi-briefcase"></i>
 														<span class="fw-light">Categories:</span>
-														{{ type }}
+														{% if type is same as('Partisan') %}
+															{{'Fan'}}
+														{% elseif type is same as('Type')%}
+															{{'Partisan'}}
+														{% endif %}
 													</p>
 													<p class="font-italic mb-1">
 														<i class="bi bi-geo-alt"></i>

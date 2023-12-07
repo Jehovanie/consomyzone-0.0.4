@@ -194,7 +194,8 @@
                                                     {% if message.content.images|length > 0 %}
                                                         {% for image in message.content.images %}
                                                             <div class="file_item">
-                                                                <img class="message_image_item" src="{{image}}" alt="image">
+                                                                <img class="message_image_item" src="{{image}}" alt="image" 
+                                                                data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)">
                                                                 <a class="icon_download_file" href="{{image}}" download>
                                                                     <i class="fa-solid fa-download"></i>
                                                                 </a>
@@ -205,7 +206,8 @@
                                                     {% if message.content.files is defined and  message.content.files|length > 0 %}
                                                         {% for file in message.content.files %}
                                                             <div class="file_item">
-                                                                <img class="message_image_item" src="{{defaultFile}}" alt="File">
+                                                                <img class="message_image_item" src="{{defaultFile}}" alt="File" 
+                                                                data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)">
                                                                 <a class="icon_download_file" href="{{file}}" download>
                                                                     <i class="fa-solid fa-download"></i>
                                                                 </a>
@@ -230,7 +232,8 @@
                                                     {% if message.content.images|length > 0 %}
                                                         {% for image in message.content.images %}
                                                             <div class="file_item">
-                                                                <img class="message_image_item" src="{{image}}" alt="image">
+                                                                <img class="message_image_item" src="{{image}}" alt="image" 
+                                                                data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)">
                                                                 <a class="icon_download_file" href="{{image}}" download>
                                                                     <i class="fa-solid fa-download"></i>
                                                                 </a>
@@ -240,7 +243,8 @@
                                                     {% if message.content.files is defined and  message.content.files|length > 0 %}
                                                         {% for file in message.content.files %}
                                                             <div class="file_item">
-                                                                <img class="message_image_item" src="{{defaultFile}}" alt="File">
+                                                                <img class="message_image_item" src="{{defaultFile}}" alt="File" 
+                                                                data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)">
                                                                 <a class="icon_download_file" href="{{file}}" download>
                                                                     <i class="fa-solid fa-download"></i>
                                                                 </a>
@@ -351,7 +355,7 @@
 </div>
 {{include('user/message/visio_message_modal.html.twig')}}
 
-
+<!-- Modal pour jitsi-->
 <div class="modal fade" id="visioGroupModalForMessage" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
@@ -369,6 +373,18 @@
     </div>
   </div>
 </div>
+<!-- Modal pour visioner les  photos -->
+    <div class="modal fade" id="modal_show_photo_mess" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <img id="img_modal_mess_photo" style="width:100%">
+                </div>
+
+            </div>
+        </div>
+    </div>
 {# {{include('user/message/visio_message_modal.html.twig')}} #}
 {# {{include('user/message/amis_mobile.html.twig')}} #}
 

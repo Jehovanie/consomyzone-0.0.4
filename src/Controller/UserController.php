@@ -2766,15 +2766,32 @@ class UserController extends AbstractController
 
         $bddRestoBackupRepository->save($restoBackup,true);
 
-        $resto->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true))
-            ->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true))
-            ->setNomvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true))
-            ->setCompvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true))
-            ->setVillenorm(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true))
-            ->setCommune(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true))
-            ->setNumvoie($key->getNumvoie())
-            ->setCodpost($key->getCodpost())
-            ->setTel($key->getTel())
+        $denominationF=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true) !="" ? 
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true) :$resto->getDenominationF();
+        $numvoie=$key->getNumvoie() !="" ? $key->getNumvoie() : $resto->getNumvoie();
+            
+        $typeVoie=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true) !="" ? 
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true) :$resto->getTypevoie(); 
+        $nomVoie=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true) !="" ? 
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true) :$resto->getNomvoie();
+        $compVoie=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true) !="" ? 
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true) :$resto->getCompvoie(); 
+        $villeNorme=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true) !="" ? 
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true) :$resto->getVillenorm();
+        $commune=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true) !="" ? 
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true) :$resto->getCommune();
+        $codePost=$key->getCodpost() !="" ? $key->getCodpost() : $resto->getCodpost();
+        $tel=$key->getTel() !="" ?$key->getTel() :$resto->getTel();
+
+        $resto->setDenominationF($denominationF)
+            ->setTypevoie($typeVoie)
+            ->setNomvoie($nomVoie)
+            ->setCompvoie($compVoie)
+            ->setVillenorm($villeNorme)
+            ->setCommune($commune)
+            ->setNumvoie( $numvoie)
+            ->setCodpost($codePost)
+            ->setTel($tel)
             ->setRestaurant(1)
             ->setBrasserie($key->getBrasserie())
             ->setCreperie($key->getCreperie())

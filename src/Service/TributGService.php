@@ -1292,33 +1292,78 @@ class TributGService extends PDOConnexionService{
         return $image;
     }
 
-    public function updatePublication($user_id , $publication_id , $publication , $confidentiality){
+    public function updatePublication($user_id, $publication_id, $publication, $confidentiality, $tablePublication = null, $photo=null)
+    {
 
         //table tribu G
         $table_name = $this->getTableNameTributG($user_id);
 
-        $table_pub = $table_name . "_publication";
+        $table_pub = $tablePublication ? $tablePublication : $table_name . "_publication";
 
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_pub  WHERE id=$publication_id");
         $statement->execute();
         $pub = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
 
         /// there no publication with this publication_id
-        if( count($pub) === 0 ){
+        if (count($pub) === 0) {
             return false;
         }
 
         /// the owner of this publication is not the owner of this user_id
-        if( intval($pub[0]["user_id"]) !== $user_id ){
+        if (intval($pub[0]["user_id"]) !== $user_id) {
             return false;
         }
 
+        ///keep the image to delete on the repository
+        $image = $pub[0]["photo"];
+
         /// WE CAN UPDATE IT
-        $statement = $this->getPDO()->prepare('UPDATE '.$table_pub.' SET publication="'. $publication . '", confidentiality="' . $confidentiality . '" WHERE id ="'.$publication_id .'"');
+        if($photo){
+            $statement = $this->getPDO()->prepare("UPDATE $table_pub SET publication=:publication, confidentiality=:confidentiality, photo=:photo WHERE id =:publication_id AND user_id =:user_id");
+            $statement->bindParam(':photo', $photo);
+        }else{
+            $statement = $this->getPDO()->prepare("UPDATE $table_pub SET publication=:publication, confidentiality=:confidentiality WHERE id =:publication_id AND user_id =:user_id");
+        }
+
+        $statement->bindParam(':publication', $publication);
+
+        $statement->bindParam(':confidentiality', $confidentiality);
+
+        $statement->bindParam(':publication_id', $publication_id);
+
+        $statement->bindParam(':user_id', $user_id);
+
         $result = $statement->execute();
 
-        return $result;
+        return $image;
     }
+//    public function updatePublication($user_id , $publication_id , $publication , $confidentiality){
+
+//         //table tribu G
+//         $table_name = $this->getTableNameTributG($user_id);
+
+//         $table_pub = $table_name . "_publication";
+
+//         $statement = $this->getPDO()->prepare("SELECT * FROM $table_pub  WHERE id=$publication_id");
+//         $statement->execute();
+//         $pub = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
+
+//         /// there no publication with this publication_id
+//         if( count($pub) === 0 ){
+//             return false;
+//         }
+
+//         /// the owner of this publication is not the owner of this user_id
+//         if( intval($pub[0]["user_id"]) !== $user_id ){
+//             return false;
+//         }
+
+//         /// WE CAN UPDATE IT
+//         $statement = $this->getPDO()->prepare('UPDATE '.$table_pub.' SET publication="'. $publication . '", confidentiality="' . $confidentiality . '" WHERE id ="'.$publication_id .'"');
+//         $result = $statement->execute();
+
+//         return $result;
+//     }
 
 
     public function showRightTributName($table){

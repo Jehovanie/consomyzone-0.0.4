@@ -114,7 +114,7 @@
             
             {% if len > 0 %}
 
-                <img class="preview-photo-detail" src="{{photos[len - 1].photo|replace({'/public':''}) }}" alt="photo"/>
+                <img class="preview-photo-detail" src="{{photos[len - 1].photo }}" alt="photo"/>
 
                 <div class="all-photos-detail" onclick="openGalleriesPhoto(this)">
                     {% if len > 1 %}
@@ -130,7 +130,7 @@
                     <div class="gallery-photo-detail d-none">
                         {% for img in photos %}
 
-                            <img src="{{img.photo|replace({'/public':''}) }}" alt="photo"/>
+                            <img src="{{img.photo}}" alt="photo"/>
 
                         {% endfor %}
                     </div>

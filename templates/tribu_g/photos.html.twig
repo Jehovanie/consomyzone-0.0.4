@@ -6,7 +6,7 @@
 				Photo télechargé avec succès!
 			</div>
 
-			<span class="h4">Les photos de la tribu-G</span>
+			{# <span class="h4">Les photos de la tribu-G</span> #}
 
 			{# <label class="input-file text-center float-end" style="height:40px;background-color:#0D6EFD;padding:10px;border-radius:5px;color:white;cursor:pointer;">
 				<i class="bi bi-camera-fill"></i>
@@ -17,21 +17,88 @@
 		</div>
 {# id="gallery" #}
 		<div class="row mt-2" style="width:100%" >
-				
-				{# <div class="column-pg-cmz" >  #}
-				{% for single_photo in photos %}
-					
-					{% if single_photo.photo %}
-					    <div class="col-lg-3 col-md-4 col-xs-6 col-sm-6 thumb text-center">
-							<a href="#" class="fancybox" rel="ligthbox">
-								<img src={{ single_photo.photo}} class="zoom img-fluid " alt="Image" style="width:100%"/>
-							</a>
-						</div>
+				<div class="gallery-container">
+                  <div>
+                      <span class="h2 text-dark text-center" >Bienvenue dans la galerie.</span> 
+                      
+                  </div>
+                  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+                    <div class="container-fluid">
+                      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+                        <div class="navbar-nav">
+                          <a class="nav-link" id="gal-publication-g" onclick="galPubG()" data-status-nav="gal-publication-g" style="color: #0101DF">Publication</a>
+                          <a class="nav-link" id="gal-agenda-g" onclick="galAgendaG()" data-status-nav="gal-agenda-g">Agenda</a>
+                        </div>
+                      </div>
+                    </div>
+                  </nav>
+                  <div id="gallery">
+                    <div class="content-publication-tomm-js" data-status="gal-publication-g">
+                      
+                      <div class="row photo-pud-t-tomm-js" >
+					  {% set mergedArrayPub = {} %}
+						{% for single_photo in photosPub %}
+							{% set createdAt = single_photo['createdAt'] %}
+							{% set photo = single_photo['photo'] %}
+							{% if not mergedArrayPub[createdAt] is defined %}
+								{% set mergedArrayPub = mergedArrayPub|merge({ (createdAt): [photo] }) %}
+							{% else %}
+								{% if mergedArrayPub[createdAt] != single_photo['photo'] %}
+									{% set mergedArrayPub = mergedArrayPub|merge({ (createdAt): mergedArrayPub[createdAt]|merge([photo]) }) %}
+								{% endif %}
+							{% endif %}
+						{% endfor %}
+						{% for key,items in mergedArrayPub %}
+							<h6>{{ key }}</h6>
+							{% for item in items %}
+								<div class="col-lg-4 col-md-12 mb-4 mb-lg-0 pub"  onclick="openGalleriesPhotoTribuT(this)">
+									<img src="{{ item }}" class="w-100 shadow-1-strong mb-4 pub" alt="Boat on Calm Water"/>
+													</div>
+						{% endfor %}
+						{% endfor %}
 						
-
+                      </div>
+                    </div>
+                    <div class="content-agenda-tomm-js d-none" data-status="gal-agenda-g">
+                      
+                      <div class="row photo-agenda-t-tomm-js">
+					  {% set mergedArray = {} %}
+					  	
+                        {% for single_photo in photosAgenda %}
+							{% set createdAt = single_photo['createdAt'] %}
+							{% set photo = single_photo['photo']  %}
+							{% set photoSplit = single_photo['photoSplit'] %}
+							{% if not mergedArray[createdAt] is defined %}
+								{% set mergedArray = mergedArray|merge({ (createdAt): [photo] }) %}
+							{% else %}
+								{% if mergedArray[createdAt] != single_photo['photo'] %}
+									{% set mergedArray = mergedArray|merge({ (createdAt): mergedArray[createdAt]|merge([photo]) }) %}
+								{% endif %}
+							{% endif %}
+						{% endfor %}
+						{% for key,items in mergedArray %}
+							<h6>{{ key }}</h6>
+							{% for item in items %}
+								{% if item %}
+									{% set photoSplit = item|split('/') %}
+								{% if photoSplit[3] is same as("tribu_g") %}
+									<div class="col-lg-4 col-md-12 mb-4 mb-lg-0 galer" onclick="openGalleriesPhotoTribuT(this)">
+										<img src="{{ item }}" class="w-100 shadow-1-strong mb-4 galer" alt="Boat on Calm Water"/>
+									</div>
+								{% endif %}
 					{% endif %}
 					
 				{% endfor %}
+				
+{% endfor %}
+
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>
+				{# <div class="column-pg-cmz" >  #}
+				
 				
 				{# </div> #}
 			{# {% endfor %} #}

@@ -112,7 +112,7 @@
                             <div>
 
                                 <div class="list_resto_or_golf" id="agenda-tribu-g">
-                                    <h5 class="ms-5 mt-4 mb-4"><i class="fa-solid fa-list"></i> Liste de partisan(s) de votre {{allTribuG|replace({'_': ' '})}}</h5>
+                                    <h5 class="ms-5 mt-4 mb-4"><i class="fa-solid fa-list"></i> Liste des fans de votre {{allTribuG|replace({'_': ' '})}}</h5>
                             
                                     <table id="list-tribu-g-partage-agenda" class="table table-striped">
                                         <thead>
@@ -135,9 +135,9 @@
                                             <tr>
                                                 <td>
                                                     {% if result.photoProfil != null %}
-                                                        <img src={{ result.photoProfil }} alt="" class="pdp-agenda-tribu-g">
+                                                        <img src= {{'/public'~ result.photoProfil }} alt="" class="pdp-agenda-tribu-g">
                                                     {% else %}
-                                                        <img src="/uploads/users/photos/img_avatar.png" alt="" class="pdp-agenda-tribu-g">
+                                                        <img src="/public/assets/image/img_avatar3.png" alt="" class="pdp-agenda-tribu-g">
                                                     {% endif %}
                                                 </td>
                                                 <td data-id="{{ result.id }}" class="lastname">{{ result.firstname }}</td>
@@ -212,7 +212,7 @@
                                                     </a> #}
                                                 </div>
                                                 {# collapse #}
-                                                <div class="mt-3" id="tribut-collapse">
+                                                {# <div class="mt-3" id="tribut-collapse">
                                                     <div class="form-group multiple_destination_css">
                                                         <label for="exampleFormControlInput1">Ajouter de Cc <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cc.)</span></label>
                                                         <input type="text" class="form-control  multiple_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email de copie">
@@ -227,7 +227,7 @@
                                                         <label for="exampleFormControlInput1">Ajouter de Cci <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cci.)</span></label>
                                                         <input type="text" class="form-control  multiple_destination_cci_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email en Cci">
                                                     </div>
-                                                </div>
+                                                </div> #}
                                                 <div class="form-group content_objet_css_jheo mt-3">
                                                     <label for="exampleFormControlInput2">Objet</label>
                                                     <input type="text" class="form-control object_js_jheo" id="exampleFormControlInput2" placeholder="Objet" disabled>

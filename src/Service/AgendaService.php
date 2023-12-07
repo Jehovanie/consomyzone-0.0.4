@@ -527,21 +527,28 @@ class AgendaService extends PDOConnexionService
         $statement->execute();
 
         $all_agenda= $statement->fetchAll(PDO::FETCH_ASSOC);
-        foreach($all_agenda as $agenda){
+        foreach($all_agenda as $event){
+            $path=json_decode($event["file_path"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["file_path"],true)) :$event["file_path"];
+            $title=json_decode($event["title"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["title"],true)) :$event["title"];
+            $type=json_decode($event["type"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["type"],true)) :$event["type"];
+            $name=json_decode($event["name"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["name"],true)) :$event["name"];
+            $adresse=json_decode($event["adresse"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["adresse"],true)) :$event["adresse"];
+            $description=json_decode($event["description"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["description"],true)) :$event["description"];
+            //($event["title"]) ? $event["title"] : substr($event["message"], 0, 15) . "..."
             $temps= [
-                "id" => $agenda['id'],
-                "title" =>($agenda["title"]) ? $agenda["title"] : substr($agenda["message"], 0, 15) . "...",
-                "type" => $agenda["type"],
-                "name" => $agenda["name"],
-                "description" => $agenda["description"],
-                "adresse" => $agenda["adresse"],
-                "isEtabCMZ" => $agenda["isEtabCMZ"],
-                "isGolfCMZ" => $agenda["isGolfCMZ"],
-                "isRestoCMZ" => $agenda["isRestoCMZ"],
-                "dateStart" => $agenda["dateStart"],
-                "dateEnd" => $agenda["dateEnd"],
-                "timeStart" => $agenda["heure_debut"],
-                "timeEnd" => $agenda["heure_fin"],
+                "id" => $event['id'],
+                "title" =>$title,
+                "type" => $type,
+                "name" => $name,
+                "description" => $description,
+                "adresse" => $adresse,
+                "isEtabCMZ" => $event["isEtabCMZ"],
+                "isGolfCMZ" => $event["isGolfCMZ"],
+                "isRestoCMZ" => $event["isRestoCMZ"],
+                "dateStart" => $event["dateStart"],
+                "dateEnd" => $event["dateEnd"],
+                "timeStart" => $event["heure_debut"],
+                "timeEnd" => $event["heure_fin"],
             ];
 
             array_push($results,$temps);
@@ -565,9 +572,22 @@ class AgendaService extends PDOConnexionService
         $statement = $this->getPDO()->prepare("SELECT * FROM $table_agenda where id= $id;");
         $statement->execute();
 
-        $agenda= $statement->fetch(PDO::FETCH_ASSOC);
-        
-        return $agenda ;
+        $event= $statement->fetch(PDO::FETCH_ASSOC);
+       
+        $path=json_decode($event["file_path"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["file_path"],true)) :$event["file_path"];
+        $title=json_decode($event["title"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["title"],true)) :$event["title"];
+        $type=json_decode($event["type"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["type"],true)) :$event["type"];
+        $name=json_decode($event["name"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["name"],true)) :$event["name"];
+        $adresse=json_decode($event["adresse"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["adresse"],true)) :$event["adresse"];
+        $description=json_decode($event["description"],true) !=null ? $this->convertUnicodeToUtf8(json_decode($event["description"],true)) :$event["description"];
+       
+        $event["title"]=$title;
+        $event["type"]=$type;
+        $event["name"]=$name;
+        $event["adresse"]=$adresse;
+        $event["description"]=$description;
+        $event["file_path"] =  $path; 
+        return $event ;
     }
     /**
      * @author Tomm
@@ -585,6 +605,11 @@ class AgendaService extends PDOConnexionService
 
         $agenda = $statement->fetchAll(PDO::FETCH_ASSOC);
 
+      
+        foreach( $agenda as &$value){
+           
+           $value["file_path"] = $this->convertUnicodeToUtf8(json_decode($value["file_path"], true));
+        }
         return $agenda;
     }
 
@@ -627,17 +652,17 @@ class AgendaService extends PDOConnexionService
             "`id` int(11) PRIMARY KEY AUTO_INCREMENT  NOT NULL,".
             "`title` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
             "`description` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
-            "`type` text CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL,".
+            "`type` text CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
             "`confidentialite` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`confidentialite`)),".
-            "`adresse` varchar(255) NOT NULL,".
-            "`name` varchar(255) DEFAULT NULL,".
-            "`restaurant` varchar(255) DEFAULT NULL,".
+            "`adresse` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,".
+            "`name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,".
+            "`restaurant` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,".
             "`dateStart` date DEFAULT NULL,".
             "`dateEnd` date DEFAULT NULL,".
             "`heure_debut` time NOT NULL,".
             "`heure_fin` time NOT NULL,".
             "`file_type` varchar(40) DEFAULT NULL,".
-            "`file_path` varchar(500) DEFAULT NULL,".
+            "`file_path` varchar(500) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,".
             "`status` tinyint(1) NOT NULL DEFAULT 0,".
             "`max_participant` int(11) NOT NULL DEFAULT 0,".
             "`place_libre` int NOT NULL DEFAULT 0,".
@@ -646,7 +671,7 @@ class AgendaService extends PDOConnexionService
             "`isRestoCMZ` tinyint(1) DEFAULT 0," .
             "`isVisioCMZ` tinyint(1) DEFAULT 0," .
             "`user_id` int(11) DEFAULT NULL,".
-            " `datetime` timestamp NOT NULL DEFAULT current_timestamp(),".
+            "`datetime` timestamp NOT NULL DEFAULT current_timestamp()".
             " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
@@ -1111,7 +1136,7 @@ class AgendaService extends PDOConnexionService
      */
     public function insertUserTemp($user,$email,$password,$userRepository,$entityManager){
         
-        $user->setPseudo("partisanAnonyme");
+        $user->setPseudo("partisanAnonyme_".time());
         $user->setEmail($email);
         $user->setPassword($password);
         $user->setVerifiedMail(false);
@@ -1142,6 +1167,18 @@ class AgendaService extends PDOConnexionService
         $userId = $user->getId();
 
         $this->createTableAgenda("agenda_" . $userId);
+
+        $user->setType("Type");
+        $user->setTablemessage("tablemessage_". $userId);
+        $user->setTablenotification("tablenotification_". $userId);
+        $user->setTablerequesting("tablerequesting_". $userId);
+        $user->setNomTableAgenda("agenda_".$userId);
+        $user->setNomTablePartageAgenda("partage_agenda_". $userId);
+        $user->setIdle(300);
+        $entityManager->persist($user);
+
+        $entityManager->flush();
+
 
         return $userId;
 
@@ -1203,4 +1240,7 @@ class AgendaService extends PDOConnexionService
         return $results;
     }
 
+   
+
+    
 }

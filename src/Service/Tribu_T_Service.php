@@ -118,7 +118,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                     $query_table_invitation = "CREATE TABLE " . $output . "_invitation(
                         id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-                        user_id int(11) NOT NULL,
+                        user_id int(11) DEFAULT NULL,
                         email varchar(255) NOT NULL,
                         is_valid tinyint(1) NOT NULL DEFAULT 0,
                         datetime DATETIME NOT NULL DEFAULT current_timestamp()
@@ -412,7 +412,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     {
 
-        $statement = $this->getPDO()->prepare("SELECT user_id, roles FROM $table WHERE status = 1");
+        $statement = $this->getPDO()->prepare("SELECT  DISTINCT(user_id), roles FROM $table WHERE status = 1");
 
         $statement->execute();
 
@@ -1106,12 +1106,20 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    public function testSiMembre($table, $user_id)
+    public function testSiMembre($table, $user_id,$email="")
 
     {
+        if($user_id){
+            $statement = $this->getPDO()->prepare("SELECT id, status FROM $table WHERE user_id = :user_id");
+            $id=intval($user_id);
+            $statement->bindParam(':user_id', $id,PDO::PARAM_INT);
 
-        $statement = $this->getPDO()->prepare("SELECT id, status FROM $table WHERE user_id = $user_id");
+        }else{
+            $statement = $this->getPDO()->prepare("SELECT id, status FROM $table WHERE email = :email");
+            $statement->bindParam(':email', $email,PDO::PARAM_STR);
+        }
 
+        
         $statement->execute();
 
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -1639,25 +1647,34 @@ class Tribu_T_Service extends PDOConnexionService
         if($idMin == 0){
             //id,user_id,confidentiality,photo,userfullname,datetime, publication 
 
-            $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)".
-            " as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id".  
-            " ORDER BY t1.id DESC LIMIT :limits) as tb1 " .
-            " LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react,". 
-            " reaction FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId"
+             $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)".
+            " as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits) as tb1 " .
+            " LEFT JOIN (SELECT GROUP_CONCAT(user_id) user_react_list, user_id as user_id_react, pub_id as pub_id_react, count(*) as nbr_reaction,". 
+            " reaction FROM $tableReaction WHERE reaction = 1 group by pub_id_react) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId"
             ;
+            // $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)".
+            // " as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id".  
+            // " ORDER BY t1.id DESC LIMIT :limits) as tb1 " .
+            // " LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react,". 
+            // " reaction FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId"
+            // ;
            
             $stmt = $this->getPDO()->prepare($sql);
-            $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
+            $stmt->bindValue(':limits', $limits, PDO::PARAM_INT);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             
         }else{
-            $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)".
-            " as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id and t1.id <". 
-            " :idmin ORDER BY id DESC LIMIT :limits) as tb1 " .
-            " LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react, reaction ". 
-            " FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId";
+            // $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)".
+            // " as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id and t1.id <". 
+            // " :idmin ORDER BY id DESC LIMIT :limits) as tb1 " .
+            // " LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react, reaction ". 
+            // " FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId";
+             $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)".
+            " as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id where t1.id < :idmin ORDER BY id DESC LIMIT :limits) as tb1" .
+            " LEFT JOIN (SELECT GROUP_CONCAT(user_id) user_react_list, user_id as user_id_react, pub_id as pub_id_react, count(*)".
+			" as nbr_reaction, reaction FROM $tableReaction WHERE reaction = 1 group by pub_id_react) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId";
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->bindValue(':idmin', $idMin, PDO::PARAM_INT); 
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 
@@ -1728,12 +1745,12 @@ class Tribu_T_Service extends PDOConnexionService
     public function getPartisanOfTribuT($tableTribuT)
     {
 
-        $sql = "SELECT * FROM $tableTribuT as t1 left join (" .
+        $sql = "SELECT * FROM $tableTribuT as t1   left join (" .
             "SELECT id,type, case type when 'consumer' THEN (SELECT JSON_OBJECT('id',id,'user_id',user_id,'firstName',firstname,'lastName'," .
             "lastname,'photo_profil',photo_profil,'tribuG',tributg,'email',email) as infos FROM consumer as c where c.user_id= u.id)" .
             "when 'supplier' THEN (SELECT JSON_OBJECT('id',id,'user_id',user_id,'firstName',firstname,'lastName', lastname," .
             "'photo_profil',photo_profil,'tribuG',tributg,'email',email)as infos FROM supplier as c where c.user_id= u.id)" .
-            "end infos_profil from user as u ) as t2 on t2.id=t1.user_id";
+            "end infos_profil from user as u ) as t2 on t2.id=t1.user_id WHERE t1.status = 1 and t1.user_id IS NOT NULL GROUP BY t1.user_id";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -2088,7 +2105,8 @@ class Tribu_T_Service extends PDOConnexionService
                 $data = [
                     "publication" => [
                         "image" => $d_pub['photo'],
-                        "createdAt" => $d_pub["datetime"]
+                        "createdAt" => $d_pub["datetime"],
+                        "id" => $d_pub["id"]
                     ]
                 ];
 
@@ -2131,7 +2149,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function getImportPhotoGalery($table_name)
     {
-        $sql = "SELECT path , datetime FROM " . str_replace("_publication", "_imp_img", $table_name);
+        $sql = "SELECT id , path , datetime FROM " . str_replace("_publication", "_imp_img", $table_name);
         //dd($sql);
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
@@ -2273,7 +2291,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @author Elie <eliefenohasina@gmail.com>
      * @Fonction de sauvegarde de l'historique de l'invitation dans la tribu T
      */
-    function saveInvitationStory($table_invitation, $user_id, $email)
+    function saveInvitationStory($table_invitation, $user_id, $email,$isverified=0)
     {
 
         $sql = "SELECT count(*) as is_invited FROM $table_invitation WHERE email = :email ";
@@ -2288,13 +2306,15 @@ class Tribu_T_Service extends PDOConnexionService
 
         if ($is_invited <= 0) {
 
-            $statement = $this->getPDO()->prepare("INSERT INTO $table_invitation (user_id, email) values (:user_id, :email)");
+            $statement = $this->getPDO()->prepare("INSERT INTO $table_invitation (user_id, email,is_valid) values (:user_id, :email, :is_valid)");
 
-            $userfullname = $this->getFullName($user_id);
+            //$userfullname = $user_id ?  $this->getFullName($user_id) : '';
 
             $statement->bindParam(':user_id', $user_id);
 
             $statement->bindParam(':email', $email);
+
+            $statement->bindParam(':is_valid', $isverified);
 
             $statement->execute();
 
@@ -2489,7 +2509,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @return string[]
      */
     public function getAllFanInTribuT($tribuName){
-        $statement = $this->getPDO()->prepare('SELECT DISTINCT user_id FROM ' . $tribuName);
+        $statement = $this->getPDO()->prepare('SELECT DISTINCT user_id FROM ' . $tribuName. ' WHERE status=1');
 
         $statement->execute();
 
@@ -2497,6 +2517,24 @@ class Tribu_T_Service extends PDOConnexionService
 
     }
     
+
+    /**
+     * @author Elie
+     *Fetch de toutes les reaction d'un seul publication dans un tribu*/
+    public function findAllReactions($table, $publication_id)
+
+    {
+
+        $statement = $this->getPDO()->prepare("SELECT usr.user_id as user_id, concat(firstname,' ', lastname) as userfullname, photo_profil, pub_id FROM $table 
+        INNER JOIN (SELECT user_id, firstname, lastname, photo_profil FROM consumer 
+        UNION SELECT user_id, firstname, lastname, photo_profil FROM supplier) as usr ON $table.user_id = usr.user_id WHERE pub_id = $publication_id and reaction = 1");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
    
 
 }

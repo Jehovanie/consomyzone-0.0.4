@@ -7,8 +7,8 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
 
     const form_parent = document.querySelector(".content_form_send_invitation_email_js_jheo");
     const input_principal = form_parent.querySelector(".single_destination_js_jheo")
-    const input_cc = form_parent.querySelector(".multiple_destination_js_jheo")
-    const input_cci = form_parent.querySelector(".multiple_destination_cci_js_jheo")
+    // const input_cc = form_parent.querySelector(".multiple_destination_js_jheo")
+    // const input_cci = form_parent.querySelector(".multiple_destination_cci_js_jheo")
     const object = form_parent.querySelector(".object_js_jheo");
     const description = editor.getData()
 
@@ -28,15 +28,16 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
         input_principal.style.border = "1px solid black";
     })
 
-    input_cc.addEventListener("input", () => {
-        input_cc.style.border = "1px solid black";
-    })
+    // input_cc.addEventListener("input", () => {
+    //     input_cc.style.border = "1px solid black";
+    // })
 
     object.addEventListener("input", () => {
         object.style.border = "1px solid black";
     })
 
-    controlInputEmailToMultiple([ input_principal, input_cc, input_cci ])
+    //, input_cc, input_cci
+    controlInputEmailToMultiple([ input_principal ])
     
     /*input_cc.addEventListener("keyup", (e) => {
 
@@ -76,10 +77,11 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
 
         let status = true;
 
+        // "cc": [],
+        // "cci": [],
         let data = {
             "principal": [], 
-            "cc": [],
-            "cci": [],
+           
             "object": "", 
             "description": "", 
             agendaId: agendaId
@@ -99,24 +101,24 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                 swal("Attention!", "Veuillez saisir un adresse email valide pour le destinataire.", "error")
             }
 
-            if (!!input_cc.value && checkIfExistMailInValid(input_cc.value)) {
-                input_cc.style.border = "1px solid red";
-                status = false;
-                swal("Attention!", "Veuillez saisir un adresse email valide pour le cc.", "error")
-            }
+            // if (!!input_cc.value && checkIfExistMailInValid(input_cc.value)) {
+            //     input_cc.style.border = "1px solid red";
+            //     status = false;
+            //     swal("Attention!", "Veuillez saisir un adresse email valide pour le cc.", "error")
+            // }
     
-            if (!!input_cci.value && checkIfExistMailInValid(input_cci.value)) {
-                input_cci.style.border = "1px solid red";
-                status = false;
-                swal("Attention!", "Veuillez saisir un adresse email valide pour le cci.", "error")
+            // if (!!input_cci.value && checkIfExistMailInValid(input_cci.value)) {
+            //     input_cci.style.border = "1px solid red";
+            //     status = false;
+            //     swal("Attention!", "Veuillez saisir un adresse email valide pour le cci.", "error")
 
-            }
-            
+            // }
+            // "cc": formatEmailAdresseFromStringLong(input_cc.value),
+            // "cci": formatEmailAdresseFromStringLong(input_cci.value),
             data = {
                 ...data,
-                "principal": formatEmailAdresseFromStringLong(input_principal.value), 
-                "cc": formatEmailAdresseFromStringLong(input_cc.value),
-                "cci": formatEmailAdresseFromStringLong(input_cci.value),
+                "principal": formatEmailAdresseFromStringLong(input_principal.value)
+              
             }
 
             if (object.value === "") {
@@ -183,7 +185,7 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                 swal("Bravo!", "Invitation envoyée avec succès!", "success")
                     .then((value)=>{
                         input_principal.value = null;
-                        input_cc.value = null;
+                        // input_cc.value = null;
                         email_piece_joint_list= [];
 
                         // editor.setData("");

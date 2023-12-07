@@ -1,4 +1,4 @@
-const IS_DEV_MODE = true;
+const IS_DEV_MODE = false;
 const current_url = window.location.href;
 const url = current_url.split("/");
 const nav_items = document.querySelectorAll(".nav-item");
@@ -1028,7 +1028,7 @@ function showModalEditor(isG, isListeInfile = false) {
   let agenda = JSON.parse(sessionStorage.getItem("agenda"));
   // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité
   //</span>
-  if (agenda.isVisioCMZ == 1) {
+  if ( agenda && agenda.isVisioCMZ == 1) {
     return (html = ` 
         <p>Madame / Monsieur 
         <br>
@@ -1093,7 +1093,7 @@ function showModalEditor(isG, isListeInfile = false) {
             ${fullname} 
         </span>
         `);
-  } else {
+  } else if(agenda && agenda.isVisioCMZ != 1){
     return (html = ` 
         <p>Madame / Monsieur 
         <br>
@@ -1362,7 +1362,7 @@ function showReponsePartenaire() {
   // let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
   const nameTribuT = document.querySelector(
     "#tribu_t_name_main_head"
-  ).textContent;
+  )?.textContent;
 
   return (html = `
         <span>Madame, Monsieur,</span></br>

@@ -1467,6 +1467,7 @@ class TributTController extends AbstractController
         $photoDatePub = [];
         for ($i = 0; $i < count($pulication); $i++) {
             array_push($photoDatePub, [
+                "id" => $pulication[$i]["publication"]["id"],
                 "photo" => $pulication[$i]["publication"]["image"],
                 "createdAt" => $pulication[$i]["publication"]["createdAt"]
             ]);
@@ -1477,6 +1478,7 @@ class TributTController extends AbstractController
         $photoAgenda = [];
         for ($a = 0; $a < count($agendas); $a++) {
             array_push($photoAgenda, [
+                "id" => $agendas[$a]["id"],
                 "photo" => $agendas[$a]["file_path"],
                 "photoSplit" =>  explode('/', $agendas[$a]["file_path"]),
                 "createdAt" => $agendas[$a]["datetime"]
@@ -1489,6 +1491,7 @@ class TributTController extends AbstractController
         $importPhoto = [];
         for ($a = 0; $a < count($importData); $a++) {
             array_push($importPhoto, [
+                "id"=>$importData[$a]["id"],
                 "photo" => $importData[$a]["path"],
                 "createdAt" => $importData[$a]["datetime"]
             ]);
@@ -1778,10 +1781,14 @@ class TributTController extends AbstractController
 
         $contentForDestinator = $from_fullname . " vous a envoyé une invitation de rejoindre la tribu " . $table;
 
+       
+
         $type = "invitation";
 
         $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
 
+      
+        
         $piece_with_path = [];
         if (count($piece_joint) > 0) {
             // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
@@ -1806,51 +1813,81 @@ class TributTController extends AbstractController
                 array_push($piece_with_path, $item);
             }
         }
+        // $context["object_mail"] = $object;
+        // $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+        // $context["link_confirm"] = $url ;
+        // $context["content_mail"] = $description . 
+        // " <a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>". 
+        // " <p> de ". $from_fullname."</p>";
+
+        // $context["piece_joint"] = $piece_with_path;
+        // $mailService->sendLinkOnEmailAboutTribuTInvitation($principal, $from_fullname, $context, "ConsoMyZone", $cc, $cci);
+        //foltrer les cc et les cci (bcc)
+        $mailInscritNonMembre=[];
+        $mailNonInscrit=[];
+        $mailInscriteDejaMembre=[];
         
         foreach ($principal as $principal_item){
 
-            if($userRepository->findOneBy(["email" => $principal_item])){
-
-                $url_name= "app_confirm_invitation_tribu";
-    
-                /** URL FOR MEMBER
-                 * EDITED By Nantenaina
-                 */
-                $url = $router->generate(
-                    $url_name, 
-                    [
-                        'email' => $principal_item,
-                        'tribu' => $table, 
-                        'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"
-                    ], 
-                    UrlGeneratorInterface::ABSOLUTE_URL
-                );
-    
-                $context["object_mail"] = $object;
-                $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-                $context["link_confirm"] = $url ;
-                $context["content_mail"] = $description . 
-                " <a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>". 
-                " <p> de ". $from_fullname."</p>";
-    
-                $context["piece_joint"] = $piece_with_path;
-    
-    
-                $mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone", $cc, $cci);
-    
+            //Verifier si dèjà inscrit dans cmz, cad dans la table user
+            if($userRepository->findOneBy(["email" => $principal_item])){ 
+                  //verifier si dèjà memebre de la tribu T;
                 $id_receiver = $userRepository->findOneBy(["email" => $principal_item])->getId();
+                $isMembre = $tribuTService->testSiMembre($table, $id_receiver,$principal_item);
+                
+                if ($isMembre != "accepted" ){
+                    //pas encore membre de la tribu T
+                    $url_name= "app_confirm_invitation_tribu";
+                    
+                    /** url pour les non membre de la tribu T mais inscrit dans cmz
+                     * EDITED By Nantenaina , re edited by Jehovanie, Faniry, Elie
+                     * ft Ratom
+                     */
+                    $url = $router->generate(
+                        $url_name, 
+                        [
+                            'email' => $principal_item,
+                            'tribu' => $table, 
+                            'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"
+                        ], 
+                        UrlGeneratorInterface::ABSOLUTE_URL
+                    );
+        
+                    $context["object_mail"] = $object;
+                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                    $context["link_confirm"] = $url ;
+                    $context["content_mail"] = $description . 
+                    " <a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>". 
+                    " <p> de ". $from_fullname."</p>";
+        
+                    $context["piece_joint"] = $piece_with_path;
+        
+                    //TODO verifier si membre envoyer email si et seulemnt si non membre
+                    
     
-                $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
-    
-                if ($isMembre == "not_invited") {
+                    $mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
+               
                     $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
-                    $tribuTService->addMember($table, $id_receiver);
+                    
+                    if($isMembre =="refuse")
+                        $tribuTService->updateMember($table, $id_receiver, 0);
+
+                    if($isMembre == "not_invited")
+                        $tribuTService->addMember($table, $id_receiver);
+
                     $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
                     $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
                     $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+                    array_push($mailInscritNonMembre,$principal_item);
+                }else{
+                    //deja membre on fait rien juste là pour la déco
+                    array_push($mailInscriteDejaMembre,$principal_item);
                 }
-    
             }else{
+
+                //envoyé invitation pour les non inscrit dans cmz
+                $isMembre = $tribuTService->testSiMembre($table, null, $principal_item);
+                
                 $url_name= "app_email_link_inscription";
 
                 //// prepare email which we wish send
@@ -1864,7 +1901,7 @@ class TributTController extends AbstractController
                     UrlGeneratorInterface::ABSOLUTE_URL
                 );
     
-                $tribuTService->addMemberTemp($table, $principal_item);
+                
     
                 $context["object_mail"] = $object;
                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
@@ -1875,11 +1912,60 @@ class TributTController extends AbstractController
     
                 $context["piece_joint"] = $piece_with_path;
     
-                $mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone", $cc, $cci);
+                $mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
+
+                if($isMembre == "not_invited")
+                    $tribuTService->addMemberTemp($table, $principal_item);
+
+                array_push($mailNonInscrit,$principal_item);
             }
         }
+
+        /// TODO foreach for cc and cci
+        // foreach( $cc as $single_cc ){
+        //     if($userRepository->findOneBy(["email" => $single_cc])){
+
+        //         $id_receiver = $userRepository->findOneBy(["email" => $single_cc])->getId();
+    
+        //         $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
+    
+        //         if ($isMembre == "not_invited") {
+        //             $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+        //             $tribuTService->addMember($table, $id_receiver);
+        //             $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+        //             $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+        //             $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+        //         }
+        //     }else{
+
+        //     }
+        // }
+
+
+        // foreach ( $cci as $single_cci ){
+        //     if($userRepository->findOneBy(["email" => $single_cci])){
+        //         $id_receiver = $userRepository->findOneBy(["email" => $single_cci])->getId();
+    
+        //         $isMembre = $tribuTService->testSiMembre($table, $id_receiver);
+    
+        //         if ($isMembre == "not_invited") {
+        //             $contentForSender = "Vous avez envoyé une invitation à " .$tribuTService->getFullName($id_receiver). " de rejoindre la tribu ". $table;
+        //             $tribuTService->addMember($table, $id_receiver);
+        //             $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+        //             $this->requesting->setRequestingTribut("tablerequesting_".$id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+        //             $this->requesting->setRequestingTribut("tablerequesting_".$userId, $userId, $id_receiver, "demande", $contentForSender, $table );
+        //         }
+        //     }else{
+
+        //     }
+        // }
+
         return $this->json([
-            "result" => "success"
+            "result" => "success",
+            "data" =>[
+                0 => $mailInscritNonMembre,
+                1=> $mailNonInscrit,
+                2 => $mailInscriteDejaMembre]
         ], 201);
     }
 
@@ -2125,13 +2211,14 @@ class TributTController extends AbstractController
     ) {
 
 
+        $userId=$this->getUser()->getId();
         $tableTribuTPublication = $request->query->get('tblpublication');
         $tableTribuTImageImported = str_replace('_publication', '_imp_img', $tableTribuTPublication);
         $idMin = $request->query->get('idmin');
         $limits = $request->query->get('limits');
         $tableCommentaireTribuT = $request->query->get('tblCommentaire');
 
-        $result = $srv->getPartisantPublication($tableTribuTPublication, $tableCommentaireTribuT, $tableTribuTImageImported, $idMin, $limits);
+        $result = $srv->getPartisantPublication($tableTribuTPublication, $tableCommentaireTribuT, $idMin, $limits, $userId);
         $json = $serializer->serialize($result, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
@@ -2483,7 +2570,7 @@ class TributTController extends AbstractController
         }
     
         $fullname=$profil[0]->getFirstname()." ". $profil[0]->getLastname();
-        $tribuTService->createImportPhotoGalery($table, $userId, $path, $datetime, $fullname);
+        $tribuTService->createImportPhotoGalery($table, $userId, $path.$imageName, $datetime, $fullname);
         return $this->json(["ok" => true]);
     }
 
@@ -2575,18 +2662,52 @@ class TributTController extends AbstractController
      * ajouter le 24-10-2023
      */
     #[Route("/tribu/invitation/save_story/{table}", name: "app_save_story_invitation", methods: ["POST"])]
-    public function saveStoryInvitation($table, Request $request, Tribu_T_Service $tribuTService)
+    public function saveStoryInvitation($table, 
+    Request $request, 
+    Tribu_T_Service $tribuTService,
+    UserRepository $userRepository)
     {
 
-        $user = $this->getUser();
-        $user_id = $user->getId();
+        // $user = $this->getUser();
+        // $user_id = $user->getId();
 
         $table_invitation = $table . "_invitation";
 
         $json = json_decode($request->getContent(), true);
-        $email = $json["email"];
+        $emails = $json["emails"];
+        //dd($emails);
+        for($i=0; $i<count($emails); $i++){
+            switch($i){
+                case 0:{
+                    $mailInscritNonMembre=$emails[0];
+                    foreach($mailInscritNonMembre as $email){
+                        $user_id=$userRepository->findOneBy(["email" => $email])->getId();
+                        $result = $tribuTService->saveInvitationStory($table_invitation, $user_id, $email);
+                    }
+                    break;
+                }
+                case 1:{
+                    $mailNonInscrit=$emails[1];
+                    foreach($mailNonInscrit as $email){
+                        //$user_id=$userRepository->findOneBy(["email" => $email])->getId();
+                        $result = $tribuTService->saveInvitationStory($table_invitation, null, $email);
+                    }
+                    break;
+                }
 
-        $result = $tribuTService->saveInvitationStory($table_invitation, $user_id, $email);
+                case 2:{
+                    $mailInscriteDejaMembre=$emails[2];
+                    foreach($mailInscriteDejaMembre as $email){
+                        $user_id=$userRepository->findOneBy(["email" => $email])->getId();
+                        $result = $tribuTService->saveInvitationStory($table_invitation, $user_id, $email,1);
+                       
+                    }
+                    break;
+                }
+            }
+        }
+
+      
 
         if ($result == true) {
             return $this->json(["status" => "ok"]);
@@ -2650,6 +2771,7 @@ class TributTController extends AbstractController
     /**
      * @author Elie <eliefenohasina@gmail.com>
      * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+     * user inscrit mais non membre de la tribu t qui a envoyée l'invitation
      * ajouter le 24-10-2023
      */
     #[Route("/tribu/invitation/confirm", name: "app_confirm_invitation_tribu", methods: ["GET"])]
@@ -2691,13 +2813,20 @@ class TributTController extends AbstractController
                     }
                 }
 
-                //// set tribu T for this new user.
-                $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(), "tribu_t_joined", $tribuTtoJoined);
+                //TODO verifier si a deje accepté
+                $isMembre = $tribuTService->testSiMembre($apropos_tribuTtoJoined["name"],$this->getUser()->getId() );
+                if($isMembre != "accepted"){
+                        //// set tribu T for this new user.
+                    $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(), "tribu_t_joined", $tribuTtoJoined);
 
-                ///update status of the user in table tribu T
-                $tribuTService->updateMember($request->query->get("tribu"), $this->getUser()->getId(), 1);
+                    ///update status of the user in table tribu T
+                    $tribuTService->updateMember($request->query->get("tribu"), $this->getUser()->getId(), 1);
 
-                $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
+                    $tribuTService->updateInvitationStory($table . "_invitation", 1, $email);
+                }else{
+                    return $this->redirectToRoute('app_accpeted_invitations');
+                }
+                
             }
 
             return $this->redirectToRoute('app_my_tribu_t');
@@ -2705,5 +2834,24 @@ class TributTController extends AbstractController
 
             return $this->redirectToRoute('app_login');
         }
+    }
+    #[Route("/validate/join/tribuT", name:"app_accpeted_invitations")]
+    public function joinTribu(){
+
+        return $this->render("tribu_t/invitation_accepted.html.twig");
+    }
+    #[Route('/user/get/reaction/pub', name: "user_get_reactions_pubss", methods: ["GET"])]
+    public function getReactionPubTribuT(Request $request, Tribu_T_Service $serv, SerializerInterface $serializer)
+    {
+
+        $datas = $request->query->all();
+
+        $tabl_react_tribu_t = $datas["tbl_tribu_t_reaction"];
+        $user_id = $datas["user_id"];
+        $idPub = $datas["pub_id"];
+        $response = $serv->findAllReactions($tabl_react_tribu_t,intval($idPub));// getCommentPubTribuT($tabl_cmnt_tribu_t, $idPub, $idMin, $limits);
+        $json = $serializer->serialize($response, 'json');
+
+        return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 }

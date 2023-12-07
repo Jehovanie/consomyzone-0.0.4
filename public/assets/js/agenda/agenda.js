@@ -416,9 +416,9 @@ function setAndShowModal(agenda) {
 
     }
 
-    nomEtab.querySelector("input").value = agenda.name
+    nomEtab.querySelector("input").value = agenda.name !="\"\"" ? agenda.name : "texte"
 
-    adresseContainer.querySelector("input").value = agenda.adresse
+    adresseContainer.querySelector("input").value = agenda.adresse !="\"\"" ? agenda.adresse : "texte"
 
     document.querySelector("#nbrParticipant").value = agenda.max_participant
 
@@ -1276,8 +1276,8 @@ function generateTableForEtab(index, etab, isValid = true) {
 
             nomTribu = etab.tribu.replace(/tribu_t_[0-9]+_/, "").replaceAll("_", " ")
             nomTribu = nomTribu.charAt(0).toUpperCase() + nomTribu.slice(1)
-            // logoTribu = etab.logoTribu ? "/public/" + etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
-            logoTribu = etab.logoTribu ? etab.logoTribu : "/uploads/tribu_t/photo/avatar_tribu.jpg";
+            logoTribu = etab.logoTribu ? "/public/" + etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
+            //logoTribu = etab.logoTribu ? etab.logoTribu : "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
 
             forTribuT = `<td><img src="${logoTribu}" alt="" style="max-height: 30px; max-width: 30px;"></td><td>${nomTribu}</td>`;
 
@@ -1537,49 +1537,142 @@ function getObjectForNewAgenda(e) {
         directoryroot = img.getAttribute("directoryroot")
     }
 
-    const agenda = {
-        "title": document.querySelector("#eventTitle").value,
-        "type": document.querySelector("#typeEvent").value,
-        "isEtabCMZ": isEtabCMZ,
-        "isGolfCMZ": isGolfCMZ,
-        "isRestoCMZ": isRestoCMZ,
-        "isVisioCMZ": isVisioCMZ,
-        "name": document.querySelector("#nomEtabEvent").value,
-        "adresse": document.querySelector("#lieuEvent").value,
-        "description": document.querySelector("#eventDesc").value,
-        "participant": document.querySelector("#nbrParticipant").value,
-        "place_libre": document.querySelector("#nbrParticipant").value,
-        "dateStart": document.querySelector("#eventStart").value,
-        "dateEnd": document.querySelector("#eventEnd").value,
-        "timeStart": document.querySelector("#timeStart").value,
-        "timeEnd": document.querySelector("#timeEnd").value,
-        "fileType": fileType,
-        "base64": base64,
-        "directoryroot": directoryroot,
-        "fileName": fileName,
-    }
-
-    console.log(agenda);
-
-    const agenda_keys = Object.keys(agenda);
-    agenda_keys.forEach(key => {
-        if (agenda[key] === '') {
-            state = false;
+    //check if all requiored are filled
+    var containerMessageRequiredAgd = null
+    let agenda={};
+    try{
+        checkRequiredInput(document.querySelector("#eventTitle"),"veuillez renseigner le titre de votre événement",containerMessageRequiredAgd)
+        checkRequiredInput(document.querySelector("#typeEvent"),"veuillez renseigner le type de votre événement",containerMessageRequiredAgd)
+        checkRequiredInput(document.querySelector("#eventDesc"),"veuillez renseigner la description de votre événement",containerMessageRequiredAgd)
+        checkRequiredInput(document.querySelector("#nbrParticipant"),"veuillez renseigner le nombre de participant de votre événement",containerMessageRequiredAgd)
+        checkRequiredInput(document.querySelector("#eventStart"),"veuillez renseigner la date de début de votre événement",containerMessageRequiredAgd)
+        checkRequiredInput(document.querySelector("#eventEnd"),"veuillez renseigner la date de fin de votre événement",containerMessageRequiredAgd)
+        checkRequiredInput(document.querySelector("#timeStart"),"veuillez renseigner l'heure de début de votre événement",containerMessageRequiredAgd)
+        checkRequiredInput(document.querySelector("#timeEnd"),"veuillez renseigner l'heure de fin de votre événement",containerMessageRequiredAgd)
+        agenda = {
+            "title": document.querySelector("#eventTitle").value,
+            "type": document.querySelector("#typeEvent").value,
+            "isEtabCMZ": isEtabCMZ,
+            "isGolfCMZ": isGolfCMZ,
+            "isRestoCMZ": isRestoCMZ,
+            "isVisioCMZ": isVisioCMZ,
+            "name": document.querySelector("#nomEtabEvent").value,
+            "adresse": document.querySelector("#lieuEvent").value,
+            "description": document.querySelector("#eventDesc").value,
+            "participant": document.querySelector("#nbrParticipant").value,
+            "place_libre": document.querySelector("#nbrParticipant").value,
+            "dateStart": document.querySelector("#eventStart").value,
+            "dateEnd": document.querySelector("#eventEnd").value,
+            "timeStart": document.querySelector("#timeStart").value,
+            "timeEnd": document.querySelector("#timeEnd").value,
+            "fileType": fileType,
+            "base64": base64,
+            "directoryroot": directoryroot,
+            "fileName": fileName,
         }
-    })
-
-    if (!state) {
-        e.preventDefault()
-        console.log(agenda)
-        document.querySelector(".invalid_agenda_jheo_js").click();
-
-        setTimeout(() => {
-            document.querySelector(".close_modal_invalid_agenda_jheo_js").click();
-        }, 1500);
-    } else {
         saveNewAgenda(agenda)
+        // const agenda_keys = Object.keys(agenda);
+        // agenda_keys.forEach(key => {
+        //     if (agenda[key] === '') {
+        //         state = false;
+        //     }
+        // })
+
+        // if (!state) {
+        //     e.preventDefault()
+        //     console.log(agenda)
+        //     document.querySelector(".invalid_agenda_jheo_js").click();
+
+        //     setTimeout(() => {
+        //         document.querySelector(".close_modal_invalid_agenda_jheo_js").click();
+        //     }, 1500);
+        // } else {
+        //     saveNewAgenda(agenda)
+        // }
+    }catch(error){
+           console.log(error.message) 
+        let element=null;
+        switch(error.message){
+            case "veuillez renseigner le titre de votre événement":{
+
+                element=document.querySelector("#eventTitle")
+                showMessage(element,error.message)
+                break;
+            }
+            case "veuillez renseigner le type de votre événement":{
+
+                element=document.querySelector("#typeEvent")
+                showMessage(element,error.message)
+                break;
+            }
+            case "veuillez renseigner la description de votre événement":{
+                element=document.querySelector("#eventDesc")
+                showMessage(element,error.message)
+                break;
+            }
+            case "veuillez renseigner le nombre de participant de votre événement":{
+                element=document.querySelector("#nbrParticipant")
+                showMessage(element,error.message)
+                break;
+            }
+            case "veuillez renseigner la date de début de votre événement":{
+                element=document.querySelector("#eventStart")
+                showMessage(element,error.message)
+                break;
+            }
+            case "veuillez renseigner la date de fin de votre événement":{
+                element=document.querySelector("#eventEnd")
+                showMessage(element,error.message)
+                break;
+            }
+            case "veuillez renseigner l'heure de début de votre événement":{
+                element=document.querySelector("#timeStart")
+                showMessage(element,error.message)
+                break;
+            }
+            case "veuillez renseigner l'heure de fin de votre événement":{
+                element=document.querySelector("#timeEnd")
+                showMessage(element,error.message)
+                break;
+            }
+        }
+        
+    }
+    
+
+    // console.log(agenda);
+
+    
+}
+
+/**
+ * @author faniry x Nantenaina
+ * verifie quel champ doit être encoire rempli
+ */
+function checkRequiredInput(element,message,containerMessageRequiredAgd){
+    //containerMessageRequiredAgd=element.parentElement
+    //console.log(containerMessageRequiredAgd)
+    if(element.value.trim() === ""){
+        throw new Error(message);
+       
     }
 }
+function showMessage(containerMessageRequiredAgd,message){
+    const parent=containerMessageRequiredAgd.parentElement
+    const span=document.createElement("span");
+    span.setAttribute("class", "msg_agenda_required_fa_Na_js text-danger");
+    span.innerText=message;
+    
+    parent.appendChild(span);
+
+    setTimeout(()=>{
+        span.remove()
+
+    },5000)
+
+    
+}
+
 
 /**
  * got and show list of departement
@@ -1899,11 +1992,11 @@ function showPartisanAgenda(tribu_t_name) {
                     if(jsons["curent_user"] != json.id){
                         
                         profilInfo = JSON.parse(json.infos_profil)
-                        let profil = profilInfo.photo_profil != null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png"
+                        let profil = profilInfo.photo_profil != null ? "/public"+profilInfo.photo_profil : "/public/assets/image/img_avatar3.png"
                         let lastName = profilInfo.lastName
                         let firstName = profilInfo.firstName
                         let tribuG = profilInfo.tribuG.replace("tribug_01_", "")
-    
+                      
                         document.querySelector('#list-partisans-tribu-t-agenda').innerHTML += `
                             <tr class="table-partisans-${tribu_t_name}-${lastName}">
                                 <td><img class="pdp-agenda-tribu-t" src="${profil}" alt=""></td>

@@ -1413,6 +1413,10 @@ function readURL(input) {
             button: "OK",
           });
         } else {
+          if(document.querySelector("#updtMdlPub")){
+            console.log(e.target.result)
+            document.querySelector("#updtMdlPub").dataset.url = e.target.result
+          }
           $(".image-upload-wrap").hide();
           $(".image-upload-image").attr("src", e.target.result);
           $(".image_upload_image_jheo_js").show();
@@ -1451,6 +1455,9 @@ function readURL(input) {
  * @parm inputImage.html.twig
  */
 function removeUpload() {
+  if(document.querySelector("#updtMdlPub"))
+      document.querySelector("#updtMdlPub").dataset.url = ""
+
   document.querySelector("#image-publication-tribu-t")
     ? (document.querySelector("#image-publication-tribu-t").src = "")
     : "";
@@ -5329,7 +5336,7 @@ function saveInvitationStory(table_trib, email) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      email: email,
+      emails: email,
     }),
   })
     .then((r) => r.json())
@@ -7100,14 +7107,30 @@ function insertPhotoRubrique(rubrique, id_rubrique) {
  * @param {*} elem
  */
 function openGalleriesPhoto(elem) {
+
+  if (document.querySelector("#footerGalleryPhoto").childNodes.length > 0) {
+    const box = document.getElementById("footerGalleryPhoto");
+    while (box.firstChild) {
+      // The list is LIVE so it will re-index each call
+      box.removeChild(box.firstChild);
+    }
+  }
+  if (document.querySelector("#bodyGalleryPhoto").childNodes.length > 0) {
+    const box = document.getElementById("bodyGalleryPhoto");
+
+    while (box.firstChild) {
+      // The list is LIVE so it will re-index each call
+      box.removeChild(box.firstChild);
+    }
+  }
   $("#modalGalleryPhoto").modal("show");
 
-  let imgs = elem.querySelectorAll("img");
+  let imgs = elem.querySelectorAll("img")
 
   // console.log(imgs);
 
   const nb_images = imgs.length;
-  const last_image = imgs[nb_images - 1];
+  const last_image = imgs[nb_images - 1].cloneNode(true);
   last_image.setAttribute("data-length", nb_images - 1);
 
   const previous = document.createElement("button");
@@ -7127,7 +7150,7 @@ function openGalleriesPhoto(elem) {
   document.querySelector("#bodyGalleryPhoto").appendChild(next);
 
   for (let i = 0; i < nb_images - 1; i++) {
-    let img = imgs[i];
+    let img = imgs[i].cloneNode(true); 
     img.setAttribute("class", "image-miniature miniature-" + i);
     img.setAttribute("data-length", i);
     img.setAttribute("onclick", "setUp(this)");
@@ -7450,6 +7473,7 @@ function galleryAll() {
           title = "";
           for (let photo of photos) {
             let img_src = photo.photo; //replaceAll("/public","");
+            let id= photo.id;
             let cheminFichier = img_src;
             let date = photo.createdAt.split(" ");
             let dateFusion = date[0]; //new date fusison
@@ -7457,64 +7481,68 @@ function galleryAll() {
             if (cheminFichier == null) {
               isPhotoSplit = "";
             } else {
-              if (cheminFichier.indexOf("/photo/") > -1) {
+              if (cheminFichier.indexOf("/photo/") > -1 && count == 0) {
+                console.log("publication " + cheminFichier);
                 //TODO date for key and path array as value
 
                 if (globalPhoto.length < 0) {
-                  map1.set(dateFusion, [img_src]);
+                  map1.set(dateFusion, [img_src+"\tfloor="+id]);
                 } else {
                   if (dateFusion == lastDateFussion) {
                     //todo update object
 
                     let value = map1.get(dateFusion);
-                    value.push(img_src);
+                    value.push(img_src+"\tfloor="+id);
                     map1.set(dateFusion, value);
                     // globalPhoto.push(object)
                   } else {
                     //todo add
-                    map1.set(dateFusion, [img_src]);
+                    map1.set(dateFusion, [img_src+"\tfloor="+id]);
                   }
                 }
 
                 lastDateFussion = dateFusion;
-              } else if (cheminFichier.indexOf("/photos/") > -1) {
+              } else if (cheminFichier.indexOf("/photos/") > -1 && count == 1) {
                 if (cheminFichier.indexOf("/tribu_t/") > -1) {
                   //TODO date for key and path array as value
 
                   if (globalPhoto.length < 0) {
-                    map1.set(dateFusion, [img_src]);
+                    map1.set(dateFusion, [img_src+"\tfloor="+id]);
                   } else {
                     if (dateFusion == lastDateFussion) {
                       //todo update object
 
                       let value = map1.get(dateFusion);
-                      value.push(img_src);
+                      value.push(img_src+"\tfloor="+id);
                       map1.set(dateFusion, value);
                       // globalPhoto.push(object)
                     } else {
                       //todo add
-                      map1.set(dateFusion, [img_src]);
+                      map1.set(dateFusion, [img_src+"\tfloor="+id]);
                     }
                   }
 
                   lastDateFussion = dateFusion;
                 }
-              } else if (cheminFichier.indexOf("/photo_imp/") > -1) {
+              } else if (
+                cheminFichier.indexOf("/photo_imp/") > -1 &&
+                count == 2
+              ) {
                 //TODO date for key and path array as value
 
                 if (globalPhoto.length < 0) {
-                  map1.set(dateFusion, [img_src]);
+                  map1.set(dateFusion, [img_src+"\tfloor="+id]);
                 } else {
                   if (dateFusion == lastDateFussion) {
                     //todo update object
 
                     let value = map1.get(dateFusion);
-                    value.push(img_src);
+                    value.push(img_src+"\tfloor="+id);
                     map1.set(dateFusion, value);
                     // globalPhoto.push(object)
                   } else {
                     //todo add
-                    map1.set(dateFusion, [img_src]);
+                    map1.set(dateFusion, [img_src+"\tfloor="+id]);
                   }
                 }
 
@@ -7530,14 +7558,19 @@ function galleryAll() {
               for (const item of iterator1) {
                 title = item[0];
                 const datas = item[1];
+                
                 li_img_pub += `<h6>${title}</h6>`;
                 for (let data of datas) {
+                  const tmp=data.split("\t")
+                  const image=tmp[0]
+                  const id=tmp[1].replace(/[^0-9]/g,"")
                   li_img_pub += `
-                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 pub"  onclick="openGalleriesPhotoTribuT(this)">
+                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 pub" data-floor=${id} onclick="openGalleriesPhotoTribuT(this)">
                         <img
-                        src="${data}"
+                        src="${image}"
                         class="w-100 shadow-1-strong mb-4 pub"
                         alt="Boat on Calm Water"
+                        data-floor=${id}
                         />
                     </div>
                     `;
@@ -7553,12 +7586,16 @@ function galleryAll() {
                 const datas = item[1];
                 li_img_agenda += `<h6>${title}</h6>`;
                 for (let data of datas) {
+                  const tmp=data.split("\t")
+                  const image=tmp[0]
+                  const id=tmp[1].replace(/[^0-9]/g,"")
                   li_img_agenda += `
-                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 galer" onclick="openGalleriesPhotoTribuT(this)">
+                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 galer" data-floor=${id} onclick="openGalleriesPhotoTribuT(this)">
                         <img
-                        src="${data}"
+                        src="${image}"
                         class="w-100 shadow-1-strong mb-4 galer"
                         alt="Boat on Calm Water"
+                        data-floor=${id}
                         />
                     </div>
                     `;
@@ -7574,12 +7611,16 @@ function galleryAll() {
                 const datas = item[1];
                 li_img_imp += `<h6>${title}</h6>`;
                 for (let data of datas) {
+                  const tmp=data.split("\t")
+                  const image=tmp[0]
+                  const id=tmp[1].replace(/[^0-9]/g,"")
                   li_img_imp += `
-                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 imp_img"  onclick="openGalleriesPhotoTribuT(this)">
+                    <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 imp_img" data-floor=${id} onclick="openGalleriesPhotoTribuT(this)">
                         <img
-                        src="${data}"
+                        src="${image}"
                         class="w-100 shadow-1-strong mb-4 imp_img"
                         alt="Boat on Calm Water"
+                        data-floor=${id}
                         />
                     </div>
                     `;
@@ -7742,7 +7783,31 @@ function galleryAll() {
  * @param {*} elem
  */
 function openGalleriesPhotoTribuT(elem) {
-  $("#modalGalleryPhoto").modal("show");
+
+ 
+ 
+  let firstSelected=elem.querySelector("img").cloneNode(true);
+  
+
+  if(document.querySelector("#footerGalleryPhoto").childNodes.length>0){
+    const box=document.getElementById("footerGalleryPhoto")
+    while (box.firstChild) {
+      // The list is LIVE so it will re-index each call
+      box.removeChild(box.firstChild);
+    }
+    
+  }
+  if (document.querySelector("#bodyGalleryPhoto").childNodes.length>0){
+        const box=document.getElementById("bodyGalleryPhoto")
+        
+        while (box.firstChild) {
+          // The list is LIVE so it will re-index each call
+          box.removeChild(box.firstChild);
+        }
+  }
+    
+$("#modalGalleryPhoto").modal("show");
+
   let container = null;
   if (elem.classList.contains("pub")) {
     container = document.querySelector(".photo-pud-t-tomm-js");
@@ -7755,10 +7820,21 @@ function openGalleriesPhotoTribuT(elem) {
   if (elem.classList.contains("imp_img")) {
     container = document.querySelector(".photo-imp-t-tomm-js");
   }
+
+  
   let imgs = [];
-  Array.from(container.querySelectorAll("img")).forEach((img) => {
-    imgs.push(img.cloneNode(true));
-  });
+  let arrayTmp= Array.from(container.querySelectorAll("img"))
+  let l=arrayTmp.length
+  for(let i=0; i<l; i++){
+    let cloneNode=arrayTmp[i].cloneNode(true);
+    cloneNode.style="";
+    if(cloneNode.dataset.floor === firstSelected.dataset.floor){
+        firstSelected.dataset.length=i
+    }
+    imgs[i]=cloneNode;
+  }
+ 
+  //console.log(imgs)
   // console.log(imgs);
 
   const nb_images = imgs.length;
@@ -7766,6 +7842,7 @@ function openGalleriesPhotoTribuT(elem) {
   last_image.setAttribute("data-length", nb_images - 1);
 
   const previous = document.createElement("button");
+   document.querySelector("#bodyGalleryPhoto");
   previous.classList = "btn-previous-photo";
   previous.innerHTML = '<i class="fa-solid fa-angle-left"></i>';
   previous.setAttribute("onclick", "previousPhotoGallery(this)");
@@ -7777,29 +7854,112 @@ function openGalleriesPhotoTribuT(elem) {
 
   document.querySelector("#bodyGalleryPhoto").appendChild(previous);
 
-  document.querySelector("#bodyGalleryPhoto").appendChild(last_image);
+  document.querySelector("#bodyGalleryPhoto").appendChild(firstSelected);
 
   document.querySelector("#bodyGalleryPhoto").appendChild(next);
 
-  for (let i = 0; i < nb_images - 1; i++) {
+  for (let i = 0; i < nb_images; i++) {
     let img = imgs[i];
-    img.setAttribute("class", "image-miniature miniature-" + i);
+
+    if(img.dataset.floor === firstSelected.dataset.floor){
+      img.setAttribute("class", "image-miniature current-gallery-photo miniature-" + i);
+    }else{
+      img.setAttribute("class", "image-miniature miniature-" + i);
+    }
+   
     img.setAttribute("data-length", i);
+    
     img.setAttribute("onclick", "setUp(this)");
     document.querySelector("#footerGalleryPhoto").appendChild(img);
-  }
+  } 
 
-  let instance = document.createElement("img");
-  instance.setAttribute(
-    "class",
-    "image-miniature current-gallery-photo miniature-" +
-      last_image.dataset.length
-  );
-  instance.setAttribute("data-length", last_image.dataset.length);
-  instance.src = last_image.src;
-  instance.setAttribute("onclick", "setUp(this)");
+  // let instance = document.createElement("img");
+  // instance.setAttribute(
+  //   "class",
+  //   "image-miniature current-gallery-photo miniature-" +
+  //   firstSelected.dataset.length
+  // );
+  // instance.setAttribute("data-length", firstSelected.dataset.length);
+  // instance.src = firstSelected.src;
+  // instance.setAttribute("onclick", "setUp(this)");
 
-  document.querySelector("#footerGalleryPhoto").appendChild(instance);
+  // document.querySelector("#footerGalleryPhoto").appendChild(instance);
 
   // console.log(imgs);
+}
+
+/**
+* @author tommy
+* @object affiche les images dans les messages lorsqu'on click dessus
+* @utils dans un click de l'amis.html.twig
+*/
+function setPhotoMessage(btn_photo) {
+  if (btn_photo.tagName != "IMG") {
+    if (document.querySelector("#img_modal_mess_photo")) {
+      document.querySelector("#img_modal_mess_photo").src =
+        btn_photo.querySelector("img").src;
+    } else {
+      document.querySelector("#img_modal_mess_grp_photo").src =
+        btn_photo.querySelector("img").src;
+    }
+  } else {
+    if (document.querySelector("#img_modal_mess_photo")) {
+      document.querySelector("#img_modal_mess_photo").src = btn_photo.src;
+    } else {
+      document.querySelector("#img_modal_mess_grp_photo").src = btn_photo.src;
+    }
+  }
+}
+
+/**
+ * @author Elie
+ * @constructor function fetch reacteur publication
+ * @param {*} pubId 
+ * @param {*} tablePub 
+ * @param {*} userOwnID 
+ */
+function getAllReaction(pubId, tablePub, userOwnID) {
+  const content_comments = document.querySelector(".content_reaction_elie_js");
+
+  content_comments.innerHTML = createMiniCMZloading();
+
+  //// initialize all event for new comment
+
+  let tbl_tribu_t_reaction = tablePub + "_reaction";
+
+  const request = new Request(
+    "/user/get/reaction/pub?tbl_tribu_t_reaction=" +
+      tbl_tribu_t_reaction +
+      "&pub_id=" +
+      pubId +
+      "&user_id=" +
+      userOwnID
+  );
+
+  fetch(request)
+    .then((response) => response.json())
+    .then((response) => {
+      console.log(response);
+
+      if (response.length > 0) {
+        let listLIcomment = '<ul class="list-group">';
+
+        for (let reaction of response) {
+          listLIcomment += `<li class="list-group-item d-flex align-items-center"> <img class="user-pdp-reaction me-2" src="${
+            reaction.photo_profil
+              ? "/public"+reaction.photo_profil
+              : "/public/uploads/users/photos/default_pdp.png"
+          }" all="..."/><a href="/user/profil/${reaction.user_id}">${reaction.userfullname}</a> </li>`;
+        }
+        listLIcomment += "</ul>";
+
+        content_comments.innerHTML = listLIcomment;
+      } else {
+        content_comments.innerHTML = `
+                <li id='45' class="nr h lc rg mg qh sq js yk bg-light text-danger alert_comment_not_exist_jheo_js" data-toggle-other-id='10000'>
+                    <p>Il n'y pas encore de réactions sur cette publication.</p
+                </li>
+            `;
+      }
+    });
 }

@@ -109,16 +109,19 @@ class AgendaController extends AbstractController
 
         $place_libre=$this->agendaService->checkFreePlace(intval($fromId), intval($toId),intval($agendaId));
 
+        
         if( $place_libre["place_libre"]=== 0){
             return $this->render("agenda/partage/agenda_full_place.html.twig",[
                 "profil" => "",
             ]);
         }elseif( $place_libre["place_libre"]>0){
-           
+            
             return $this->render("agenda/partage/agenda_free_place.html.twig",[
                 "profil" => "",
             ]);
         }
+        
+        
 
         return $this->render("agenda/partage/agenda_full_place.html.twig",[
             "profil" => "",
@@ -733,7 +736,12 @@ class AgendaController extends AbstractController
 
         $imgURL = null;
 
+        
         if( $fileName && $fileType ){
+            $extension = explode("/", $fileType)[1];
+
+            $newFileName=time()."_agd_". uniqid() . "." . $extension;
+
             $pathDir = "";
             if($directoryroot){
                 $nameRoot = explode("_",$directoryroot)[0];
@@ -758,21 +766,21 @@ class AgendaController extends AbstractController
             }
 
             $fileUtils = new FilesUtils();
-            $fileUtils->uploadImageAjax($path, $base64, $fileName);
-            $imgURL = $pathDir.$fileName;
+            $fileUtils->uploadImageAjax($path, $base64, $newFileName);
+            $imgURL = json_encode($pathDir.$newFileName);
 
         }
 
         $newAgenda= [
-            "title" => $title,
-            "type" => $type,
+            "title" => json_encode($title),
+            "type" =>json_encode($type),
             "isEtabCMZ" => $isEtabCMZ ? 1 : 0 ,
             "isGolfCMZ" => $isGolfCMZ ? 1 : 0 ,
             "isRestoCMZ" => $isRestoCMZ ? 1 : 0,
             "isVisioCMZ" => $isVisioCMZ ? 1 : 0,
-            "name" => $name,
-            "adresse" => $adresse,
-            "description" => $description,
+            "name" => json_encode($name),
+            "adresse" => json_encode($adresse),
+            "description" => json_encode($description),
             "participant" => $participant,
             "place_libre"=>$place_libre,
             "dateStart" => $dateStart,
@@ -814,6 +822,10 @@ class AgendaController extends AbstractController
 
         if( $fileName && $fileType ){
             $pathDir = "";
+            $extension = explode("/", $fileType)[1];
+
+            $newFileName=time()."_agd_". uniqid() . "." . $extension;
+
             if($directoryroot){
                 $nameRoot = explode("_",$directoryroot)[0];
                 if($nameRoot =="tribug"){
@@ -838,8 +850,8 @@ class AgendaController extends AbstractController
             }
 
             $fileUtils = new FilesUtils();
-            $fileUtils->uploadImageAjax($path, $base64, $fileName);
-            $imgURL = $pathDir.$fileName;
+            $fileUtils->uploadImageAjax($path, $base64, $newFileName);
+            $imgURL = json_encode($pathDir.$newFileName);
 
         }
 
@@ -848,14 +860,14 @@ class AgendaController extends AbstractController
         $agenda= $agendaService->getOneAgenda($agendaTableName, $agendaId);
 
         $newAgenda= [
-            "title" => $title,
-            "type" => $type,
+            "title" => json_encode($title),
+            "type" => json_encode($type),
             "isEtabCMZ" => $isEtabCMZ,
             "isGolfCMZ" => $isGolfCMZ,
             "isRestoCMZ" => $isRestoCMZ,
-            "name" => $name,
-            "adresse" => $adresse,
-            "description" => $description,
+            "name" => json_encode($name),
+            "adresse" => json_encode($adresse),
+            "description" => json_encode($description),
             "participant" => $participant,
             "dateStart" => $dateStart,
             "dateEnd" => $dateEnd,
@@ -1937,7 +1949,7 @@ class AgendaController extends AbstractController
     
                 $context["piece_joint"] = $piece_with_path;
                 // $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
-                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context, $fullNameSender, $cc, $cci);
+                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context, $fullNameSender);
     
                 $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                 $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status,$agendaID);
@@ -1958,7 +1970,7 @@ class AgendaController extends AbstractController
     
                 // $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
     
-                $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context, $fullNameSender, $cc, $cci);
+                $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context, $fullNameSender);
                 
                 $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                 $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);

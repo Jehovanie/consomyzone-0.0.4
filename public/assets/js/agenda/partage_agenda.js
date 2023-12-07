@@ -165,6 +165,8 @@ function fromBinary(encoded) {
 
 function sendInvitation(event){
 
+    //SHOW INVITIATION
+    event.target.innerText="En cours d'envoie ..."
     let data=editor.getData()
     
     let agenda = JSON.parse(sessionStorage.getItem("agenda"))
@@ -221,12 +223,13 @@ function sendInvitation(event){
     })
 
     if(isValidateEmail){
-        makeLoadingEmail()
+        //makeLoadingEmail()
     
         fetch(request).then(r=>{
-        
+            
             if(r.status===200 && r.ok){
-                deleteChargement("chargement_content");
+                //deleteChargement("chargement_content");
+                event.target.innerText="Valider et partager par email"
                 swal("Bravo !","Invitation bien envoyée", "success")
                         .then((value) => {
                             if(isG){
@@ -288,8 +291,9 @@ function sendEventByMessage(e){
 
     e.preventDefault()
 
-    makeLoadingEmail()
+    //makeLoadingEmail()
 
+    e.target.innerText="En cours d'envoie ..."
     let data = editor.getData();
 
     let isG = e.target.dataset.g
@@ -315,7 +319,8 @@ function sendEventByMessage(e){
     }).then(response => {
 
         if (response.status == 200) {
-            deleteChargement("chargement_content");
+            //deleteChargement("chargement_content");
+            e.target.innerText="Valider et partager par message"
             swal("Bravo !","Invitation bien envoyée", "success")
                     .then((value) => {
                         $("#emailTemplateModal").modal("hide")
@@ -502,7 +507,7 @@ function invitationStoryAgenda(){
                     <thead>
                         <tr>
                             <th scope="col">Email</th>
-                            <th scope="col">Statut du Partisan</th>
+                            <th scope="col">Statut du Fan</th>
                             <th scope="col">Statut de l'invitation</th>
                             <th scope="col">Date d'invitation.</th>
                         </tr>

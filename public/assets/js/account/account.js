@@ -68,7 +68,7 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
       //get cookie
       
       if (Cookies2.get("_egemonie_n_" + currentUser) != undefined) {
-            console.log("ato express")
+            //console.log("ato express")
             let tmp = Cookies2.get("_egemonie_n_" + currentUser);
 
             Cookies2.set("_egemonie_0_" + currentUser, tmp, {
@@ -627,7 +627,7 @@ function showToastMessage(
   const currentUser = document.querySelector(".ref_tom_js").dataset.roof;
   const oldMessagesStr = Cookies2.get("_egemonie_0_" + currentUser);
   const oldMessages=JSON.parse(oldMessagesStr);
-  console.log(oldMessages);
+  //console.log(oldMessages);
   if (oldMessages.length > 0 && allUserAlreadyInNotifications.length > 0) {
     for (const message of allMessageNotifications) {
       const userLastName = message.lastname;

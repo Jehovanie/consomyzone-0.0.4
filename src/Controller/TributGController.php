@@ -18,6 +18,10 @@ use App\Repository\UserRepository;
 
 use App\Service\NotificationService;
 
+use App\Service\FilesUtils;
+
+use App\Service\AgendaService;
+
 use Doctrine\ORM\EntityManagerInterface;
 
 use Symfony\Component\Filesystem\Filesystem;
@@ -356,31 +360,63 @@ class TributGController extends AbstractController
         ]);
     }
 
+    /**
+     * @author Jehobanie x modified by Tommy
+     * cette route a pour but de charger les photos de la tribu-G
+     */
     #[Route("/tributG/photos", name: "app_photos_tributG")]
 
     public function fetchAllPhotosTributG(
         TributGService $tributGService,
+        AgendaService $agendaService,
+        UserRepository $userRepository,
+        UserService $userService
     ){
         // $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
         $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
 
         // dd($tributGService->getAllPhotos($table_tributG_name));
 
-        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_g/photos/".$table_tributG_name."/";
-        $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
-        $tabPhoto = [];
-        foreach ($images as $image) {
-            $photo = explode("uploads/tribu_g",$image)[1];
-            $photo = "/public/uploads/tribu_g".$photo;
-            array_push($tabPhoto, ["photo"=>$photo]);
+        // $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/tribu_g/photos/".$table_tributG_name."/";
+        // $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF}', GLOB_BRACE);
+        // $tabPhoto = [];
+        // foreach ($images as $image) {
+        //     $photo = explode("uploads/tribu_g",$image)[1];
+        //     $photo = "/public/uploads/tribu_g".$photo;
+        //     array_push($tabPhoto, ["photo"=>$photo]);
+        // }
+        $galeryPhotosPub = $tributGService->getAllPublicationBrutes($table_tributG_name);
+        $photoDatePub = [];
+        for ($i = 0; $i < count($galeryPhotosPub); $i++) {
+            array_push($photoDatePub, [
+                "photo" => $galeryPhotosPub[$i]["photo"],
+                "createdAt" => explode(' ', $galeryPhotosPub[$i]["datetime"])[0]
+            ]);
         }
-
-        // dd($tabPhoto);
-        // return $this->json($tabPhoto);
-
+        //get id -> get repo-> get nom table -> get photo 
+        $user_connected = $this->getUser();
+        $tributG_name = $tributGService->getTribuGtableForNotif($user_connected->getId());
+		$photoAgenda = [];
+        $all_user_id_tribug = $tributGService->getAllTributG($tributG_name);
+		foreach ($all_user_id_tribug as $user_id) {
+			$user = $userRepository->find(intval($user_id["user_id"]));
+			$table_agenda = $user->getNomTableAgenda();
+			$agendas = $agendaService->getOneAgendaPhoto($table_agenda);
+			
+			for ($a = 0; $a < count($agendas); $a++) {
+				array_push($photoAgenda, [
+					"photo" => $agendas[$a]["file_path"],
+					"photoSplit" =>  explode('/', $agendas[$a]["file_path"]),
+					"createdAt" =>  explode(' ', $agendas[$a]["datetime"])[0]
+				]);
+			}
+		}
+       
         return $this->render("tribu_g/photos.html.twig", [
-            "photos" => $tabPhoto
+            "photosPub" => $photoDatePub,
+            "photosAgenda" => $photoAgenda
         ]);
+        
         // return $this->render("tribu_g/photos.html.twig", [
         //     "photos" => $tributGService->getAllPhotos($table_tributG_name),
         // ]);
@@ -505,6 +541,65 @@ class TributGController extends AbstractController
     #[Route("/user/acount/tributG/publication/update", name: "app_update_pub_tributG", methods: "PUT")]
     public function updatePublicationAction(
         Request $request,
+        TributGService $tributGService,
+        Filesystem $filesyst
+    ) {
+        if (!$this->getUser()) {
+            return $this->json(["result" => "unauthorized"], 401);
+        }
+
+        $userId = $this->getUser()->getId();
+        $data = json_decode($request->getContent(), true);
+        extract($data); /// $pub_id, $confidentiality, $message
+
+        $isTribuT = explode("_", $table)[0] === "tribu";
+
+        $path = "";
+        $imageName = "";
+        if(isset($img_data))
+            if($img_data != ""){
+                $image = $img_data;
+                $extension = explode(";", $image)[0];
+                $extension = explode("/", $extension)[1];
+                $imageName = time() . "_" . $userId . ".". $extension;
+
+                if ($isTribuT) {
+                    $path = '/public/uploads/tribu_t/photo/' .  $table . "/";
+                } else {
+                    $path = '/public/uploads/tribu_g/photo/' .  $table . "/";
+                }
+
+                if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+                    $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+    
+                $fileUtils = new FilesUtils();
+                
+                $fileUtils->uploadImageAjax($this->getParameter('kernel.project_dir') . $path, $image, $imageName);
+
+            }
+
+        $photo = $imageName != "" ? $path.$imageName : null;
+        if ($isTribuT) {
+            $result = $tributGService->updatePublication($userId, $pub_id, json_encode($message), $confidentiality, $table . "_publication", $photo);
+        } else {
+            $result = $tributGService->updatePublication($userId, $pub_id, json_encode($message), $confidentiality, null, $photo);
+        }
+        
+        if($photo != null)
+            if ($result != "" || $result != null) {
+                if (str_contains($result, "/public/")) {
+                    $filesyst->remove($this->getParameter('kernel.project_dir') . $result);
+                } else {
+                    $filesyst->remove($this->getParameter('kernel.project_dir') . '/public' . $result);
+                }
+            }
+
+        return $this->json([
+            "result" => $result,
+        ], 204);
+    }
+    /*public function updatePublicationAction(
+        Request $request,
         TributGService $tributGService
 
     ) {
@@ -525,7 +620,7 @@ class TributGController extends AbstractController
         return $this->json([
             "result" => $result,
         ], 204);
-    }
+    }*/
 
 
     #[Route('/tribu_g/add_photo', name: 'add_photo_tribu_g')]

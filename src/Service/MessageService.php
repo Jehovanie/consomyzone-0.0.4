@@ -29,6 +29,7 @@ class MessageService extends PDOConnexionService{
                 isForMe tinyint(1) NOT NULL  DEFAULT '0',
                 isShow tinyint(1) NOT NULL  DEFAULT '0',
                 isRead tinyint(1) NOT NULL  DEFAULT '0',
+                user_receiver int DEFAULT NULL,
                 datetime timestamp NOT NULL DEFAULT current_timestamp(),
                 INDEX user_id_index (user_id),
                 INDEX user_post_index (user_post)
@@ -71,9 +72,9 @@ class MessageService extends PDOConnexionService{
         $result_sender = $statement_sender->fetchAll(PDO::FETCH_ASSOC);
  
         ///insert notification
-        $sql_sender = "INSERT INTO " . $result_sender[0]["tablemessage"] . " (user_id,user_post,content,message_type, isForMe, isShow,isRead) VALUES (?,?,?,?,?,?,?)";
+        $sql_sender = "INSERT INTO " . $result_sender[0]["tablemessage"] . " (user_id,user_post,content,message_type, isForMe, isShow,isRead,user_receiver) VALUES (?,?,?,?,?,?,?,?)";
              
-        $this->getPDO()->prepare($sql_sender)->execute([$user_id, $user_id, $content, $message_type, 0, 1, 1]);
+        $this->getPDO()->prepare($sql_sender)->execute([$user_id, $user_id, $content, $message_type, 0, 1, 1,$user_id_post]);
         //---------------------- FINISH HERE --------------------
 
         $max_id = $this->getPDO()->prepare("SELECT max(id) as last_id_message FROM  ". $result_sender[0]["tablemessage"]);
@@ -140,7 +141,7 @@ class MessageService extends PDOConnexionService{
      */
     public function getAllOldMessage(int $user_other, string $table ){
 
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table  WHERE user_post = $user_other");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table  WHERE user_post = $user_other or (user_id= user_post and user_receiver=$user_other )");
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -172,18 +173,25 @@ class MessageService extends PDOConnexionService{
         return $statement->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    /**
+     * other id is Id of the user who rerceived message
+     */
 
     public function getLastMessage($myTableMessage,$otherID){
 
-        $sql = "SELECT id,user_id,user_post,content, message_type, isForMe, isRead , datetime FROM ".$myTableMessage." WHERE user_post = " . $otherID . " ORDER BY id DESC LIMIT 1";
+        $sql = "SELECT id,user_id,user_post,content, message_type, isForMe, isRead , datetime FROM "
+        .$myTableMessage." WHERE user_post = " . $otherID . 
+        " OR (user_id = user_post and user_receiver=". $otherID .")".
+        " ORDER BY id DESC LIMIT 1";
         $result = $this->getPDO()->query($sql);
         $msg=  $result->fetch(PDO::FETCH_ASSOC);
 
-        // dd($msg);
+      
 
-        if(!!$msg === true){
+        if(!!$msg === true && json_decode($this->convertUnicodeToUtf8($msg["content"]), true)){
+
             $text = json_decode($this->convertUnicodeToUtf8($msg["content"]), true);
-          
+           //dd($text);
             $result = [
                 "id" => $msg["id"],
                 "user_id" => $msg["user_id"],

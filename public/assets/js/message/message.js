@@ -902,6 +902,7 @@ function fan(){
 
 if(location.href.includes("/user/all/message") ||location.href.includes("/user/message/perso")){
     const fanss=document.querySelectorAll(`.mpcm_faniry_js`)
+    console.log(fanss)
     let results =removeReplicatedFan(fanss)
     if(results.length >0 ){
         const fanOnlineContainer=document.querySelector("div.all_mpcmz_faniry_js ")

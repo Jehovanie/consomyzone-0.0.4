@@ -86,9 +86,18 @@
                                 <div class="row">
                                     <div class="col-lg-5 col-sm-10 mx-auto">
                                         <!-- Nom et prenom input -->
+                                       
                                         <div class="mb-4">
+                                            <div class="response-pseudo-js-tom" style="display: block; color: red;">
+									   		    <span id="pseudo-verif-response-js-tom"></span>
+										    </div>
                                             {{ form_label(form_inscription.pseudo , "Pseudo", {'label_attr': {'class': 'form_label fw-bolder'}}) }}
                                             {{ form_widget(form_inscription.pseudo, {'attr': {'class': 'form-control'}}) }}
+
+                                            <label for="pseudo" class="form_label fw-bolder text-white" id="pseudo_choise_label_js_tom" style="display: none;">Voici  un pseudo encore libre</label>
+                                            <select name="pseudo" id="pseudo_choise_js_tom" class="form-control w-50 ms-2" style="display: none;" onclick="setPseudo(event)">
+                                                <option value></option>
+                                            </select>
                                         </div>
 
                                         <!-- email input -->
