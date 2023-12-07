@@ -115,7 +115,7 @@ class MapModule {
 
 		/// i use this variable to calculate the distance between the two markers
 		this.epsilone = 1e-4;
-		this.ratio_float = 8;
+		this.ratio_float = 4;
 	}
 
 	initTales() {
@@ -2408,7 +2408,6 @@ class MapModule {
 	customSpiderfy(key_name_from_over_map) {
 		///to store all marker view in the map.
 		const closeToEachOther = [];
-
 		this.markers.eachLayer((marker) => {
 			const marker_lat = marker.getLatLng().lat;
 			const marker_lng = marker.getLatLng().lng;
@@ -2417,7 +2416,7 @@ class MapModule {
 			const key_name = this.formatKeyCle(marker_lat, marker_lng); /// lat( with ratio_length ) _ lng( with ratio_length )
 
 			/// check if there is an one, close to each other ( current position on mouse )
-			if (this.isEquivalentEpsilone(key_name_from_over_map, key_name)) {
+			if (this.isDistantEquivalentEpsilone(key_name_from_over_map, key_name)) {
 				/// recolte data.
 				closeToEachOther.push(marker);
 			}
@@ -2441,13 +2440,22 @@ class MapModule {
 	 * @returns [ lat , lng ]
 	 */
 	cirlce_trajet(lat, lng, offset) {
-		var radius = 0.00008;
-		var angle = 0 + offset;
+		const radius = 0.00005;
+		const angle = 0 + offset;
 
-		var lat = lat + radius * Math.sin(angle);
-		var lng = lng + radius * Math.cos(angle);
+		const lat_modified = lat + radius * Math.sin(angle);
+		const lng_modified = lng + radius * Math.cos(angle);
 
-		return [lat, lng];
+		return [lat_modified, lng_modified];
+	}
+
+	spyral_trajet(lat, lng, offset, radius) {
+		const angle = 0 + offset;
+
+		const lat_modified = lat + radius * Math.sin(angle);
+		const lng_modified = lng + radius * Math.cos(angle);
+
+		return [lat_modified, lng_modified];
 	}
 
 	/**
@@ -2467,7 +2475,7 @@ class MapModule {
 					const lat = e.latlng.lat;
 					const lng = e.latlng.lng;
 
-					/// generate the key used for custmoSpyderfy
+					// /// generate the key used for custmoSpyderfy
 					const key_name = this.formatKeyCle(lat, lng); /// lat( with ratio_length ) _ lng( with ratio_length )
 
 					///REMOVE THE POLYLINE
@@ -2491,7 +2499,7 @@ class MapModule {
 	 *
 	 * @returns boolean
 	 */
-	isEquivalentEpsilone(str_latlng_left, str_latlng_right) {
+	isDistantEquivalentEpsilone(str_latlng_left, str_latlng_right) {
 		const epsilone = this.epsilone;
 
 		const latlng_left = this.splitLatLong(str_latlng_left);
@@ -2518,18 +2526,28 @@ class MapModule {
 		const center_pos = single_one.getLatLng();
 
 		/// distance for each other when spyderfy.
-		let offset = parseFloat(Math.PI / tabDataToOpen.length);
+		let offset = parseFloat((2 * Math.PI) / tabDataToOpen.length);
+
+		let radius_spiral = 0.00008;
 
 		/// MOVE THE MARKER
 		for (let i = 0; i < tabDataToOpen.length; i++) {
 			const marker_to_move = tabDataToOpen[i];
 
-			/// get the new lag lng with offset.
+			/// get the new lag lng with offset on circle.
 			const [lat, lng] = this.cirlce_trajet(
 				marker_to_move.getLatLng().lat,
 				marker_to_move.getLatLng().lng,
 				offset
 			);
+
+			/// get the new lag lng with offset on spyral
+			// const [lat, lng] = this.spyral_trajet(
+			// 	marker_to_move.getLatLng().lat,
+			// 	marker_to_move.getLatLng().lng,
+			// 	offset,
+			// 	radius_spiral
+			// );
 
 			// Offset the position of the second marker
 			const newLatLng = L.latLng(lat, lng);
@@ -2538,7 +2556,10 @@ class MapModule {
 			marker_to_move.setLatLng(newLatLng);
 
 			///increase the offset
-			offset += 3.14 / tabDataToOpen.length;
+			offset += parseFloat((2 * Math.PI) / tabDataToOpen.length);
+
+			/// for the spiral direction
+			// radius_spiral += 0.00002;
 		}
 
 		/// GENERATE THE LINE FROM THE CENTER TO THE MARKER
