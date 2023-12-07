@@ -32,7 +32,6 @@ class MapModule {
 
 		/// object map
 		this.map = null;
-		this.polylines = [];
 
 		/// we use this for help in right section
 		this.isRightSideAlreadyOpen = false;
@@ -114,8 +113,13 @@ class MapModule {
 		];
 
 		/// i use this variable to calculate the distance between the two markers
-		this.epsilone = 1e-4;
-		this.ratio_float = 4;
+		this.epsilone = 1e-5;
+		this.ratio_float = 5;
+
+		this.polylines = [];
+		this.closeToEachOther = [];
+		this.tab_polylines = [];
+		this.tab_closeToEachOther = [];
 	}
 
 	initTales() {
@@ -335,6 +339,9 @@ class MapModule {
 				};
 				setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition));
 			}
+
+			/// check and add polylines s'il faut
+			this.customiSpyderfyWithoutMousePosition();
 		});
 
 		this.map.on("movestart", (e) => {
@@ -370,8 +377,6 @@ class MapModule {
 			if (!parentIconControlAfter.classList.contains("d-none")) {
 				parentIconControlAfter.classList.add("d-none");
 			}
-			// if( this.indexCurrentOnLisPositionBeforeAndAfter === this.listPositionBeforAndAfter.length - 1 ){
-			// }
 
 			if (this.listPositionBeforAndAfter.length > 1) {
 				const parentIconControl = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
@@ -380,8 +385,8 @@ class MapModule {
 				}
 			}
 
-			// console.log(this.listPositionBeforAndAfter)
-			// console.log(this.indexCurrentOnLisPositionBeforeAndAfter)
+			///remove polyline
+			this.removePolylineWithoutMousePosition();
 		});
 	}
 
@@ -1979,6 +1984,39 @@ class MapModule {
 		///reset marker spyderfy
 	}
 
+	removePolylineWithoutMousePosition() {
+		if (this.tab_polylines.length > 0) {
+			this.tab_polylines.forEach((polylines) => {
+				if (polylines.length > 0) {
+					this.closeToEachOther = [];
+
+					polylines.forEach((polyline) => {
+						const keyLeaflet = polyline.options.idLeaflet;
+
+						const latlngs = polyline.getLatLngs()[0];
+
+						if (this.markers.getLayer(keyLeaflet)) {
+							const layers = this.markers.getLayer(keyLeaflet);
+							layers.setLatLng(latlngs);
+						}
+
+						this.map.removeLayer(polyline);
+					});
+				}
+			});
+
+			this.tab_closeToEachOther = [];
+			this.closeToEachOther = [];
+			this.tab_polylines = [];
+			this.polylines = [];
+		}
+	}
+
+	removePolylineAndSpyderfyMarker() {
+		this.removePolylineWithoutMousePosition();
+		this.customiSpyderfyWithoutMousePosition();
+	}
+
 	/**
 	 * @author Jehovanie RAMANDRIJOEL
 	 * où: on Utilise cette fonction dans la rubrique resto,
@@ -2168,8 +2206,6 @@ class MapModule {
 		// const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
 		this.synchronizeAllIconSize();
 
-		// this.markers.refreshClusters();
-
 		////count marker in map
 		this.countMarkerInCart();
 	}
@@ -2343,6 +2379,8 @@ class MapModule {
 				}
 			});
 		}
+
+		this.removePolylineAndSpyderfyMarker();
 	}
 
 	countMarkerInCart() {
@@ -2429,8 +2467,56 @@ class MapModule {
 		}
 	}
 
+	customiSpyderfyWithoutMousePosition() {
+		if (this.map._zoom < 19) {
+			return false;
+		}
+
+		const tab_closeToEachOther = [];
+		const tab_list_push = [];
+
+		this.markers.eachLayer((markerFirst) => {
+			const closeToEachOther = [];
+
+			const marker_first_lat = markerFirst.getLatLng().lat;
+			const marker_first_lng = markerFirst.getLatLng().lng;
+
+			/// generate the key used for custmoSpyderfy
+			const key_name_first = this.formatKeyCle(marker_first_lat, marker_first_lng); /// lat( with ratio_length ) _ lng( with ratio_length )
+
+			this.markers.eachLayer((markerSecond) => {
+				const marker_second_lat = markerSecond.getLatLng().lat;
+				const marker_second_lng = markerSecond.getLatLng().lng;
+
+				/// generate the key used for custmoSpyderfy
+				const key_name_second = this.formatKeyCle(marker_second_lat, marker_second_lng); /// lat( with ratio_length ) _ lng( with ratio_length )
+				/// check if there is an one, close to each other ( current position on mouse )
+				if (this.isDistantEquivalentEpsilone(key_name_first, key_name_second)) {
+					/// recolte data.
+					if (!tab_list_push.some((item) => +item.options.id === +markerSecond.options.id)) {
+						closeToEachOther.push(markerSecond);
+						tab_list_push.push(markerSecond);
+					}
+				}
+			});
+
+			tab_closeToEachOther.push(closeToEachOther);
+		});
+
+		/// must more than one, is not none supperposed.
+		if (tab_closeToEachOther.length > 0) {
+			this.tab_closeToEachOther = tab_closeToEachOther;
+
+			tab_closeToEachOther.forEach((closeToOther_item) => {
+				if (closeToOther_item.length > 1) {
+					this.customOpenClusterGroup(closeToOther_item);
+				}
+			});
+		}
+	}
+
 	/**
-	 * @author Jehovanei RAMANDRIJOEL <jehovanierama@gmail.com>
+	 * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
 	 *
 	 * Goal: calculate the new position lat, lng for the marker.
 	 *
@@ -2467,7 +2553,8 @@ class MapModule {
 	 * @return void.
 	 */
 	bindEventMouseOverOnMap() {
-		if (this.map) {
+		/// NOT USE THIS - this is good to not apear on mouse over but all action.
+		if (!this.map) {
 			/// this is event fire when the mouse is move on the map
 			this.map.on("mousemove", (e) => {
 				/// current mouse position
@@ -2528,20 +2615,20 @@ class MapModule {
 		/// distance for each other when spyderfy.
 		let offset = parseFloat((2 * Math.PI) / tabDataToOpen.length);
 
-		let radius_spiral = 0.00008;
+		// let radius_spiral = 0.00008;
 
 		/// MOVE THE MARKER
 		for (let i = 0; i < tabDataToOpen.length; i++) {
 			const marker_to_move = tabDataToOpen[i];
 
-			/// get the new lag lng with offset on circle.
+			/// get the new lag lng with offset on CIRCLE.
 			const [lat, lng] = this.cirlce_trajet(
 				marker_to_move.getLatLng().lat,
 				marker_to_move.getLatLng().lng,
 				offset
 			);
 
-			/// get the new lag lng with offset on spyral
+			/// get the new lag lng with offset on SPIRAL
 			// const [lat, lng] = this.spyral_trajet(
 			// 	marker_to_move.getLatLng().lat,
 			// 	marker_to_move.getLatLng().lng,
@@ -2577,17 +2664,30 @@ class MapModule {
 	generatePolyLine(center_pos, tabDataToOpen) {
 		const center = [center_pos.lat, center_pos.lng];
 
+		this.polylines = [];
+
 		for (let i = 0; i < tabDataToOpen.length; i++) {
 			const temp = tabDataToOpen[i];
 
 			const element = temp.getLatLng();
 			const point = [element.lat, element.lng];
 
-			const polyline = L.polyline([center, point], { color: "gray", opacity: 0.7, border: "1px" });
+			const polyline = L.polyline([center, point], {
+				color: "gray",
+				opacity: 0.7,
+				border: "1px",
+				idLeaflet: temp._leaflet_id,
+			});
 
 			polyline.addTo(this.map);
 
 			this.polylines.push(polyline);
+		}
+		if (this.tab_closeToEachOther.length > 0) {
+			const tab = this.tab_closeToEachOther.filter((item) => item.length > 1);
+			if (tab.length > this.tab_polylines.length) {
+				this.tab_polylines.push(this.polylines);
+			}
 		}
 	}
 
