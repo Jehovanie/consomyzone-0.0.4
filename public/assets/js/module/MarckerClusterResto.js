@@ -7,6 +7,9 @@ class MarckerClusterResto extends MapModule {
 	async onInit(isAddControl = false) {
 		this.ALREADY_INIT = false;
 		try {
+			const zoom = this.codinsee ? 13 : null;
+			this.initMap(null, null, zoom, isAddControl);
+
 			this.createMarkersCluster();
 
 			/// Three possiblities : all departement, arrondissement, in departement
@@ -38,6 +41,19 @@ class MarckerClusterResto extends MapModule {
 					  "&maxy=" +
 					  encodeURIComponent(maxy)
 					: "";
+			} else if (!!this.map) {
+				const new_size = this.getBoundsWestEastNorthSouth();
+				const { minx, miny, maxx, maxy } = new_size;
+
+				param =
+					"?minx=" +
+					encodeURIComponent(minx) +
+					"&miny=" +
+					encodeURIComponent(miny) +
+					"&maxx=" +
+					encodeURIComponent(maxx) +
+					"&maxy=" +
+					encodeURIComponent(maxy);
 			}
 
 			// "data" => $datas,
@@ -50,9 +66,6 @@ class MarckerClusterResto extends MapModule {
 			this.data = this.default_data;
 
 			this.listRestoPastille = responseJson.allIdRestoPastille;
-
-			const zoom = this.codinsee ? 13 : null;
-			this.initMap(null, null, zoom, isAddControl);
 
 			this.bindAction();
 
@@ -176,6 +189,7 @@ class MarckerClusterResto extends MapModule {
 		});
 		// console.log(dataFiltered);
 		this.map.addLayer(this.markers);
+		this.removePolylineAndSpyderfyMarker();
 	}
 
 	/**

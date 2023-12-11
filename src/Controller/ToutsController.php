@@ -343,13 +343,18 @@ class ToutsController extends AbstractController
             $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$restos);
              
             $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+
+            $golfs= $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy ,null ,null, 100);
+            $ids_golf= array_map('App\Service\SortResultService::getIdFromData', $golfs);
+            $moyenne_golfs= $avisGolfRepository->getAllNoteById($ids_golf);
             
             return $this->json([
                 "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, "", "", 100),
                 "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, 100),
                 "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
-                "golf" => $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy ,null ,null, 100),
+                "golf" => $golfFranceService->mergeDatasAndAvis($golfs, $moyenne_golfs),
                 "tabac" => $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, 100),
+                "allIdRestoPastille" => $arrayIdResto
             ]);
         }
 

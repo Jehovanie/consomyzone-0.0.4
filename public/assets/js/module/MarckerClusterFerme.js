@@ -10,9 +10,10 @@ class MarckerClusterFerme extends MapModule {
         this.ALREADY_INIT = false;
 
         try{
+            this.initMap(null, null, null, isAddControl);
+
             this.createMarkersCluster();
 
-            this.initMap(null, null, null, isAddControl);
 
             const link =( this.nom_dep && this.id_dep) ? `/ferme/departement/${this.nom_dep}/${this.id_dep}/allFerme` : `/getLatitudeLongitudeFerme`;
 

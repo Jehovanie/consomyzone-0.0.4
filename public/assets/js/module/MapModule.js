@@ -321,6 +321,13 @@ class MapModule {
 		});
 	}
 
+	getBoundsWestEastNorthSouth() {
+		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+		return { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
+	}
+
 	settingMemoryCenter() {
 		this.map.on("moveend", (e) => {
 			const center = e.target.getCenter();
@@ -2462,7 +2469,7 @@ class MapModule {
 
 		/// must more than one, is not none supperposed.
 		if (closeToEachOther.length > 1) {
-			this.customOpenClusterGroup(closeToEachOther);
+			this.customOpenClusterGroup(closeToEachOther, closeToEachOther.length);
 			this.closeToEachOther = closeToEachOther;
 		}
 	}
@@ -2509,7 +2516,7 @@ class MapModule {
 
 			tab_closeToEachOther.forEach((closeToOther_item) => {
 				if (closeToOther_item.length > 1) {
-					this.customOpenClusterGroup(closeToOther_item);
+					this.customOpenClusterGroup(closeToOther_item, closeToOther_item.length);
 				}
 			});
 		}
@@ -2525,8 +2532,8 @@ class MapModule {
 	 * @param {*} offset
 	 * @returns [ lat , lng ]
 	 */
-	cirlce_trajet(lat, lng, offset) {
-		const radius = 0.00005;
+	cirlce_trajet(lat, lng, offset, customizeRadiusOfCircle) {
+		const radius = customizeRadiusOfCircle > 2 ? 0.000013 * customizeRadiusOfCircle : 0.00005;
 		const angle = 0 + offset;
 
 		const lat_modified = lat + radius * Math.sin(angle);
@@ -2605,7 +2612,7 @@ class MapModule {
 	 *
 	 * @param {*} tabDataToOpen: list of the marker suppeport
 	 */
-	customOpenClusterGroup(tabDataToOpen) {
+	customOpenClusterGroup(tabDataToOpen, customizeRadiusOfCircle) {
 		/// always exist, tabDataToOpen length mush > 1;
 		const single_one = tabDataToOpen[0];
 
@@ -2625,7 +2632,8 @@ class MapModule {
 			const [lat, lng] = this.cirlce_trajet(
 				marker_to_move.getLatLng().lat,
 				marker_to_move.getLatLng().lng,
-				offset
+				offset,
+				customizeRadiusOfCircle
 			);
 
 			/// get the new lag lng with offset on SPIRAL
