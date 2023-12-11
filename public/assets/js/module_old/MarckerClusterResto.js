@@ -20,7 +20,20 @@ class MarckerClusterResto extends MapModule  {
                 const lastSearchPosition= getDataInSessionStorage("lastSearchPosition") ? JSON.parse(getDataInSessionStorage("lastSearchPosition")) : null;
                 const { minx, miny, maxx, maxy }= lastSearchPosition.position;
                 param= lastSearchPosition ? "?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy)  : "";
-            }
+            } else if (!!this.map) {
+				const new_size = this.getBoundsWestEastNorthSouth();
+				const { minx, miny, maxx, maxy } = new_size;
+
+				param =
+					"?minx=" +
+					encodeURIComponent(minx) +
+					"&miny=" +
+					encodeURIComponent(miny) +
+					"&maxx=" +
+					encodeURIComponent(maxx) +
+					"&maxy=" +
+					encodeURIComponent(maxy);
+			}
 
             // "data" => $datas,
             // "allIdRestoPastille" => $arrayIdResto
@@ -48,59 +61,41 @@ class MarckerClusterResto extends MapModule  {
     }
 
     createMarkersCluster(){
-        // const that= this;
+        const that= this;
         this.markers = L.markerClusterGroup({ 
             chunkedLoading: true,
-            animate: true,
-            disableClusteringAtZoom: true,
-            animateAddingMarkers:true,
-            chunkedLoading: true,
-            chunkInterval: 500, 
-            chunkDelay: 100
-        })
-            // chunkProgress: null,
-            // maxClusterRadius: 40,
-            // iconCreateFunction: function (cluster) {
-            //     console.log(cluster)
-            //     return L.divIcon({
-            //         className: "d-none",
-            //     });
-            // },
-            
-            // maxClusterRadius: function(zoom){
-            //     return 210 - zoom * 10
-            //     // return 10
-            // },
-            // iconCreateFunction: function (cluster) {
-            //     if(that.marker_last_selected){
-            //         console.log(cluster)
-            //         let sepcMarmerIsExist = false;
-            //         for (let g of  cluster.getAllChildMarkers()){
-            //             if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
-            //                 sepcMarmerIsExist = true;
-            //                 break;
-            //             }
-            //         }
+            iconCreateFunction: function (cluster) {
+                if(that.marker_last_selected){
+                    let sepcMarmerIsExist = false;
+                    for (let g of  cluster.getAllChildMarkers()){
+                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+                            sepcMarmerIsExist = true;
+                            break;
+                        }
+                    }
 
-            //         if(sepcMarmerIsExist){
-            //             return L.divIcon({
-            //                 html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
-            //                 className: "spec_cluster",
-            //                 iconSize:L.point(35,35)
-            //             });
-            //         }else{
-            //             return L.divIcon({
-            //                 className: "d-none",
-            //             });
-            //         }
-            //     }else{
-            //         return L.divIcon({
-            //             className: "d-none",
-            //         });
-            //     }
-            // },
-            
-        // });
+                    if(sepcMarmerIsExist){
+                        return L.divIcon({
+                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+                            className: "spec_cluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }else{
+                        return L.divIcon({
+                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                            className: "mycluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }
+                }else{
+                    return L.divIcon({
+                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                        className: "mycluster",
+                        iconSize:L.point(35,35)
+                    });
+                }
+            },
+        });
     }
 
 
@@ -120,32 +115,8 @@ class MarckerClusterResto extends MapModule  {
 
 
     addMarker(newData){
-        const zoom = this.map._zoom;
-        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
-        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
-        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
-
-        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
-        const { dataMax, ratio }= current_object_dataMax;
-
-        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
-        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
-
-        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
-
         newData.forEach(item => {
-            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
-            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
-            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
-
-                this.settingSingleMarker(item, false);
-
-                dataFiltered.forEach(ktem => {
-                    if(parseFloat(ktem.lat) === item_with_ratio ){
-                        ktem.data.push(item)
-                    }
-                })
-            }
+            this.settingSingleMarker(item, false);
         })
         // console.log(dataFiltered);
         this.map.addLayer(this.markers);
@@ -279,7 +250,6 @@ class MarckerClusterResto extends MapModule  {
 
             const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
 
-            this.updateMarkersDisplay(new_size);
             this.addPeripheriqueMarker(new_size);
         })
     }
@@ -364,12 +334,10 @@ class MarckerClusterResto extends MapModule  {
             const response = await fetch(`${this.api_data}${param}`);
             const responseJson = await response.json();
             let new_data = responseJson.data;
-
-            this.addMarkerNewPeripherique(new_data, new_size);
-
             
             // const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
             new_data = new_data.filter(item => !this.default_data.some(j => parseInt(j.id) === parseInt(item.id)))
+            this.addMarker(new_data);
 
             // this.addMarker(this.checkeFilterType(new_data));
 
