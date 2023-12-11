@@ -1,3 +1,7 @@
+///Jehovanie: this variable is use for the list of the piece joint
+/// in the send email on the invitation tribu T
+let email_piece_joint_list_member= [];
+
 if(dropZones)
     if( dropZones!=null && dropZones.length > 0){
         document.querySelectorAll(".drop_zone__input_Nantenaina_css_js").forEach((inputElement) => {
@@ -163,20 +167,29 @@ function fromBinary(encoded) {
     }).join(''));
 }
 
+
+/**
+ * @author Nantenaina x Faniry 
+ * envoyer des invitations à participer a un evenement via email
+ * @param {*} event 
+ */
 function sendInvitation(event){
 
     //SHOW INVITIATION
     event.target.innerText="En cours d'envoie ..."
     let data=editor.getData()
     
+    let mailObject="";
     let agenda = JSON.parse(sessionStorage.getItem("agenda"))
+    if(document.querySelector("#object_share_event"))
+       mailObject= document.querySelector("#object_share_event").value
     let isG = event.target.dataset.g
     console.log("isG : " + isG);
     let dataInfos = []
     let isValidateEmail = true
     let infos={}
     if(isG){
-         infos = getUserInfoForSharing(isG, dataInfos,data)
+        infos = getUserInfoForSharing(isG, dataInfos,data,mailObject)
         isValidateEmail =infos.isvalid 
     }else{
         let contenu = sessionStorage.getItem("csvContent")
@@ -188,7 +201,7 @@ function sendInvitation(event){
                 if(validateEmail(email)){
                     dataInfos.push({
                         agendaId:agenda.id,
-                        objet:agenda.title,
+                        objet:mailObject,
                         from_id:null,
                         to_id:null,
                         lastname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexName],
@@ -210,9 +223,10 @@ function sendInvitation(event){
 
     let dataEmail={
         emailCore:infos.data,
-        receiver:dataInfos
+        receiver:dataInfos,
+        files:email_piece_joint_list_member
     }
-
+   
     let request =new Request("/agenda/send/invitation",{
         method: "POST",
         headers: {
@@ -222,6 +236,7 @@ function sendInvitation(event){
         body: JSON.stringify(dataEmail)
     })
 
+   
     if(isValidateEmail){
         //makeLoadingEmail()
     
@@ -296,6 +311,7 @@ function sendEventByMessage(e){
     e.target.innerText="En cours d'envoie ..."
     let data = editor.getData();
 
+    
     let isG = e.target.dataset.g
     let isValidateEmail = true
     let dataInfos = []
@@ -336,7 +352,7 @@ function sendEventByMessage(e){
 
 }
 
-function getUserInfoForSharing(isG, dataInfos,data){
+function getUserInfoForSharing(isG, dataInfos,data,mailObject){
     let agenda = JSON.parse(sessionStorage.getItem("agenda"))
     let isValidateEmail = true
     if(isG ==="1"){
@@ -357,7 +373,7 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 data=tempDiv.outerHTML
                 dataInfos.push({
                     agendaId:agenda.id,
-                    objet:agenda.title,
+                    objet:mailObject,
                     from_id:from_id,
                     to_id:to_id,
                     lastname : lastname,
@@ -391,7 +407,7 @@ function getUserInfoForSharing(isG, dataInfos,data){
                 data=tempDiv.outerHTML
                 dataInfos.push({
                     agendaId:agenda.id,
-                    objet:agenda.title,
+                    objet:mailObject,
                     from_id:from_id,
                     to_id:to_id,
                     lastname : lastname,
@@ -524,4 +540,172 @@ function invitationStoryAgenda(){
                         url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json'
                     },})
         })
+}
+
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ * 
+ * This function is use listen the input file event onchange
+ * on the input piece joint in mail invitation 
+ * 
+ * All add input image
+ * @parm inputImage.html.twig
+ */
+function addPieceJointMember(input) {
+
+    if (input.files && input.files[0]){
+
+        /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants : 
+        /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+        const listNotAccepted = ["zip", "css", "html", "sql", "xml", "gz", "bz2", "tgz",'ade', 'adp', 'apk', 'appx', 'appxbundle', 'bat', 'cab', 'chm', 'cmd', 'com', 'cpl', 'diagcab', 'diagcfg', 'diagpack', 'dll', 'dmg', 'ex', 'ex_', 'exe', 'hta', 'img', 'ins', 'iso', 'isp', 'jar', 'jnlp', 'js', 'jse', 'lib', 'lnk', 'mde', 'msc', 'msi', 'msix', 'msixbundle', 'msp', 'mst', 'nsh', 'pif', 'ps1', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vhd', 'vxd', 'wsc', 'wsf', 'wsh', 'xll'];
+        
+        /// input value to get the original name of the file ( with the fake path )
+        const value= input.value;
+
+        //// to get the extension file
+        const  temp= value.split(".");
+        const extensions = temp[temp.length-1]; /// extension
+
+        ///if the current extension is in the list not accepted.
+        if( !listNotAccepted.some( item => item.toLowerCase() === extensions.toLowerCase() ) && extensions !== value ){
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+
+                /// get name the originila name of the file
+                const input_value= value.split("\\")
+                const name= input_value[input_value.length-1]; /// original name
+    
+                ///unique  to identify the file item
+                /// this not save in the database.
+                const id_unique= new Date().getTime();
+
+                ////create item piece joint.
+                createListItemPieceMember(name, id_unique);
+                
+                //// save the item in variable global list piece jointe.
+                email_piece_joint_list_member.push({id: id_unique,  name, base64File: e.target.result })
+            };
+    
+            reader.readAsDataURL(input.files[0]);
+        }else{ /// if the extension is not supported.
+            swal({
+                title: "Le format de fichier n'est pas pris en charge!",
+                icon: "error",
+                button: "OK",
+            });
+        }
+    }
+}
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ * 
+ * This function is use listen the input file event onchange
+ * on the input piece joint in mail invitation 
+ * 
+ * All add input image
+ * Object element
+ */
+function addPieceJointImageMember(input) {
+
+    if (input.files && input.files[0]){
+
+        /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants : 
+        /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+        const listNotAccepted = ["zip", "css", "html", "sql", "xml", "gz", "bz2", "tgz",'ade', 'adp', 'apk', 'appx', 'appxbundle', 'bat', 'cab', 'chm', 'cmd', 'com', 'cpl', 'diagcab', 'diagcfg', 'diagpack', 'dll', 'dmg', 'ex', 'ex_', 'exe', 'hta', 'img', 'ins', 'iso', 'isp', 'jar', 'jnlp', 'js', 'jse', 'lib', 'lnk', 'mde', 'msc', 'msi', 'msix', 'msixbundle', 'msp', 'mst', 'nsh', 'pif', 'ps1', 'scr', 'sct', 'shb', 'sys', 'vb', 'vbe', 'vbs', 'vhd', 'vxd', 'wsc', 'wsf', 'wsh', 'xll'];
+        const listAccepted= [ "png", "gif", "jpeg", "jpg" ];
+        
+        /// input value to get the original name of the file ( with the fake path )
+        const value= input.value;
+
+        //// to get the extension file
+        const  temp= value.split(".");
+        const extensions = temp[temp.length-1]; /// extension
+
+        ///if the current extension is in the list not accepted.
+        if( 
+            listAccepted.some(item => item === extensions ) 
+            && !listNotAccepted.some( item => item.toLowerCase() === extensions.toLowerCase() ) 
+            && extensions !== value 
+        ){
+
+            var reader = new FileReader();
+            reader.onload = function (e) {
+
+                /// get name the originila name of the file
+                const input_value= value.split("\\")
+                const name= input_value[input_value.length-1]; /// original name
+    
+                ///unique  to identify the file item
+                /// this not save in the database.
+                const id_unique= new Date().getTime();
+
+                ////create item piece joint.
+                createListItemPieceMember(name, id_unique);
+                
+                //// save the item in variable global list piece jointe.
+                email_piece_joint_list_member.push({id: id_unique,  name, base64File: e.target.result })
+            };
+    
+            reader.readAsDataURL(input.files[0]);
+        }else{ /// if the extension is not supported.
+            swal({
+                title: "Le format de fichier n'est pas pris en charge!",
+                icon: "error",
+                button: "OK",
+            });
+        }
+    }
+}
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ * 
+ * This function create single elemment html like to piece joint
+ * on the send email invitation on the tribu T
+ * 
+ * @param {*} name : file name
+ * @param {*} id : unique id to identifie the element in the object.
+ * 
+ * @return void
+ */
+function createListItemPieceMember(name, id){
+    
+    ////content block the list item piece joint.
+    const content_list_piece_joint= document.querySelector(".content_list_piece_joint_jheo_member_js");
+
+    //// display the block when it's hidden.
+    if( content_list_piece_joint.classList.contains("d-none")){
+        content_list_piece_joint.classList.remove("d-none")
+    }
+
+    /// structure html the single element
+    const list_item= `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <p>${name}</p>
+            <button type="button" class="btn btn-outline-danger fa_solid_${id}_jheo_js" onclick="removeListeItemMember(this, '${id}')"><i class="fa-solid fa-trash-can"></i></button>
+        </li>
+    `
+    /// insert the single element.
+    content_list_piece_joint.innerHTML += list_item;
+}
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *  
+ * This function remove the item on the list piece jointe 
+ * and update variable global `email_piece_joint_list_member` list of the piece joint 
+ * 
+ * @param {*} e : event html object: item list piece jointe
+ * @param {*} id : unique id in to identify the item piece joint in the list `email_piece_joint_list_member`
+ * 
+ * @return void
+ */
+function removeListeItemMember(e, id){
+    ///remove html element
+    e.parentElement.remove()
+    ///remove one element in the piece global
+    email_piece_joint_list_member= email_piece_joint_list_member.filter(item => item.id  != id )
 }

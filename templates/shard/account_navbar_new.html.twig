@@ -192,11 +192,15 @@
 					<span class="pc tu in">
 						<span class="jc un mn zn gs use-in-agd-nanta_js_css"> {{ userConnected.lastname ~ " " ~ " " ~ userConnected.firstname }} </span>
 						<span class="jc nn toltip-hover-text" >
-							{{userConnected.status_tribuG}}
+							{% if userConnected.status_tribuG is same as('PARTISAN') %}
+								{{'Fan'}}
+							{% else %}
+								{{userConnected.status_tribuG}}
+							{% endif %}
 							{% if userConnected.status_tribuG == 'FONDATEUR' %}
 								<span class="tooltip-text" id="bottom">Fondateur du département {{ userConnected.tableTribuG|replace({'tribug' : '', '_' : ' '}) }}</span>
-							{% elseif userConnected.status_tribuG == 'UTILISATEUR' %}
-								<span class="tooltip-text" id="bottom">Utilisateur du département {{ userConnected.tableTribuG|replace({'tribug' : '', '_' : ' '}) }}</span>
+							{% elseif userConnected.status_tribuG == 'PARTISAN' %}
+								<span class="tooltip-text" id="bottom">Fan dans le département {{ userConnected.tableTribuG|replace({'tribug' : '', '_' : ' '}) }}</span>
 							{% endif %}
 						</span>
 					</span>

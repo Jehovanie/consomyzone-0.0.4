@@ -2175,24 +2175,24 @@ function showInvitations() {
                             <a data-element="table-tribuG-member" class="nav-link active text-secondary tab_invite_elie" aria-current="page" href="#" onclick="setActiveTab(this, 'tribu_g')">Tribu G</a>
                         </li>
                         <li class="nav-item">
-                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'email')">Par Email</a>
+                            <a data-element="blockSendEmailInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'email')">Par e-mail</a>
 </li>
                         <li class="nav-item">
                             <a data-element="blockHistInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTab(this, 'historique')">Historiques</a>
                         </li>
                     </ul>
                     <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
-                        <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre fan par E-mail</h5>
-<h6 class="modal-title text-primary" >Vous pouvez modifier le corps du email comme vous le voulez.</h6>
-                        <h6 class="modal-title text-primary" >Le lien d'invitation sera généré par l'application CMZ automatiquement.</h6>
-                        <h6 class="modal-title text-primary" >L'email envoyé sera automatiquement signé à votre nom.</h6>
+                        <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre fan par e-mail</h5>
+<h6 class="modal-title text-primary" >Vous pouvez modifier le corps de l'e-mail comme vous le voulez.</h6>
+                        <h6 class="modal-title text-primary" >Le lien d'invitation sera généré automatiquement par CMZ.</h6>
+                        <h6 class="modal-title text-primary" >L'e-mail envoyé sera automatiquement signé à votre nom.</h6>
                         <form class="content_form_send_invitation_email_js_jheo">
                             <div class="alert alert-success mt-3" id="successSendingMail" role="alert" style="display:none;">
                                 Invitation envoyée avec succès !
                             </div>
                             <div class="form-group content_cc_css_jheo mt-3">
-                                <label for="exampleFormControlInput1">Destinataires  <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs destinations.)</span></label>
-                                <input type="text" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir l'adresse email du destinataire">
+                                <label for="exampleFormControlInput1">Destinataires<span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs destinataires.)</span></label>
+                                <input type="text" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir les ou l'adresse(s) e-mail du destinataire">
                                 <!--<a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
                                     <span class="me-2 mt-2">Cc/Cci</span>
                                 </a>-->
@@ -2205,7 +2205,7 @@ function showInvitations() {
                             </div>
 
                             <div class="form-group mt-3">
-                                <label for="exampleFormControlTextarea1">Description</label>
+                                <label for="exampleFormControlTextarea1">Corps de l'e-mail</label>
                                 <div id="exampleFormControlTextarea32">
                                     <div class="wrapper pt-3 pb-3">
                                         <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1">
@@ -2248,7 +2248,7 @@ function showInvitations() {
                             <thead>
                                 <tr>
                                     <th scope="col">Nom</th>
-                                    <th>Email</th>
+                                    <th>E-mail</th>
                                     <th scope="col">Tribu G</th>
                                     <th scope="col">Action</th>
                                 </tr>
@@ -2263,7 +2263,7 @@ function showInvitations() {
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th>Email</th>
+                                    <th>E-mail</th>
                                     <th scope="col">Date</th>
                                     <th scope="col">Fan</th>
                                     <th scope="col">Status</th>

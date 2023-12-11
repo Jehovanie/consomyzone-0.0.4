@@ -1,12 +1,12 @@
 <div class="navleft  result_container_resto_spec result_container_resto_spec_js content_navleft_jheo_js">
-    <nav class="navbar navbar-light navbar-light-left fixed-top">
+    <nav class="navbar navbar-light navbar-light-left">
         <div class="container-fluid">
             <div class="row mt-3">
-                <div class="col-8 mt-5">
+                <div class="col-2">
                     {% if id_dep is same as('75') %}
                         <a href="{{path('app_dep_restaurant_arrondisme', {'nom_dep': nom_dep, 'id_dep': id_dep }) }}">
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                            width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
+                            width="3vw" height="3vh" viewBox="0 0 128.000000 128.000000"
                             preserveAspectRatio="xMidYMid meet">
 
                                 <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
@@ -22,7 +22,7 @@
                     {% else %}
                         <a href="{{path('restaurant_all_dep') }}">
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
-                            width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
+                            width="3vw" height="3vh" viewBox="0 0 128.000000 128.000000"
                             preserveAspectRatio="xMidYMid meet">
 
                                 <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)"
@@ -37,18 +37,8 @@
                         </a>
                     {% endif %}
                 </div>
-                <div class="col-2 mt-5">
-                    <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-resto-spec" ></i>
-                </div>
-            </div>
-            <hr>
-        </div>
-        
-    </nav>
-    <div class="container-fluid">
-        <div class="head-left spec-dep">
-            <div class="row ">
-                <div class="col-md-1">
+                <div class="col-9">
+                    <div class="" style="margin-left: -30px;font-size: 10pt;display: flex;">
                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="5vw" height="5vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
 
                         <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" 
@@ -77,10 +67,8 @@
                             <path d="M580 245 c-16 -19 -1 -25 61 -25 56 0 84 14 59 30 -20 12 -108 9-120 -5z"/>
                         </g>
                     </svg>
-                </div>
+                                    <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
 
-                <div class="col-md-10 mb-3" style="margin-left:20px;">
-                    <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
                         Restaurants à <span class="fw-bolder">{{nom_dep}}</span>
                         {% if id_dep is same as('75') %}
                             département <span class="fw-bolder">{{id_dep}}, arrondissement  {{arrdssm }},</span> <br>
@@ -90,6 +78,19 @@
                         <span class="fw-bolder content_nombre_result_js_jheo">{{nomber_resto}}</span> résultats.
                     </p>
                 </div>
+</div>
+                <div class="col-1">
+                    <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-resto-spec" ></i>
+                </div>
+            </div>
+            <hr>
+        </div>
+        
+    </nav>
+    <div class="container-fluid">
+        <div class="head-left spec-dep">
+            <div class="row ">
+                
 
                 {# <div class="dropdown col-md-2">
                     <a class="btn dropdown-toggle" title="Tire par" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">

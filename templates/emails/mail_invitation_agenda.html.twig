@@ -4,7 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ConsoMyZone</title>
-
+    {# background: rgba(0,54,246,0);
+                background: linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+                background: -webkit-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+                background: -moz-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%); #}
+                {# background: rgba(0,54,246,0);
+                background: linear-gradient(88deg,rgba(0,54,246,0) 10%, #cdcdcd 80%);
+                background: -webkit-linear-gradient(90deg,rgba(0,54,246,0) 10%, #cdcdcd 80%); #}
     {% apply inline_css %}
         <style>
             {# here, define your CSS styles as usual #}
@@ -13,10 +19,7 @@
             }
 
             .container_fluid{
-                background: rgba(0,54,246,0);
-                background: linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
-                background: -webkit-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
-                background: -moz-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+                
                 width: 100%;
                 z-index: 1;
                 height: 100vh;
@@ -33,14 +36,12 @@
                 display: block;
                 border-radius: 15px;
                 padding: 25px;
-                background: rgba(0,54,246,0);
-                background: linear-gradient(88deg,rgba(0,54,246,0) 10%, #cdcdcd 80%);
-                background: -webkit-linear-gradient(90deg,rgba(0,54,246,0) 10%, #cdcdcd 80%);
+                
             }
 
             a{
                 text-decoration: none;
-                color: white;
+                color: blue;
             }
 
             .btn_style{

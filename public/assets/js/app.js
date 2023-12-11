@@ -1006,6 +1006,9 @@ function initCKEditor(idElement, callback) {
 }
 
 function showModalEditor(isG, isListeInfile = false) {
+
+
+
   let fullname = document
     .querySelector(".use-in-agd-nanta_js_css")
     .textContent.trim();
@@ -1026,108 +1029,82 @@ function showModalEditor(isG, isListeInfile = false) {
   }
 
   let agenda = JSON.parse(sessionStorage.getItem("agenda"));
+
+  if(document.querySelector("#object_share_event"))
+      document.querySelector("#object_share_event").value=agenda.title+", "+fullname
   // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité
   //</span>
   if ( agenda && agenda.isVisioCMZ == 1) {
+    let img= agenda.file_path ? `<img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js"></img>`:""
     return (html = ` 
         <p>Madame / Monsieur 
         <br>
-            C'est avec un immense plaisir que je vous annonce la tenue de la visio conférence
+            Je vous annonce la tenue de la visioconférence
             <span id="eventTitleText" style="background-color:rgba(252, 130, 29, 1);">
                 ${agenda.title}, 
             </span>
             
-            qui aura lieu le <span id="dataDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+           le <span id="dataDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
                 ${agenda.dateStart}
-            </span> à partir de  
+            </span>de  
             <span id="heureDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
                 ${agenda.heure_debut}
-            </span>  jusqu'à 
+            </span> à 
             <span id="heureFinText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
                 ${agenda.heure_fin}
             </span></p>
-        <p >
+        <p>Description:
         <span id="descriptionText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">${agenda.description}</span>
         </p>
         <p id="remerciementText" >Je vous remercie de bien vouloir confirmer votre présence avant le 
         <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
-        <p id="confirmationText">Pour confirmer votre présence, veuillez cliquer sur le lien ci-dessous</p>
-        <a id="mail_link_Natenaina_js_css" href="" disabled contenteditable="false">Confirmation</button>
+        <p id="confirmationText">en cliquant sur le lien</p>
+        <a id="mail_link_Natenaina_js_css" href="" disabled contenteditable="false" style="text-decoration:underline">Confirmation</a>
         <p id="free_place" > 
-        Faites vite, car il ne reste plus que <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);"> ${agenda.place_libre} </span> place(s)</p>
-        <img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js">
+        Nombre de places restantes: <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);"> ${agenda.place_libre} </span> place(s)</p>
+        ${img}
         <p>Cordialement</p>
         <span id="fullnameCanEdit" contenteditable="true" style="background-color:cyan">
             ${fullname} 
-        </span>
-        , qui aura lieu à l'établissement
-        <span id="etabNameText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
-            ${agenda.name}
-        </span> 
-        , se trouvant à l'adresse 
-        <span id="etabAdresseText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
-            ${agenda.adresse}
-        </span> 
-         qui aura lieu le <span id="dataDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
-            ${agenda.dateStart}
-        </span> à partir de  
-        <span id="heureDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
-            ${agenda.heure_debut}
-        </span>  jusqu'à 
-        <span id="heureFinText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
-            ${agenda.heure_fin}
-        </span></p>
-        <p >
-        <span id="descriptionText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">${agenda.description}</span>
-        </p>
-        <p id="remerciementText" >Je vous remercie de bien vouloir confirmer votre présence avant le 
-        <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
-        <p id="confirmationText">Pour confirmer votre présence, veuillez cliquer sur le lien ci-dessous</p>
-        <a id="mail_link_Natenaina_js_css" href="" disabled contenteditable="false">Confirmation</button>
-        <p id="free_place" > 
-        Faites vite, car il ne reste plus que <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);"> ${agenda.place_libre} </span> place(s)</p>
-        <img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js">
-        <p class="content_link content_link_jheo_js"></p>
-        <p>Cordialement</p>
-        <span id="fullnameCanEdit" contenteditable="true" style="background-color:cyan">
-            ${fullname} 
-        </span>
+         </span>
         `);
   } else if(agenda && agenda.isVisioCMZ != 1){
+    
+    let img= agenda.file_path ? `<img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js"></img>`:""
     return (html = ` 
         <p>Madame / Monsieur 
         <br>
-            C'est avec un immense plaisir que je vous annonce la tenue de l'événement 
+            Je vous annonce la tenue de l'événement
             <span id="eventTitleText" style="background-color:rgba(252, 130, 29, 1);">
                 ${agenda.title}
             </span>
-            , qui aura lieu à l'établissement
+            , qui aura lieu à
             <span id="etabNameText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
                 ${agenda.name}
             </span> 
-            , se trouvant à l'adresse 
+            ,
             <span id="etabAdresseText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
                 ${agenda.adresse}
-            </span> 
-            qui aura lieu le <span id="dataDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
+            </span> le
+           <span id="dataDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
                 ${agenda.dateStart}
-            </span> à partir de  
+            </span> de  
             <span id="heureDebutText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
                 ${agenda.heure_debut}
-            </span>  jusqu'à 
+            </span>à 
             <span id="heureFinText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">
                 ${agenda.heure_fin}
             </span></p>
-        <p >
+        <p >Description:
         <span id="descriptionText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">${agenda.description}</span>
         </p>
         <p id="remerciementText" >Je vous remercie de bien vouloir confirmer votre présence avant le 
         <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
-        <p id="confirmationText">Pour confirmer votre présence, veuillez cliquer sur le lien ci-dessous</p>
-        <a id="mail_link_Natenaina_js_css" href="" disabled contenteditable="false">Confirmation</button>
+        <p id="confirmationText">en cliquant sur le lien</p>
+        <a id="mail_link_Natenaina_js_css" href="" disabled contenteditable="false" style="text-decoration:underline">Confirmation</a>
         <p id="free_place" > 
-        Faites vite, car il ne reste plus que <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);"> ${agenda.place_libre} </span> place(s)</p>
-        <img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js">
+        Nombre de places restantes <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);"> ${agenda.place_libre} </span> place(s)</p>
+        ${img}
         <p>Cordialement</p>
         <span id="fullnameCanEdit" contenteditable="true" style="background-color:cyan">
             ${fullname} 
@@ -1363,15 +1340,18 @@ function showReponsePartenaire() {
   const nameTribuT = document.querySelector(
     "#tribu_t_name_main_head"
   )?.textContent;
-
+  let userSender="";
+  if(document.querySelector(".information_user_conected_jheo_js"))
+      userSender=document.querySelector(".information_user_conected_jheo_js").dataset.userfullname
   return (html = `
         <span>Madame, Monsieur,</span></br>
 
-            <span>Nous avons le plaisir de vous inviter à rejoindre notre tribu thématique</span> <span class="nom_tribu_t_envoyeur_invit_elie_js">${nameTribuT}</span> <span>nouvellement fondée sur l'application ConsoMyZone</span>.
+            <span>J'ai le plaisir de vous inviter à rejoindre la tribu thématique</span> <span class="nom_tribu_t_envoyeur_invit_elie_js">${nameTribuT}</span> <span>nouvellement fondée sur l'application ConsoMyZone</span>.
             
-            <p>Pour cela, nous serions ravis de vous compter parmi nos membres et que votre présence sera une aide précieuse.
+            <p>Nous serions ravis de vous compter parmi nos membres.  Votre présence sera une aide précieuse.</br>
             
-            En espérant vous revoir très bientôt, nous vous prions d'agréer, Madame, Monsieur, en l'expression de notre considération distinguée.</p>
+            Dans cette attente, je vous adresse mes cordiales salutations.</p></br>
+          <span>${userSender}</span>
         `);
 }
 
@@ -2492,7 +2472,13 @@ if (document.querySelector(".btn-navright-en-lign-tomm-js")) {
         .classList.toggle("span-btn-menu-en-lign");
     });
 }
-
+if (document.querySelector(".fermet-en-lign-tomm-js")) {
+    document.querySelector(".fermet-en-lign-tomm-js").addEventListener('click', () => {
+      document.querySelector(".span-menu-en-lign-tomm-js").classList.toggle("responsif-none");
+      document.querySelector(".btn-navright-en-lign-tomm-js").style.display = "block";
+      document.querySelector(".span-menu-en-lign-tomm-js").classList.toggle("responsif-none");
+    })
+}
 if (document.querySelector(".ref_tom_js")) {
   sendHeartBeat();
   let idle = relaeseIdle();

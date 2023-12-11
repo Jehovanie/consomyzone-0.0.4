@@ -1825,44 +1825,59 @@ class AgendaController extends AbstractController
 
         $under_tributG = $tributGService->getAllUserWithRoles($allTribuG);
         if ($under_tributG === 0) {
-            goto quit;
-        }
+            //goto quit;
+            $userConnected = $status->userProfilService($this->getUser());
+            $statusProfile = $status->statusFondateur($this->getUser());
+            return $this->render('agenda/partage_agenda.html.twig',[
+                "profil" => $statusProfile["profil"],
+                "statusTribut" => $statusProfile["statusTribut"],
+                "userConnected" => $userConnected,
+                "allTribuTs" => $allTribuT,
+                "allTribuG" => $allTribuG,
+                "results" => $results,
+            ]);
+        }else{
+            foreach ($under_tributG as $tributG) {
 
-        foreach ($under_tributG as $tributG) {
-
-            $user = $userRepository->find(intval($tributG["user_id"]));
-            if ($user->getType() === "consumer") {
-                $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);
-            } else {
-                $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
+                $user = $userRepository->find(intval($tributG["user_id"]));
+                if ($user->getType() === "consumer") {
+                    $user_profil = $consumerRepository->findOneBy(['userId' => $tributG["user_id"]]);
+                } else {
+                    $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
+                }
+                // dd($user_profil);
+                $result = [
+                    "id" => $tributG["user_id"],
+                    "roles" => $tributG["roles"],
+                    "email" => $user->getEmail(),
+                    "firstname" => $user_profil->getFirstname(),
+                    "lastname" => $user_profil->getLastname(),
+                    "commune" => $user_profil->getCommune(),
+                    "photoProfil" => $user_profil->getphotoProfil(),
+                    "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
+                ];
+    
+                if($tributG["user_id"] != $userId)
+                    array_push($results, $result);
             }
-            // dd($user_profil);
-            $result = [
-                "id" => $tributG["user_id"],
-                "roles" => $tributG["roles"],
-                "email" => $user->getEmail(),
-                "firstname" => $user_profil->getFirstname(),
-                "lastname" => $user_profil->getLastname(),
-                "commune" => $user_profil->getCommune(),
-                "photoProfil" => $user_profil->getphotoProfil(),
-                "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
-            ];
 
-            if($tributG["user_id"] != $userId)
-                array_push($results, $result);
+
+            $userConnected = $status->userProfilService($this->getUser());
+            $statusProfile = $status->statusFondateur($this->getUser());
+            return $this->render('agenda/partage_agenda.html.twig',[
+                "profil" => $statusProfile["profil"],
+                "statusTribut" => $statusProfile["statusTribut"],
+                "userConnected" => $userConnected,
+                "allTribuTs" => $allTribuT,
+                "allTribuG" => $allTribuG,
+                "results" => $results,
+            ]);
         }
 
-        quit:
-        $userConnected = $status->userProfilService($this->getUser());
-        $statusProfile = $status->statusFondateur($this->getUser());
-        return $this->render('agenda/partage_agenda.html.twig',[
-            "profil" => $statusProfile["profil"],
-            "statusTribut" => $statusProfile["statusTribut"],
-            "userConnected" => $userConnected,
-            "allTribuTs" => $allTribuT,
-            "allTribuG" => $allTribuG,
-            "results" => $results,
-        ]);
+        
+
+        
+        
     }
 
 /**

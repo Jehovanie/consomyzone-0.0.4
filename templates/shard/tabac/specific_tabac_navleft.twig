@@ -1,8 +1,8 @@
 <div class="navleft responsif-none result_container_tabac_spec content_navleft_jheo_js">
     <nav class="navbar navbar-light navbar-light-left">
         <div class="container-fluid">
-                <div class="row">
-                    <div class="col-8">
+                <div class="row mt-3">
+                    <div class="col-2">
                         <a href="{{path('app_bureau_tabac') }}">
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                             width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
@@ -18,7 +18,17 @@
                             </svg>
                         </a>
                     </div>
-                    <div class="col-2">
+                    <div class="col-9">
+                        <div class="" style="margin-left: -15px;font-size: 10pt;display: flex;">
+                            <img class="icon_tabac" src="{{asset('assets/icon/NewIcons/tabac.png')}}" alt="Icon tabac" style="width: 25px; height:25px">
+                            <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
+                                Tabac à <span class="fw-bolder">{{nom_dep}}</span>
+                                departement <span class="fw-bolder">{{id_dep}},</span> <br>
+                                <span class="fw-bolder content_nombre_result_js_jheo">{{nomber_tabac}}</span> résultats.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-1">
                         <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-tabac-spec"></i>
                     </div>
                 </div>
@@ -29,18 +39,7 @@
     <div class="container-fluid">
         <div class="head-left">
             <div class="row">
-                <div class="col-md-1"></div>
-                <div class="col-md-2">
-                    <img class="icon_tabac" src="{{asset('assets/icon/NewIcons/tabac.png')}}" alt="Icon tabac">
-                </div>
-                <div class="col-md-9">
-                  
-                    <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
-                        Tabac à <span class="fw-bolder">{{nom_dep}}</span>
-                        departement <span class="fw-bolder">{{id_dep}},</span> <br>
-                        <span class="fw-bolder content_nombre_result_js_jheo">{{nomber_tabac}}</span> résultats.
-                    </p>
-                </div>
+                
                 <div class="content_filter_trie content_filter_trie_jheo_js">
                     <div class="pagination_alphabet pagination_alphabet_jheo_js">
                         <ul>

@@ -1102,15 +1102,42 @@ class SecurityController extends AbstractController
         SerializerInterface $serialize,
         MailService $mailService,
         AgendaService $agendaService,
-        TributGService $tributGService
+        TributGService $tributGService,
+        Filesystem $filesyst
         ){
         $context=[];
         $requestContent = json_decode($request->getContent(), true);
         $receivers=$requestContent["receiver"];
         $content=$requestContent["emailCore"];
+        $piece_joint=$requestContent["files"];
         $user = $this->getUser();
         $userId = $user->getId();
         $fullNameSender = $tributGService->getFullName($userId);
+        $piece_with_path = [];
+        if (count($piece_joint) > 0) {
+            // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/piece_joint/user_' . $userId . "/";
+            $dir_exist = $filesyst->exists($path);
+            if ($dir_exist === false) {
+                $filesyst->mkdir($path, 0777);
+            }
+
+            foreach ($piece_joint as $item) {
+                $name = $item["name"];
+
+                $char_spec = ["-", " "];
+                $name = str_replace($char_spec, "_", $name);
+                $path_name = $path . $name;
+                ///name file, file base64
+                file_put_contents($path_name, file_get_contents($item["base64File"]));
+
+
+                $item["path"] = $path . $name;
+
+                array_push($piece_with_path, $item);
+            }
+        }
+        
         foreach($receivers as $receiver){
                 $agendaID = $receiver["agendaId"];
                 $from_id=$receiver["from_id"];
@@ -1122,6 +1149,7 @@ class SecurityController extends AbstractController
                 $context["template_path"]="emails/mail_invitation_agenda.html.twig";
                 $context["link_confirm"]="";
                 $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$content);
+                $context["piece_joint"] = $piece_with_path;
                 $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
 
                 if(!is_null($to_id)){

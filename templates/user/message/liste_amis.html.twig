@@ -25,7 +25,7 @@
 	<div class="nh">
 		{% include 'shard/account_navleft_new.html.twig' %}
 		{% include 'shard/account_navbar_new.html.twig' %}
-		<div class="fixed-top">
+		{# <div class="fixed-top">
 			<button class="responsif-none-pc vu jc g  pa nj xr ni bj wr _k uo qh btn-navright-tribut btn-navright-en-lign-tomm-js">
 				<span class="jc h cg bf sd span-btn-menu-en-lign menu-en-lign-tomm-js">
 					<span class="du-block g m yd vc span-menu-en-lign-tomm-js">
@@ -37,7 +37,7 @@
 				</span>
 			</button>
 		</div>
-		<!-- ===== Main Content Start ===== -->
+		<!-- ===== Main Content Start ===== --> #}
 		<main class="gv om hv wd account-message-conected">
             <div class="container-bar-recherche-message">
                 <input type="text" class="search_input_message" id="fan_look_tom_js" placeholder="Recherche des fan dans consomyzone" oninput="lookupFan(event)">
@@ -45,12 +45,12 @@
             <div class="lookup_fan_result lookup_fan_result_tom_js d-none">
                
             </div>
-            <div class="responsif-none sv en-lign-mobile en-lign-mobile-tomm-js list-amie-message">
+            <div class="sv en-lign-mobile en-lign-mobile-tomm-js list-amie-message">
                     <!-- ====== Chat List Start -->
                     <div class="vc xk">
                          {# <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 creer-reunion" onclick="createVisoGroup()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button>  #}
                         
-                        <div class="vd mh ip ch ib user_profile_list_elie">
+                        <div class="vd mh ip ch ib user_profile_list_elie nav-message">
                             <ul class="nav nav-tabs">
                                 <li class="nav-item" data-type="liste-message" onclick="toggleAmisMessage(this)">
                                     <a class="nav-link linkToActive_tomm_js active" data-selector-list="content_list_message_tomm_js">Vos Messages.</a>

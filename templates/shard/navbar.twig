@@ -187,7 +187,18 @@
                         <a class="cta_connexion_navbar cta_to_actualite_jheo_js" href="{{path('app_actualite')}}">
                             <img src="{{(userConnected.photo_profil) ? "/public" ~ userConnected.photo_profil : asset('/public/uploads/users/photos/default_pdp.png') }}" alt="pdp">
                         </a>
-                        <div class="dropdown">
+                        <div class="">
+                            <a class="un mn qv lc mg dp zq ml" data-toggle="tooltip" data-placement="bottom" title="Déconnexion" href="{{path('app_logout')}}">
+                                <i class="fa-solid fa-right-from-bracket fa-xl hover-deconnexion" style="color:red;  text-shadow: -1px -1px 0 #ffff, 1px -1px 0 #ffff, -1px 1px 0 #ffff, 1px 1px 0 #ffff;
+                                    font-weight: bolder;
+                                    font-size: 18pt;" >
+                                </i>
+                            </a>
+                        </div>
+                        {# <div class="dropdown">
+                         <li>
+								<a class="dropdown-item" href="{{path('app_logout')}}" lng-tag="deconnexion">Déconnexion</a>
+							</li>
                             <i class="fa-solid fa-ellipsis-vertical dropdown-toggle drop_down_map" role="button" data-bs-toggle="dropdown" aria-expanded="false" ></i>
 
                             <ul class="dropdown-menu mt-5">
@@ -211,8 +222,8 @@
                                         Déconnexion
                                     </a>
                                 </li>
-                            </ul>
-                        </div>
+                            </ul> 
+                        </div>  #}
                     {% else %}
                         <a class="cta_connexion_navbar_no_connected cta_navbar_to_connexion_jheo_js" href="{{path('app_login')}}">
                             <svg fill="gray" class="svg-1" version="1.0" xmlns="http://www.w3.org/2000/svg" width="7vw" height="7vh" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">

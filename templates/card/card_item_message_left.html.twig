@@ -12,7 +12,7 @@
 
     </div>
 
-    {% set linkParam = tribuT is defined ?  { 'user_id' : id, 'tribuT' : tribuT } : { 'user_id' : id } %}
+    {% set linkParam = tribuT is defined ?  { 'user_id' : id } : { 'user_id' : id } %}
     <a href="{{path('app_message_perso', linkParam )}}" class="yd">
         <div class="row">
             <div class="col-8">

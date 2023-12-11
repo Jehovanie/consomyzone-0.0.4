@@ -1646,12 +1646,14 @@ class Tribu_T_Service extends PDOConnexionService
   
         if($idMin == 0){
             //id,user_id,confidentiality,photo,userfullname,datetime, publication 
-
-             $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)".
-            " as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id  ORDER BY t1.id DESC LIMIT :limits) as tb1 " .
+//t1.user_id IS NOT NULL AND
+             $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN (SELECT pub_id ,count(*)".
+            " as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id = t2.pub_id WHERE". 
+            "  t1.user_id IS NOT NULL ORDER BY t1.id DESC LIMIT :limits) as tb1 " .
             " LEFT JOIN (SELECT GROUP_CONCAT(user_id) user_react_list, user_id as user_id_react, pub_id as pub_id_react, count(*) as nbr_reaction,". 
-            " reaction FROM $tableReaction WHERE reaction = 1 group by pub_id_react) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId"
+            " reaction FROM $tableReaction WHERE reaction = 1 group by pub_id_react) as tb2 on tb1.id = tb2.pub_id_react"
             ;
+// and tb2.user_id_react = $userId
             // $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)".
             // " as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id".  
             // " ORDER BY t1.id DESC LIMIT :limits) as tb1 " .
@@ -1671,10 +1673,11 @@ class Tribu_T_Service extends PDOConnexionService
             // " :idmin ORDER BY id DESC LIMIT :limits) as tb1 " .
             // " LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react, reaction ". 
             // " FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId";
+// and tb2.user_id_react = $userId
              $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)".
-            " as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id where t1.id < :idmin ORDER BY id DESC LIMIT :limits) as tb1" .
+            " as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id where t1.id < :idmin and t1.user_id is NOT NULL  ORDER BY id DESC LIMIT :limits) as tb1" .
             " LEFT JOIN (SELECT GROUP_CONCAT(user_id) user_react_list, user_id as user_id_react, pub_id as pub_id_react, count(*)".
-			" as nbr_reaction, reaction FROM $tableReaction WHERE reaction = 1 group by pub_id_react) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId";
+			" as nbr_reaction, reaction FROM $tableReaction WHERE reaction = 1 group by pub_id_react) as tb2 on tb1.id = tb2.pub_id_react";
             $stmt = $this->getPDO()->prepare($sql);
             $stmt->bindValue(':idmin', $idMin, PDO::PARAM_INT); 
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT); 

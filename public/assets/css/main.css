@@ -77,7 +77,7 @@ body {
 
 .navbar-light-left {
     /* background-color: #fff !important; */
-    width: 25vw;
+    width: 28vw;
 }
 
 
@@ -1270,9 +1270,9 @@ li a .station {
     margin-right: -40px;
 }
 
-.spec-dep {
+/* .spec-dep {
     margin-top: 35px;
-}
+} */
 
 .bg-blanc {
     z-index: 1;
@@ -1309,8 +1309,9 @@ li a .station {
     opacity: 1 !important;
 } */
 .navbar-light-left .fa-x {
-    margin-left: 140px;
-    margin-top: 15px;
+    /* margin-left: 140px;
+    margin-top: 15px; */
+    margin-left: 25px;
 }
 
 input::-ms-reveal,

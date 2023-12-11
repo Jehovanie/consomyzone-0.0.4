@@ -96,7 +96,7 @@ class UserService  extends PDOConnexionService{
 
     public function getMembreTribuT($table){
 
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE status = 1 and user_id IS NOT NULL GROUP BY user_id");
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;

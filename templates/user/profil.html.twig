@@ -106,7 +106,14 @@
 									</h4>
 
 									<p class="mn un" id="elie_my_tribu_g" data-g="{{autre_profil[0].getTributG|replace({'tribug' : '', '_' : ' ' })}}">
-										{{status_tribuT_autre_profil}}
+										 
+										{% if status_tribuT_autre_profil is same as('PARTISAN') %}
+											{{'Fan'}}
+										{% elseif status_tribuT_autre_profil is same as('Type')%}
+											{{'Partisan'}}
+										{% else %}
+											{{status_tribuT_autre_profil}}
+										{% endif %}
 										de la tribu-G 
 										{{autre_profil[0].getTributG|replace({'tribug' : '', '_' : ' ' })}}
 									</p>
@@ -243,7 +250,7 @@
 					<div id="tribu_profil" class="gallery-container mx-auto content-profil-navs tribu_profil" style="margin-top: -90px;">
 						<hr class="mb-3">
 						
-						<h5 class="fw-bolder">Liste des partisans</h5>
+						<h5 class="fw-bolder">Liste des fans</h5>
 						<ul class="nav nav-tabs mt-3 mb-3">
 							<li class="nav-item">
 								<span class="nav-link active elie_nav_link" aria-current="page" href="#" data-tribu="G">Tribu G</span>
@@ -283,7 +290,7 @@
 						<table id="table_tribu_t" class="display  mt-3 table_tribu_t" style="width:100%; display:none;">
 							<thead>
 								<tr>
-									<th>Logo</th>
+									<th>Logo du Tribu T</th>
 									<th>Tribu T</th>
 									<th>Membres</th>
 									<th>E-mail</th>
