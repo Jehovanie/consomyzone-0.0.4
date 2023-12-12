@@ -5722,11 +5722,40 @@ function pastilleForTribuG(e, type, id, name) {
 						title: "Bravo!",
 						text: "Restaurant pastillé avec succès dans votre tribu G.",
 						icon: "success",
-					});
+					}).then(() => {
+						e.classList = "btn ms-1 btn-info";
+						e.id = "btn-pastille-elie-tbg";
+						e.innerText = "Dépastiller";
+						e.setAttribute(
+							"onclick",
+							`pastilleForTribuG(this, false,"${e.dataset.id}","${e.dataset.name}")`
+						);
 
-					e.classList = "btn btn-success ms-1";
-					e.innerText = "Pastillé";
-					document.querySelector("#fetch_resto_tribug_jheo_js").click();
+						if (document.querySelector(".mainContainerLogoTribu")) {
+							let img = document.createElement("img");
+							img.src = e.dataset.velona;
+							img.dataset.name = name;
+							img.setAttribute("alt", name);
+
+							let div = document.createElement("div");
+							div.setAttribute("onclick", "createPopUpTribuG(event)");
+							div.setAttribute("onmouseout", "resetImage(event)");
+							div.setAttribute("onmouseover", "agrandirImage(event)");
+							div.setAttribute("id", e.dataset.tbname);
+							div.setAttribute("class", "img_nantenaina");
+							div.setAttribute("title", "Tribu G " + name);
+							div.setAttribute("data-bs-toggle", "tooltip");
+							div.setAttribute("data-bs-placement", "top");
+							div.dataset.name = name;
+							div.appendChild(img);
+
+							document.querySelector(".mainContainerLogoTribu").appendChild(div);
+						}
+
+						if (document.querySelector("#fetch_resto_tribug_jheo_js")) {
+							document.querySelector("#fetch_resto_tribug_jheo_js").click();
+						}
+					});
 				}
 			});
 	} else {
@@ -5742,14 +5771,22 @@ function pastilleForTribuG(e, type, id, name) {
 			.then((r) => r.json())
 			.then((res) => {
 				if (res.status == "ok") {
+					if (document.querySelector("#" + e.dataset.tbname)) {
+						document.querySelector("#" + e.dataset.tbname).remove();
+					}
+
 					swal({
 						title: "Bravo!",
 						text: "Restaurant dépastillé avec succès dans votre tribu G.",
 						icon: "success",
+					}).then((response) => {
+						e.classList = "btn btn-success btn-sm";
+						e.innerText = "Pastiller";
+						e.setAttribute(
+							"onclick",
+							`pastilleForTribuG(this, true,"${e.dataset.id}","${e.dataset.name}")`
+						);
 					});
-
-					e.classList = "btn btn-success ms-1";
-					e.innerText = "Dépastillé";
 				}
 			});
 	}
@@ -5991,7 +6028,7 @@ function findResto(val, localisation = "") {
                                   <td>${adresse}</td>
                                   <td class="d-flex bd-highlight">
                                       <button class="btn btn-info" onclick="openDetail('${name}', '${adresse}', '${depName}','${dep}','${json.id}')"><!--<i class="fas fa-plus"></i>--> Détail</button>
-                                      <button class="btn btn-primary ms-1" onclick="${oncl}">Pastillez</button>
+                                      <button class="btn btn-primary ms-1" data-id="${json.id}" onclick="${oncl}">Pastillez</button>
                                   </td>
                               </tr>
                           `;
