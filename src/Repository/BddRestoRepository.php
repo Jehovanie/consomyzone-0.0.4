@@ -1216,6 +1216,7 @@ class BddRestoRepository extends ServiceEntityRepository
 
 
     public function getDataBetweenAnd($minx, $miny, $maxx, $maxy, $idDep= null, $codinsee= null, $taille= 200){
+        $idDep= strlen($idDep) === 1  ? "0" . $idDep : $idDep;
         $query =  $this->createQueryBuilder("r")
                     ->select("r.id,
                         r.denominationF,
