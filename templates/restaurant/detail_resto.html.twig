@@ -14,12 +14,12 @@
 									{% if tribu_g_resto_pastille|length > 0 %}
 										{% for item in tribu_g_resto_pastille %}
 											{% if item["avatar"] != "" %}
-												<div onclick="createPopUpTribuG(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu G {{item["name"]}}" data-name="{{item["name"]}}" id="{{item["name"]}}">
+												<div onclick="createPopUpTribuG(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu G {{item["name"]}}" data-name="{{item["name"]}}" id="{{item["table_name"]}}">
 													<img src="/public{{asset(item["avatar"])}}" alt="{{item["name"]}}" data-name="{{item["description"]}}" data-type="tribuG">
 												</div>
 											{% else %}
 												{# <img  width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
-												<div onclick="createPopUpTribuG(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu G {{item["name"]}}" data-name="{{item["name"]}}" id="{{item["name"]}}">
+												<div onclick="createPopUpTribuG(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu G {{item["name"]}}" data-name="{{item["name"]}}" id="{{item["table_name"]}}">
 													<img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name"]}}" data-name="{{item["description"]}}" data-type="tribuG">
 												</div>
 											{% endif %}
