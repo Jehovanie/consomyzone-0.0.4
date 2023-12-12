@@ -263,7 +263,7 @@ class MarckerClusterSearch extends MapModule  {
             })
             ////affiche les resultats.
             this.map.addLayer(this.markers);
-
+		    this.removePolylineAndSpyderfyMarker();
             // ////count marker in map
             // this.countMarkerInCart()
         }

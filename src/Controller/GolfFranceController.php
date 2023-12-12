@@ -110,6 +110,7 @@ class GolfFranceController extends AbstractController
 
     #[Route('/api/golf', name: 'api_golf_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
+        Request $request,
         GolfFranceRepository $golfFranceRepository,
         AvisGolfRepository $avisGolfRepository,
         GolfFranceService $golfFranceService,
@@ -118,6 +119,23 @@ class GolfFranceController extends AbstractController
         $golfs = [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
 
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas = $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+            
+            $ids=array_map('App\Service\SortResultService::getIdFromData', $datas);
+            $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
+
+            $golfs= $golfFranceService->mergeDatasAndAvis($datas, $moyenneNote);
+
+            return $this->json([ "success" => true, "data" => $golfs ], 200);
+        }
+
         $data = $golfFranceRepository->getSomeDataShuffle($userID);
 
         
@@ -125,7 +143,6 @@ class GolfFranceController extends AbstractController
         $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
 
         $golfs= $golfFranceService->mergeDatasAndAvis($data, $moyenneNote);
-
 
         return $this->json([
             "success" => true,
@@ -228,8 +245,8 @@ class GolfFranceController extends AbstractController
      */
     public function getPeripheriqueData(
         Request $request, 
-        GolfFranceRepository $golfFranceRepository)
-    {
+        GolfFranceRepository $golfFranceRepository
+    ){
         if($request->query->has("minx") && $request->query->has("miny") ){
             
             $dep = ( $request->query->get("dep")) ?  $request->query->get("dep") : null;

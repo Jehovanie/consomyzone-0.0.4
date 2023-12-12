@@ -1,307 +1,360 @@
-class MarckerClusterStation extends MapModule  {
+class MarckerClusterStation extends MapModule {
+	constructor(price_min, price_max, type = null, nom_dep = null, id_dep = null) {
+		super(id_dep, nom_dep, "station");
 
-    constructor(price_min, price_max, type = null, nom_dep = null, id_dep = null) {
-        super(id_dep, nom_dep, "station");
+		this.price_min = price_min;
+		this.price_max = price_max;
+		this.type = type ? type : null;
+	}
 
-        this.price_min = price_min;
-        this.price_max = price_max;
-        this.type = type ? type : null;
+	async onInit(isAddControl = false) {
+		this.ALREADY_INIT = false;
+		try {
+			this.createMarkersCluster();
+			this.initMap(null, null, null, isAddControl);
 
-    }
+			const response = await fetch(
+				"/getLatitudeLongitudeStation/?max=" +
+					this.price_max +
+					"&min=" +
+					this.price_min +
+					"&type=" +
+					this.type +
+					"&nom_dep=" +
+					this.nom_dep +
+					"&id_dep=" +
+					this.id_dep
+			);
+			this.default_data = await response.json();
+			this.data = this.default_data;
 
-    async onInit(isAddControl=false) {
-        this.ALREADY_INIT = false;
-        try {
-            this.createMarkersCluster();
-            this.initMap(null, null, null, isAddControl);
+			this.bindAction();
+		} catch (e) {
+			console.log(e);
+		}
+	}
 
-            const response = await fetch("/getLatitudeLongitudeStation/?max=" + this.price_max + "&min=" + this.price_min + "&type=" + this.type + "&nom_dep=" + this.nom_dep + "&id_dep=" + this.id_dep);
-            this.default_data = await response.json();
-            this.data = this.default_data;
+	async filterByPrice(price_min, price_max, type) {
+		try {
+			const response = await fetch(
+				"/getLatitudeLongitudeStation/?max=" +
+					price_max +
+					"&min=" +
+					price_min +
+					"&type=" +
+					type +
+					"&nom_dep=" +
+					this.nom_dep +
+					"&id_dep=" +
+					this.id_dep,
+				{
+					method: "get",
+				}
+			);
+			this.default_data = await response.json();
+			this.data = this.default_data;
 
-            this.bindAction()
-        } catch (e) {
-            console.log(e)
-        }
-    }
+			this.removeMarker();
+			// this.generateAllCard();
+			this.setNumberOfMarker();
 
-    async filterByPrice(price_min, price_max, type) {
-        try {
-            const response = await fetch("/getLatitudeLongitudeStation/?max=" + price_max + "&min=" + price_min + "&type=" + type + "&nom_dep=" + this.nom_dep + "&id_dep=" + this.id_dep, {
-                method: 'get',
-            });
-            this.default_data = await response.json();
-            this.data = this.default_data;
+			if (document.querySelector(".alphabet_active span")) {
+				this.filterByFirstLetterOnName(document.querySelector(".alphabet_active span").innerText);
+				handleFilterFirstChar(document.querySelector(".alphabet_active span").innerText);
+			} else {
+				this.addMarker(this.data);
+			}
+		} catch (e) {
+			console.log(e);
+		}
+	}
 
-            this.removeMarker();
-            // this.generateAllCard();
-            this.setNumberOfMarker();
+	getAlreadyInit() {
+		return this.ALREADY_INIT;
+	}
 
-            if (document.querySelector(".alphabet_active span")) {
-                this.filterByFirstLetterOnName(document.querySelector(".alphabet_active span").innerText)
-                handleFilterFirstChar(document.querySelector(".alphabet_active span").innerText)
-            } else {
-                this.addMarker(this.data);
-            }
+	setAlreadyInit(val) {
+		this.ALREADY_INIT = val;
+	}
 
+	bindAction() {
+		this.addMarker(this.data);
+		this.setNumberOfMarker();
+		// this.generateAllCard();
+		this.addEventOnMap(this.map);
+	}
 
-        } catch (e) {
-            console.log(e)
-        }
-    }
+	setNumberOfMarker() {
+		/// change the number of result in div
+		if (document.querySelector(".content_nombre_result_js_jheo")) {
+			document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
+		}
 
-    getAlreadyInit() {
-        return this.ALREADY_INIT;
-    }
+		/// change the number of result in div for the left translate
+		if (document.querySelector(".content_nombre_result_left_js_jheo")) {
+			document.querySelector(".content_nombre_result_left_js_jheo").innerText = this.data.length;
+		}
+	}
 
-    setAlreadyInit(val) {
-        this.ALREADY_INIT = val;
-    }
+	displayData() {
+		console.log(this.data);
+		console.log(this.geos);
+		console.log(this.map);
+	}
 
+	createMarkersCluster() {
+		this.markers = L.markerClusterGroup({
+			chunkedLoading: true,
+			animate: true,
+			disableClusteringAtZoom: true,
+			animateAddingMarkers: true,
+			chunkedLoading: true,
+			chunkInterval: 500,
+			chunkDelay: 100,
+		});
+		// const that = this;
+		// this.markers = L.markerClusterGroup({
+		//     chunkedLoading: true,
 
+		//     iconCreateFunction: function (cluster) {
+		//         if(that.marker_last_selected){
+		//             let sepcMarmerIsExist = false;
+		//             for (let g of  cluster.getAllChildMarkers()){
+		//                 if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) {
+		//                     sepcMarmerIsExist = true;
+		//                     break;
+		//                 }
+		//             }
+		//             if(sepcMarmerIsExist){
+		//                 return L.divIcon({
+		//                     html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+		//                     className: "spec_cluster",
+		//                     iconSize:L.point(35,35)
+		//                 });
+		//             }else{
+		//                 return L.divIcon({
+		//                     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+		//                     className: "mycluster",
+		//                     iconSize:L.point(35,35)
+		//                 });
+		//             }
+		//         }else{
+		//             return L.divIcon({
+		//                 html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+		//                 className: "mycluster",
+		//                 iconSize:L.point(35,35)
+		//             });
+		//         }
+		//     },
+		// });
+	}
 
-    bindAction() {
-        this.addMarker(this.data);
-        this.setNumberOfMarker();
-        // this.generateAllCard();
-        this.addEventOnMap(this.map);
-    }
+	addMarker(newData) {
+		const zoom = this.map._zoom;
+		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+		const minx = x.min,
+			miny = y.min,
+			maxx = x.max,
+			maxy = y.max;
 
-    setNumberOfMarker() {
-        /// change the number of result in div
-        if (document.querySelector(".content_nombre_result_js_jheo")) {
-            document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
-        }
+		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		const { dataMax, ratio } = current_object_dataMax;
 
-        /// change the number of result in div for the left translate
-        if (document.querySelector(".content_nombre_result_left_js_jheo")) {
-            document.querySelector(".content_nombre_result_left_js_jheo").innerText = this.data.length;
-        }
-    }
+		const ratioMin = parseFloat(parseFloat(y.min).toFixed(ratio));
+		const ratioMax = parseFloat(parseFloat(y.max).toFixed(ratio));
 
-    displayData() {
-        console.log(this.data)
-        console.log(this.geos)
-        console.log(this.map)
-    }
+		const dataFiltered = this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
 
-    createMarkersCluster() {
-        this.markers = L.markerClusterGroup({ 
-            chunkedLoading: true,
-            animate: true,
-            disableClusteringAtZoom: true,
-            animateAddingMarkers:true,
-            chunkedLoading: true,
-            chunkInterval: 500, 
-            chunkDelay: 100,
-        });
-        // const that = this;
-        // this.markers = L.markerClusterGroup({
-        //     chunkedLoading: true,
+		newData.forEach((item) => {
+			// this.settingSingleMarker(item, false);
+			const isInside =
+				parseFloat(item.lat) > parseFloat(miny) &&
+				parseFloat(item.lat) < parseFloat(maxy) &&
+				parseFloat(item.long) > parseFloat(minx) &&
+				parseFloat(item.long) < parseFloat(maxx);
+			const item_with_ratio = parseFloat(parseFloat(item.lat).toFixed(ratio));
 
-        //     iconCreateFunction: function (cluster) {
-        //         if(that.marker_last_selected){
-        //             let sepcMarmerIsExist = false;
-        //             for (let g of  cluster.getAllChildMarkers()){
-        //                 if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
-        //                     sepcMarmerIsExist = true;
-        //                     break;
-        //                 }
-        //             }
-        //             if(sepcMarmerIsExist){
-        //                 return L.divIcon({
-        //                     html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
-        //                     className: "spec_cluster",
-        //                     iconSize:L.point(35,35)
-        //                 });
-        //             }else{
-        //                 return L.divIcon({
-        //                     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-        //                     className: "mycluster",
-        //                     iconSize:L.point(35,35)
-        //                 });
-        //             }
-        //         }else{
-        //             return L.divIcon({
-        //                 html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-        //                 className: "mycluster",
-        //                 iconSize:L.point(35,35)
-        //             });
-        //         }
-        //     },
-        // });
-    }
+			if (
+				dataFiltered.some((jtem) => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax) &&
+				isInside
+			) {
+				this.settingSingleMarker(item, false);
 
-    addMarker(newData) {
-        const zoom = this.map._zoom;
-        const x = this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
-        const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
-        const minx= x.min, miny=y.min, maxx=x.max, maxy=y.max;
+				dataFiltered.forEach((ktem) => {
+					if (parseFloat(ktem.lat) === item_with_ratio) {
+						ktem.data.push(item);
+					}
+				});
+			}
+		});
+		this.map.addLayer(this.markers);
+		this.removePolylineAndSpyderfyMarker();
+	}
 
-        const current_object_dataMax= this.objectRatioAndDataMax.find( item => zoom >= parseInt(item.zoomMin));
-        const { dataMax, ratio }= current_object_dataMax;
-        
+	/**
+	 * Goals object about markers icon.
+	 * @param {*} item  this rubric item.
+	 * @param {*} isSelected : true or false
+	 * @returns object : { path: ..., size: }
+	 */
+	getIcon(item, isSelected = false) {
+		const icon_path = isSelected
+			? "assets/icon/NewIcons/icon-station-new-R.png"
+			: "assets/icon/NewIcons/icon-station-new-B.png";
+		const icon_size = isSelected ? 2 : 1; /// 0: normal, 2: selected
 
-        const ratioMin= parseFloat(parseFloat(y.min).toFixed(ratio));
-        const ratioMax= parseFloat(parseFloat(y.max).toFixed(ratio));
+		return { path: icon_path, size: icon_size };
+	}
 
-        const dataFiltered= this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
-        
-        newData.forEach(item => {
-            // this.settingSingleMarker(item, false);
-            const isInside = ( parseFloat(item.lat) > parseFloat(miny) && parseFloat(item.lat) < parseFloat(maxy) ) && ( parseFloat(item.long) > parseFloat(minx) && parseFloat(item.long) < parseFloat(maxx));
-            const item_with_ratio= parseFloat(parseFloat(item.lat).toFixed(ratio));
+	settingSingleMarker(item, isSelected = false) {
+		const zoom = this.map._zoom;
+		const icon = this.getIcon(item, isSelected);
 
-            if(dataFiltered.some(jtem => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax ) && isInside ){
+		let marker = L.marker(L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), {
+			icon: setIconn(icon.path, "content_badge", icon.size, zoom),
+			id: item.id,
+		});
 
-                this.settingSingleMarker(item, false);
+		////================ POPUP WHEN OPEN =================================================================
+		// marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
 
-                dataFiltered.forEach(ktem => {
-                    if(parseFloat(ktem.lat) === item_with_ratio ){
-                        ktem.data.push(item)
-                    }
-                })
-            }
-        })
-        this.map.addLayer(this.markers);
-    }
+		// marker.on('add', function () {
+		//     marker.openPopup();
+		// });
 
-    /**
-     * Goals object about markers icon.
-     * @param {*} item  this rubric item.
-     * @param {*} isSelected : true or false
-     * @returns object : { path: ..., size: }
-     */
-    getIcon(item, isSelected= false ){
-        const icon_path= isSelected ? "assets/icon/NewIcons/icon-station-new-R.png" : "assets/icon/NewIcons/icon-station-new-B.png";
-        const icon_size= isSelected ? 2 : 1; /// 0: normal, 2: selected
+		this.bindEventClick(marker, item);
 
-        return { 'path': icon_path, 'size': icon_size };
-    }
+		let miniFicheOnHover = setMiniFicheForStation(
+			item.nom,
+			item.adresse,
+			item.prixE85,
+			item.prixGplc,
+			item.prixSp95,
+			item.prixSp95E10,
+			item.prixGasoil,
+			item.prixSp98
+		);
+		marker.on("mouseover", () => {
+			marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
+			marker.closePopup();
+		});
 
-    settingSingleMarker(item, isSelected= false){
-        const zoom = this.map._zoom;
-        const icon = this.getIcon(item, isSelected);
+		this.markers.addLayer(marker);
+	}
 
-        let marker = L.marker(
-            L.latLng(parseFloat(item.latitude), parseFloat(item.longitude)), 
-            { 
-                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
-                id: item.id 
-            }
-        );
-        
-        ////================ POPUP WHEN OPEN =================================================================
-        // marker.bindPopup(setDefaultMiniFicherForStation(item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98), {autoClose: false, autoPan: false});
+	bindEventClick(marker, item) {
+		marker.on("click", (e) => {
+			////close right if this open
+			this.closeRightSide();
+			this.updateCenter(parseFloat(item.latitude), parseFloat(item.longitude), this.zoomDetails);
 
-        // marker.on('add', function () {
-        //     marker.openPopup();
-        // });
-        
-        this.bindEventClick( marker, item );
+			const zoom = this.map._zoom;
+			const icon = this.getIcon(item, true);
 
-        let miniFicheOnHover = setMiniFicheForStation(item.nom, item.adresse, item.prixE85, item.prixGplc, item.prixSp95, item.prixSp95E10, item.prixGasoil, item.prixSp98)
-        marker.on("mouseover", () => {
-            marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip()
-            marker.closePopup();
-        })
+			marker.setIcon(setIconn(icon.path, "", icon.size, zoom));
 
-        this.markers.addLayer(marker);
-    }
+			this.updateLastMarkerSelected(marker, item);
 
-    bindEventClick( marker, item ){
-        marker.on('click', (e) => {
-            ////close right if this open
-            this.closeRightSide();
-            this.updateCenter( parseFloat(item.latitude ), parseFloat(item.longitude ), this.zoomDetails);
-            
-            const zoom = this.map._zoom;
-            const icon= this.getIcon(item, true );
+			this.markers.refreshClusters();
 
-            marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+			this.renderFicheDetails(item);
+		});
+	}
 
-            this.updateLastMarkerSelected( marker, item )
+	updateLastMarkerSelected(marker, item) {
+		if (this.marker_last_selected && this.marker_last_selected != marker) {
+			const last_marker = this.data.find(
+				({ id }) => parseInt(id) === parseInt(this.marker_last_selected.options.id)
+			);
+			const icon = this.getIcon(last_marker, false);
 
-            this.markers.refreshClusters();
+			this.marker_last_selected.setIcon(setIconn(icon.path, "", icon.size, 9));
+		}
+		this.marker_last_selected = marker;
+	}
 
-            this.renderFicheDetails( item )
-        })
-    }
+	renderFicheDetails(item) {
+		if (screen.width < 991) {
+			getDetailStation(
+				item.departementName.trim().replace("?", ""),
+				item.departementCode.toString().trim(),
+				item.id,
+				false
+			);
+		} else {
+			getDetailStation(
+				item.departementName.trim().replace("?", ""),
+				item.departementCode.toString().trim(),
+				item.id,
+				false
+			);
+		}
+	}
 
-    updateLastMarkerSelected( marker, item ){
-        if (this.marker_last_selected && this.marker_last_selected != marker ) {
-            const last_marker= this.data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
-            const icon= this.getIcon(last_marker, false );
-            
-            this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, 9 ));
-        }
-        this.marker_last_selected = marker;
-    }
+	addEventOnMap(map) {
+		map.on("resize moveend", (e) => {
+			const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+			const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
 
-    renderFicheDetails( item ){
-        if (screen.width < 991) {
-            getDetailStation( item.departementName.trim().replace("?", ""), item.departementCode.toString().trim(), item.id, false)
-        } else {
-            getDetailStation( item.departementName.trim().replace("?", ""), item.departementCode.toString().trim(), item.id, false)
-        }
-    }
+			const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
 
-    addEventOnMap(map) {
-        map.on("resize moveend", (e) => {
-            const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
-            const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+			this.updateMarkersDisplay(new_size);
+			this.addPeripheriqueMarker(new_size);
+		});
+	}
 
-            const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+	async addPeripheriqueMarker(new_size) {
+		try {
+			const { minx, miny, maxx, maxy } = new_size;
 
-            this.updateMarkersDisplay(new_size);
-            this.addPeripheriqueMarker(new_size);
-        })
-    }
+			let param =
+				"?minx=" +
+				encodeURIComponent(minx) +
+				"&miny=" +
+				encodeURIComponent(miny) +
+				"&maxx=" +
+				encodeURIComponent(maxx) +
+				"&maxy=" +
+				encodeURIComponent(maxy);
+			param += this.nom_dep && this.id_dep ? `&dep=${this.id_dep}&nom_dep=${this.nom_dep}` : "";
 
-    async addPeripheriqueMarker(new_size) {
-        try {
-            const { minx, miny, maxx, maxy }= new_size;
+			const api_data = "/station_in_peripherique/";
+			const response = await fetch(`${api_data}${param}`);
+			const responseJson = await response.json();
 
-            let param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
-            param += ( this.nom_dep && this.id_dep) ? `&dep=${this.id_dep}&nom_dep=${this.nom_dep}` : "";
+			let new_data = responseJson.data;
+			this.addMarkerNewPeripherique(new_data, new_size);
 
-            const api_data= "/station_in_peripherique/";
-            const response = await fetch(`${api_data}${param}`);
-            const responseJson = await response.json();
-            
-            let new_data = responseJson.data;
-            this.addMarkerNewPeripherique(new_data, new_size);
+			// const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
+			new_data = new_data.filter((item) => !this.default_data.some((j) => parseInt(j.id) === parseInt(item.id)));
 
+			// this.addMarker(this.checkeFilterType(new_data));
+			this.default_data = this.default_data.concat(new_data);
+		} catch (e) {
+			console.log(e);
+		}
+	}
 
-            // const new_data_filterd = new_data.filter(item => !this.default_data.some(j => j.id === item.id));
-            new_data = new_data.filter(item => !this.default_data.some(j => parseInt(j.id) === parseInt(item.id)));
+	removeMarker() {
+		this.markers.clearLayers();
+		this.map.removeLayer(this.markers);
+	}
 
-            // this.addMarker(this.checkeFilterType(new_data));
-            this.default_data= this.default_data.concat(new_data);
+	generateAllCard() {
+		if (this.nom_dep && this.id_dep) {
+			/// mise a jour de liste
+			const parent_elements = document.querySelector(".list_result");
+			const elements = document.querySelectorAll(".element");
+			elements.forEach((element) => {
+				element.parentElement.removeChild(element);
+			});
 
-        } catch (e) {
-            console.log(e)
-        }
-    }
-
-    removeMarker() {
-        this.markers.clearLayers();
-        this.map.removeLayer(this.markers);
-    }
-
-
-    generateAllCard() {
-        if (this.nom_dep && this.id_dep) {
-            /// mise a jour de liste
-            const parent_elements = document.querySelector(".list_result")
-            const elements = document.querySelectorAll(".element")
-            elements.forEach(element => {
-                element.parentElement.removeChild(element);
-            })
-            
-            this.data.forEach(element => {
-                parent_elements.querySelector("ul").innerHTML += `
-                    <li class="card-list element open_detail_jheo_js" onclick="getDetailFromListLeft('${this.id_dep}','${this.nom_dep}','${element.id}')" data-toggle-id='${element.id}'>
+			this.data.forEach((element) => {
+				parent_elements.querySelector("ul").innerHTML += `
+                    <li class="card-list element open_detail_jheo_js" onclick="getDetailFromListLeft('${
+						this.id_dep
+					}','${this.nom_dep}','${element.id}')" data-toggle-id='${element.id}'>
                         <div class="row container-depart element card_list_element_jheo_js" id="${element.id}">
                             <div class="col-md-9">
                                 <p> <span class="id_departement">${element.nom.toLowerCase()}<br> </span>${element.adresse.toLowerCase()}</p>
@@ -338,15 +391,19 @@ class MarckerClusterStation extends MapModule  {
                         </div>
                     </li>
                 
-                `
-            })
+                `;
+			});
 
-            ///show when screen mobile
-            if (document.querySelector(".content_list_station_left")) {
-                const parent_elements_mobile_on_left = document.querySelector(".content_list_station_left")
-                this.data.forEach(element => {
-                    parent_elements_mobile_on_left.innerHTML += `
-                        <li class="card_list element open_detail_mobile_jheo_js" data-toggle-id='${element.id}'  data-bs-toggle="modal" data-bs-target="#detailModalMobil" onclick="getDetailStationForMobile('${this.id_dep}','${this.nom_dep}','${element.id}')">
+			///show when screen mobile
+			if (document.querySelector(".content_list_station_left")) {
+				const parent_elements_mobile_on_left = document.querySelector(".content_list_station_left");
+				this.data.forEach((element) => {
+					parent_elements_mobile_on_left.innerHTML += `
+                        <li class="card_list element open_detail_mobile_jheo_js" data-toggle-id='${
+							element.id
+						}'  data-bs-toggle="modal" data-bs-target="#detailModalMobil" onclick="getDetailStationForMobile('${
+						this.id_dep
+					}','${this.nom_dep}','${element.id}')">
                             <div class="row container-depart pt-4 element" id="${element.id}">
                                 <div class="col-md-9 col-sm-12">
                                     <p> 
@@ -366,81 +423,80 @@ class MarckerClusterStation extends MapModule  {
                                 </div>
                             </div>
                         </li>
-                    `
-                })
-            }
-        }
+                    `;
+				});
+			}
+		}
 
-        const selector = screen.width < 991 ? "open_detail_mobile_jheo_js" : "open_detail_jheo_js";
-        if (document.querySelectorAll(`.${selector}`)) {
-            const cta_details = document.querySelectorAll(`.${selector}`);
-            cta_details.forEach(cta_detail => {
-                cta_detail.addEventListener("click", () => {
-                    const url = new URL(window.location.href);
-                    this.markers.eachLayer(layer => {
+		const selector = screen.width < 991 ? "open_detail_mobile_jheo_js" : "open_detail_jheo_js";
+		if (document.querySelectorAll(`.${selector}`)) {
+			const cta_details = document.querySelectorAll(`.${selector}`);
+			cta_details.forEach((cta_detail) => {
+				cta_detail.addEventListener("click", () => {
+					const url = new URL(window.location.href);
+					this.markers.eachLayer((layer) => {
+						if (parseInt(layer.options.id_icon) === parseInt(cta_detail.getAttribute("data-toggle-id"))) {
+							const icon_R = L.Icon.extend({
+								options: {
+									iconUrl: IS_DEV_MODE
+										? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png"
+										: url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
+									iconSize: [32, 50],
+									iconAnchor: [11, 30],
+									popupAnchor: [0, -20],
+									//shadowUrl: 'my-icon-shadow.png',
+									shadowSize: [68, 95],
+									shadowAnchor: [22, 94],
+								},
+							});
+							layer.setIcon(new icon_R());
+							if (this.marker_last_selected) {
+								const icon_B = L.Icon.extend({
+									options: {
+										iconUrl: IS_DEV_MODE
+											? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png"
+											: url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
+										iconSize: [32, 50],
+										iconAnchor: [11, 30],
+										popupAnchor: [0, -20],
+										//shadowUrl: 'my-icon-shadow.png',
+										shadowSize: [68, 95],
+										shadowAnchor: [22, 94],
+									},
+								});
+								this.marker_last_selected.setIcon(new icon_B());
+							}
+							this.marker_last_selected = layer;
+						}
+					});
+				});
+			});
+		}
+	}
 
-                        if (parseInt(layer.options.id_icon) === parseInt(cta_detail.getAttribute("data-toggle-id"))) {
-                            const icon_R = L.Icon.extend({
-                                options: {
-                                    iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-R.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-R.png",
-                                    iconSize: [32,50],
-                                    iconAnchor: [11, 30],
-                                    popupAnchor: [0, -20],
-                                    //shadowUrl: 'my-icon-shadow.png',
-                                    shadowSize: [68, 95],
-                                    shadowAnchor: [22, 94]
-                                }
-                            })
-                            layer.setIcon(new icon_R);
-                            if (this.marker_last_selected) {
-                                const icon_B = L.Icon.extend({
-                                    options: {
-                                        iconUrl: IS_DEV_MODE ? url.origin + "/assets/icon/NewIcons/icon-station-new-B.png" : url.origin + "/public/assets/icon/NewIcons/icon-station-new-B.png",
-                                        iconSize: [32,50],
-                                        iconAnchor: [11, 30],
-                                        popupAnchor: [0, -20],
-                                        //shadowUrl: 'my-icon-shadow.png',
-                                        shadowSize: [68, 95],
-                                        shadowAnchor: [22, 94]
-                                    }
-                                })
-                                this.marker_last_selected.setIcon(new icon_B)
-                            }
-                            this.marker_last_selected = layer;
-                        }
+	filterByFirstLetterOnName(letter) {
+		const new_data = [];
+		this.removeMarker();
 
-                    })
+		this.default_data.forEach((item) => {
+			if (item.nom.toLowerCase().charAt(0) === letter.toLowerCase()) {
+				new_data.push(item);
+			}
+		});
+		// alert(new_data.length)
+		this.addMarker(new_data);
+	}
 
-                })
-            })
-        }
+	resetToDefaultMarkers() {
+		this.removeMarker();
+		this.addMarker(this.default_data);
+	}
 
-    }
-
-
-    filterByFirstLetterOnName(letter) {
-        const new_data = [];
-        this.removeMarker();
-
-        this.default_data.forEach(item => {
-            if (item.nom.toLowerCase().charAt(0) === letter.toLowerCase()) {
-                new_data.push(item)
-            }
-        })
-        // alert(new_data.length)
-        this.addMarker(new_data)
-    }
-
-    resetToDefaultMarkers() {
-        this.removeMarker();
-        this.addMarker(this.default_data)
-    }
-
-    clickOnMarker(id){
-        this.markers.eachLayer((marker) => {
-            if (parseInt(marker.options.id) === parseInt(id) ) {
-                marker.fireEvent('click');
-            }
-        });
-    }
+	clickOnMarker(id) {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(id)) {
+				marker.fireEvent("click");
+			}
+		});
+	}
 }
