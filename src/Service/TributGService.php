@@ -1385,7 +1385,7 @@ class TributGService extends PDOConnexionService{
      */
      public function getAllTableTribuG(){
         $results = array();
-        $tab_not_like= ['%agenda%','%commentaire%', '%publication%','%reaction%'];
+        $tab_not_like= ['%agenda%','%commentaire%', '%publication%','%reaction%', '%golf%', '%msg_grp%', '%restaurant%'];
         
         $query_sql= "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_name like 'tribug_%'";
         foreach($tab_not_like as $not_like ){
@@ -1986,5 +1986,4 @@ class TributGService extends PDOConnexionService{
 
             return $max_id->fetchAll(PDO::FETCH_ASSOC);
     }
-
 }

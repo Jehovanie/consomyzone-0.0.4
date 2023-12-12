@@ -976,6 +976,7 @@ class RestaurantController extends AbstractController
         $id_restaurant,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
         AvisRestaurantRepository $avisRestaurantRepository,
         Filesystem $filesyst
     ): Response {
@@ -1019,9 +1020,10 @@ class RestaurantController extends AbstractController
         $arrayTribu = [];
         $arrayTribuRestoPast = [];
         $arrayTribuRestoJoinedPast = [];
+        $arrayTribuGRestoPastille = [];
         
         if($this->getUser()){
-
+            $user= $this->getUser();
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
             // dd($tribu_t_owned);
@@ -1056,6 +1058,25 @@ class RestaurantController extends AbstractController
                 }
             }
 
+            ///tribut G pastille
+            // $current_profil= $statusProfile["profil"][0];
+            // $tributG_table_name= $current_profil->getTributG();
+            // $isPastilled = $tributGService->getIdRestoOnTableExtension($tributG_table_name."_restaurant", $id_restaurant);
+            // if( count($isPastilled) > 0 ){
+            //     $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
+            //     array_push($arrayTribuGRestoPastille, $profil_tribuG);
+            // }
+
+            $all_table_tribuG= $tributGService->getAllTableTribuG();
+            foreach($all_table_tribuG as $table_tribuG){
+                $tributG_table_name= $table_tribuG["table_name"];
+                $isPastilled = $tributGService->getIdRestoOnTableExtension($tributG_table_name."_restaurant", $id_restaurant);
+
+                if( count($isPastilled) > 0 ){
+                    $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
+                    array_push($arrayTribuGRestoPastille, $profil_tribuG);
+                }
+            }
         }
 
         $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/restaurant/".$id_restaurant."/";
@@ -1078,7 +1099,6 @@ class RestaurantController extends AbstractController
             }
         }
 
-        // dd($tabPhoto);
         
         return $this->render("restaurant/detail_resto.html.twig", [
             "id_restaurant"=>$id_restaurant,
@@ -1091,6 +1111,7 @@ class RestaurantController extends AbstractController
             "tribu_t_can_pastille" => $arrayTribu,
             "tribu_t_resto_pastille" => $arrayTribuRestoPast,
             "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
+            "tribu_g_resto_pastille" => $arrayTribuGRestoPastille,
             "photos" => $tabPhoto,
         ]);
     }
