@@ -655,7 +655,8 @@ class TributGService extends PDOConnexionService{
             "datetime" => $data['datetime'],
             "isBanished" => $data["isBanished"],
             "isDeveloper" => $data["isDeveloper"],
-            "isModerate" => $data["isModerate"]
+            "isModerate" => $data["isModerate"],
+            "table_name" => $table_name
         ];
         return $result;
 
@@ -1724,7 +1725,7 @@ class TributGService extends PDOConnexionService{
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        $result=mb_convert_encoding($result, 'UTF-8', 'UTF-8');
+        // $result=mb_convert_encoding($result, 'UTF-8', 'UTF-8');
 
 		//$result=$serialize->serialize($result,'json');
 		
