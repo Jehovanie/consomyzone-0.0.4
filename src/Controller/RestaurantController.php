@@ -1061,7 +1061,7 @@ class RestaurantController extends AbstractController
             ///tribut G pastille
             // $current_profil= $statusProfile["profil"][0];
             // $tributG_table_name= $current_profil->getTributG();
-            // $isPastilled = $tributGService->getIdRestoOnTableExtension($tributG_table_name."_restaurant", $id_restaurant);
+            // $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $id_restaurant);
             // if( count($isPastilled) > 0 ){
             //     $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
             //     array_push($arrayTribuGRestoPastille, $profil_tribuG);
@@ -1070,7 +1070,7 @@ class RestaurantController extends AbstractController
             $all_table_tribuG= $tributGService->getAllTableTribuG();
             foreach($all_table_tribuG as $table_tribuG){
                 $tributG_table_name= $table_tribuG["table_name"];
-                $isPastilled = $tributGService->getIdRestoOnTableExtension($tributG_table_name."_restaurant", $id_restaurant);
+                $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $id_restaurant);
 
                 if( count($isPastilled) > 0 ){
                     $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
