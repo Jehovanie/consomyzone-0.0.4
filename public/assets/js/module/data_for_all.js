@@ -112,7 +112,7 @@ function pastilleRestoForTribuT(element, isPastilled) {
 	};
 
 	let link = isPastilled ? "/user/tribu_t/pastille/resto" : "/user/tribu_t/depastille/resto";
-    
+
 	const request = new Request(link, {
 		method: "POST",
 		headers: {
@@ -159,7 +159,7 @@ function pastilleRestoForTribuT(element, isPastilled) {
 				div.setAttribute("data-bs-placement", "top");
 				div.dataset.name = tribuName;
 				div.appendChild(img);
-				
+
 				new swal("Succès !", "Restaurant pastillé avec succès", "success").then((value) => {
 					updateBtnStatus(element, html);
 					document.querySelector(".mainContainerLogoTribu").appendChild(div);
@@ -169,6 +169,14 @@ function pastilleRestoForTribuT(element, isPastilled) {
 			}
 		})
 		.catch((error) => console.log(error));
+}
+
+function updateListRestoPastille(id, table, isPastille) {
+	if (isPastille) {
+		CURRENT_MAP_INSTANCE.updateListRestoPastille(id, table);
+	} else {
+		CURRENT_MAP_INSTANCE.updateListRestoDepastille(id, table);
+	}
 }
 
 function injectChooseCouch() {

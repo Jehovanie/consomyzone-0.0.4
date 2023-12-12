@@ -5732,6 +5732,8 @@ function pastilleForTribuG(e, type, id, name) {
 						);
 
 						if (document.querySelector(".mainContainerLogoTribu")) {
+							updateListRestoPastille(e.dataset.id, e.dataset.tbname + "_restaurant", true);
+
 							let img = document.createElement("img");
 							img.src = e.dataset.velona;
 							img.dataset.name = name;
@@ -5786,6 +5788,10 @@ function pastilleForTribuG(e, type, id, name) {
 							"onclick",
 							`pastilleForTribuG(this, true,"${e.dataset.id}","${e.dataset.name}")`
 						);
+
+						if (document.querySelector(".mainContainerLogoTribu")) {
+							updateListRestoPastille(e.dataset.id, e.dataset.tbname + "_restaurant", false);
+						}
 					});
 				}
 			});
