@@ -828,13 +828,29 @@ class TributGController extends AbstractController
 
         }
 
-        return $this->json(["status"=>"ok","id_golf"=>$golf_id, "table"=>$tribu_g."_golf", "golf"=> $golf_name]);
+        $profil_tribuG= $tribuGService->getProfilTributG($tribu_g, $this->getUser()->getId());
+
+        return $this->json([
+            "status"=>"ok",
+            "id_golf"=>$golf_id, 
+            "table"=>$tribu_g."_golf", 
+            "profil_tribuG" =>  [
+                "table_name" => $tribu_g, 
+                "logo_path" => $profil_tribuG["avatar"], 
+                "name_tribu_t_muable" => $profil_tribuG["name"], 
+                "isPastilled" => true
+            ],
+            "golf"=> $golf_name
+        ]);
         
         
     }
 
     #[Route("/user/tribu_g/depastille/golf", name:"tribu_g_depastille_golf", methods:["POST"])]
-    public function depastilleGolfForTribuT(Request $resquest, TributGService $tribuGService){
+    public function depastilleGolfForTribuT(
+        Request $resquest, 
+        TributGService $tribuGService
+    ){
 
         $jsonParsed=json_decode($resquest->getContent(),true);
 
@@ -846,22 +862,49 @@ class TributGController extends AbstractController
 
         $tribuGService->depastilleOrPastilleRestaurant($tribu_g."_golf", $golf_id, 0);
 
-        return $this->json(["status"=>"ok","id_golf"=>$golf_id, "table"=>$tribu_g."_golf", "golf"=> $golf_name]);
+        $profil_tribuG= $tribuGService->getProfilTributG($tribu_g, $this->getUser()->getId());
+
+        return $this->json([
+            "status"=>"ok",
+            "id_golf"=>$golf_id, 
+            "table"=>$tribu_g."_golf",
+            "profil_tribuG" =>  [
+                "table_name" => $tribu_g, 
+                "logo_path" => $profil_tribuG["avatar"], 
+                "name_tribu_t_muable" => $profil_tribuG["name"], 
+                "isPastilled" => false
+            ],
+            "golf"=> $golf_name
+        ]);
 
         
     }
 
-    #[Route("/user/tribu_g/isPastilled/{table}/{id_resto}", name:"tribu_g_isPastilled", methods:["GET"])]
-    public function isPastilled($table, $id_resto, Request $resquest, TributGService $tribuGService){
+    #[Route("/user/tribu_g/isPastilled/{table}/{golfId}", name:"tribu_g_isPastilled", methods:["GET"])]
+    public function isPastilled(
+        $table, 
+        $golfId, 
+        Request $resquest, 
+        TributGService $tribuGService
+    ){
 
-        $res = $tribuGService->isPastilled($table, $id_resto);
+        $res = $tribuGService->isPastilled($table, $golfId);
+        $table_tribuG_name= str_replace("_golf", "", $table);
 
-        if(count($res)>0){
+        $profil_tribuG= $tribuGService->getProfilTributG($table_tribuG_name, $this->getUser()->getId());
 
-            return $this->json(true);
-        }else{
-            return $this->json(false);
-        }
+        $isPastilled = (count($res)>0) ? true : false;;
+
+        return $this->json([
+            "isPastilled" => $isPastilled,
+            "profil_tribuG" =>  [
+                "table_name" => $table_tribuG_name, 
+                "logo_path" => $profil_tribuG["avatar"], 
+                "name_tribu_t_muable" => $profil_tribuG["name"], 
+                "isPastilled" => false
+            ],
+            "gold_id" => $golfId
+        ]);
     }
 
     /**

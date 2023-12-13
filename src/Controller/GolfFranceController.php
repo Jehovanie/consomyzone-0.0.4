@@ -482,6 +482,10 @@ class GolfFranceController extends AbstractController
         $avis= ["note" => null, "text" => null  ];
 
         $arrayTribu = [];
+        
+        // tribut G pastille
+        $array_tribug_pastilled= [];
+
         $isPastilled = false;
         
         $note_temp=0;

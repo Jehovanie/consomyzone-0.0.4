@@ -5230,11 +5230,16 @@ function pastilleGolf(element, table_tribu_t) {
 							}
 							if (data["logo_path"] != "") {
 								if (data["isPastilled"] == true && table_tribu_t == data["table_name"]) {
-									logoPath = `<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data["logo_path"]}" alt="">`;
+									logoPath = `
+										<img  class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" 
+											  src="/public${data["logo_path"]}" alt="">
+										`;
 								}
 							} else {
 								if (data["isPastilled"] == true && table_tribu_t == data["table_name"]) {
-									logoPath = `<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="">`;
+									logoPath = `<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" 
+									             src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" 
+												 alt="">`;
 								}
 							}
 
@@ -5399,7 +5404,11 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
 
 			fetch(`/user/tribu_g/isPastilled/${tribu_g_name + "_golf"}/${id_golf}`)
 				.then((s) => s.json())
-				.then((isOk) => {
+				.then((response) => {
+					const isOk = response.isPastilled;
+					const profil_tribuG = response.profil_tribuG;
+					console.log(profil_tribuG);
+
 					let txt = "";
 					let isPastilled = false;
 					let classe = "";
@@ -5413,39 +5422,64 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
 						classe = "success";
 					}
 
+					const logoTribuG = profil_tribuG.logo_path
+						? profil_tribuG.logo_path
+						: "/public/uploads/tribu_t/photo/avatar_tribu.jpg";
+
 					let modalPastillGolf = `
-              <ul class="nav nav-tabs">
-                  <li class="nav-item">
-                      <a class="nav-link active elie-tribu-t" aria-current="page" href="#" onclick="setViewTribu('g','t')">Tribu T</a>
-                  </li>
-                  <li class="nav-item">
-                      <a class="nav-link elie-tribu-g" href="#" onclick="setViewTribu('t','g')">Tribu G</a>
-                  </li>
-              </ul>
+						<ul class="nav nav-tabs">
+							<li class="nav-item">
+								<a class="nav-link active elie-tribu-t" aria-current="page" href="#" onclick="setViewTribu('g','t')">Tribu T</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link elie-tribu-g" href="#" onclick="setViewTribu('t','g')">Tribu G</a>
+							</li>
+						</ul>
 
-              <table class="table table-striped content_list_resto_js">
-                  <thead>
-                      <tr>
-                          <th scope="col">Logo</th>
-                          <th scope="col">Tribu T</th>
-                          <th scope="col">Action</th>
-                      </tr>
-                  </thead>
-                  <tbody>
-                      ${listTibuTPast}
-                  </tbody>
-              </table>
+						<table class="table table-striped content_list_resto_js">
+							<thead>
+								<tr>
+									<th scope="col">Logo</th>
+									<th scope="col">Tribu T</th>
+									<th scope="col">Action</th>
+								</tr>
+							</thead>
+							<tbody>
+								${listTibuTPast}
+							</tbody>
+						</table>
 
-              <div class="m-2 content_list_resto_js_g d-none">
-                  <div class="d-flex justify-content-between">
-                          <span>${tribu_g_name}</span>
-                          <button class="btn btn-${classe} btn-sm" id="btn-pastille-elie-tbg" data-tbname ="${tribu_g_name}" onclick="pastilleGolfForTribuG(this, ${isPastilled}, ${id_golf}, '${name_golf}')">
-                              ${txt}
-                          </button>
-              
-                  </div>
-              </div>
-          `;
+						<div class="m-2 content_list_resto_js_g d-none">
+							<table style="width: 100%;">
+								<thead>
+									<tr>
+										<th scope="col">Logo</th>
+										<th scope="col">Tribu G</th>
+										<th scope="col">Action</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr style="vertical-align: middle;">
+										<td class="col-logo">
+											<img style="max-height:70px;max-width:70px;clip-path: circle(40%);" 
+											     src="${logoTribuG}" alt="Icon Tribu G">
+										</td>
+										<td class="col-tribuT">${name_golf}</td>
+										<td class="col-action">
+											<button class="btn btn-${classe} btn-sm" 
+												id="btn-pastille-elie-tbg" 
+												data-tbname ="${tribu_g_name}"
+												data-name ="${name_golf.replaceAll("'", "\\'")}"
+												data-id= "${id_golf}"
+												onclick="pastilleGolfForTribuG(this, ${isPastilled}, ${id_golf}, '${name_golf.replaceAll("'", "\\'")}')">
+												${txt}
+											</button>
+										</td>
+									</tr>
+								</tbody>
+							</table>
+						</div>
+					`;
 					/*let modalPastillGolf = `
 							  <div class="content-modal-pastille-golf modal-pastille-golf-tomm-js ">
 								  <div class="modal-pastille-golf">
@@ -5830,11 +5864,37 @@ function pastilleGolfForTribuG(e, type, id, name) {
 						text: "Golf pastillé avec succès dans votre tribu G.",
 						icon: "success",
 					}).then(() => {
-						document.querySelector("#fetch_golf_tribug_jheo_js").click();
-					});
+						e.classList = "btn btn-warning ms-1";
+						e.innerText = "Dépastille";
+						e.setAttribute(
+							"onclick",
+							`pastilleGolfForTribuG(this, false, "${e.dataset.id}", "${e.dataset.name}")`
+						);
 
-					e.classList = "btn btn-success ms-1";
-					e.innerText = "Pastillé";
+						if (document.querySelector(".logo-pastille-golf-tomm-js")) {
+							console.log(res);
+							const info_tribuG = res.profil_tribuG;
+
+							const content_list_pastille = document.querySelector(".logo-pastille-golf-tomm-js");
+
+							const image = document.createElement("img");
+							image.className = `logo_path_pastille_details logo_path_${info_tribuG["table_name"]}_tomm_js logo_path_pastille_details-tomm-js`;
+							image.id = info_tribuG["table_name"];
+							image.src =
+								info_tribuG["logo_path"] === null
+									? "/uploads/tribu_t/photo/avatar_tribu.jpg"
+									: info_tribuG["logo_path"];
+
+							image.alt = "Icon Tribu G";
+
+							content_list_pastille.prepend(image);
+						}
+						if (document.querySelector("#fetch_golf_tribug_jheo_js")) {
+							/// this use in the tribu G (partie connected)
+							document.querySelector("#fetch_golf_tribug_jheo_js").click();
+						}
+					});
+					// return $this->json(["id_golf" => $golf_id, "table" => $tribu_t . "_golf"]);
 				}
 			});
 	}
@@ -5855,10 +5915,28 @@ function pastilleGolfForTribuG(e, type, id, name) {
 						title: "Bravo!",
 						text: "Golf dépastillé avec succès dans votre tribu G.",
 						icon: "success",
-					});
+					}).then(() => {
+						e.classList = "btn btn-success ms-1";
+						e.innerText = "Pastillé";
 
-					e.classList = "btn btn-success ms-1";
-					e.innerText = "Dépastillé";
+						e.setAttribute(
+							"onclick",
+							`pastilleGolfForTribuG(this, true, "${e.dataset.id}", "${e.dataset.name}")`
+						);
+
+						// onclick = "pastilleGolfForTribuG(this, true, 151, 'golf club de lalargue')";
+
+						const info_tribuG = res.profil_tribuG;
+
+						if (document.querySelector(".logo-pastille-golf-tomm-js")) {
+							const content_list_pastille = document.querySelector(".logo-pastille-golf-tomm-js");
+
+							if (content_list_pastille.querySelector(`#${info_tribuG["table_name"]}`)) {
+								const info_tribuG = res.profil_tribuG;
+								content_list_pastille.querySelector(`#${info_tribuG["table_name"]}`).remove();
+							}
+						}
+					});
 				}
 			});
 	}
