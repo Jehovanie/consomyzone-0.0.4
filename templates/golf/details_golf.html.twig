@@ -43,17 +43,34 @@
                             {% set count = 0 %}
                             {% for tribu_t_pastilled in tribu_t_pastilleds %}
                                 {# {{ dump(tribu_t_pastilled) }} #}
-                                    {% if tribu_t_pastilled.isPastilled == true %}
-                                        {% set count = count + 1 %}
-                                    {% endif %}
+                                {% if tribu_t_pastilled.isPastilled == true %}
+                                    {% set count = count + 1 %}
+                                {% endif %}
+
                                 {% if tribu_t_pastilled['isPastilled'] == true %}
+
                                     {% if tribu_t_pastilled['logo_path'] == "" %}
                                         <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="te">
                                     {% else %}
                                         <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public{{tribu_t_pastilled['logo_path']}}" alt="t">
                                     {% endif %}
-                                    
+                                {% endif %}
                                 
+                            {% endfor %}
+
+                            {% for tribu_g_pastilled in tribu_g_pastilleds %}
+                                {# {{ dump(tribu_t_pastilled) }} #}
+                                {% if tribu_g_pastilled.isPastilled == true %}
+                                    {% set count = count + 1 %}
+                                {% endif %}
+
+                                {% if tribu_g_pastilled['isPastilled'] == true %}
+
+                                    {% if tribu_g_pastilled['logo_path'] == "" %}
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_g_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="te">
+                                    {% else %}
+                                        <img class="logo_path_pastille_details logo_path_{{tribu_g_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public{{tribu_g_pastilled['logo_path']}}" alt="t">
+                                    {% endif %}
                                 {% endif %}
                                 
                             {% endfor %}

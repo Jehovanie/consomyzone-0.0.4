@@ -465,6 +465,7 @@ class GolfFranceController extends AbstractController
         UserRepository $userRepository,
         Status $status,
         Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
         Filesystem $filesyst,
     ){
         ///current user connected
@@ -518,6 +519,35 @@ class GolfFranceController extends AbstractController
                     }
                 }
             }
+
+            $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+            foreach ($tribu_t_joined as $key) {
+                $tbtJoined = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                $tableExtensionTbtJoined = $tbtJoined . "_golf";
+                if($tribu_T_Service->checkExtension($tbtJoined, "_golf") > 0){
+                    if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"], true)){
+                        array_push($arrayTribu, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => true]);
+                    }else{
+                        array_push($arrayTribu, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable, "isPastilled" => false]);
+                    }
+                }
+            }
+            // tribut G pastille
+            $array_tribug_pastilled= [];
+
+            $statusProfile = $status->statusFondateur($this->getUser());
+
+            $current_profil= $statusProfile["profil"][0];
+            $tributG_table_name= $current_profil->getTributG();
+
+            $isPastilled = $tributGService->isPastilled($tributG_table_name."_golf", $golfID);
+
+            if( count($isPastilled) > 0 ){
+                $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
+                array_push($array_tribug_pastilled, ["table_name" => $profil_tribuG["table_name"], "logo_path" => $profil_tribuG["avatar"], "name_tribu_g_muable" => $profil_tribuG["name"], "isPastilled" => true]);
+            }
         }
 
         $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/golf/".$details["id"]."/";
@@ -546,6 +576,7 @@ class GolfFranceController extends AbstractController
             "nom_dep" => $nom_dep,
             "details" => $details,
             "tribu_t_pastilleds" => $arrayTribu,
+            "tribu_g_pastilleds" => $array_tribug_pastilled,
             "photos" => $tabPhoto,
         ]);
     }
