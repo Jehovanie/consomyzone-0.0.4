@@ -1725,7 +1725,7 @@ class TributGService extends PDOConnexionService{
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
-        // $result=mb_convert_encoding($result, 'UTF-8', 'UTF-8');
+        $result=mb_convert_encoding($result, 'UTF-8', 'UTF-8');
 
 		//$result=$serialize->serialize($result,'json');
 		

@@ -5550,9 +5550,17 @@ function isPastilledList(id_golf, name_golf) {
 					listTibuTPast += `
                                       <tr>
                                           <td>${logoPath}</td>
-                                          <td>${data.name_tribu_t_muable}</td>
+                                          <td>${data.name_display}</td>
                                           <td>
-                                              <button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)" data-id="${id_golf}" data-name="${name_golf}" data-tbname=${data.table_name}>Dépastiller</button>
+                                              	<button type="button" 
+											          id="data-depastilleGolf-nanta-js" 
+													  class="btn btn-warning" 
+													  data-id="${id_golf}" 
+													  data-name="${name_golf}" 
+													  data-tbname=${data.table_name}>
+													  onclick="depastilleGolf(this)"
+													  Dépastiller
+												</button>
                                           </td>
                                       </tr>
                                   `;
@@ -5563,7 +5571,7 @@ function isPastilledList(id_golf, name_golf) {
                                   <thead>
                                       <tr>
                                           <th scope="col">Logo</th>
-                                          <th scope="col">Tribu T</th>
+                                          <th scope="col">Tribu</th>
                                           <th scope="col">Action</th>
                                       </tr>
                                   </thead>

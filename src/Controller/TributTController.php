@@ -237,7 +237,9 @@ class TributTController extends AbstractController
         $id_golf,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
-        SerializerInterface $serializerInterface
+        TributGService $tributGService,
+        SerializerInterface $serializerInterface,
+        Status $status,
     ) {
         $arrayTribu = [];
         if ($this->getUser()) {
@@ -252,13 +254,42 @@ class TributTController extends AbstractController
                 $tableExtension = $tableTribu . "_golf";
                 if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
                     if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
-
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "name_display" => "Tribu T " .  $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
                     } else {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "name_display" => "Tribu T " .  $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
                     }
                 }
             }
+
+            // tribut G pastille
+            $statusProfile = $status->statusFondateur($this->getUser());
+
+            $current_profil= $statusProfile["profil"][0];
+            $tributG_table_name= $current_profil->getTributG();
+
+            $isPastilled = $tributGService->isPastilled($tributG_table_name."_golf", $id_golf);
+
+            if( count($isPastilled) > 0 ){
+                $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $this->getUser()->getId());
+                array_push($arrayTribu, ["table_name" => $profil_tribuG["table_name"],  "name_display" => "Tribu G " .  $profil_tribuG["table_name"], "logo_path" => $profil_tribuG["avatar"], "name_tribu_t_muable" => $profil_tribuG["name"], "isPastilled" => true]);
+            }
+
+            /// list tribu T joined
+            // $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+            // foreach ($tribu_t_joined as $key) {
+            //     $tbtJoined = $key["table_name"];
+            //     $logo_path = $key["logo_path"];
+            //     $name_tribu_t_muable = $key["name_tribu_t_muable"];
+            //     $tableExtensionTbtJoined = $tbtJoined . "_golf";
+            //     if($tribu_T_Service->checkExtension($tbtJoined, "_golf") > 0){
+            //         if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $id_golf, true)){
+            //             array_push($arrayTribu, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => true]);
+            //         }else{
+            //             array_push($arrayTribu, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable, "isPastilled" => false]);
+            //         }
+            //     }
+            // }
+
         }
         $datas = $serializerInterface->serialize($arrayTribu, 'json');
         return new JsonResponse($datas, 200, [], true);
