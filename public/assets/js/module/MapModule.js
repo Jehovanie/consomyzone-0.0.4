@@ -2479,7 +2479,7 @@ class MapModule {
 			return false;
 		}
 
-		const tab_closeToEachOther = [];
+		const tab_closeToEachOther = []; /// [ [], ... ]
 		const tab_list_push = [];
 
 		this.markers.eachLayer((markerFirst) => {
