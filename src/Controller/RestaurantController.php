@@ -1024,10 +1024,9 @@ class RestaurantController extends AbstractController
         
         if($this->getUser()){
             $user= $this->getUser();
-            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
-            // dd($tribu_t_owned);
-    
+            //// list tribu T owned
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
             foreach ($tribu_t_owned as $key) {
                 $tableTribu = $key["table_name"];
                 $logo_path = $key["logo_path"];
@@ -1042,8 +1041,8 @@ class RestaurantController extends AbstractController
                 }
             }
 
+            /// list tribu T joined
             $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
-            // dd($tribu_t_joined);
             foreach ($tribu_t_joined as $key) {
                 $tbtJoined = $key["table_name"];
                 $logo_path = $key["logo_path"];
@@ -1058,25 +1057,25 @@ class RestaurantController extends AbstractController
                 }
             }
 
-            ///tribut G pastille
-            // $current_profil= $statusProfile["profil"][0];
-            // $tributG_table_name= $current_profil->getTributG();
-            // $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $id_restaurant);
-            // if( count($isPastilled) > 0 ){
-            //     $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
-            //     array_push($arrayTribuGRestoPastille, $profil_tribuG);
-            // }
-
-            $all_table_tribuG= $tributGService->getAllTableTribuG();
-            foreach($all_table_tribuG as $table_tribuG){
-                $tributG_table_name= $table_tribuG["table_name"];
-                $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $id_restaurant);
-
-                if( count($isPastilled) > 0 ){
-                    $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
-                    array_push($arrayTribuGRestoPastille, $profil_tribuG);
-                }
+            // tribut G pastille
+            $current_profil= $statusProfile["profil"][0];
+            $tributG_table_name= $current_profil->getTributG();
+            $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $id_restaurant);
+            if( count($isPastilled) > 0 ){
+                $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
+                array_push($arrayTribuGRestoPastille, $profil_tribuG);
             }
+
+            // $all_table_tribuG= $tributGService->getAllTableTribuG();
+            // foreach($all_table_tribuG as $table_tribuG){
+            //     $tributG_table_name= $table_tribuG["table_name"];
+            //     $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $id_restaurant);
+
+            //     if( count($isPastilled) > 0 ){
+            //         $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
+            //         array_push($arrayTribuGRestoPastille, $profil_tribuG);
+            //     }
+            // }
         }
 
         $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/restaurant/".$id_restaurant."/";
