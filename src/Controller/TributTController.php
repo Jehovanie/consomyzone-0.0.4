@@ -239,7 +239,6 @@ class TributTController extends AbstractController
         Tribu_T_Service $tribu_T_Service,
         TributGService $tributGService,
         SerializerInterface $serializerInterface,
-        Status $status,
     ) {
         $arrayTribu = [];
         if ($this->getUser()) {
@@ -260,20 +259,6 @@ class TributTController extends AbstractController
                     }
                 }
             }
-
-            // tribut G pastille
-            $statusProfile = $status->statusFondateur($this->getUser());
-
-            $current_profil= $statusProfile["profil"][0];
-            $tributG_table_name= $current_profil->getTributG();
-
-            $isPastilled = $tributGService->isPastilled($tributG_table_name."_golf", $id_golf);
-
-            if( count($isPastilled) > 0 ){
-                $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $this->getUser()->getId());
-                array_push($arrayTribu, ["table_name" => $profil_tribuG["table_name"],  "name_display" => "Tribu G " .  $profil_tribuG["table_name"], "logo_path" => $profil_tribuG["avatar"], "name_tribu_t_muable" => $profil_tribuG["name"], "isPastilled" => true]);
-            }
-
             /// list tribu T joined
             // $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
             // foreach ($tribu_t_joined as $key) {
