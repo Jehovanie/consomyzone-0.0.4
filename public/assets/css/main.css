@@ -213,9 +213,9 @@ body {
 	width: 25vw;
 	/* height: 100vh; */
 	/* box-shadow: -5px -5px 15px #4d4d4d !important; */
-	transform: translate(72vw, 15vh);
+	/* transform: translate(72vw, 15vh); */
 	opacity: 1;
-	transition: all 1.5s ease-out;
+	/* transition: all 1.5s ease-out; */
 	border-radius: 15px;
 }
 
@@ -582,8 +582,7 @@ body {
 }
 
 .navbar-light-bar .icon-connexion .svg-2 {
-    fill: #09ff00;
-
+	fill: #09ff00;
 }
 
 .navbar-light-bar .icon-connexion .svg-2 g .gadena {
@@ -1184,8 +1183,7 @@ li a .station {
     height: 100%;
     width: 100%;
     object-fit: cover; */
-    box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
-
+	box-shadow: rgba(14, 30, 37, 0.12) 0px 2px 4px 0px, rgba(14, 30, 37, 0.32) 0px 2px 16px 0px;
 }
 
 .left_menu {
@@ -1916,8 +1914,7 @@ i.fa-eye {
 } */
 
 textarea {
-    padding: 2rem;
-
+	padding: 2rem;
 }
 
 .wrapper {
@@ -1963,8 +1960,7 @@ textarea {
 }
 
 .what-means-partenaire-Nantenaina_css {
-    padding: 15px;
-
+	padding: 15px;
 }
 
 .linkOndetail:hover {
@@ -2189,8 +2185,8 @@ textarea {
 }
 
 .mt-50px {
-    margin-top: -50px !important;
-    color: #000;
+	margin-top: -50px !important;
+	color: #000;
 }
 
 .modal_visio {
@@ -2717,10 +2713,17 @@ textarea {
 	cursor: pointer;
 }
 
-#remove-detail-resto {
+#remove-detail-resto,
+#remove-detail-ferme,
+#remove-detail-ferme,
+#remove-detail-station,
+#remove-detail-golf,
+#remove-detail-tabac,
+#remove-detail-home {
 	position: absolute;
 	top: 0px;
-	z-index: 9999;
+	z-index: 999999;
+	transform: translate(70vw, 15vh) !important;
 }
 
 #btn_to_drag {
