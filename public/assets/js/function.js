@@ -7386,25 +7386,30 @@ function fireExecuteForPastGolf() {
 	}
 }
 
+if (document.querySelector(".icon_draggable_jheo_js")) {
+	const icon_draggable = document.querySelector(".icon_draggable_jheo_js");
+	const div_message_tooltip_drag = document.querySelector(".message_tooltip_drag_jheo_js");
+
+	icon_draggable.addEventListener("mouseover", () => {
+		div_message_tooltip_drag.classList.remove("d-none");
+	});
+
+	icon_draggable.addEventListener("mouseout", () => {
+		div_message_tooltip_drag.classList.add("d-none");
+	});
+}
 dragElement(document.querySelector(".key_draggable_details_jheo_js"));
 
 function dragElement(elmnt) {
-	console.log("dragElement...");
-	var pos1 = 0,
-		pos2 = 0,
-		pos3 = 0,
-		pos4 = 0;
-	// if (document.querySelector(".content_body_details_jheo_js")) {
-	// 	// if present, the header is where you move the DIV from:
-	// 	console.log("dragElement > .content_body_details_jheo_js ....");
-	// 	document.querySelector(".content_body_details_jheo_js").onmousedown = dragMouseDown;
-	// } else {
-	// 	// otherwise, move the DIV from anywhere inside the DIV:
-	// }
-	elmnt.onmousedown = dragMouseDown;
+	var pos1 = 0, pos2 = 0,  pos3 = 0, pos4 = 0;
+
+	if (document.querySelector(".content_icon_draggable_jheo_js")) {
+		document.querySelector(".content_icon_draggable_jheo_js").onmousedown = dragMouseDown;
+	} else {
+		elmnt.onmousedown = dragMouseDown;
+	}
 
 	function dragMouseDown(e) {
-		console.log("Mouse down...");
 		e = e || window.event;
 		e.preventDefault();
 		// get the mouse cursor position at startup:
@@ -7418,14 +7423,6 @@ function dragElement(elmnt) {
 	function elementDrag(e) {
 		e = e || window.event;
 		e.preventDefault();
-		console.log("e.clientX: " + e.clientX);
-		console.log("e.clientY: " + e.clientY);
-
-		console.log("availHeight : " + window.screen.availHeight);
-		console.log("availWidth : " + window.screen.availWidth);
-
-		const percent_y = (e.clientY * 100) / window.screen.availHeight;
-		const percent_x = (e.clientX * 100) / window.screen.availWidth;
 
 		// calculate the new cursor position:
 		pos1 = pos3 - e.clientX;
@@ -7441,7 +7438,6 @@ function dragElement(elmnt) {
 	}
 
 	function closeDragElement() {
-		console.log("mouse up...");
 		// stop moving when mouse button is released:
 		document.onmouseup = null;
 		document.onmousemove = null;
