@@ -1120,12 +1120,16 @@ class RestaurantController extends AbstractController
     *DON'T CHANGE THIS ROUTE: It's use in js file.
     */
     #[Route("/restaurant/pastilled/checking/{idRestaurant}", name:"app_resto_pastilled_checked",methods:["GET"])]
-    public function checkedIfRestaurantIsPastilled($idRestaurant,
-    UserRepository $userRepository,
-    Tribu_T_Service $tribu_T_Service,
-    SerializerInterface $serializerInterface
+    public function checkedIfRestaurantIsPastilled(
+        $idRestaurant,
+        Status $status,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
+        SerializerInterface $serializerInterface
     ){
         $arrayTribu = [];
+        $arrayTribuGRestoPastille = [];
         if($this->getUser()){
 
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
@@ -1143,10 +1147,31 @@ class RestaurantController extends AbstractController
                     }
                 }
             }
+
+            $statusProfile = $status->statusFondateur($this->getUser());
+
+            // tribut G pastille
+            $current_profil= $statusProfile["profil"][0];
+            $tributG_table_name= $current_profil->getTributG();
+
+            $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $this->getUser()->getId());
+            $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $idRestaurant);
+
+            array_push($arrayTribuGRestoPastille, [
+                "table_name" => $profil_tribuG["table_name"], 
+                "name_tribu_t_muable" => $profil_tribuG["name"], 
+                "logo_path" => $profil_tribuG["avatar"], 
+                "isPastilled"=> count($isPastilled) > 0 ? true: false
+            ]);
         }
 
-        $datas = $serializerInterface->serialize($arrayTribu, 'json');
-        return new JsonResponse($datas, 200, [], true);
+        // dd($arrayTribu);
+        return $this->json([
+            "listResto" => $arrayTribu,
+            "tribuGProfil" => $arrayTribuGRestoPastille
+        ]);
+        // $datas = $serializerInterface->serialize($arrayTribu, 'json');
+        // return new JsonResponse($datas, 200, [], true);
     }
 
     /** 

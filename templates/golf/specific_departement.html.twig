@@ -98,8 +98,11 @@
             </div>
         </div>
     </div>
-    {% include 'shard/chatBot.html.twig' %}
 
+
+    {{ include('shard/modal/modalDescriptionTribuPastille.html.twig') }}
+
+    {% include 'shard/chatBot.html.twig' %}
     {% include 'shard/modal/list_avis.html.twig' %}
     {% include 'shard/modal/modal_avis.html.twig' %}
     {% include 'shard/modal/modal_show_gallery.twig' %}

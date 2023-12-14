@@ -889,7 +889,12 @@ class TributGController extends AbstractController
     ){
 
         $res = $tribuGService->isPastilled($table, $golfId);
-        $table_tribuG_name= str_replace("_golf", "", $table);
+
+        if( str_contains($table, "_golf")){
+            $table_tribuG_name= str_replace("_golf", "", $table);
+        }else if( str_contains($table, "_restaurant")){
+            $table_tribuG_name= str_replace("_restaurant", "", $table); 
+        }
 
         $profil_tribuG= $tribuGService->getProfilTributG($table_tribuG_name, $this->getUser()->getId());
 
@@ -1031,7 +1036,7 @@ class TributGController extends AbstractController
         // getAllRestoTribuG($table_name)
         
         $results= $tributGService->getGolfPastillesTribuGV2($table_tributG_name);
-        $results=mb_convert_encoding($results, 'UTF-8', 'UTF-8');
+        // $results=mb_convert_encoding($results, 'UTF-8', 'UTF-8');
 
         return $this->json($results);
     }

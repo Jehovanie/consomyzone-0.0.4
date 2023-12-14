@@ -408,7 +408,7 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome = false, select_
 	if (screen.width <= 991) {
 		remove.setAttribute("class", "navleft-detail-mobile fixed-top ");
 	} else {
-		remove.setAttribute("class", "navleft-detail fixed-top ");
+		remove.setAttribute("class", "navleft-detail");
 	}
 
 	const id_selector = !inHome ? "#content_detail_resto_js_jheo" : "#content_details_home_js_jheo";
@@ -2227,7 +2227,10 @@ function showPastillTable(e, id) {
 
 	fetch("/restaurant/pastilled/checking/" + parseInt(id)).then((response) => {
 		if ((response.status = 200 && response.ok)) {
-			response.json().then((data) => {
+			response.json().then((response) => {
+				const data = response.listResto;
+
+				//// list tribu T extension.
 				if (data.length > 0) {
 					data.forEach((item) => {
 						let status = item.isPastilled ? "Dépastiller" : "Pastiller";
@@ -2267,6 +2270,49 @@ function showPastillTable(e, id) {
                                     </tr>
                                 `;
 				}
+
+				/// list tribu G extension.
+				// const tribuGProfil = response.tribuGProfil;
+				// if (!document.querySelector(".content_list_state_tribuG_jheo_js")) {
+				// 	const content_list_state_tribuG = document.querySelector(".content_list_state_tribuG_jheo_js");
+
+				// 	let logo_path =
+				// 		tribuGProfil.logo_path != null
+				// 			? tribuGProfil.logo_path
+				// 			: "/uploads/tribu_t/photo/avatar_tribu.jpg";
+
+				// 	logo_path = IS_DEV_MODE ? logo_path : "/public" + logo_path;
+
+				// 	let btn_action_pastille = "";
+				// 	if (!tribuGProfil.isPastilled) {
+				// 		btn_action_pastille = `
+				// 			<button class="btn btn-success btn-sm" id="btn-pastille-elie-tbg" data-tbname ="${tribuGProfil.table_name}" data-velona="${logo_path}">
+				// 				Pastiller
+				// 			</button>
+				// 		`;
+				// 	} else {
+				// 		btn_action_pastille = `
+				// 			<button class="btn btn-success btn-sm" id="btn-pastille-elie-tbg" data-tbname ="${tribuGProfil.table_name}" data-velona="${logo_path}">
+				// 				Pastiller
+				// 			</button>
+				// 		`;
+				// 	}
+				// 	content_list_state_tribuG.innerHTML = `
+				// 		<tr style="vertical-align: middle;">
+				// 			<td class="col-logo">
+				// 				<img style="max-height:70px;max-width:70px;clip-path: circle(40%);"
+				// 					src=${logo_path} alt="Avart tribu G"
+				// 					>
+				// 			</td>
+				// 			<td class="col-tribuT">
+				// 				<span>${tribuGProfil.name_tribu_t_muable}</span>
+				// 			</td>
+				// 			<td class="col-action">
+				// 				${btn_action_pastille}
+				// 			</td>
+				// 		</tr>
+				// 	`;
+				// }
 			});
 		}
 	});
@@ -2278,9 +2324,11 @@ function showPastillTable(e, id) {
 	const tribu_g_r = document.querySelector("#my_tribu_g").textContent.trim() + "_restaurant";
 	document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-id", id);
 	document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-name", e.target.dataset.name);
+
 	fetch("/user/tribu_g/isPastilled/" + tribu_g_r + "/" + id)
 		.then((res) => res.json())
-		.then((isOk) => {
+		.then((response) => {
+			const isOk = response.isPastilled;
 			if (isOk) {
 				document
 					.querySelector("#btn-pastille-elie-tbg")
@@ -5231,15 +5279,23 @@ function pastilleGolf(element, table_tribu_t) {
 							if (data["logo_path"] != "") {
 								if (data["isPastilled"] == true && table_tribu_t == data["table_name"]) {
 									logoPath = `
-										<img  class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" 
-											  src="/public${data["logo_path"]}" alt="">
-										`;
+										<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" 
+											 id="${data["table_name"]}"
+										     class="img_nantenaina" 
+											 title="Tribu T ${data["name_tribu_t_muable"]}" 
+											 data-bs-toggle="tooltip" data-bs-placement="top" 
+											 data-name="${data["name_tribu_t_muable"]}">
+											<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data["logo_path"]}" alt="Tribu T" data-name="${data["name_tribu_t_muable"]}" style="transform: scale(1.2);">
+										</div>
+									`;
 								}
 							} else {
 								if (data["isPastilled"] == true && table_tribu_t == data["table_name"]) {
-									logoPath = `<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" 
-									             src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" 
-												 alt="">`;
+									logoPath = `
+										<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${data["name_tribu_t_muable"]}" data-name="${data["name_tribu_t_muable"]}" id="${data["table_name"]}">
+											<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data["logo_path"]}" alt="Tribu T" data-name="${data["name_tribu_t_muable"]}" style="transform: scale(1.2);">
+										</div>
+									`;
 								}
 							}
 
@@ -5254,7 +5310,7 @@ function pastilleGolf(element, table_tribu_t) {
 							}
 							document.querySelector(
 								".logo-pastille-golf-tomm-js"
-							).innerHTML += ` <span class="length-pastille-plus">${countIsPastilled}+</span>`;
+							).innerHTML += ` <span class="length-pastille-plus" onclick="fireExecuteForPastGolf()">${countIsPastilled}+</span>`;
 						} else {
 							// document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus"></span>`
 							if (document.querySelector(".length-pastille-plus")) {
@@ -5557,8 +5613,8 @@ function isPastilledList(id_golf, name_golf) {
 													  class="btn btn-warning" 
 													  data-id="${id_golf}" 
 													  data-name="${name_golf}" 
-													  data-tbname=${data.table_name}>
-													  onclick="depastilleGolf(this)"
+													  data-tbname=${data.table_name}
+													  onclick="depastilleGolf(this)">
 													  Dépastiller
 												</button>
                                           </td>
@@ -5880,22 +5936,40 @@ function pastilleGolfForTribuG(e, type, id, name) {
 						);
 
 						if (document.querySelector(".logo-pastille-golf-tomm-js")) {
-							console.log(res);
+							const content_list_pastille = document.querySelector(".logo-pastille-golf-tomm-js");
 							const info_tribuG = res.profil_tribuG;
 
-							const content_list_pastille = document.querySelector(".logo-pastille-golf-tomm-js");
+							const div_content = document.createElement("div");
+							div_content.className = "img_nantenaina";
+
+							div_content.setAttribute("data-bs-toggle", "tooltip");
+							div_content.setAttribute("data-bs-placement", "top");
+							div_content.setAttribute("title", "Tribu G " + info_tribuG["name_tribu_t_muable"]);
+							div_content.setAttribute("onclick", "createPopUpTribuG(event)");
+							div_content.setAttribute("onmouseout", "resetImage(event)");
+							div_content.setAttribute("onmouseover", "agrandirImage(event)");
+							div_content.setAttribute("id", info_tribuG["table_name"]);
 
 							const image = document.createElement("img");
 							image.className = `logo_path_pastille_details logo_path_${info_tribuG["table_name"]}_tomm_js logo_path_pastille_details-tomm-js`;
-							image.id = info_tribuG["table_name"];
-							image.src =
+
+							image.id = info_tribuG["table_name"] + "_image";
+
+							let logo_path =
 								info_tribuG["logo_path"] === null
 									? "/uploads/tribu_t/photo/avatar_tribu.jpg"
 									: info_tribuG["logo_path"];
 
-							image.alt = "Icon Tribu G";
+							logo_path = IS_DEV_MODE ? logo_path : "/public" + logo_path;
 
-							content_list_pastille.prepend(image);
+							image.src = logo_path;
+
+							image.alt = "Icon Tribu G";
+							image.setAttribute("data-name", info_tribuG["name_tribu_t_muable"]);
+
+							div_content.appendChild(image);
+
+							content_list_pastille.prepend(div_content);
 						}
 						if (document.querySelector("#fetch_golf_tribug_jheo_js")) {
 							/// this use in the tribu G (partie connected)
@@ -7305,3 +7379,68 @@ function getAllReaction(pubId, tablePub, userOwnID) {
 			}
 		});
 }
+
+function fireExecuteForPastGolf() {
+	if (document.querySelector(".fire_execute_for_past_golf_jheo_js")) {
+		document.querySelector(".fire_execute_for_past_golf_jheo_js").click();
+	}
+}
+// dragElement(document.getElementById("remove-detail-resto"));
+
+// function dragElement(elmnt) {
+// 	var pos1 = 0,
+// 		pos2 = 0,
+// 		pos3 = 0,
+// 		pos4 = 0;
+// 	if (document.getElementById("btn_to_drag")) {
+// 		// if present, the header is where you move the DIV from:
+// 		document.getElementById("btn_to_drag").onmousedown = dragMouseDown;
+// 	} else {
+// 		// otherwise, move the DIV from anywhere inside the DIV:
+// 		elmnt.onmousedown = dragMouseDown;
+// 	}
+
+// 	function dragMouseDown(e) {
+// 		console.log("Mouse down...");
+// 		e = e || window.event;
+// 		e.preventDefault();
+// 		// get the mouse cursor position at startup:
+// 		pos3 = e.clientX;
+// 		pos4 = e.clientY;
+// 		document.onmouseup = closeDragElement;
+// 		// call a function whenever the cursor moves:
+// 		document.onmousemove = elementDrag;
+// 	}
+
+// 	function elementDrag(e) {
+// 		e = e || window.event;
+// 		e.preventDefault();
+// 		console.log("e.clientX: " + e.clientX);
+// 		console.log("e.clientY: " + e.clientY);
+
+// 		console.log("availHeight : " + window.screen.availHeight);
+// 		console.log("availWidth : " + window.screen.availWidth);
+
+// 		const percent_y = (e.clientY * 100) / window.screen.availHeight;
+// 		const percent_x = (e.clientX * 100) / window.screen.availWidth;
+
+// 		// calculate the new cursor position:
+// 		pos1 = pos3 - e.clientX;
+// 		pos2 = pos4 - e.clientY;
+// 		pos3 = e.clientX;
+// 		pos4 = e.clientY;
+// 		// set the element's new position:
+// 		// elmnt.style.top = elmnt.offsetTop - pos2 + "px";
+// 		// elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
+
+// 		elmnt.style.top = percent_y + "%";
+// 		elmnt.style.left = percent_x + "%";
+// 	}
+
+// 	function closeDragElement() {
+// 		console.log("mouse up...");
+// 		// stop moving when mouse button is released:
+// 		document.onmouseup = null;
+// 		document.onmousemove = null;
+// 	}
+// }

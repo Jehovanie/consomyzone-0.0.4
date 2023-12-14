@@ -39,19 +39,32 @@
                         </p>
                     </div>
                     <div class="col-4">
-                        <div class="logo-pastille-golf-tomm-js" style="width: 500px" onclick='isPastilledList({{details.id}},"{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}")'>
+                        {# <div class="logo-pastille-golf-tomm-js" style="width: 500px" onclick='isPastilledList({{details.id}},"{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}")'> #}
+                        <div class="logo-pastille-golf-tomm-js" style="width: 500px">
                             {% set count = 0 %}
                             {% for tribu_g_pastilled in tribu_g_pastilleds %}
-                                {# {{ dump(tribu_t_pastilled) }} #}
+                                {# {{ dump(tribu_g_pastilled) }} #}
                                 {% if tribu_g_pastilled.isPastilled == true %}
                                     {% set count = count + 1 %}
                                 {% endif %}
 
                                 {% if tribu_g_pastilled['isPastilled'] == true %}
-                                    <img  id="{{tribu_g_pastilled['table_name']}}"
-                                          class="logo_path_pastille_details logo_path_{{tribu_g_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" 
-                                          src={{ (tribu_g_pastilled['logo_path'] == "") ? "/uploads/tribu_t/photo/avatar_tribu.jpg" : "/public" ~ tribu_g_pastilled['logo_path'] }} 
-                                          alt="TribuG">
+                                    <div data-bs-toggle="tooltip" 
+                                         data-bs-placement="top" 
+                                         title="Tribu G {{tribu_g_pastilled['name_tribu_g_muable']}}" 
+                                         data-name="{{tribu_g_pastilled['name_tribu_g_muable']}}" 
+                                         onclick="createPopUpTribuG(event)" 
+                                         onmouseout="resetImage(event)" 
+                                         onmouseover="agrandirImage(event)" 
+                                         class="img_nantenaina" 
+                                         id="{{tribu_g_pastilled['table_name']}}">
+                                         
+                                        <img id="{{tribu_g_pastilled['table_name']}}"
+                                            data-name="{{tribu_g_pastilled['name_tribu_g_muable']}}" 
+                                            class="logo_path_pastille_details logo_path_{{tribu_g_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" 
+                                            src={{ (tribu_g_pastilled['logo_path'] == "") ? "/public/uploads/tribu_t/photo/avatar_tribu.jpg" : "/public" ~ tribu_g_pastilled['logo_path'] }} 
+                                            alt="TribuG">
+                                    </div>
                                 {% endif %}
                             {% endfor %}
 
@@ -64,9 +77,13 @@
                                 {% if tribu_t_pastilled['isPastilled'] == true %}
 
                                     {% if tribu_t_pastilled['logo_path'] == "" %}
-                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="te">
+                                        <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{tribu_t_pastilled["name_tribu_t_muable"]}}" data-name="{{tribu_t_pastilled["name_tribu_t_muable"]}}" id="{{tribu_t_pastilled["table_name"]}}">
+                                            <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="Tribu T" data-name="{{tribu_t_pastilled["name_tribu_t_muable"]}}" >
+                                        </div>
                                     {% else %}
-                                        <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public{{tribu_t_pastilled['logo_path']}}" alt="t">
+                                        <div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{tribu_t_pastilled["name_tribu_t_muable"]}}" data-name="{{tribu_t_pastilled["name_tribu_t_muable"]}}" id="{{tribu_t_pastilled["table_name"]}}">
+                                            <img class="logo_path_pastille_details logo_path_{{tribu_t_pastilled['table_name']}}_tomm_js logo_path_pastille_details-tomm-js" src="/public{{tribu_t_pastilled['logo_path']}}" alt="Tribu T" data-name="{{tribu_t_pastilled["name_tribu_t_muable"]}}" >
+                                        </div>
                                     {% endif %}
                                 {% endif %}
                                 
@@ -75,9 +92,9 @@
                             
                             
                             {% if count > 4 %}
-                                <span class="length-pastille-plus">{{ count }}+</span>
+                                <span class="length-pastille-plus" onclick="fireExecuteForPastGolf()">{{ count }}+</span>
                             {% else %}
-                                <span class="length-pastille-plus"></span>
+                                <span class="length-pastille-plus" onclick="fireExecuteForPastGolf()"></span>
                             {% endif %}
                         </div>
                     </div>
@@ -107,7 +124,7 @@
                 </div>
                 <div class="mon-golf">
                     <p>voulez-vous pastiller avec un autre tribu ou depastiller?</p>
-                    <button class="btn btn-success" value="3" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>Mon golf</button>
+                    <button class="btn btn-success fire_execute_for_past_golf_jheo_js" value="3" onclick='executeActionForPastMonGolf("{{details.id}}","{{details.nomGolf|replace({'"': '&quot;', "'": '&apos;'}) | raw}}","{{details.adr1|replace({'"': '&quot;', "'": '&apos;'}) | raw}}  {{details.cp  | raw}}  {{details.nomCommune  | raw}}" )'>Mon golf</button>
                 </div>
             {% endif %}
                 
