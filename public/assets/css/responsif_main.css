@@ -662,7 +662,7 @@
     .navleft-detail-mobile {
         transform: translate(1vw, 1vh) !important;
         width: 355px;
-        /* z-index: 10404 !important; */
+        z-index: 1001 !important;
     }
     .swal-overlay--show-modal{
         z-index: 10405 !important;
@@ -1396,6 +1396,7 @@
         width: 100%;
         position: absolute;
         bottom: 10px;
+        z-index: 1000 !important;
     }
 
     .swal-overlay{
