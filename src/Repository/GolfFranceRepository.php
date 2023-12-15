@@ -414,7 +414,7 @@ class GolfFranceRepository extends ServiceEntityRepository
             } else {
                 $golfFinishedRepository = new GolfFinishedRepository($this->registry);
                 $user = $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data[$i]["id"]]);
-                $data[$i]["user_status"] = ($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait(), "mon_golf" => $user->getMonGolf() , 'refaire' => $user->getRefaire()]  : ["a_faire" => null, "fait" => null, "mon_golf" => null, 'refaire' => null];
+                $data[$i]["user_status"] = ($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait(), "mon_golf" => $user->getMonGolf() , 'refaire' => $user->getARefaire()]  : ["a_faire" => null, "fait" => null, "mon_golf" => null, 'refaire' => null];
                 $data[$i]["user_id"] = $userID;
             }
         }

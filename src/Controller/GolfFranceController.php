@@ -937,7 +937,7 @@ class GolfFranceController extends AbstractController
         $isnumeric = (bool)preg_match('/[0-9]/', $golfID, $numerics);
         $userID = $user->getId();
         if ($isnumeric && intval($golfID) > 0) {
-            $golf = $golfFranceRepository->findOneBy(["id" => $golfID]);
+            $golf = $golfRepo->findOneBy(["id" => $golfID]);
             if (!is_null($golf)) {
                 $golfFinished = new GolfFinished();
                 $golfFinished->setGolfId($golfID);
