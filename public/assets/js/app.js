@@ -1809,10 +1809,12 @@ function createPopUp(ev) {
 function createPopUpTribuG(ev) {
 	$("#modalCreatePopUp").modal("show");
 
+	const type = document.querySelector(".select_action_golf_nanta_js") ? "golf" : "restaurant";
+
 	let tribuName = ev.target.dataset.name;
 	document.querySelector("#modalCreatePopUpLabel").textContent = "Tribu G " + tribuName;
 	document.querySelector("#modalCreatePopUp .textInfos").textContent =
-		"Ce restaurant est pastillé par la tribu " + tribuName;
+		`Ce ${type} est pastillé par la tribu ${tribuName}`;
 
 	document.querySelector("#modalCreatePopUp .tbtName").textContent = tribuName;
 }
