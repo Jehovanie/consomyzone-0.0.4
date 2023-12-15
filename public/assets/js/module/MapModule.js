@@ -2730,4 +2730,18 @@ class MapModule {
 
 		return { lat: +lat, lng: +lng };
 	}
+
+	getNewUserStatus(status) {
+		let user_status = { a_faire: false, fait: false, mon_golf: false, refaire: false };
+		if (status === "fait") {
+			user_status = { ...user_status, fait: true };
+		} else if (status === "afaire") {
+			user_status = { ...user_status, a_faire: true };
+		} else if (status === "refaire") {
+			user_status = { ...user_status, refaire: true };
+		} else if (status === "mon_golf") {
+			user_status = { ...user_status, mon_golf: true };
+		}
+		return user_status;
+	}
 }

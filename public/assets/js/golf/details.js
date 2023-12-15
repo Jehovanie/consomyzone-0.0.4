@@ -1,99 +1,89 @@
-function getDetailFromListLeft(depart_name, depart_code, id) { 
-    
-    if(OBJECT_MARKERS_GOLF.checkIsExist(id)){
-        OBJECT_MARKERS_GOLF.clickOnMarker(id)
-    }
-    
-    // if (screen.width < 991) {
-    //     var pathDetails = `/golf-mobile/departement/${depart_name}/${depart_code}/details/${id}`;
-    //     location.assign(pathDetails)
-    // }else{
-    //     OBJECT_MARKERS_GOLF.clickOnMarker(id)
-    // }
-   
+function getDetailFromListLeft(depart_name, depart_code, id) {
+	if (OBJECT_MARKERS_GOLF.checkIsExist(id)) {
+		OBJECT_MARKERS_GOLF.clickOnMarker(id);
+	}
+
+	// if (screen.width < 991) {
+	//     var pathDetails = `/golf-mobile/departement/${depart_name}/${depart_code}/details/${id}`;
+	//     location.assign(pathDetails)
+	// }else{
+	//     OBJECT_MARKERS_GOLF.clickOnMarker(id)
+	// }
 }
 
-function setGolfTodo(goldID,selectElement){
-    fecthGolfAction(goldID, "todo",selectElement)
+function setGolfTodo(goldID, selectElement) {
+	fecthGolfAction(goldID, "todo", selectElement);
 }
 
-function setMonGolf(goldID, golfName, golfAdress){
-    // fecthGolfAction(goldID, "for_me",selectElement)
-    showPastillGolfTribuT(goldID, golfName, golfAdress)
+function setMonGolf(goldID, golfName, golfAdress) {
+	// fecthGolfAction(goldID, "for_me",selectElement)
+	showPastillGolfTribuT(goldID, golfName, golfAdress);
 }
 
-function setGolfFinished(goldID,selectElement){
-    fecthGolfAction(goldID, "finished",selectElement)
+function setGolfFinished(goldID, selectElement) {
+	fecthGolfAction(goldID, "finished", selectElement);
 }
 
-function setGolfNone(goldID,selectElement){
-    fecthGolfAction(goldID, "none",selectElement)
+function setGolfNone(goldID, selectElement) {
+	fecthGolfAction(goldID, "none", selectElement);
 }
 
-function cancelGolfFinished(event,goldID){
-    let selectElement=event.target;
-    fecthGolfAction(goldID, "cancel",selectElement)
+function cancelGolfFinished(event, goldID) {
+	let selectElement = event.target;
+	fecthGolfAction(goldID, "cancel", selectElement);
 }
-function setGolfRemake(goldID,event) {
-    let selectElement=event.target;
-    fecthGolfAction(goldID, "remake",selectElement)
+function setGolfRemake(goldID, event) {
+	let selectElement = event.target;
+	fecthGolfAction(goldID, "remake", selectElement);
 }
-function executeActionForPastGolf(event,goldID){
-    let selectElement=event.target
-    console.log(selectElement)
-    if(selectElement !=null && selectElement instanceof HTMLElement){
-        let actionstr = selectElement.options[selectElement.selectedIndex].value;
-        action = parseInt(actionstr)
-        if(/[0-9]/.test(actionstr)){
-            if (action >= 0 && action <= 3) {
-                switch (action) {
-                    case 1: {
-                        setGolfTodo(goldID, selectElement)
-                        OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID)
-                        break;
-                    }
-                    case 2: {
-                        setGolfFinished(goldID, selectElement)
-                        OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID)
-                        break;
-                    }
-                    case 3: {
-                        setGolfRemake(goldID, event)
-                        OBJECT_MARKERS_GOLF.updateStateGolf("refaire", goldID)
-                        break;
-                    }
-                    // case 4: {
-                    
-                    //     setMonGolf(goldID, selectElement)
-                    //     OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
-                    //     break;
-                    // }
+function executeActionForPastGolf(event, goldID) {
+	let selectElement = event.target;
+	if (selectElement != null && selectElement instanceof HTMLElement) {
+		let actionstr = selectElement.options[selectElement.selectedIndex].value;
+		action = parseInt(actionstr);
+		if (/[0-9]/.test(actionstr)) {
+			if (action >= 0 && action <= 3) {
+				switch (action) {
+					case 1: {
+						setGolfTodo(goldID, selectElement);
+						OBJECT_MARKERS_GOLF.updateStateGolf("afaire", goldID);
+						break;
+					}
+					case 2: {
+						setGolfFinished(goldID, selectElement);
+						OBJECT_MARKERS_GOLF.updateStateGolf("fait", goldID);
+						break;
+					}
+					case 3: {
+						setGolfRemake(goldID, event);
+						OBJECT_MARKERS_GOLF.updateStateGolf("refaire", goldID);
+						break;
+					}
+					// case 4: {
 
-                    default:
-                        {
-                            setGolfNone(goldID, selectElement)
-                            OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID)
-                    
-                        }
-                }
-                
-            }else{
-                new swal("Bonjour!","Bienvenu sur consomyzone.", "info")
-            }
+					//     setMonGolf(goldID, selectElement)
+					//     OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
+					//     break;
+					// }
 
-        }else{
-            new swal("Bonjour!","Bienvenu sur consomyzone.", "info")
-        }
-    }else{
-        new swal("Bonjour","Oups!! ", "info")
-    }
-
-    
+					default: {
+						setGolfNone(goldID, selectElement);
+						OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID);
+					}
+				}
+			} else {
+				new swal("Bonjour!", "Bienvenu sur consomyzone.", "info");
+			}
+		} else {
+			new swal("Bonjour!", "Bienvenu sur consomyzone.", "info");
+		}
+	} else {
+		new swal("Bonjour", "Oups!! ", "info");
+	}
 }
 
 // function fecthGolfAction(goldID, action,selectElement){
 
-    
 //     if(selectElement !=null && selectElement instanceof HTMLElement){
 //         selectElement=selectElement.parentElement;
 //     let url = ""
@@ -114,7 +104,7 @@ function executeActionForPastGolf(event,goldID){
 //             url = '/user/setGolf/none'
 //             break;
 //         }
-//         case "remake": { 
+//         case "remake": {
 //             url = "/user/setGolf/remake"
 //             break;
 //         }
@@ -122,14 +112,14 @@ function executeActionForPastGolf(event,goldID){
 //             url = '/user/setGolf/unfinished'
 //             break;
 //         }
-        
+
 //     }
-   
+
 //     const request = new Request(url, {
 //         method: "POST",
 //         headers: {
 //             'Accept': 'application/json',
-//             'Content-Type': 'application/json'  
+//             'Content-Type': 'application/json'
 //         },
 //         body: JSON.stringify({
 //             golfID : goldID,
@@ -148,11 +138,11 @@ function executeActionForPastGolf(event,goldID){
 //                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
 //                             `
 //                         }
-        
+
 //                         if( document.querySelector(".golf_status_jheo_js")){
 //                             document.querySelector(".golf_status_jheo_js").innerText= "FAIT"
 //                         }
-//                     });  
+//                     });
 
 //                 }else if( action === "for_me"){
 //                     new swal("Bravo !","Vous avez marqué ce golf comme Mon Golf !", "success")
@@ -162,11 +152,11 @@ function executeActionForPastGolf(event,goldID){
 //                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
 //                             `
 //                         }
-        
+
 //                         if( document.querySelector(".golf_status_jheo_js")){
 //                             document.querySelector(".golf_status_jheo_js").innerText= "MON GOLF"
 //                         }
-//                     });  
+//                     });
 
 //                 }else if( action === "todo"){
 
@@ -177,11 +167,11 @@ function executeActionForPastGolf(event,goldID){
 //                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
 //                             `
 //                         }
-        
+
 //                         if( document.querySelector(".golf_status_jheo_js")){
 //                             document.querySelector(".golf_status_jheo_js").innerText= "A FAIRE"
 //                         }
-//                     });  
+//                     });
 
 //                 }else if( action === "none"){
 
@@ -192,11 +182,11 @@ function executeActionForPastGolf(event,goldID){
 //                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
 //                             `
 //                         }
-        
+
 //                         if( document.querySelector(".golf_status_jheo_js")){
 //                             document.querySelector(".golf_status_jheo_js").innerText= ""
 //                         }
-//                     });  
+//                     });
 
 //                 } else if (action === "remake") {
 //                     new swal("Bravo !","Vous avez marqué ce golf comme à refaire.", "success")
@@ -206,11 +196,11 @@ function executeActionForPastGolf(event,goldID){
 //                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
 //                             `
 //                         }
-        
+
 //                         if( document.querySelector(".golf_status_jheo_js")){
 //                             document.querySelector(".golf_status_jheo_js").innerText= "A REFAIRE"
 //                         }
-//                     });  
+//                     });
 //                 }else {
 
 //                     new swal("Info !","Vous venez d'annuler votre choix !", "success")
@@ -227,7 +217,7 @@ function executeActionForPastGolf(event,goldID){
 //                             </select>
 //                             `
 //                         }
-        
+
 //                         if( document.querySelector(".golf_status_jheo_js")){
 //                                 document.querySelector(".golf_status_jheo_js").innerText= ""
 //                         }
@@ -242,12 +232,10 @@ function executeActionForPastGolf(event,goldID){
 //         new swal("Bonjour","Oups!! ", "info")
 //     }
 //     // const url = (action === "finished") ? '/user/setGolf/finished': '/user/setGolf/unfinished';
-   
 
 // }
 // }
-
 
 function executeActionForPastMonGolf(goldID, golfName, golfAdress) {
-    setMonGolf(goldID, golfName, golfAdress)
+	setMonGolf(goldID, golfName, golfAdress);
 }

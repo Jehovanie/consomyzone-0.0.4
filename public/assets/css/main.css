@@ -213,7 +213,8 @@ body {
 	width: 25vw;
 	/* height: 100vh; */
 	/* box-shadow: -5px -5px 15px #4d4d4d !important; */
-	/* transform: translate(72vw, 15vh); */
+	z-index: 999999;
+	transform: translate(72vw, 15vh);
 	opacity: 1;
 	/* transition: all 1.5s ease-out; */
 	border-radius: 15px;
@@ -2722,6 +2723,14 @@ textarea {
 	font-size: 1.2rem;
 	cursor: move;
 }
+
+/*100% Image Width on Smaller Screens*/
+@media only screen and (max-width: 991px) {
+	.content_icon_draggable {
+		display: none;
+	}
+}
+
 .message_tooltip_drag {
 	display: block;
 	position: absolute;
@@ -2754,8 +2763,8 @@ textarea {
 #remove-detail-home {
 	position: absolute;
 	top: 0px;
-	z-index: 999999;
-	transform: translate(70vw, 15vh) !important;
+	/* z-index: 999999; */
+	/* transform: translate(70vw, 15vh) !important; */
 }
 
 #btn_to_drag {

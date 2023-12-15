@@ -678,7 +678,8 @@ class MarckerClusterHome extends MapModule {
 				L.latLng(parseFloat(item.lat), parseFloat(item.long)),
 				item,
 				icon.path,
-				icon.size
+				icon.size,
+				"golf"
 			);
 		}
 
@@ -1221,48 +1222,57 @@ class MarckerClusterHome extends MapModule {
 		this.map.removeLayer(this.markers);
 	}
 
-	updateStateGolf(status, id) {
-		let user_status = { a_faire: false, fait: false };
+	updateStatusDataItem(user_status, id, type) {
+		if (type === "golf") {
+			this.updateStatusDataGolfItem(user_status, id);
+		}
+	}
 
-		this.markers.eachLayer((marker) => {
-			if (marker.options.type === "golf" && parseInt(marker.options.id) === parseInt(id)) {
-				let pathIcon = "";
-
-				if (status === "fait") {
-					pathIcon = "/assets/icon/NewIcons/icon-vert-golf-bleu.png";
-					user_status = { ...user_status, fait: true };
-				} else if (status === "afaire") {
-					pathIcon = "/assets/icon/NewIcons/icon-vert-golf-orange.png";
-					user_status = { ...user_status, a_faire: true };
-				} else {
-					/// aucun
-					pathIcon = "/assets/icon/NewIcons/icon-rouge-golf-C.png";
+	updateStatusDataGolfItem(user_status, id) {
+		if (this.default_data.golf.some(({ id: item_id }) => parseInt(item_id) === parseInt(id))) {
+			this.default_data.golf = this.default_data.golf.map((item) => {
+				if (parseInt(item.id) === parseInt(id)) {
+					item.user_status = { ...item.user_status, ...user_status };
 				}
+				return item;
+			});
 
-				const icon_R = L.Icon.extend({
-					options: {
-						iconUrl: IS_DEV_MODE
-							? this.currentUrl.origin + pathIcon
-							: this.currentUrl.origin + "/public" + pathIcon,
-						iconSize: [35, 55],
-						iconAnchor: [11, 30],
-						popupAnchor: [0, -20],
-						shadowSize: [68, 95],
-						shadowAnchor: [22, 94],
-					},
-				});
-				marker.setIcon(new icon_R());
-			}
-		});
+			this.data.golf = this.data.golf.map((item) => {
+				if (parseInt(item.id) === parseInt(id)) {
+					item.user_status = { ...item.user_status, ...user_status }; /// { "a_faire" : ... , "fait" : ...  }
+				}
+				return item;
+			});
+		}
+	}
 
-		this.markers.refreshClusters();
+	updateStateGolf(status, id) {
+		/// new state for the data
+		let user_status = this.getNewUserStatus(status); ///  { a_faire: ..., fait: ..., mon_golf: ..., refaire: ... };
 
-		this.data.golf = this.data.golf.map((item) => {
-			if (parseInt(item.id) === parseInt(id)) {
-				item.user_status = { ...item.user_status, ...user_status };
-			}
-			return item;
-		});
+		if (this.default_data.golf.some(({ id: item_id }) => parseInt(item_id) === parseInt(id))) {
+			///update the global data state
+			this.updateStatusDataItem(user_status, id, "golf");
+
+			const golfModified = this.default_data.golf.find(({ id: item_id }) => parseInt(item_id) === parseInt(id));
+
+			this.markers.eachLayer((marker) => {
+				if (marker.options.type === "golf" && parseInt(marker.options.id) === parseInt(id)) {
+					const icon = this.getIcon(golfModified, true); /// path, size
+
+					if (!golfModified.moyenne_note) {
+						marker.setIcon(setIconn(icon.path, "", icon.size, zoom));
+					} else {
+						marker.setIcon(
+							// this.setSpecialIcon(oneResto, false, poi_icon, poi_icon_Selected, isPastille)
+							this.setSpecialIconRefactor(golfModified, icon.path, icon.size)
+						);
+					}
+				}
+			});
+
+			this.markers.refreshClusters();
+		}
 	}
 
 	injectListRestoPastille() {

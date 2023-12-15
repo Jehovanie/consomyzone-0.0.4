@@ -5762,7 +5762,7 @@ function fecthGolfAction(goldID, action, selectElement) {
 								document.querySelector(".golf_status_jheo_js").innerText = "";
 							}
 
-							OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID);
+							// OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID);
 						});
 					}
 
@@ -5783,8 +5783,6 @@ function fecthGolfAction(goldID, action, selectElement) {
 					// }
 				}
 			});
-	} else {
-		new swal("Bonjour", "Oups!! ", "info");
 	}
 	// const url = (action === "finished") ? '/user/setGolf/finished': '/user/setGolf/unfinished';
 }
@@ -7401,7 +7399,10 @@ if (document.querySelector(".icon_draggable_jheo_js")) {
 dragElement(document.querySelector(".key_draggable_details_jheo_js"));
 
 function dragElement(elmnt) {
-	var pos1 = 0, pos2 = 0,  pos3 = 0, pos4 = 0;
+	var pos1 = 0,
+		pos2 = 0,
+		pos3 = 0,
+		pos4 = 0;
 
 	if (document.querySelector(".content_icon_draggable_jheo_js")) {
 		document.querySelector(".content_icon_draggable_jheo_js").onmousedown = dragMouseDown;
