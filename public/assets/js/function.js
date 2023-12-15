@@ -3461,29 +3461,31 @@ function getGolfSpecSearchMobile(nom_dep, id_dep, idGolf) {
 			let containerActionGolf = "";
 			let statusGolf = "";
 			if (document.querySelector("#is-connected-tomm-js")) {
-				btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvisFerme">Donner votre avis</button>`;
+				btnAviMobile = `<button type="button" class="mx-2 text-point-9 btn btn-primary btn_modal_avis_resto_jheo_js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Donner votre avis</button>`;
 				let valueContaintGolf = "";
 				let valueContaintGolfDetail = "";
 				if (golfs.user_status["a_faire"] == null && golfs.user_status["fait"] == null) {
 					valueContaintGolf = ` 
                                 <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
-                                <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${golfs.id}" onchange="executeActionForPastGolf(${golfs.id})">
+                                <select class="form-select select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${golfs.id}" onchange="executeActionForPastGolf(event, ${golfs.id})">
                                     <option value="0">Aucun</option>
                                     <option value="1">A faire</option>
                                     <option value="2">Fait</option>
+									<option value="3">A refaire</option>
                                 </select>`;
 					valueContaintGolfDetail = ` 
                                 <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme :
                                     </label>
-                                    <select class="form-select-detail select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${golfs.id}" onchange="executeActionForPastGolf(${golfs.id})">
+                                    <select class="form-select-detail select_action_golf select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${golfs.id}" onchange="executeActionForPastGolf(event, ${golfs.id})">
                                         <option value="0">Aucun</option>
                                         <option value="1">A faire</option>
                                         <option value="2">Fait</option>
+										<option value="3">A refaire</option>
                                     </select>`;
 					statusGolf = `<span class="badge bg-info golf_status golf_status_jheo_js"></span>`;
 				} else {
-					valueContaintGolf = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${golfs.id}')">Oui</span>`;
-					valueContaintGolfDetail = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished('${golfs.id}')">Oui</span>`;
+					valueContaintGolf = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished(event, '${golfs.id}')">Oui</span>`;
+					valueContaintGolfDetail = `Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did  btn_golf_did_jheo_js" onclick="cancelGolfFinished( event, '${golfs.id}')">Oui</span>`;
 					if (golfs.user_status["a_faire"] == 1) {
 						statusGolf = `<span class="badge bg-info  golf_status golf_status_jheo_js">A FAIRE</span>`;
 					} else if (golfs.user_status["fait"] == 1) {
@@ -3502,14 +3504,14 @@ function getGolfSpecSearchMobile(nom_dep, id_dep, idGolf) {
 			}
 
 			listSpecMobile.innerHTML += `
-                    <li class="nav-item icon-tabac me-3">
+                    <li class="nav-item icon-tabac me-3 item_carrousel_${idGolf}_jheo_js">
 						<a class="nav-link d-block">
 							<div class="containt-specific">
 								<div class="click-detail" data-bs-toggle="modal" data-bs-target="#detailModalMobilGolf${golfs.id}" onclick="getDetailFromListLeft('golf','${golfs.depName}', '${golfs.dep}', '${golfs.id}')">
 									<p class="text-point-12 fw-bold">
                                         ${golfs.name} 
 									</p>
-                                    <div class="start">
+                                    <div class="start start_${idGolf}_jheo_js">
                                         <i class="fa-solid fa-star" data-rank="1"></i>
                                         <i class="fa-solid fa-star" data-rank="2"></i>
                                         <i class="fa-solid fa-star" data-rank="3"></i>
@@ -3529,7 +3531,7 @@ function getGolfSpecSearchMobile(nom_dep, id_dep, idGolf) {
 								<div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
 									
 									<span>
-										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdropFerme">
+										<a id="see-tom-js" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop">
 											<span class="nbr_avis_resto_jheo_js">
 											</span>
 											avis
@@ -4110,6 +4112,7 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
                                     <option value="0">Aucun</option>
                                     <option value="1">A faire</option>
                                     <option value="2">Fait</option>
+									<option value="3">A refaire</option>
                                 </select>`;
 						valueContaintGolfDetail = ` 
                                 <label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme :
@@ -4118,6 +4121,7 @@ function getDataSpecGolfMobile(nom_dep, id_dep) {
                                         <option value="0">Aucun</option>
                                         <option value="1">A faire</option>
                                         <option value="2">Fait</option>
+										<option value="3">A refaire</option>
                                     </select>`;
 						statusGolf = `<span class="badge bg-info golf_status golf_status_jheo_js"></span>`;
 					} else {

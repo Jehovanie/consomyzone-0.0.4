@@ -51,6 +51,7 @@ function executeActionForPastGolf(event, goldID) {
 
 		event = content_details.querySelector(".content_btn_golf_did_jheo_js");
 	}
+
 	if (action == "1") {
 		setGolfTodo(goldID, event);
 		OBJECT_MARKERS_SEARCH.updateStateGolf("afaire", goldID);
@@ -107,6 +108,13 @@ function fecthGolfAction(goldID, action, selectElement) {
                             `;
 						}
 
+						if (document.querySelector(`.item_carrousel_${goldID}_jheo_js`)) {
+							const itemCarrousel = document.querySelector(`.item_carrousel_${goldID}_jheo_js`);
+							itemCarrousel.querySelector(".content_btn_golf_did_jheo_js").innerHTML = `
+                                Vouliez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+							`;
+						}
+
 						if (document.querySelector(".golf_status_jheo_js")) {
 							document.querySelector(".golf_status_jheo_js").innerText = "FAIT";
 						}
@@ -117,6 +125,13 @@ function fecthGolfAction(goldID, action, selectElement) {
 							selectElement.innerHTML = `
                                 Vouliez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
                             `;
+						}
+
+						if (document.querySelector(`.item_carrousel_${goldID}_jheo_js`)) {
+							const itemCarrousel = document.querySelector(`.item_carrousel_${goldID}_jheo_js`);
+							itemCarrousel.querySelector(".content_btn_golf_did_jheo_js").innerHTML = `
+                                Vouliez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+							`;
 						}
 
 						if (document.querySelector(".golf_status_jheo_js")) {
@@ -130,6 +145,12 @@ function fecthGolfAction(goldID, action, selectElement) {
                                 Vouliez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
                             `;
 						}
+						if (document.querySelector(`.item_carrousel_${goldID}_jheo_js`)) {
+							const itemCarrousel = document.querySelector(`.item_carrousel_${goldID}_jheo_js`);
+							itemCarrousel.querySelector(".content_btn_golf_did_jheo_js").innerHTML = `
+                                Vouliez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+							`;
+						}
 
 						if (document.querySelector(".golf_status_jheo_js")) {
 							document.querySelector(".golf_status_jheo_js").innerText = "";
@@ -141,6 +162,13 @@ function fecthGolfAction(goldID, action, selectElement) {
 							selectElement.innerHTML = `
                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
                             `;
+						}
+
+						if (document.querySelector(`.item_carrousel_${goldID}_jheo_js`)) {
+							const itemCarrousel = document.querySelector(`.item_carrousel_${goldID}_jheo_js`);
+							itemCarrousel.querySelector(".content_btn_golf_did_jheo_js").innerHTML = `
+								Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
+							`;
 						}
 
 						if (document.querySelector(".golf_status_jheo_js")) {
@@ -161,6 +189,18 @@ function fecthGolfAction(goldID, action, selectElement) {
                             `;
 						}
 
+						if (document.querySelector(`.item_carrousel_${goldID}_jheo_js`)) {
+							const itemCarrousel = document.querySelector(`.item_carrousel_${goldID}_jheo_js`);
+							itemCarrousel.querySelector(".content_btn_golf_did_jheo_js").innerHTML = `
+								<label for="selectActionGolf" class="form-label">Vous voulez marquer que ce golf comme : </label>
+								<select class="form-select select_action_golf_nanta_js" id="selectActionGolf" name="sellist_action" data-id="${goldID}" onchange="executeActionForPastGolf(event,'${goldID}')">
+									<option value="0">Aucun</option>
+									<option value="1">A faire</option>
+									<option value="2">Fait</option>
+									<option value="3">A refaire</option>
+								</select>
+							`;
+						}
 						if (document.querySelector(".golf_status_jheo_js")) {
 							document.querySelector(".golf_status_jheo_js").innerText = "";
 						}
