@@ -547,6 +547,7 @@ function updateAvis(avisID, idItemRubrique){
  * @param {*} globalNote 
  */
 function createGlobalNote(globalNote,idItem= null) {
+    console.log(document.querySelector(`.start_${idItem}_jheo_js`));
     let startHTML = "";
     let rate= globalNote - Math.trunc(globalNote);
     let rateYellow = rate * 100;
@@ -568,6 +569,10 @@ function createGlobalNote(globalNote,idItem= null) {
     }else if(document.querySelector(".start_jheo_js")) {
         document.querySelector(".start_jheo_js").innerHTML = startHTML;
     }
+
+    if (document.querySelector(`.start_${idItem}_jheo_js`)) {
+		document.querySelector(`.start_${idItem}_jheo_js`).innerHTML = startHTML;
+	}
     
 }
 
