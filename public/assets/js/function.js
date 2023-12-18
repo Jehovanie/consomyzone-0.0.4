@@ -5259,10 +5259,12 @@ function pastilleGolf(element, table_tribu_t) {
 		.then((response) => response.json())
 		.then((message) => {
 			new swal("Succès !", "Golf pastillé avec succès", "success").then((value) => {
-				element.classList = "btn btn-secondary ms-1";
-				element.textContent = "Pastillé";
-				element.setAttribute("disabled", true);
+				element.classList = "btn btn-warning ms-1";
+				element.innerText = "Dépastille";
+				element.setAttribute("onclick", `depastilleGolf(this)`);
+
 				showGolf(tbl);
+
 				if (document.querySelector("#tribu_t_conteuneur")) {
 					document.querySelector("#tribu_t_conteuneur").style.textAlign = "";
 				}
@@ -5289,23 +5291,29 @@ function pastilleGolf(element, table_tribu_t) {
 											 title="Tribu T ${data["name_tribu_t_muable"]}" 
 											 data-bs-toggle="tooltip" data-bs-placement="top" 
 											 data-name="${data["name_tribu_t_muable"]}">
-											<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data["logo_path"]}" alt="Tribu T" data-name="${data["name_tribu_t_muable"]}" style="transform: scale(1.2);">
+											<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data["logo_path"]}" alt="tT" data-name="${data["name_tribu_t_muable"]}" style="transform: scale(1.2);">
 										</div>
 									`;
 								}
 							} else {
 								if (data["isPastilled"] == true && table_tribu_t == data["table_name"]) {
 									logoPath = `
-										<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T ${data["name_tribu_t_muable"]}" data-name="${data["name_tribu_t_muable"]}" id="${data["table_name"]}">
-											<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" src="/public${data["logo_path"]}" alt="Tribu T" data-name="${data["name_tribu_t_muable"]}" style="transform: scale(1.2);">
+										<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" 
+										     class="img_nantenaina" 
+											 data-bs-toggle="tooltip" 
+											 data-bs-placement="top" 
+											 title="Tribu T ${data["name_tribu_t_muable"]}" 
+											 data-name="${data["name_tribu_t_muable"]}" 
+											 id="${data["table_name"]}">
+											<img class="logo_path_pastille_details logo_path_${data["table_name"]}_tomm_js logo_path_pastille_details-tomm-js" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="tT" data-name="${data["name_tribu_t_muable"]}" style="transform: scale(1.2);">
 										</div>
 									`;
 								}
 							}
 
-							if (document.querySelector(".logo-pastille-golf-tomm-js")) {
-								document.querySelector(".logo-pastille-golf-tomm-js").style.width = i + "px";
-							}
+							// if (document.querySelector(".logo-pastille-golf-tomm-js")) {
+							// 	document.querySelector(".logo-pastille-golf-tomm-js").style.width = i + "px";
+							// }
 						}
 
 						if (countIsPastilled > 4) {
@@ -5314,14 +5322,15 @@ function pastilleGolf(element, table_tribu_t) {
 							}
 							document.querySelector(
 								".logo-pastille-golf-tomm-js"
-							).innerHTML += ` <span class="length-pastille-plus" onclick="fireExecuteForPastGolf()">${countIsPastilled}+</span>`;
+							).innerHTML += ` <div class="length-pastille-plus length_pastille_plus_jheo_js" onclick="fireExecuteForPastGolf()">${countIsPastilled}+</div>`;
 						} else {
 							// document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += ` <span class="length-pastille-plus"></span>`
 							if (document.querySelector(".length-pastille-plus")) {
 								document.querySelector(".length-pastille-plus").remove();
 							}
 						}
-						document.querySelector(".logo-pastille-golf-tomm-js").innerHTML += logoPath;
+						document.querySelector(".logo-pastille-golf-tomm-js").innerHTML =
+							logoPath + document.querySelector(".logo-pastille-golf-tomm-js").innerHTML;
 					});
 			}
 		})
@@ -5357,12 +5366,38 @@ function depastilleGolf(selector) {
 	fetch(request)
 		.then((response) => response.json())
 		.then((message) => {
-			new swal("Succès !", "Golf dépastillé avec succès", "success").then((value) => {
-				$("#detailOptionGolf").modal("hide");
-				if (document.querySelector("#golf_" + id)) {
-					document.querySelector("#golf_" + id).remove();
-				}
-			});
+			new swal("Succès !", "Golf dépastillé avec succès", "success")
+				.then((value) => {
+					$("#detailOptionGolf").modal("hide");
+					if (document.querySelector("#golf_" + id)) {
+						document.querySelector("#golf_" + id).remove();
+					}
+				})
+				.then((response) => {
+					// <button
+					// 	data-adresse="Rue de Chêne de Cambrie  02720  MESNIL SAINT LAURENT"
+					// 	class="btn btn-success"
+					// 	onclick="pastilleGolf(this, 'tribu_t_19_tribu_t_misy_golf')"
+					// >
+					// 	Pastillez
+					// </button>;
+
+					// <button
+					// 	type="button"
+					// 	id="data-depastilleGolf-nanta-js"
+					// 	class="btn btn-warning"
+					// 	onclick="depastilleGolf(this)"
+					// 	data-id="408"
+					// 	data-name="golf de saint quentin mesnil"
+					// 	data-tbname="tribu_t_19_new_tribu_t"
+					// >
+					// 	Dépastiller
+					// </button>;
+
+					selector.className = "btn btn-success";
+					selector.innerText = "Pastillez";
+					selector.setAttribute("onclick", `pastilleGolf(this, "${selector.dataset.tbname}")`);
+				});
 			if (message.id_golf) {
 				fetch(`/golf/pastilled/checking/${message.id_golf}`)
 					.then((response) => response.json())
@@ -5387,6 +5422,7 @@ function depastilleGolf(selector) {
 							document.querySelector(
 								".logo-pastille-golf-tomm-js"
 							).innerHTML += `<span class="length-pastille-plus">${countIsPastilled}+</span>`;
+
 							if (document.querySelector(".length-pastille-plus")) {
 								document.querySelector(".length-pastille-plus").remove();
 							}
@@ -5972,6 +6008,14 @@ function pastilleGolfForTribuG(e, type, id, name) {
 							div_content.appendChild(image);
 
 							content_list_pastille.prepend(div_content);
+
+							if (content_list_pastille.querySelector(".length_pastille_plus_jheo_js")) {
+								const content_length = content_list_pastille.querySelector(
+									".length_pastille_plus_jheo_js"
+								);
+
+								content_length.innerText = `${parseInt(content_length.innerText) + 1}+`;
+							}
 						}
 						if (document.querySelector("#fetch_golf_tribug_jheo_js")) {
 							/// this use in the tribu G (partie connected)

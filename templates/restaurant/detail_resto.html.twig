@@ -4,70 +4,74 @@
 			<div class="content_titre_details">
 				<div class="titre text-center">
 					<div class="mb-2 restoNameWithLogoTribu">
-						<div class="mt-2 ms-3 me-1 text-center">
-							<b>{{details.denominationF | raw}}</b>
+						<div class="col-8 mt-2 ms-3 me-1 ">
+							<div class="text-center">
+								<p>{{details.denominationF | raw}}</p>
+							</div>
 						</div>
-						{% if (app.user and app.user.type!='Type') %}
-							<div class="super_container_js_nantenaina">
-								<div class="mainContainerLogoTribu">
+						<div class="col-4">
+							{% if (app.user and app.user.type!='Type') %}
+								<div class="super_container_js_nantenaina">
+									<div class="mainContainerLogoTribu">
 
-									{% if tribu_g_resto_pastille|length > 0 %}
-										{% for item in tribu_g_resto_pastille %}
-											{% if item["avatar"] != "" %}
-												<div onclick="createPopUpTribuG(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu G {{item["name"]}}" data-name="{{item["name"]}}" id="{{item["table_name"]}}">
-													<img src="/public{{asset(item["avatar"])}}" alt="{{item["name"]}}" data-name="{{item["description"]}}" data-type="tribuG">
-												</div>
-											{% else %}
-												{# <img  width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
-												<div onclick="createPopUpTribuG(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu G {{item["name"]}}" data-name="{{item["name"]}}" id="{{item["table_name"]}}">
-													<img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name"]}}" data-name="{{item["description"]}}" data-type="tribuG">
-												</div>
-											{% endif %}
-										{% endfor %}
-									{% endif %}
-
-
-									{% if tribu_t_resto_pastille|length > 0 %}
-										{% for item in tribu_t_resto_pastille %}
-											{% if item["isPastilled"]%}
-												{% if item["logo_path"] != "" %}
-													<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}">
-														<img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" data-type="tribuT">
+										{% if tribu_g_resto_pastille|length > 0 %}
+											{% for item in tribu_g_resto_pastille %}
+												{% if item["avatar"] != "" %}
+													<div onclick="createPopUpTribuG(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu G {{item["name"]}}" data-name="{{item["name"]}}" id="{{item["table_name"]}}">
+														<img src="/public{{asset(item["avatar"])}}" alt="tG" data-name="{{item["description"]}}" data-type="tribuG">
 													</div>
 												{% else %}
-													<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}">
-														<img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" data-type="tribuT">
+													{# <img  width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
+													<div onclick="createPopUpTribuG(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu G {{item["name"]}}" data-name="{{item["name"]}}" id="{{item["table_name"]}}">
+														<img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="tG" data-name="{{item["description"]}}" data-type="tribuG">
 													</div>
 												{% endif %}
-											{% endif %}
-										{% endfor %}
-									{% endif %}
+											{% endfor %}
+										{% endif %}
 
-									{% if tribu_t_resto_joined_pastille|length > 0 %}
-										{% for item in tribu_t_resto_joined_pastille %}
-											{% if item["isPastilled"] %}
-												{% if item["logo_path"] != "" %}
-													{# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt="">#}
-													<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}">
-														<img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" data-type="tribuT">
-													</div>
-												{% else %}
-													{# <img class="ms-1" width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
-													<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" ata-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}">
-														<img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" data-type="tribuT">
-													</div>
+
+										{% if tribu_t_resto_pastille|length > 0 %}
+											{% for item in tribu_t_resto_pastille %}
+												{% if item["isPastilled"]%}
+													{% if item["logo_path"] != "" %}
+														<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}">
+															<img src="/public{{asset(item["logo_path"])}}" alt="tT" data-name="{{item["name_tribu_t_muable"]}}" data-type="tribuT">
+														</div>
+													{% else %}
+														<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}">
+															<img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="tT" data-name="{{item["name_tribu_t_muable"]}}" data-type="tribuT">
+														</div>
+													{% endif %}
 												{% endif %}
-											{% endif %}
-										{% endfor %}
-									{% endif %}
+											{% endfor %}
+										{% endif %}
+
+										{% if tribu_t_resto_joined_pastille|length > 0 %}
+											{% for item in tribu_t_resto_joined_pastille %}
+												{% if item["isPastilled"] %}
+													{% if item["logo_path"] != "" %}
+														{# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt="">#}
+														<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" data-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}">
+															<img src="/public{{asset(item["logo_path"])}}" alt="tT" data-name="{{item["name_tribu_t_muable"]}}" data-type="tribuT">
+														</div>
+													{% else %}
+														{# <img class="ms-1" width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
+														<div onclick="createPopUp(event)" onmouseout="resetImage(event)" onmouseover="agrandirImage(event)" class="img_nantenaina" ata-bs-toggle="tooltip" data-bs-placement="top" title="Tribu T {{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}" id="{{item["table_name"]}}">
+															<img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="tT" data-name="{{item["name_tribu_t_muable"]}}" data-type="tribuT">
+														</div>
+													{% endif %}
+												{% endif %}
+											{% endfor %}
+										{% endif %}
+									</div>
 								</div>
-							</div>
-							<div class="iconePlus_nanta_js d-none">
-								<a href="#" onclick="showLogoAndNameTribus()">
-									<i class="bi bi-plus"></i>
-								</a>
-							</div>
-						{% endif %}
+								<div class="iconePlus_nanta_js d-none">
+									<a href="#" onclick="showLogoAndNameTribus()">
+										<i class="bi bi-plus"></i>
+									</a>
+								</div>
+							{% endif %}
+						</div>
 					</div>
 
 					<figcaption class="blockquote-footer card-text cmz-adresse">

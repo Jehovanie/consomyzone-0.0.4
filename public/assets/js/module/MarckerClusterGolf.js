@@ -349,7 +349,6 @@ class MarckerClusterGolf extends MapModule {
 		this.addMarker(this.default_data);
 	}
 
-
 	updateStatusDataItem(user_status, id) {
 		if (this.default_data.some(({ id: item_id }) => parseInt(item_id) === parseInt(id))) {
 			this.default_data = this.default_data.map((item) => {
@@ -384,6 +383,7 @@ class MarckerClusterGolf extends MapModule {
 					const icon = this.getIcon(golfModified, true); /// path, size
 
 					if (!golfModified.moyenne_note) {
+						const zoom = this.map._zoom;
 						marker.setIcon(setIconn(icon.path, "", icon.size, zoom));
 					} else {
 						marker.setIcon(this.setSpecialIconRefactor(golfModified, icon.path, icon.size));

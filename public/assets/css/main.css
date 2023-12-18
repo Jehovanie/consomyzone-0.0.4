@@ -1727,10 +1727,16 @@ i.fa-eye {
 	font-size: 1.1rem;
 }
 
+.logo_pastille_golf {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
 .img_nantenaina {
 	float: left;
-	height: 50px;
-	/* margin-left: -10px; */
+	/* height: 50px; */
+	margin-left: -10px;
 	cursor: pointer;
 }
 
@@ -2525,11 +2531,12 @@ textarea {
 	background-color: #ccc;
 	position: absolute;
 	color: #000;
-	right: 0;
+	right: 5px;
 	font-size: 11pt;
 	width: 25px;
 	clip-path: circle();
 	z-index: 1;
+	cursor: pointer;
 }
 
 /* css modal carousel*/
