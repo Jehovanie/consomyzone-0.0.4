@@ -1728,27 +1728,28 @@ i.fa-eye {
 }
 
 .logo_pastille_golf {
-	display: flex;
-	align-items: center;
-	justify-content: center;
+	overflow: hidden;
 }
 
 .img_nantenaina {
 	float: left;
 	/* height: 50px; */
-	margin-left: -10px;
+	/* margin-left: -10px; */
 	cursor: pointer;
 }
 
 .super_container_js_nantenaina {
-	width: 40.3%;
-	height: 50px;
+	/* width: 40.3%; */
+	/* height: 50px; */
 	overflow: hidden;
 }
 
 .mainContainerLogoTribu {
-	height: 43px;
+	height: 35px;
 	position: relative;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
 
 .mainContainerLogoTribu:after {
@@ -2528,14 +2529,7 @@ textarea {
 }
 
 .length-pastille-plus {
-	background-color: #ccc;
-	position: absolute;
 	color: #000;
-	right: 5px;
-	font-size: 11pt;
-	width: 25px;
-	clip-path: circle();
-	z-index: 1;
 	cursor: pointer;
 }
 
@@ -2780,4 +2774,53 @@ textarea {
 	z-index: 10;
 	background-color: #2196f3;
 	color: #fff;
+}
+
+.translate_left {
+	margin-left: -10px !important;
+}
+.flex_content_center {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+}
+
+.flex_content_start {
+	display: flex;
+	justify-content: flex-start;
+	align-items: center;
+}
+
+.flex_content_end {
+	display: flex;
+	justify-content: flex-end;
+	align-items: center;
+}
+
+.length-pastille-plus > i {
+	font-size: 35px;
+	color: blue;
+	font-weight: bolder;
+}
+
+.content_logo_tribu_pastille {
+	width: 30px;
+	height: 80%;
+	border-radius: 50%;
+}
+
+.logo_tribu_pastille {
+	width: 100%;
+	height: 100%;
+	border-radius: 50%;
+}
+.text_bold_pastille_golf {
+	text-align: start;
+	font-size: 0.9rem;
+	font-weight: 600;
+}
+
+.cta_mongolf {
+	font-size: 0.8rem;
+	font-weight: bolder;
 }

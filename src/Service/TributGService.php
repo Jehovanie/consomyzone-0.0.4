@@ -6,10 +6,10 @@ namespace App\Service;
 
 use PDO;
 
+use Exception;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
 use Doctrine\DBAL\Driver\SQLSrv\Exception\Error;
-use Exception;
 
 class TributGService extends PDOConnexionService{
 
@@ -1681,6 +1681,31 @@ class TributGService extends PDOConnexionService{
         $statement->execute();
 
         return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    public function getEntityRestoPastilled($user){
+        $results=  [];
+        if( $user ){
+            $tribuG= $this->getTribuG($user->getId());
+            $profil_tribuG= $this->getProfilTributG($tribuG, $user->getId());
+
+            $logo_tribuG= $profil_tribuG["avatar"] !== "" ? "/uploads/tribus/photos/" . $profil_tribuG["avatar"] : "/uploads/tribus/avatar_tribu.jpg";
+
+            $resto_pastielle = $this->getAllRestoTribuG($tribuG);
+            
+            foreach ($resto_pastielle as $resto) {
+                array_push($results, [ 
+                    "id_resto" => $resto["extensionId"],
+                    "table_name" => $tribuG, 
+                    "tableName" => $tribuG, 
+                    "name_tribu_t_muable" => $profil_tribuG["name"], 
+                    "logo_path" => $logo_tribuG 
+                ]);
+            }
+        }
+
+        return $results;
     }
 
     public function getRestoPastillesTribuG($table_name){

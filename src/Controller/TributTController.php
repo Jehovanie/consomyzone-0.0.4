@@ -1845,10 +1845,12 @@ class TributTController extends AbstractController
         
         foreach ($principal as $principal_item){
 
+            $user_receiver= $userRepository->findOneBy(["email" => $principal_item]);
+
             //Verifier si dèjà inscrit dans cmz, cad dans la table user
-            if($userRepository->findOneBy(["email" => $principal_item])){ 
-                  //verifier si dèjà memebre de la tribu T;
-                $id_receiver = $userRepository->findOneBy(["email" => $principal_item])->getId();
+            if($user_receiver && $user_receiver->getType() !== "Type" ){ 
+                $id_receiver = $user_receiver->getId();
+
                 $isMembre = $tribuTService->testSiMembre($table, $id_receiver,$principal_item);
                 
                 if ($isMembre != "accepted" ){

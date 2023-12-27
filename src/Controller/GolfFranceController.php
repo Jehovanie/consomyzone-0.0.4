@@ -455,6 +455,48 @@ class GolfFranceController extends AbstractController
         ], 200);
     }
 
+    #[Route("/api/golf/one_data/{golfID}" , name:"api_one_data_golf" , methods:"GET" )]
+    public function getOneDataGolf(
+        $golfID,
+        GolfFranceRepository $golfFranceRepository,
+        AvisGolfRepository $avisGolfRepository,
+    ){
+        ///current user connected
+        $user = $this->getUser();
+        $userID = ($user) ? intval($user->getId()) : null;
+
+        $details = $golfFranceRepository->getOneGolf(intval($golfID), $userID);
+
+        $nbr_avis_resto = $avisGolfRepository->getNombreAvis($details["id"]);
+
+        $global_note  = $avisGolfRepository->getNoteGlobale($details["id"]);
+
+        $isAlreadyCommented= false;
+        $isHaveTribuPastille= false;
+
+        $avis= ["note" => null, "text" => null  ];
+
+        $note_temp=0;
+        foreach ($global_note as $note ) {
+            if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
+                $isAlreadyCommented = true;
+                $avis = [ "note" => $note["note"], "text" => $note["avis"] ];
+            }
+            $note_temp += $note["note"]; 
+        }
+
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto,
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
+        ];
+
+        return $this->json([
+            "details" => $details,
+        ], 200);
+    }
+
     #[Route('/golf/departement/{nom_dep}/{id_dep}/{golfID}', name: 'single_golf_france', methods: ["GET"])]
     public function oneGolf(
         $nom_dep,
@@ -479,15 +521,10 @@ class GolfFranceController extends AbstractController
         $global_note  = $avisGolfRepository->getNoteGlobale($details["id"]);
 
         $isAlreadyCommented= false;
+        $isHaveTribuPastille= false;
+
         $avis= ["note" => null, "text" => null  ];
 
-        $arrayTribu = [];
-        
-        // tribut G pastille
-        $array_tribug_pastilled= [];
-
-        $isPastilled = false;
-        
         $note_temp=0;
         foreach ($global_note as $note ) {
             if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
@@ -504,6 +541,10 @@ class GolfFranceController extends AbstractController
             "avisPerso" => $avis
         ];
 
+        $arrayTribu = []; // tribut T (own) pastille
+        $arrayTribuJoined= []; // tribut T join pastille
+        $array_tribug_pastilled= [];  // tribut G pastille
+
         if ($this->getUser()) {
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
@@ -519,7 +560,7 @@ class GolfFranceController extends AbstractController
                         array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
                     } else {
                         array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
-                        $isPastilled = true;
+                        $isHaveTribuPastille= true;
                     }
                 }
             }
@@ -532,14 +573,13 @@ class GolfFranceController extends AbstractController
                 $tableExtensionTbtJoined = $tbtJoined . "_golf";
                 if($tribu_T_Service->checkExtension($tbtJoined, "_golf") > 0){
                     if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"], true)){
-                        array_push($arrayTribu, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => true]);
+                        array_push($arrayTribuJoined, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => true]);
+                        $isHaveTribuPastille= true;
                     }else{
-                        array_push($arrayTribu, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable, "isPastilled" => false]);
+                        array_push($arrayTribuJoined, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable, "isPastilled" => false]);
                     }
                 }
             }
-            // tribut G pastille
-            $array_tribug_pastilled= [];
 
             $statusProfile = $status->statusFondateur($this->getUser());
 
@@ -551,6 +591,7 @@ class GolfFranceController extends AbstractController
             if( count($isPastilled) > 0 ){
                 $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
                 array_push($array_tribug_pastilled, ["table_name" => $profil_tribuG["table_name"], "logo_path" => $profil_tribuG["avatar"], "name_tribu_g_muable" => $profil_tribuG["name"], "isPastilled" => true]);
+                $isHaveTribuPastille= true;
             }
         }
 
@@ -580,8 +621,10 @@ class GolfFranceController extends AbstractController
             "nom_dep" => $nom_dep,
             "details" => $details,
             "tribu_t_pastilleds" => $arrayTribu,
+            "tribu_t_joined_pastille" => $arrayTribuJoined,
             "tribu_g_pastilleds" => $array_tribug_pastilled,
             "photos" => $tabPhoto,
+            "isHaveTribuPastille" => $isHaveTribuPastille
         ]);
     }
 

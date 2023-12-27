@@ -135,8 +135,10 @@ function pastilleRestoForTribuT(element, isPastilled) {
 				new swal("Succès !", "Restaurant dépastillé avec succès", "success").then((value) => {
 					updateBtnStatus(element, html);
 					document.querySelector("#" + tbl).remove();
-					reorganisePastille();
+
 					CURRENT_MAP_INSTANCE.updateListRestoDepastille(id, tbl + "_restaurant");
+
+					// reorganisePastille();
 				});
 			} else {
 				html = `<button type="button" data-id="${id}" data-tribu="${tribuName}" data-name="${name}" 
@@ -144,26 +146,47 @@ function pastilleRestoForTribuT(element, isPastilled) {
                                     onclick="pastilleRestoForTribuT(this,false)">Dépastiller</button>`;
 
 				let img = document.createElement("img");
+				img.setAttribute("class", "logo_tribu_pastille");
 				img.src = element.dataset.velona;
 				img.dataset.name = tribuName;
+				img.dataset.type = "tribuT";
 				img.setAttribute("alt", tribuName);
 
+				let translate_left = "";
+				if (document.querySelector(".content_tribuT_pastille_jheo_js")) {
+					const content_tribuT_pastille = document.querySelector(".content_tribuT_pastille_jheo_js");
+					if (content_tribuT_pastille.querySelector(".logo_tribu_pastille")) {
+						translate_left = "translate_left";
+					}
+				}
+
 				let div = document.createElement("div");
+				div.setAttribute("id", tbl);
+				div.setAttribute("class", "img_nantenaina content_logo_tribu_pastille " + translate_left);
 				div.setAttribute("onclick", "createPopUp(event)");
 				div.setAttribute("onmouseout", "resetImage(event)");
 				div.setAttribute("onmouseover", "agrandirImage(event)");
-				div.setAttribute("id", tbl);
-				div.setAttribute("class", "img_nantenaina");
-				div.setAttribute("title", "Tribu T " + tribuName);
 				div.setAttribute("data-bs-toggle", "tooltip");
 				div.setAttribute("data-bs-placement", "top");
-				div.dataset.name = tribuName;
+				div.setAttribute("title", "Tribu T " + tribuName);
+				div.setAttribute("data-name", tribuName);
+
 				div.appendChild(img);
 
 				new swal("Succès !", "Restaurant pastillé avec succès", "success").then((value) => {
 					updateBtnStatus(element, html);
-					document.querySelector(".mainContainerLogoTribu").appendChild(div);
-					reorganisePastille();
+
+					if (document.querySelector(".content_tribuT_pastille_jheo_js")) {
+						const content_tribuT_pastille = document.querySelector(".content_tribuT_pastille_jheo_js");
+						content_tribuT_pastille.querySelector(".mainContainerLogoTribu").appendChild(div);
+
+						const all_tribuT_pastille = content_tribuT_pastille.querySelectorAll(".logo_tribu_pastille");
+						if (all_tribuT_pastille.length > 4) {
+							content_tribuT_pastille.querySelector(".iconePlus_nanta_js").classList.remove("d-none");
+						}
+					}
+
+					// reorganisePastille();
 					CURRENT_MAP_INSTANCE.updateListRestoPastille(data.id_resto, data.table);
 				});
 			}
@@ -393,13 +416,14 @@ function injectStatus(data) {
 }
 
 function itemRestoPastielle(numeroIndices, depName, dep, name, id, icon) {
+	let logo_path = icon ? icon : "/uploads/tribu_t/photo/avatar_tribu.jpg";
+	logo_path = IS_DEV_MODE ? logo_path : "/public" + logo_path;
+
 	const items = `
         <tr>
             <th scope="row">${numeroIndices + 1}</th>
             <td onclick="getDetailFromListRight('${depName}', '${dep}', '${id}')">
-                <img class="icon_resto_legend" style="clip-path:circle()" src="/public${
-					icon ? icon : "/uploads/tribu_t/photo/avatar_tribu.jpg"
-				}" alt="Icon Resto">
+                <img class="icon_resto_legend" style="clip-path:circle()" src="${logo_path}" alt="Icon Resto">
             </td>
             <td>
                 <a href="#" class="link-primary" onclick="getDetailFromListRight('${depName}', '${dep}', '${id}')">${name}</a>
@@ -471,33 +495,11 @@ function injectListMarker(data, isInSearch = false) {
 }
 
 function getDetailFromListRight(nom_dep, id_dep, id_resto) {
-	CURRENT_MAP_INSTANCE.clickOnMarker(id_resto);
+	id_resto = parseFloat(id_resto);
+	if (CURRENT_MAP_INSTANCE.checkIsExist(id_resto)) {
+		CURRENT_MAP_INSTANCE.clickOnMarker(id_resto);
+	}
 }
-
-// /**
-//  * Get global note avis resto  and setting
-//  * @param {*} idRestaurant
-//  * @override Jehovanie
-//  * I deplace this into the module/avis_depart.js
-//  */
-// function showNoteGlobale(idRestaurant) {
-//     fetch(`/avis/restaurant/global/${idRestaurant}`, {
-//         methode:"GET"
-//     }).then(r => r.json())
-//     .then(response => {
-//         let globalNote=0.00;
-//         let totalNote=0.00;
-//         if( response.length > 0 ){
-//             for (let avis of response) {
-//                 totalNote+=parseFloat(avis["note"])
-//             }
-//             globalNote= totalNote /(response.length);
-//             createGlobalNote(globalNote)
-//             CURRENT_MAP_INSTANCE.showNoteMoyenneRealTime(idRestaurant, globalNote)
-//         }
-
-//     })
-// }
 
 /**
  * Get global note avis resto  and setting

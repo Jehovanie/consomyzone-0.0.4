@@ -2411,8 +2411,8 @@ class MapModule {
 	 * @returns true if exists, false if not
 	 */
 	checkIsExist(idToCheck) {
+		let isAlreadyExist = false;
 		if (this.default_data.some(({ id }) => parseInt(id) === parseInt(idToCheck))) {
-			let isAlreadyExist = false;
 			this.markers.eachLayer((marker) => {
 				if (parseInt(marker.options.id) === parseInt(idToCheck)) {
 					isAlreadyExist = true;
@@ -2424,6 +2424,7 @@ class MapModule {
 				this.settingSingleMarker(data, false);
 			}
 		}
+
 		return this.default_data.some(({ id }) => parseInt(id) === parseInt(idToCheck));
 	}
 

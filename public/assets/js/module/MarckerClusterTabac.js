@@ -251,14 +251,6 @@ class MarckerClusterTabac extends MapModule {
 		this.addMarker(this.default_data);
 	}
 
-	clickOnMarker(id) {
-		this.markers.eachLayer((marker) => {
-			if (parseInt(marker.options.id) === parseInt(id)) {
-				marker.fireEvent("click");
-			}
-		});
-	}
-
 	/**
 	 * Fetch all related data from the boundaries...
 	 * @param {*} new_size  { minx, miny, maxx, maxy }

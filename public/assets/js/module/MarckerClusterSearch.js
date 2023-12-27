@@ -86,6 +86,7 @@ class MarckerClusterSearch extends MapModule {
 					},
 					{
 						regex: /[\d]{5}/g,
+						max_length: 5,
 						clesType: "codepostal",
 						zoom: 13,
 						link: `https://nominatim.openstreetmap.org/search?format=json&postalcode=${data_origin_cle1}&country=France&limit=1`,
@@ -93,12 +94,20 @@ class MarckerClusterSearch extends MapModule {
 					{
 						regex: /([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+/g,
 						clesType: "city",
+						max_length: 10,
 						zoom: 13,
 						link: `https://nominatim.openstreetmap.org/search?format=json&city=${data_origin_cle1}&country=France&limit=1`,
 					},
 				];
 
-				let useLink = dataLink.find((item) => item.regex.test(data_origin_cle1));
+				let useLink = dataLink.find((item) => {
+					if (item.regex.test(data_origin_cle1)) {
+						if (item.hasOwnProperty("max_length")) {
+							return data_origin_cle1.length === item.max_length;
+						}
+						return true;
+					}
+				});
 
 				const apiOpenStreetMap = useLink
 					? useLink.link
@@ -1098,14 +1107,6 @@ class MarckerClusterSearch extends MapModule {
 		this.map.removeLayer(this.markers);
 	}
 
-	clickOnMarker(id) {
-		this.markers.eachLayer((marker) => {
-			if (parseInt(marker.options.id) === parseInt(id)) {
-				marker.fireEvent("click");
-			}
-		});
-	}
-
 	redirectOnAdresse(lat, lng, zoom) {
 		this.map.setView([lat, lng], zoom);
 	}
@@ -1158,7 +1159,7 @@ class MarckerClusterSearch extends MapModule {
 			this.markers.eachLayer((marker) => {
 				if (marker.options.type === "golf" && parseInt(marker.options.id) === parseInt(id)) {
 					const icon = this.getIcon(golfModified, true); /// path, size
-
+					const zoom = this.map._zoom;
 					if (!golfModified.moyenne_note) {
 						marker.setIcon(setIconn(icon.path, "", icon.size, zoom));
 					} else {
@@ -1334,7 +1335,7 @@ class MarckerClusterSearch extends MapModule {
 	 *
 	 * @returns
 	 */
-	clickOnMarker(id, type) {
+	clickOnMarker(id, type = "resto") {
 		this.markers.eachLayer((marker) => {
 			if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === type) {
 				marker.fireEvent("click");

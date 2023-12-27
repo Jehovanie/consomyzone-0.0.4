@@ -566,7 +566,7 @@ class GolfFranceRepository extends ServiceEntityRepository
                 $golfFinishedRepository = new GolfFinishedRepository($this->registry);
                 $user= $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $results[$i]["id"]]);
                 
-                $results[$i]["user_status"]=($user) ? [
+                $results[$i]["user_status"]= ($user) ? [
                         "a_faire" => $user->getAfaire(), 
                         "fait" => $user->getFait(), 
                         "mon_golf" => $user->getMonGolf(),
@@ -574,7 +574,8 @@ class GolfFranceRepository extends ServiceEntityRepository
                     ] : [
                         "a_faire" => null, 
                         "fait" => null, 
-                        "mon_golf"=>null
+                        "mon_golf"=> null,
+                        "refaire" => null
                     ];
                 $results[$i]["user_id"]=$userID;
             }
@@ -683,7 +684,8 @@ class GolfFranceRepository extends ServiceEntityRepository
                 $results[$i]["user_status"]= [
                     "a_faire" => null, 
                     "fait" => null, 
-                    "mon_golf" => null
+                    "mon_golf" => null,
+                    "refaire" => null
                 ];
                 $results[$i]["user_id"]=null;
             }else{

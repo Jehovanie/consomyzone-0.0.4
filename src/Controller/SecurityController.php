@@ -783,7 +783,7 @@ class SecurityController extends AbstractController
                 "admin" => "Nous vous informons qu'une nouvelle tribu G a été créée.",
                 "fondateur" => "Nous avons un grand plaisir de vous annoncer que la tribu G selon votre code postal a été créée et vous êtes l'administrateur provisoire.",
                 "current" => "Nous avons un grand plaisir de vous avoir parmi nous dans la tribu G d'après votre code postal. De la part de tous les membres et la direction, nous aimerions présenter nos salutations cordiales et la bonne chance.",
-                "other" => "Nous avons un grand plaisir de vous annonce que notre tribu G a un nouveau partisan."
+                "other" => "Nous avons un grand plaisir de vous annonce que notre tribu G a un nouveau fan."
             ];
 
 

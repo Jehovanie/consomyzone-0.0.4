@@ -456,4 +456,18 @@ class MarckerClusterGolf extends MapModule {
 
 		this.markers.refreshClusters();
 	}
+
+	async fetchOneData(id) {
+		try {
+			const api_data = `/api/golf/${this.nom_dep}/${this.id_dep}/${id}`;
+			const response = await fetch(api_data);
+			let { details } = await response.json();
+			this.default_data = this.default_data.concat([details]);
+
+			this.settingSingleMarker(details, false);
+			this.clickOnMarker(id);
+		} catch (e) {
+			console.log(e);
+		}
+	}
 }

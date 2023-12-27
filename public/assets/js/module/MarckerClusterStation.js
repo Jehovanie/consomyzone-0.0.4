@@ -491,12 +491,4 @@ class MarckerClusterStation extends MapModule {
 		this.removeMarker();
 		this.addMarker(this.default_data);
 	}
-
-	clickOnMarker(id) {
-		this.markers.eachLayer((marker) => {
-			if (parseInt(marker.options.id) === parseInt(id)) {
-				marker.fireEvent("click");
-			}
-		});
-	}
 }

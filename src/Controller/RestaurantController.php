@@ -100,6 +100,7 @@ class RestaurantController extends AbstractController
         SerializerInterface $serialize,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
         AvisRestaurantRepository $avisRestaurantRepository
     ) {
         $arrayIdResto = [];
@@ -110,6 +111,11 @@ class RestaurantController extends AbstractController
         //// description tribu T with ID restaurant pastille
         $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
 
+        //// list resto pastille dans le tribu G
+        $restoPastilleInTribuG= $tributGService->getEntityRestoPastilled($this->getUser()); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+        
+        $arrayIdResto= array_merge( $arrayIdResto, $restoPastilleInTribuG );
+
         if($request->query->has("minx") && $request->query->has("miny") ){
 
             $minx = $request->query->get("minx");
@@ -118,6 +124,11 @@ class RestaurantController extends AbstractController
             $maxy = $request->query->get("maxy");
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+
+            if( $request->query->has("isFirstResquest")){
+                //// update data result to add all resto pastille in the Tribu T
+                $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
+            }
 
             $ids=array_map('self::getIdAvisResto',$datas);
 
@@ -220,6 +231,11 @@ class RestaurantController extends AbstractController
             $maxy = $request->query->get("maxy");
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep, $codinsee, 50);
+            
+            if( $request->query->has("isFirstResquest")){
+                //// update data result to add all resto pastille in the Tribu T
+                $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
+            }
 
             $ids=array_map('self::getIdAvisResto',$datas);
 
@@ -273,6 +289,11 @@ class RestaurantController extends AbstractController
             $maxy = $request->query->get("maxy");
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep);
+
+            if( $request->query->has("isFirstResquest")){
+                //// update data result to add all resto pastille in the Tribu T
+                $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
+            }
 
             $ids=array_map('self::getIdAvisResto',$datas);
 
@@ -963,6 +984,50 @@ class RestaurantController extends AbstractController
     /** 
      * DON'T CHANGE THIS ROUTE: It's use in js file. 
      * 
+     * @Route("/api/restaurant/one_data/{id_restaurant}" , name="api_one_data_resto" , methods="GET" )
+     */
+    public function getOneDataResto(
+        $id_restaurant,
+        Request $request,
+        BddRestoRepository $bddResto,
+        Status $status,
+        AvisRestaurantRepository $avisRestaurantRepository,
+    ): Response {
+        $statusProfile = $status->statusFondateur($this->getUser());
+        $details= $bddResto->getOneRestaurant(null, $id_restaurant)[0];
+
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($details["id"]);
+
+        $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
+
+        $isAlreadyCommented= false;
+        $avis= ["note" => null, "text" => null  ];
+        
+        $note_temp=0;
+        foreach ($global_note as $note ) {
+            if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
+                $isAlreadyCommented = true;
+                $avis = [ "note" => $note["note"], "text" => $note["avis"] ];
+            }
+            $note_temp += $note["note"]; 
+        }
+
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto,
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
+        ];
+
+        return $this->json([
+            "details" => $details,
+        ], 200);
+    }
+
+
+    /** 
+     * DON'T CHANGE THIS ROUTE: It's use in js file. 
+     * 
      * @Route("/restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="app_detail_restaurant" , methods="GET" )
      * @Route("/api/restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="api_detail_restaurant" , methods="GET" )
      */
@@ -1114,6 +1179,8 @@ class RestaurantController extends AbstractController
             "photos" => $tabPhoto,
         ]);
     }
+
+
 
     /*
     *use this API to know what tribu T had pastilled an rastaurant or not

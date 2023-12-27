@@ -49,14 +49,14 @@
                                     <tr style="vertical-align: middle;">
                                         <td class="col-logo">
                                             <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" 
-                                                src={{userConnected.tribugAvatar}} alt="Avart tribu G"
+                                                src={{"/public" ~ userConnected.tribugAvatar}} alt="Avart tribu G"
                                                 >
                                         </td>
                                         <td class="col-tribuT">
-                                            <span>{{userConnected ? userConnected.tableTribuG : ""}}</span>
+                                            <span>{{userConnected.tribuG_name_muable }}</span>
                                         </td>
                                         <td class="col-action">
-                                            <button class="btn btn-success btn-sm" id="btn-pastille-elie-tbg" data-tbname ="{{userConnected.tableTribuG}}" data-velona={{userConnected.tribugAvatar}}>
+                                            <button class="btn btn-success btn-sm" id="btn-pastille-elie-tbg" data-tbname ="{{userConnected.tableTribuG}}" data-velona={{"/public" ~ userConnected.tribugAvatar}}>
                                                 Pastiller
                                             </button>
                                         </td>

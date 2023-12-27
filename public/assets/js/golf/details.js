@@ -1,14 +1,9 @@
 function getDetailFromListLeft(depart_name, depart_code, id) {
 	if (OBJECT_MARKERS_GOLF.checkIsExist(id)) {
 		OBJECT_MARKERS_GOLF.clickOnMarker(id);
+	} else {
+		OBJECT_MARKERS_GOLF.fetchOneData(id_resto);
 	}
-
-	// if (screen.width < 991) {
-	//     var pathDetails = `/golf-mobile/departement/${depart_name}/${depart_code}/details/${id}`;
-	//     location.assign(pathDetails)
-	// }else{
-	//     OBJECT_MARKERS_GOLF.clickOnMarker(id)
-	// }
 }
 
 function setGolfTodo(goldID, selectElement) {
@@ -37,11 +32,14 @@ function setGolfRemake(goldID, event) {
 	let selectElement = event.target;
 	fecthGolfAction(goldID, "remake", selectElement);
 }
+
 function executeActionForPastGolf(event, goldID) {
 	let selectElement = event.target;
+
 	if (selectElement != null && selectElement instanceof HTMLElement) {
 		let actionstr = selectElement.options[selectElement.selectedIndex].value;
 		action = parseInt(actionstr);
+
 		if (/[0-9]/.test(actionstr)) {
 			if (action >= 0 && action <= 3) {
 				switch (action) {

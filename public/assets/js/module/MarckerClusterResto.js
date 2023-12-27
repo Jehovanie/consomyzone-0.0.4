@@ -53,7 +53,8 @@ class MarckerClusterResto extends MapModule {
 					"&maxx=" +
 					encodeURIComponent(maxx) +
 					"&maxy=" +
-					encodeURIComponent(maxy);
+					encodeURIComponent(maxy) +
+					"&isFirstResquest=true";
 			}
 
 			// "data" => $datas,
@@ -265,7 +266,6 @@ class MarckerClusterResto extends MapModule {
 
 		if (isSelected) {
 			this.marker_last_selected = marker;
-
 			this.markers.refreshClusters();
 			this.map.addLayer(this.markers);
 		}
@@ -355,31 +355,13 @@ class MarckerClusterResto extends MapModule {
 
 	async fetchOneData(id) {
 		try {
-			if (this.marker_last_selected) {
-				const icon_B = L.Icon.extend({
-					options: {
-						iconUrl: IS_DEV_MODE
-							? this.currentUrl.origin + "/assets/icon/NewIcons/icon-resto-new-B.png"
-							: this.currentUrl.origin + "/public/assets/icon/NewIcons/icon-resto-new-B.png",
-						iconSize: [32, 50],
-						iconAnchor: [11, 30],
-						popupAnchor: [0, -20],
-						//shadowUrl: 'my-icon-shadow.png',
-						shadowSize: [68, 95],
-						shadowAnchor: [22, 94],
-					},
-				});
-				this.marker_last_selected.setIcon(new icon_B());
-			}
-
-			const api_data = `/api/restaurant/${this.id_dep}/${this.id_dep}/details/${id}`;
+			const api_data = `/api/restaurant/one_data/${id}`;
 			const response = await fetch(api_data);
 			let { details } = await response.json();
-			this.updateCenter(details.lat, details.long, this.zoomDetails);
-
-			this.settingSingleMarker(details, true);
-
 			this.default_data = this.default_data.concat([details]);
+
+			this.settingSingleMarker(details, false);
+			this.clickOnMarker(id);
 		} catch (e) {
 			console.log(e);
 		}

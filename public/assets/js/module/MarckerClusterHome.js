@@ -40,7 +40,8 @@ class MarckerClusterHome extends MapModule {
 					"&maxx=" +
 					encodeURIComponent(maxx) +
 					"&maxy=" +
-					encodeURIComponent(maxy);
+					encodeURIComponent(maxy) +
+					"&isFirstResquest=true";
 			}
 
 			//// api get all data from server and return objects
@@ -1255,7 +1256,7 @@ class MarckerClusterHome extends MapModule {
 			this.updateStatusDataItem(user_status, id, "golf");
 
 			const golfModified = this.default_data.golf.find(({ id: item_id }) => parseInt(item_id) === parseInt(id));
-
+			const zoom = this.map._zoom;
 			this.markers.eachLayer((marker) => {
 				if (marker.options.type === "golf" && parseInt(marker.options.id) === parseInt(id)) {
 					const icon = this.getIcon(golfModified, true); /// path, size
@@ -1303,8 +1304,26 @@ class MarckerClusterHome extends MapModule {
 	 *
 	 * @returns
 	 */
-	checkIsExist(idToCheck) {
-		return this.default_data.resto.some(({ id }) => parseInt(id) === parseInt(idToCheck));
+	checkIsExist(idToCheck, type = "resto") {
+		const default_data = this.transformDataStructure();
+
+		if (default_data.some((item) => parseInt(item.id) === parseInt(idToCheck) && item.hasOwnProperty(type))) {
+			let isAlreadyExist = false;
+
+			this.markers.eachLayer((marker) => {
+				if (parseInt(marker.options.id) === parseInt(idToCheck) && marker.options.type === type) {
+					isAlreadyExist = true;
+				}
+			});
+
+			if (!isAlreadyExist) {
+				const data = default_data.find(
+					(item) => parseInt(item.id) === parseInt(idToCheck) && item.hasOwnProperty(type)
+				);
+				this.settingSingleMarker(data, false);
+			}
+		}
+		return default_data.some((item) => parseInt(item.id) === parseInt(idToCheck) && item.hasOwnProperty(type));
 	}
 
 	/**
@@ -1316,9 +1335,9 @@ class MarckerClusterHome extends MapModule {
 	 *
 	 * @returns
 	 */
-	clickOnMarker(id) {
+	clickOnMarker(id, type = "resto") {
 		this.markers.eachLayer((marker) => {
-			if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === "resto") {
+			if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === type) {
 				marker.fireEvent("click");
 			}
 		});

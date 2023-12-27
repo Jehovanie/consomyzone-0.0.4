@@ -888,7 +888,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    public function getOneRestaurant($dep, $id)
+    public function getOneRestaurant($dep= null, $id)
     {
         $resto =  $this->createQueryBuilder("r")
                 ->select("r.id,
@@ -898,10 +898,12 @@ class BddRestoRepository extends ServiceEntityRepository
                     r.typevoie,
                     r.nomvoie,
                     r.compvoie,
+                    r.codinsee,
                     r.codpost,
                     r.villenorm,
                     r.commune,
                     r.restaurant,
+                    r.restaurant as resto,
                     r.brasserie,
                     r.creperie,
                     r.fastFood,
@@ -922,7 +924,6 @@ class BddRestoRepository extends ServiceEntityRepository
                     r.dep,
                     r.depName,
                     r.tel,
-                    r.codinsee,
                     r.poiX,
                     r.poiY,
                     r.poiX as long,
@@ -1152,6 +1153,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     r.villenorm,
                     r.commune,
                     r.restaurant,
+                    r.restaurant as resto,
                     r.brasserie,
                     r.creperie,
                     r.fastFood,
@@ -1255,10 +1257,10 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.poiX as long,
                         r.poiY as lat"
                     )
-                    ->where(" r.poiX >= :minx")
+                    ->where("r.poiX >= :minx")
                     ->andWhere("r.poiX <= :maxx")
-                    ->andWhere("ABS(r.poiY) >=ABS(:miny)")
-                    ->andWhere("ABS(r.poiY) <=ABS(:maxy)")
+                    ->andWhere("r.poiY >= :miny")
+                    ->andWhere("r.poiY <= :maxy")
                     ->setParameter("minx", $minx)
                     ->setParameter("maxx", $maxx)
                     ->setParameter("miny", $miny)

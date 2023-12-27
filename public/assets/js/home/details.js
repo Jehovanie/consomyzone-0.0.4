@@ -39,7 +39,7 @@ function executeActionForPastGolf(event, goldID) {
 	}
 }
 
-function fecthGolfAction(goldID, action) {
+function fecthGolfAction(goldID, action, selectElement) {
 	let url = "";
 
 	if (action === "finished") {

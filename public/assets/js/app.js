@@ -1779,20 +1779,16 @@ function showNextImage() {
 }
 
 function agrandirImage(ev) {
-	console.log(ev.target);
 	ev.target.style = "transform:scale(1.2)";
 }
 
 function resetImage(ev) {
-	// console.log(ev.target)
 	ev.target.style = "transform:scale(1)";
 }
 
 function createPopUp(ev) {
 	let tribuName = ev.target.dataset.name;
-	console.log(ev);
 	$("#modalCreatePopUp").modal("show");
-	console.log(document.querySelector("#modalCreatePopUp"));
 	document.querySelector("#modalCreatePopUpLabel").textContent = "Tribu T " + tribuName;
 	document.querySelector("#modalCreatePopUp .textInfos").textContent =
 		"Ce restaurant est pastillé par la tribu " + tribuName;
@@ -1813,8 +1809,9 @@ function createPopUpTribuG(ev) {
 
 	let tribuName = ev.target.dataset.name;
 	document.querySelector("#modalCreatePopUpLabel").textContent = "Tribu G " + tribuName;
-	document.querySelector("#modalCreatePopUp .textInfos").textContent =
-		`Ce ${type} est pastillé par la tribu ${tribuName}`;
+	document.querySelector(
+		"#modalCreatePopUp .textInfos"
+	).textContent = `Ce ${type} est pastillé par la tribu ${tribuName}`;
 
 	document.querySelector("#modalCreatePopUp .tbtName").textContent = tribuName;
 }
@@ -1829,99 +1826,35 @@ function showLogoAndNameTribus() {
 	modalBody.innerHTML = "";
 
 	$("#modalShowTribusInfos").modal("show");
+
 	let allTribusT = document.querySelectorAll(".img_nantenaina > img");
 
 	allTribusT.forEach((tribu) => {
 		if (tribu.dataset.type === "tribuG") {
-			modalBody.innerHTML += `<div class="divContainerImgOnModal mb-3">
-        <div>
-          <img onclick="createPopUpTribuG(event)" src="${tribu.src}" alt="${tribu.dataset.name}" data-name="${tribu.dataset.name}" data-bs-dismiss="modal">
-        </div>
-        <div class="tribuTName" onclick="createPopUpTribuG(event)" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"> 
-          ${tribu.dataset.name}
-        </div>
-      </div>`;
+			modalBody.innerHTML += `
+				<div class="divContainerImgOnModal mb-3">
+					<div>
+						<img onclick="createPopUpTribuG(event)" src="${tribu.src}" alt="${tribu.dataset.name}" data-name="${tribu.dataset.name}" data-bs-dismiss="modal">
+					</div>
+					<div class="tribuTName" onclick="createPopUpTribuG(event)" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"> 
+						${tribu.dataset.name}
+					</div>
+				</div>
+			`;
 		} else if (tribu.dataset.type === "tribuT") {
-			modalBody.innerHTML += `<div class="divContainerImgOnModal mb-3">
-        <div>
-          <img onclick="createPopUp(event)" src="${tribu.src}" alt="${tribu.dataset.name}" data-name="${tribu.dataset.name}" data-bs-dismiss="modal">
-        </div>
-        <div class="tribuTName" onclick="createPopUp(event)" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"> 
-          ${tribu.dataset.name}
-        </div>
-      </div>`;
+			modalBody.innerHTML += `
+				<div class="divContainerImgOnModal mb-3">
+					<div>
+						<img onclick="createPopUp(event)" src="${tribu.src}" alt="${tribu.dataset.name}" data-name="${tribu.dataset.name}" data-bs-dismiss="modal">
+					</div>
+					<div class="tribuTName" onclick="createPopUp(event)" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"> 
+						${tribu.dataset.name}
+					</div>
+				</div>
+			`;
 		}
 	});
 }
-
-// window.onload = (event) => {
-
-//     // document.querySelector("#visioMessageElie").style="display :none !important;"
-//     // document.querySelector("#minimizeVisio").style="display :none !important;"
-
-//     if(localStorage.getItem("room_name")){
-//         let room = localStorage.getItem("room_name")
-
-//         document.querySelector("#visioMessageElie").style="display :none !important;"
-//         document.querySelector("#minimizeVisio").style="display :block !important;"
-
-//         joinMeet(room, 'minimizeVisio', this)
-
-//         let btn_expand = document.createElement("button")
-//         btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
-//         btn_expand.setAttribute('type', 'button')
-//         btn_expand.classList = "btn-close btn-expand-elie"
-//         btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
-
-//         document.querySelector("#minimizeVisio").appendChild(btn_expand)
-
-//         btn_expand.addEventListener("click", function () {
-//             // $("#visioMessageElie").modal("show")
-//             document.querySelector("#visioMessageElie").style="display:block !important"
-//             document.querySelector("#minimizeVisio").innerHTML = ""
-//             document.querySelector("#minimizeVisio").style="display:none !important"
-//         })
-//     }else{
-//         if(document.querySelector("#minimizeVisio")){
-
-//             document.querySelector("#minimizeVisio").style="display :none !important;"
-//         }
-//     }
-
-// };
-
-// if(document.querySelector(".btn-minimize-elie")){
-
-//     document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
-
-//         document.querySelector("#visioMessageElie").style ="translate(25px, 25px); display:none !important;"
-
-//         let room_link = localStorage.getItem("room_link")
-
-//         document.querySelector("#minimizeVisio").style="display:block !important;"
-
-//         let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
-
-//         joinMeet(room, 'minimizeVisio', this)
-
-//         let btn_expand = document.createElement("button")
-//         btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
-//         btn_expand.setAttribute('type', 'button')
-//         btn_expand.classList = "btn-close btn-expand-elie"
-//         btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
-
-//         document.querySelector("#minimizeVisio").appendChild(btn_expand)
-
-//         btn_expand.addEventListener("click", function () {
-//             // $("#visioMessageElie").modal("show")
-//             document.querySelector("#visioMessageElie").style="display:block !important"
-//             document.querySelector("#minimizeVisio").innerHTML = ""
-//             document.querySelector("#minimizeVisio").style="display:none;"
-//         })
-
-//     })
-
-// }
 
 function expand(e) {
 	e.setAttribute("onclick", "reduire(this)");
@@ -1943,21 +1876,6 @@ if (document.querySelector("#visioMessageElie")) {
 		// script.js File
 	}
 }
-
-// const container = document.querySelector(".minRightModal");
-// function onMouseDrag({ movementX, movementY }) {
-//     let getContainerStyle = window.getComputedStyle(container);
-//     let leftValue = parseInt(getContainerStyle.left);
-//     let topValue = parseInt(getContainerStyle.top);
-//     container.style.left = `${leftValue + movementX}px`;
-//     container.style.top = `${topValue + movementY}px`;
-// }
-// container.addEventListener("mousedown", () => {
-//     container.addEventListener("mousemove", onMouseDrag);
-// });
-// document.addEventListener("mouseup", () => {
-//     container.removeEventListener("mousemove", onMouseDrag);
-// });
 
 function notificationSong() {
 	// var audio = new Audio('/assets/song/notification_message.mp3');
