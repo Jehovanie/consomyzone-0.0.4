@@ -1603,8 +1603,9 @@ class AgendaController extends AbstractController
             return $this->json([ "success" => false, "message" => "User not Connecter"]);
         }
 
+        $tribu_t_list = $userRepository->getListTableTribuT();
         if($etab == "restaurant") {
-            $response = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
+            $response = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId(),$tribu_t_list);
             //// add adress
             foreach($response as $result){
 
@@ -1622,7 +1623,7 @@ class AgendaController extends AbstractController
                     $result["dep"] = $resto->getDep();
                     $result["departement"] = $resto->getDepName();
     
-                    $tribu_t_list = $userRepository->getListTableTribuT();
+                    
 
                     foreach ($tribu_t_list as $key) {
                         $tableTribu = $key["table_name"];
@@ -1639,7 +1640,8 @@ class AgendaController extends AbstractController
                 }
             }
         }elseif ($etab == "golf") {
-            $response = $golfFranceRepository->getGolfAfaire();
+            $userId = $this->getUser()->getId();
+            $response = $golfFranceRepository->getGolfAfaire($userId);
             $results= $response;
         }else{
             $response = [];
@@ -1666,9 +1668,9 @@ class AgendaController extends AbstractController
         if(!$this->getUser()){
             return $this->json([ "success" => false, "message" => "User not Connecter"]);
         }
-
+        $tribu_t_list = $userRepository->getListTableTribuT();
         if($etab == "restaurant") {
-            $response = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId());
+            $response = $tribuTService->getAllRestoPastiledForAllTable($this->getUser()->getId(), $tribu_t_list);
             foreach($response as $result){
 
                 $resto = $bddRestoRepository->find(intval($result['id_resto']));
@@ -1682,7 +1684,7 @@ class AgendaController extends AbstractController
                         $result["dep"] = $resto->getDep();
                         $result["departement"] = $resto->getDepName();
     
-                        $tribu_t_list = $userRepository->getListTableTribuT();
+                        
     
                         foreach ($tribu_t_list as $key) {
                             $tableTribu = $key["table_name"];
@@ -1700,7 +1702,8 @@ class AgendaController extends AbstractController
                 }
             }
         }elseif ($etab == "golf") {
-            $response = $golfFranceRepository->getGolfAfaire();
+            $userId = $this->getUser()->getId();
+            $response = $golfFranceRepository->getGolfAfaire($userId);
             $results= $response;
         }else{
             $response = [];
@@ -1905,12 +1908,13 @@ class AgendaController extends AbstractController
         $userId = $this->getUser()->getId();
 
         $data = json_decode($request->getContent(), true);
-
-        extract($data); ///$table, $principal, $cc, $cci, $object, $description, $agendaId, $piece_joint
+        ///$table, $principal, $cc, $cci, $object, $description, $agendaId, $piece_joint
+        extract($data); 
 
         $piece_with_path= [];
         if( count($piece_joint) > 0 ){
-            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/piece_joint/user_' . $userId . "/";
+            $path = $this->getParameter('kernel.project_dir') . 
+            '/public/uploads/users/piece_joint/user_' . $userId . "/";
             $dir_exist = $filesyst->exists($path);
             if ($dir_exist === false) {
                 $filesyst->mkdir($path, 0777);
@@ -1959,8 +1963,8 @@ class AgendaController extends AbstractController
                 $context["object_mail"] = $object;
                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
                 $context["link_confirm"] = "";
-                $description = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$description);
-                $context["content_mail"] = $description;
+                $descriptionTmp = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$description);
+                $context["content_mail"] = $descriptionTmp;
     
                 $context["piece_joint"] = $piece_with_path;
                 // $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
@@ -1979,8 +1983,8 @@ class AgendaController extends AbstractController
                 $userTemp = new User();
                 $to_id = $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
     
-                $description = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$description);
-                $context["content_mail"] = $description;
+                $descriptionTmp = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$description);
+                $context["content_mail"] = $descriptionTmp;
                 $context["piece_joint"] = $piece_with_path;
     
                 // $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);

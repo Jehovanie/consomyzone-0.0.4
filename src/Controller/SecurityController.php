@@ -783,7 +783,7 @@ class SecurityController extends AbstractController
                 "admin" => "Nous vous informons qu'une nouvelle tribu G a été créée.",
                 "fondateur" => "Nous avons un grand plaisir de vous annoncer que la tribu G selon votre code postal a été créée et vous êtes l'administrateur provisoire.",
                 "current" => "Nous avons un grand plaisir de vous avoir parmi nous dans la tribu G d'après votre code postal. De la part de tous les membres et la direction, nous aimerions présenter nos salutations cordiales et la bonne chance.",
-                "other" => "Nous avons un grand plaisir de vous annonce que notre tribu G a un nouveau partisan."
+                "other" => "Nous avons un grand plaisir de vous annonce que notre tribu G a un nouveau fan."
             ];
 
 
@@ -1103,6 +1103,8 @@ class SecurityController extends AbstractController
         MailService $mailService,
         AgendaService $agendaService,
         TributGService $tributGService,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
         Filesystem $filesyst
         ){
         $context=[];
@@ -1150,12 +1152,28 @@ class SecurityController extends AbstractController
                 $context["link_confirm"]="";
                 $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$content);
                 $context["piece_joint"] = $piece_with_path;
-                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
-
+                $table_agenda_partage_name="partage_agenda_".$userId;
                 if(!is_null($to_id)){
-                    $table_agenda_partage_name="partage_agenda_".$userId;
+                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
-                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
+                }else{
+                    if($userRepository->findOneBy(["email" => $email_to])){
+                        $userTo = $userRepository->findOneBy(["email" => $email_to]);
+                        $idUserTo = $userTo->getId();
+                        $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$idUserTo."/".$agendaID,$content);
+                        $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
+                        $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$idUserTo]);
+                        $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
+                    }else{
+                        // ADD USER TEMP
+                        $userTemp = new User();
+                        $idUserTo = $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
+                        $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$idUserTo."/".$agendaID,$content);
+                        $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
+                        $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$idUserTo]);
+                        $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
+                    }
                 }
         }
         $r = $serialize->serialize(["response"=>"0k"], 'json');

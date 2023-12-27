@@ -31,7 +31,7 @@ function executeActionForPastGolf(event, goldID){
         setGolfNone(goldID)
         OBJECT_MARKERS_HOME.updateStateGolf("aucun", goldID)
     } else if (action == "3") {
-        setGolfRemake(goldID)
+        setGolfRemake(goldID, event)
         OBJECT_MARKERS_HOME.updateStateGolf("remake", goldID)
     } else{
         cancelGolfFinished(event,goldID)

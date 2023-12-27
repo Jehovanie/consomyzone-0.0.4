@@ -106,7 +106,7 @@ class TributGService extends PDOConnexionService{
 
                     user_id int(11) NOT NULL,
 
-                    publication VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+                    publication TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
 
                     confidentiality TINYINT(1) NOT NULL,
 
@@ -655,7 +655,8 @@ class TributGService extends PDOConnexionService{
             "datetime" => $data['datetime'],
             "isBanished" => $data["isBanished"],
             "isDeveloper" => $data["isDeveloper"],
-            "isModerate" => $data["isModerate"]
+            "isModerate" => $data["isModerate"],
+            "table_name" => $table_name
         ];
         return $result;
 
@@ -1245,22 +1246,23 @@ class TributGService extends PDOConnexionService{
 
 
 
-    public function deletePublication($user_id , $publication_id ){
+    public function deletePublication($user_id, $publication_id, $tableTribu = null)
+    {
 
         //table tribu G
-        $table_name = $this->getTableNameTributG($user_id);
+        $table_name = $tableTribu ? $tableTribu : $this->getTableNameTributG($user_id);
         
         ///check the publication if exists
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" ."_publication  WHERE id=". $publication_id .";");
+        $statement = $this->getPDO()->prepare("SELECT * FROM $table_name" . "_publication  WHERE id=" . $publication_id . ";");
 
         $statement->execute();
 
         $publication = $statement->fetchAll(PDO::FETCH_ASSOC); // [...publications]
 
-        if( count($publication) === 0 ){
+        if (count($publication) === 0) {
             return false;
         }
-        if( intval($publication[0]["user_id"]) !== $user_id ){
+        if (intval($publication[0]["user_id"]) !== $user_id) {
             return false;
         }
 
@@ -1270,20 +1272,20 @@ class TributGService extends PDOConnexionService{
         $image = $publication[0]["photo"];
 
         ///delete the publication
-        $del_pub = "DELETE FROM ". $table_name ."_publication  WHERE id= ?";
+        $del_pub = "DELETE FROM " . $table_name . "_publication  WHERE id= ?";
 
         $pub = $this->getPDO()->prepare($del_pub);
         $pub->execute([$publication_id]);
 
         ///delete comment
-        $del_com = "DELETE FROM ". $table_name ."_commentaire  WHERE pub_id= ?";
+        $del_com = "DELETE FROM " . $table_name . "_commentaire  WHERE pub_id= ?";
 
         $com = $this->getPDO()->prepare($del_com);
         $com->execute([$publication_id]);
 
 
         ///delete reaction
-        $del_reaction = "DELETE FROM ". $table_name ."_reaction  WHERE pub_id= ?";
+        $del_reaction = "DELETE FROM " . $table_name . "_reaction  WHERE pub_id= ?";
 
         $reaction = $this->getPDO()->prepare($del_reaction);
         $reaction->execute([$publication_id]);
@@ -1385,7 +1387,7 @@ class TributGService extends PDOConnexionService{
      */
      public function getAllTableTribuG(){
         $results = array();
-        $tab_not_like= ['%agenda%','%commentaire%', '%publication%','%reaction%'];
+        $tab_not_like= ['%agenda%','%commentaire%', '%publication%','%reaction%', '%golf%', '%msg_grp%', '%restaurant%'];
         
         $query_sql= "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_name like 'tribug_%'";
         foreach($tab_not_like as $not_like ){
@@ -1680,6 +1682,31 @@ class TributGService extends PDOConnexionService{
         $statement->execute();
 
         return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+
+    public function getEntityRestoPastilled($user){
+        $results=  [];
+        
+        if( $user ){
+            $tribuG= $this->getTribuG($user->getId());
+            $profil_tribuG= $this->getProfilTributG($tribuG, $user->getId());
+
+            $logo_tribuG= $profil_tribuG["avatar"] !== "" ? "/uploads/tribus/photos/" . $profil_tribuG["avatar"] : "/uploads/tribus/avatar_tribu.jpg";
+
+            $resto_pastielle = $this->getAllRestoTribuG($tribuG);
+            
+            foreach ($resto_pastielle as $resto) {
+                array_push($results, [ 
+                    "id_resto" => $resto["extensionId"],
+                    "table_name" => $tribuG,
+                    "tableName" => $tribuG, 
+                    "name_tribu_t_muable" => $profil_tribuG["name"], 
+                    "logo_path" => $logo_tribuG 
+                ]);
+            }
+        }
+        return $results;
     }
 
     public function getRestoPastillesTribuG($table_name){
@@ -1986,5 +2013,4 @@ class TributGService extends PDOConnexionService{
 
             return $max_id->fetchAll(PDO::FETCH_ASSOC);
     }
-
 }

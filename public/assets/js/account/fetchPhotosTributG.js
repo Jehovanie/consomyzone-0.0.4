@@ -46,6 +46,7 @@ if( document.querySelector("#fetch_photo_tribug_jheo_js")){
         fetch("/tributG/photos").then(response=>{
             if(response.ok && response.status==200){
                 response.text().then(text=>{
+                    document.querySelector(".textIndicationNantaJs").textContent = "Photos"
                     if( document.querySelector(".content_bloc_jheo_js")){
                         document.querySelector(".content_bloc_jheo_js").innerHTML = text;
                         // const parser = new DOMParser();

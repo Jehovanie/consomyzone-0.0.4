@@ -3,8 +3,8 @@
     <nav class="navbar navbar-light navbar-light-left fixed-top">
         <div class="container-fluid">
             
-                <div class="row mt-3">
-                    <div class="col-8 mt-5">
+                <div class="row mt-5">
+                    <div class="col-2">
                         <a href="{{path('restaurant_all_dep') }}">
                             <svg version="1.0" xmlns="http://www.w3.org/2000/svg"
                             width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000"
@@ -20,20 +20,8 @@
                             </svg>
                         </a>
                     </div>
-                    
-                    <div class="col-2 mt-5">
-                        <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-resto-spec-arrond"></i>
-                    </div>
-                </div> 
-            <hr>
-        </div>
-        
-    </nav>
-    <div class="container-fluid">
-        <div class="head-left spec-dep">
-
-            <div class="row">
-                <div class="col-md-2">
+                    <div class="col-9">
+                        <div class="" style="margin-left: -30px;font-size: 10pt;display: flex;">
                     <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="5vw" height="5vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
 
                             <g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" 
@@ -62,20 +50,35 @@
                                 <path d="M580 245 c-16 -19 -1 -25 61 -25 56 0 84 14 59 30 -20 12 -108 9-120 -5z"/>
                             </g>
                         </svg>
-                </div>
-                <div class="col-md-10">
-                    {# <p  class="titre" data-toggle-deparement="{{nom_dep}}">
-                        Restaurants à
-						<span class="fw-bolder">{{nom_dep}}</span><br>
-                        <span  class="nombre content_nombre_result_js_jheo" id="resultTot">{{resto_nombre}}</span> résultats
-                    </p> #}
-                    <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
+                                    <p  class="titre mb-3" data-toggle-deparement="{{nom_dep}}">
                         Restaurants à <span class="fw-bolder">{{nom_dep}}</span>
                         département <span class="fw-bolder">{{id_dep}},</span> <br>
                         <span class="fw-bolder content_nombre_result_js_jheo">{{resto_nombre}}</span> résultats.
                     </p>
                 </div>
+{# <div class="col-md-10">
+                             <p  class="titre" data-toggle-deparement="{{nom_dep}}">
+                                Restaurants à
+                                <span class="fw-bolder">{{nom_dep}}</span><br>
+                                <span  class="nombre content_nombre_result_js_jheo" id="resultTot">{{resto_nombre}}</span> résultats
+                            </p> 
+                            
+                        </div> #}
+                    </div>
+                    <div class="col-1">
+                        <i class="fa-solid fa-x icon_close_nav_left_jheo_js" id="close-list-depart-resto-spec-arrond"></i>
+                    </div>
+                </div> 
+            <hr>
             </div>
+
+</nav>
+    <div class="container-fluid">
+        <div class="head-left spec-dep">
+
+            {# <div class="row"> #}
+                
+            {# </div> #}
 
             {# <select class="form-select mb-3 w-50 non_active" style="margin-left: 82px;" aria-label="selectRestoArrondismentParis" id="selectRestoArrondismentParis" disabled>
             {# <select class="form-select mb-3 w-50" style="margin-left: 82px;" aria-label="selectRestoArrondismentParis" id="selectRestoArrondismentParis">

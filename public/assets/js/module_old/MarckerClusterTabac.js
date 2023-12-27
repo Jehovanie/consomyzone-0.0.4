@@ -1,0 +1,243 @@
+class MarckerClusterTabac extends MapModule {
+
+    constructor(nom_dep=null,id_dep=null){
+        super(id_dep,nom_dep, "tabac")
+    }
+
+    async onInit(isAddControl){
+        this.ALREADY_INIT = false;
+        try{
+            this.createMarkersCluster();
+            this.initMap(null, null, null, isAddControl);
+
+            const link =( this.nom_dep && this.id_dep) ? `/api/tabac/departement/${this.nom_dep}/${this.id_dep}` : `/api/tabac`;
+            const response= await fetch(link);
+            const result= await response.json();
+            this.default_data = result.data
+            
+            this.data= this.default_data; 
+            
+
+            this.bindAction()
+        }catch(e){
+            console.log(e)
+        }
+    }
+
+    bindAction(){
+        this.addMarker(this.data);
+        // this.setNumberOfMarker();
+        this.addEventOnMap(this.map);
+    }
+
+    
+    setNumberOfMarker(){
+        if( this.id_dep){
+            /// change the number of result in div
+            if( document.querySelector(".content_nombre_result_js_jheo")){
+                document.querySelector(".content_nombre_result_js_jheo").innerText = this.data.length;
+            }
+
+            /// change the number of result in div for the left translate
+            if( document.querySelector(".content_nombre_result_mobile_js_jheo")){
+                document.querySelector(".content_nombre_result_mobile_js_jheo").innerText = this.data.length;
+            }
+        }
+    }
+
+    displayData() {
+        console.log(this.data)
+        console.log(this.map)
+    }
+
+    createMarkersCluster(){
+        const that= this;
+        this.markers = L.markerClusterGroup({ 
+            chunkedLoading: true,
+            iconCreateFunction: function (cluster) {
+                if(that.marker_last_selected){
+                    let sepcMarmerIsExist = false;
+                    for (let g of  cluster.getAllChildMarkers()){
+                        if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) { 
+                            sepcMarmerIsExist = true;
+                            break;
+                        }
+                    }
+
+                    if(sepcMarmerIsExist){
+                        return L.divIcon({
+                            html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
+                            className: "spec_cluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }else{
+                        return L.divIcon({
+                            html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                            className: "mycluster",
+                            iconSize:L.point(35,35)
+                        });
+                    }
+                }else{
+                    return L.divIcon({
+                        html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
+                        className: "mycluster",
+                        iconSize:L.point(35,35)
+                    });
+                }
+            },
+        });
+    }
+
+    addMarker(newData){
+        newData.forEach(item => {
+            this.settingSingleMarker(item, false);
+        })
+        this.map.addLayer(this.markers);
+    }
+
+    /**
+     * Goals object about markers icon.
+     * @param {*} item  this rubric item.
+     * @param {*} isSelected : true or false
+     * @returns object : { path: ..., size: }
+     */
+    getIcon(item, isSelected){
+        const icon_path= isSelected ? "assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
+        const icon_size= isSelected ? 2 : 0; /// 0: normal, 2: selected
+
+        return { 'path': icon_path, 'size': icon_size };
+    }
+
+    settingSingleMarker(item, isSelected=false ){
+        const zoom = this.map._zoom;
+        const icon = this.getIcon(item, isSelected);
+
+        let marker = L.marker( 
+            L.latLng( parseFloat( item.lat ), parseFloat( item.long ) ), 
+            {
+                icon: setIconn( icon.path, 'content_badge', icon.size, zoom ), 
+                id: item.id
+            }
+        );
+
+        const adress = `<br><span class='fw-bolder'> Adresse:</span> <br> ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
+        const title = "<span class='fw-bolder'> Tabac: </span>" + item.name + ".<span class='fw-bolder'><br>Departement: </span>" + item.dep + " " + item.depName + " ." + adress;
+
+        marker.bindTooltip(title, { direction: "top", offset: L.point( 0, -30 )}).openTooltip();
+
+        this.bindEventClick( marker, item );
+
+        this.markers.addLayer(marker);
+    }
+
+
+    bindEventClick( marker, item ){
+        marker.on('click', (e) => {
+            ////close right if this open
+            this.closeRightSide();
+
+            ///set in the center
+            this.updateCenter( parseFloat(item.lat ), parseFloat(item.long ), this.zoomDetails);
+
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(item, true );
+
+            marker.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+
+            this.updateLastMarkerSelected( marker, item );
+
+            this.markers.refreshClusters();
+
+            this.renderFicheDetails(item);
+        })
+    }
+
+    updateLastMarkerSelected(marker, item){
+        if (this.marker_last_selected && this.marker_last_selected != marker ) {
+            const last_marker= this.data.find(({id}) => parseInt(id) === parseInt(this.marker_last_selected.options.id))
+            const zoom = this.map._zoom;
+            const icon= this.getIcon(last_marker, false );
+            
+            this.marker_last_selected.setIcon( setIconn( icon.path, "", icon.size, zoom ));
+        }
+
+        this.marker_last_selected = marker;
+    }
+
+    renderFicheDetails(item){
+        if (screen.width < 991) {
+            getDetailTabac(item.dep, item.nom_dep, item.id)
+        } else {
+            getDetailTabac(item.dep, item.nom_dep, item.id)
+        }
+    }
+
+    addEventOnMap(map) {
+        map.on("resize moveend", () => { 
+            const x= this.getMax(this.map.getBounds().getWest(),this.map.getBounds().getEast())
+            const y= this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth())
+
+            const new_size= { minx:x.min, miny:y.min, maxx:x.max, maxy:y.max }
+
+            this.addPeripheriqueMarker(new_size);
+        })
+    }
+
+    removeMarker(){
+        this.markers.clearLayers();
+        this.map.removeLayer(this.markers);
+    }
+
+
+    generateAllCard(){
+      console.log("Generating all cards...")
+    }
+
+
+    filterByFirstLetterOnName(letter){
+       console.log(letter)
+    }
+
+    resetToDefaultMarkers(){
+        this.removeMarker();
+        this.addMarker(this.default_data)
+    }
+
+    clickOnMarker(id){
+        this.markers.eachLayer((marker) => {
+            if (parseInt(marker.options.id) === parseInt(id) ) {
+                marker.fireEvent('click');  
+            }
+        });
+    }
+
+    /**
+     * Fetch all related data from the boundaries...
+     * @param {*} new_size  { minx, miny, maxx, maxy }
+     */
+    async addPeripheriqueMarker(new_size) {
+        try {
+            const { minx, miny, maxx, maxy }= new_size;
+            const param="?minx="+encodeURIComponent(minx)+"&miny="+encodeURIComponent(miny)+"&maxx="+encodeURIComponent(maxx)+"&maxy="+encodeURIComponent(maxy);
+
+            const link =( this.nom_dep && this.id_dep) ? `/api/tabac/departement/${this.nom_dep}/${this.id_dep}` : `/api/tabac`;
+            const response= await fetch(`${link}${param}`);
+            const results = await response.json();
+            // console.log(results)
+            
+            let new_data= results.data;
+            // console.log(new_data);
+            
+            new_data = new_data.filter(item => !this.default_data.some(j => j.id === item.id))
+            this.addMarker(new_data);
+         
+            this.default_data= this.default_data.concat(new_data);
+        } catch (e) {
+            console.log(e)
+        }
+    }
+    
+    checkeFilterType(data) {
+        return data;
+    }
+}

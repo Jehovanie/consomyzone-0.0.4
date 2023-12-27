@@ -196,23 +196,32 @@ function isLike(pub_id, author_id, table = "") {
   value = 0;
 
   //x = document.querySelector(".reaction_js_" + pub_id + "_jheo")
-  x = document.querySelector(".reaction_" + table + "_" + pub_id);
+  //x = document.querySelector(".reaction_" + table + "_" + pub_id);
+
+  let reaction_list_ico = document.querySelectorAll(".reaction_" + table + "_" + pub_id)
+
+    reaction_list_ico.forEach(x=>{
 
   if (x.classList.contains("bi-heart-fill")) {
-    x.classList.remove("bi-heart-fill");
+    
+            x.classList.remove("bi-heart-fill")
 
     x.classList.add("bi-heart");
 
     x.style.color = "black";
+
   } else {
-    x.classList.remove("bi-heart");
+    
+            x.classList.remove("bi-heart")
 
     x.classList.add("bi-heart-fill");
 
     x.style.color = "red";
 
     value = 1;
+
   }
+})
 
   fetch("/tributG/publications/reaction", {
     method: "POST",
@@ -237,17 +246,15 @@ function isLike(pub_id, author_id, table = "") {
         res.json().then((data) => {
             if (parseInt(data.reaction) > 0) {
                 
-                document.querySelector(
-                  "#nbr_reaction_pub_" + table+"_" + pub_id
-                ).innerText =
-                  parseInt(data.reaction) > 1
-                    ? data.reaction + " réactions"
-                    : data.reaction + " réaction";
+                document.querySelectorAll("#nbr_reaction_pub_" + table + "_"+ pub_id ).forEach(pub=>{
+                pub.innerText = (parseInt(data.reaction) > 1)?data.reaction +" réactions":data.reaction +" réaction";
+})
+
             } else {
                 
-                document.querySelector(
-                  "#nbr_reaction_pub_" + table + "_" + pub_id
-                ).innerText = "0 réaction";
+                document.querySelectorAll("#nbr_reaction_pub_" + table + "_"+ pub_id ).forEach(pub=>{
+                pub.innerText = "0 réaction";
+})
             }
         }));
 }
@@ -724,7 +731,8 @@ function updatePublication() {
       console.log(error);
     });
 }
-function removePublication(elem) {
+
+/*function removePublication(elem) {
   console.log(elem);
   document.querySelector(`#pubication_js_${elem.value}_jheo`).remove();
 
@@ -749,6 +757,57 @@ function removePublication(elem) {
     })
     .then((response) => {
       console.log(JSON.stringify(response));
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}*/
+
+function removePublication(elem) {
+  
+  //document.querySelector(`#pubication_js_${elem.value}_jheo`).remove();
+
+  let idElem = "#" + elem.dataset.fit
+
+  let _table = document.querySelector(idElem).dataset.name
+
+  document.querySelector(idElem).remove();
+
+  const URL = "/user/acount/tributG/publication/delete";
+  const options = {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      id_publication: elem.value,
+      table : _table
+    }),
+  };
+
+  fetch(URL, options)
+    .then((response) => {
+      /*if (!response.ok || response.status !== 204) {
+        throw new Error("ERROR: from the back");
+      }*/
+      return response.json();
+    })
+    .then((response) => {
+      // console.log(JSON.stringify(response));
+      $("#deletePubModalConfirm").modal("hide");
+      swal({
+        title: "Bravo !",
+        text: "Votre publication a été bien supprimer !",
+        icon: "success",
+        button: "Fermer",
+      }).then((value) => {
+        if (document.querySelector("#activeTribu")) {
+          document.querySelector("#activeTribu").click();
+        } else {
+          location.reload();
+        }
+      });
     })
     .catch((error) => {
       console.log(error);
@@ -879,15 +938,40 @@ function setHiddenValue(table, update = "", pub_id) {
 
   document.querySelector("#data-pub-id").dataset.fit = table + "_" + pub_id;
 
-  if (update != "") {
-    document.querySelector("#publication_update_confidentiality").value =
-      parentOfElement.dataset.confid;
-    document.getElementById("publication_update_legend").value = parentOfElement
-      .querySelector(".card-pub-actu > .text-pub")
-      .innerText.trim();
-  }
   let hiddenElement = document.querySelector("#hiddenElement" + update);
   hiddenElement.dataset.id = parentOfElement.id;
   hiddenElement.dataset.name = parentOfElement.dataset.name;
   hiddenElement.value = parentOfElement.dataset.id;
+
+  if (update != "") {
+    document.querySelector("#publication_update_confidentiality").value =
+      parentOfElement.dataset.confid;
+
+      if(parentOfElement.querySelector(".card-pub-actu > .text-pub")){
+    document.getElementById("publication_update_legend").value = parentOfElement
+      .querySelector(".card-pub-actu > .text-pub")
+      .innerText.trim();
+  }else{
+        document.getElementById("publication_update_legend").value = parentOfElement
+        .querySelector(".full_description")
+        .innerText.trim();
+      }
+    
+
+      if(parentOfElement.querySelector(".card-pub-actu img")){
+        $("#modal_publication_modif .image-upload-wrap").hide();
+        $("#modal_publication_modif .image-upload-image").attr("src", parentOfElement.querySelector(".card-pub-actu img").src);
+        $("#modal_publication_modif .image_upload_image_jheo_js").show();
+        $("#modal_publication_modif .image-upload-content").show();
+      }else if(parentOfElement.querySelector(".publication-image")){
+        $("#modal_publication_modif .image-upload-wrap").hide();
+        $("#modal_publication_modif .image-upload-image").attr("src", parentOfElement.querySelector(".publication-image").src);
+        $("#modal_publication_modif .image_upload_image_jheo_js").show();
+        $("#modal_publication_modif .image-upload-content").show();
+      }else{
+        removeUpload()
+      }
+
+  }
+  
 }

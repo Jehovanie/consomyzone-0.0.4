@@ -1,0 +1,33 @@
+{% if publications|length > 0 %}
+    {% for item in publications %}
+        <!-- ====== Chart One Start -->
+        {% if ( item.publication.confidentiality|number_format == 1) or ( item.userOwnPub.id is same as(app.user.id) ) %}
+            {% include 'card/card_publication_actualite.html.twig' with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
+        {% endif %}
+        <!-- ====== Chart One End -->
+    {% endfor %}
+{% else %}
+    <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr" >
+        <div class="head-pub content_header_pub">
+           <div class="card">
+                <h6  class="text-center alert alert-info"> Information </h6>
+                <div class="card-body">
+                    <p class="mx-auto">
+                        Nous tenons à vous informer qu'actuellement, <br>
+                        Il n'y a pas encore de publication disponible sur notre plateforme.  <br>
+                        Si vous avez une histoire intéressante à raconter, des connaissances à partager ou des idées à proposer, 
+                        n'hésitez pas à créer votre propre publication dès maintenant. <br>
+                        Votre contribution peut inspirer et enrichir la communauté. <br>
+                        Cordialement, <br><br><br>
+                        CMZ <br>
+                    </p>
+                </div>
+           </div>
+        </div>
+    </div>
+{% endif %}
+
+
+
+{% include 'shard/modal/delete.html.twig' %}
+{% include 'shard/modal/commentaire.html.twig' %}

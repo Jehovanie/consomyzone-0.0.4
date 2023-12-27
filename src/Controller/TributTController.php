@@ -237,7 +237,8 @@ class TributTController extends AbstractController
         $id_golf,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
-        SerializerInterface $serializerInterface
+        TributGService $tributGService,
+        SerializerInterface $serializerInterface,
     ) {
         $arrayTribu = [];
         if ($this->getUser()) {
@@ -252,13 +253,28 @@ class TributTController extends AbstractController
                 $tableExtension = $tableTribu . "_golf";
                 if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
                     if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $id_golf, true)) {
-
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "name_display" => "Tribu T " .  $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
                     } else {
-                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "name_display" => "Tribu T " .  $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
                     }
                 }
             }
+            /// list tribu T joined
+            // $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+            // foreach ($tribu_t_joined as $key) {
+            //     $tbtJoined = $key["table_name"];
+            //     $logo_path = $key["logo_path"];
+            //     $name_tribu_t_muable = $key["name_tribu_t_muable"];
+            //     $tableExtensionTbtJoined = $tbtJoined . "_golf";
+            //     if($tribu_T_Service->checkExtension($tbtJoined, "_golf") > 0){
+            //         if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $id_golf, true)){
+            //             array_push($arrayTribu, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => true]);
+            //         }else{
+            //             array_push($arrayTribu, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable, "isPastilled" => false]);
+            //         }
+            //     }
+            // }
+
         }
         $datas = $serializerInterface->serialize($arrayTribu, 'json');
         return new JsonResponse($datas, 200, [], true);
@@ -1829,10 +1845,13 @@ class TributTController extends AbstractController
         
         foreach ($principal as $principal_item){
 
+            $user_receiver= $userRepository->findOneBy(["email" => $principal_item]);
+
             //Verifier si dèjà inscrit dans cmz, cad dans la table user
-            if($userRepository->findOneBy(["email" => $principal_item])){ 
+            if($user_receiver && $user_receiver->getType() !== "Type" ){
+
                   //verifier si dèjà memebre de la tribu T;
-                $id_receiver = $userRepository->findOneBy(["email" => $principal_item])->getId();
+                $id_receiver = $user_receiver->getId();
                 $isMembre = $tribuTService->testSiMembre($table, $id_receiver,$principal_item);
                 
                 if ($isMembre != "accepted" ){

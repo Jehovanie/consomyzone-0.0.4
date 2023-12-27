@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>.js
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
     <script  src="{{ asset('assets/js/account/actualiter_new_publication.js') }}" defer></script>
     <script  src="{{ asset('assets/js/account/publication_event.js') }}" defer></script>
 {% endblock %}
@@ -40,10 +40,23 @@
                 </div>
                 <!-- ====== Chart pub One End -->
             </div>
-             
-            <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
-                {% include 'shard/publications/all_publication.html.twig' with { 'publications': publications } %}
+
+            <div class="account content_right_actualite user_actualite" id="container-mobile">
+                <div id="content-pub-js">
+
+                    <div class="lc kg hg vg 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 boucle-for-pub">
+                        <h3 class="text-primary textIndicationNantaJsAct">Actualité de mes tribus G et T</h3>
+                        {% include 'shard/publications/all_publication_actualite.html.twig' with { 'publications': publications } %}
+                    </div>
+                    
+                </div>
             </div>
+             
+            {# <div class="lc kg hg vg 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
+                <h3 class="text-primary textIndicationNantaJsAct">Actualité de mes tribus G et T</h3> #}
+                {# {% include 'shard/publications/all_publication.html.twig' with { 'publications': publications } %} #}
+                {# {% include 'shard/publications/all_publication_actualite.html.twig' with { 'publications': publications } %} #}
+            {# </div> #}
 
             <!-- ====== Chart Two Start -->
             <div class="apropos-tribu-g yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none">
@@ -88,5 +101,6 @@
 {% include 'shard/modal/commentaire.html.twig' %}
 {% include 'shard/modal/alert_flash.html.twig' %}
 {% include 'shard/modal/liste_reacteur.html.twig' %}
+{% include 'shard/modal/modal_detail_publication.twig' %}
 
 {% endblock %}

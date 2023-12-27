@@ -1,4 +1,5 @@
-<div class="content_photos_js_jheo content_photos">
+{# content_photos #}
+<div class="2xl:ud-max-w-230 content_photos_js_jheo">
 	<div class="card p-3">
 		<!-- Gallery -->
 		<div>
@@ -24,14 +25,25 @@
                   </div>
                   <nav class="navbar navbar-expand-lg navbar-light bg-light">
                     <div class="container-fluid">
-                      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
-                        <div class="navbar-nav">
-                          <a class="nav-link" id="gal-publication-g" onclick="galPubG()" data-status-nav="gal-publication-g" style="color: #0101DF">Publication</a>
-                          <a class="nav-link" id="gal-agenda-g" onclick="galAgendaG()" data-status-nav="gal-agenda-g">Agenda</a>
+                      <div class="navbar-collapse" id="navbarNavAltMarkup">
+                        <div
+							class="navbar-nav">
+							{# <a class="nav-link" id="gal-publication-g" onclick="galPubG()" data-status-nav="gal-publication-g" style="color: #0101DF">Publication</a>
+							<a class="nav-link" id="gal-agenda-g" onclick="galAgendaG()" data-status-nav="gal-agenda-g">Agenda</a> #}
+							<ul class="d-flex">
+								<li class="nav-link me-2">
+									<a id="gal-publication-g" onclick="galPubG()" data-status-nav="gal-publication-g" style="color: #0101DF">Publication</a>
+								</li>
+
+								<li class="nav-link">
+									<a id="gal-agenda-g" onclick="galAgendaG()" data-status-nav="gal-agenda-g">Agenda</a>
+								</li>
+							</ul>
                         </div>
                       </div>
                     </div>
                   </nav>
+
                   <div id="gallery">
                     <div class="content-publication-tomm-js" data-status="gal-publication-g">
                       

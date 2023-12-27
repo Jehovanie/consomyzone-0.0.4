@@ -500,9 +500,9 @@ class HomeController extends AbstractController
                         $resto[0] = $restaurantController->mergeDatasAndAvis($resto[0],$moyenneNote);
                     }
 
-                    $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
                     if(!count($golf[0])>0){
-                        $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size, $userId);
                         $golf0 = $sortResultService->getDataByCommune($golf, $cles1, "golf", $cles0);
                         
                         if(count($golf0["data"])>0){
@@ -597,6 +597,12 @@ class HomeController extends AbstractController
 
         //// description tribu T with ID restaurant pastille
         $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+
+        //// list resto pastille dans le tribu G
+        $restoPastilleInTribuG= $tributGService->getEntityRestoPastilled($this->getUser()); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+        
+        $arrayIdResto= array_merge( $arrayIdResto, $restoPastilleInTribuG );
+
 
 
         if(str_contains($request->getPathInfo(), '/api/search')){

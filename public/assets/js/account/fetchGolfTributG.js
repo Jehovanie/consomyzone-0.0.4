@@ -55,7 +55,7 @@ if (document.querySelector("#fetch_golf_tribug_jheo_js")) {
         fetch("/tributG/mon-golf/v2")
             .then(response => response.json())
             .then(response => {
-
+document.querySelector(".textIndicationNantaJs").textContent = "Golfs"
                 let text = `<div class="content_list_p_tG">
                                     <div class="card mb-2">
 

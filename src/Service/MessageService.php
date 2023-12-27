@@ -465,4 +465,80 @@ class MessageService extends PDOConnexionService{
         return $all_tribuT_user;
     }
 
+    /**
+     * @author faniry
+     * partage les message entres les fans
+     */
+    public function transferMessage($currentUserId,$userIdReceivedMsg,$messageId){
+
+        $tableMessageWhereWeTakeMessage="tablemessage_".$currentUserId;
+        $sql="SELECT * FROM ". $tableMessageWhereWeTakeMessage ." WHERE id= :id";
+        $statement=$this->getPDO()->prepare($sql);
+        $statement->bindParam(":id",$messageId,PDO::PARAM_INT);
+        $statement->execute();
+        $data=$statement->fetch(PDO::FETCH_ASSOC);
+        
+        $message1=array(
+            ":user_id"=>$userIdReceivedMsg,
+            ":user_post"=>$currentUserId,
+            ":content"=>$data["content"],
+            "message_type"=>$data["message_type"],
+            "isForMe"=>1,
+            "isShow"=>0,
+            "isRead"=>0);
+
+       //ecrire le message dans  la table de receveur
+        $tablemessageWhoReceivedMessage="tablemessage_".$userIdReceivedMsg;
+        $sql2="INSERT INTO ".$tablemessageWhoReceivedMessage.
+        "(user_id,".
+          "user_post,".
+          "content,". 
+          "message_type,". 
+          "isForMe,".
+          "isShow,". 
+          "isRead)".
+          " VALUES".
+          " (:user_id,".
+          ":user_post,".
+          ":content,". 
+          ":message_type,". 
+          ":isForMe,".
+          ":isShow,". 
+          ":isRead)";
+        $statement2= $this->getPDO()->prepare($sql2);
+        $statement2->execute($message1);
+
+        //ecrire le message dans la table de l'envoyeur
+        $message2=array(
+            ":user_id"=>$currentUserId,
+            ":user_post"=>$currentUserId,
+            ":content"=>$data["content"],
+            "message_type"=>$data["message_type"],
+            ":isForMe"=>0,
+            ":isShow"=>0,
+            ":isRead"=>0,
+            ":user_receiver"=>$userIdReceivedMsg);
+        $tablemessageWhoSenderMessage="tablemessage_".$currentUserId;
+        $sql3="INSERT INTO ".$tablemessageWhoSenderMessage.
+        "(user_id,".
+          "user_post,".
+          "content,". 
+          "message_type,". 
+          "isForMe,".
+          "isShow,". 
+          "isRead,".
+          "user_receiver)".
+          " VALUES".
+          " (:user_id,".
+          ":user_post,".
+          ":content,". 
+          ":message_type,". 
+          ":isForMe,".
+          ":isShow,". 
+          ":isRead,". 
+          ":user_receiver)";
+        $statement3= $this->getPDO()->prepare($sql3);
+        return $statement3->execute($message2);
+       
+    }
 }

@@ -1286,24 +1286,78 @@ function createVisioGroupFromMessage() {
   });
 }
 
+
 /**
- * @author faniry
- * lance le visio de groupe
+ * @author faniry <faniryandriamihaingo@gmail.com> doesn't disturb me when I'm off
+ * cette fonction créé les elements html pour afficher la liste des fan 
+ * @param {String} id l'id de l'elemene où vous voulez afficher la liste
+ * @param {*} fans provenant de la focntion generateListFanConnected ou formater les object exactement comme le retour 
+ * de generateListFanConnected
+ * @param {string} [customClassForInput="fan_who_selected_faniry_js"] class par défaut des checkbox générer
+ * @param {boolean} [useSearchBar=true] 
+ * @param {string} [title="Contacts"] le titre de l'element ul généré,par défaut le titre est contacts
+ * @param {string} [ulClass=""]  class de l'element ul généré, par défaut il n' a pas de class
  */
-async function createVisoGroup() {
-  const fans = await generateListFanConnected();
-  console.log(fans);
+function createListeFans(id, 
+  fans,
+  customClassForInput="fan_who_selected_faniry_js", 
+  useSearchBar = false,
+  title="Contacts",
+  ulClass="",
+  addNewElement=false,
+  origin="visio"
+  ){
   const ul = document.createElement("ul");
-  const modalContainer = document.querySelector("#visioGroupContentForMessage");
+  if(ulClass!="")
+      ul.setAttribute("class",ulClass)
+
+  const modalContainer = document.querySelector("#"+id);
+  if(!addNewElement)
   modalContainer.innerHTML = "";
-  let myid = 0;
+  
+  const fli=document.createElement("li")
+  let className = ""
+  switch(origin){
+    case "contact":{
+      className= "all-c-faniry-js"
+      break
+    }
+    case "search":{
+      className= "all-s-faniry-js"
+      break
+    }
+    case "visio":{
+      className= "all-v-faniry-js"
+      break
+    }
+  }
+  fli.setAttribute("class",className )
+  fli.innerHTML=`
+      <div class="cg lc mg sh ol rl tq is content-message-nanta-css">
+       
+      <div  class="yd">
+          <div class="row">
+              <div class="col align-self-start">
+                  <h5 class="mn un zn gs">
+                    Sélectionnez tout
+                  </h5>
+
+              </div>
+              <div class="col-md-4 ${className}" >
+                <input class="ms-3 selected_all_fans_js" type="checkbox"/>
+              </div>
+          </div>
+      </div>
+      </div>
+  `
+  ul.appendChild(fli);
   for (let fan of fans) {
     myid = parseInt(fan.myid);
     const li = document.createElement("li");
     const fullName = fan.fullName;
     const photoProfil =
       fan.photo_fan != null
-        ? "/public" + fan.photo_fan
+        ? "/public" + fan.photo_fan.replace(/\/public/i,"")
         : "/public/uploads/users/photos/default_pdp.png";
     const user_id = fan.id_fan;
     const status = !!parseInt(fan.isActive);
@@ -1316,7 +1370,7 @@ async function createVisoGroup() {
                         <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif"/>
                         ${statusHtml}
                     </div>
-                    <a href="javascript:void(0)" class="yd">
+                    <div class="yd">
                         <div class="row">
                             <div class="col-8">
                                 <h5 class="mn un zn gs">
@@ -1325,15 +1379,238 @@ async function createVisoGroup() {
 
                             </div>
                             <div class="col-4">
-                            <input class="fan_who_selected_faniry_js" type="checkbox" data-roof=${user_id} id="user_${user_id}" name="user_${user_id}"/>
+                            <input class="${customClassForInput}" type="checkbox" data-roof=${user_id} id="user_${user_id}" name="user_${user_id}"/>
                             </div>
                         </div>
-                    </a>
+                    </div>
                 </div>
         `;
     ul.appendChild(li);
   }
+if(useSearchBar){
+    if(document.querySelector(".back_to_futur"))
+        document.querySelector(".back_to_futur").remove()
+
+    const searchElement=document.createElement('input');
+    searchElement.setAttribute("class", "back_to_futur")
+    searchElement.setAttribute("oninput","lookupFan(event,false,updateListIfChangeWord,updateList)")
+    searchElement.placeholder="Rechercher des personnes..."
+    searchElement.type="search";
+    searchElement.style="border:1px solid black;width: 100%;"+ 
+      "margin-top: 25px;"+
+      "margin-left: 15px;"+
+      "border-radius: 30px;"+
+      "font-size: 16px;"+
+      "background-color: white;"+
+      "background-image: url('https://cdn2.iconfinder.com/data/icons/ios-7-icons/50/search-24.png');"+
+      "background-position: 10px 7px;"+
+      "background-repeat: no-repeat;"+
+      "padding: 8px 20px 8px 40px;"+
+      "-webkit-transition: width 0.8s ease-in-out;"+
+      "transition: width 0.8s ease-in-out;"+
+      "outline: none;"+
+      "opacity: 0.9;"+
+  
+    
+    modalContainer.parentElement.querySelector(".search_bar").appendChild(searchElement);
+  }
+  const h4 = document.createElement("h4");
+  h4.innerHTML =`<p>${title}</p>`
+  ul.style.padding="5px"
+  modalContainer.appendChild(h4)
   modalContainer.appendChild(ul);
+}
+
+function createLoader(hidden=false){
+      if(hidden){
+        document.querySelector("#modal_Partage_Message_Faniry_js > .loader-fan").classList.add("d-none")
+      }else{
+        document.querySelector("#modal_Partage_Message_Faniry_js > .loader-fan").classList.remove("d-none")
+      }
+}
+
+function updateListIfChangeWord(useTransition=true){
+    //TODO update list if no 
+    const ul=document.querySelector(".result_search_faniry_js")
+    if(ul){
+      if(useTransition){
+        const seconds = 200/1000;
+        ul.style.transition = "opacity "+seconds+"s ease";
+        ul.parentElement.querySelector("h4").style.transition="opacity "+seconds+"s ease";
+        ul.style.opacity = 0;
+        ul.parentElement.querySelector("h4").opacity=0
+        setTimeout(function() {
+          ul.parentElement.querySelector("h4").remove()
+          ul.remove();
+        }, 200);
+      }else{
+        ul.parentElement.querySelector("h4").remove()
+        ul.remove();
+      }
+      
+    }
+}
+
+function listenCheckBoxChecked(){
+  if(document.querySelectorAll(".fan_who_selected_prtg_msgfaniry_js").length > 0){
+    Array.from(document.querySelectorAll(".fan_who_selected_prtg_msgfaniry_js")).forEach(item=>{
+            item
+            .addEventListener("input",(event)=>{
+                  if(event.target.checked){
+                        document.querySelector("#patager_message_faniry_js").disabled=false
+                        
+                  }else{
+                  //   document.querySelector("#patager_message_faniry_js").disabled=true
+                    if(document.querySelector(".selected_all_fans_js").checked){
+                        document.querySelector(".selected_all_fans_js").checked=false
+                    }
+                    const isSomeChecked=[]
+                    Array.from(document.querySelectorAll(".fan_who_selected_prtg_msgfaniry_js")).forEach(item2=>{
+                          if(item2.checked){
+                              isSomeChecked.push(true)
+                          }
+                    })
+                    if(isSomeChecked.indexOf(true) < 0 ){
+                      document.querySelector("#patager_message_faniry_js").disabled=true
+                    }
+                  }
+                  //verifier si il y a encore des input checked
+
+            })
+    })
+  }else{
+    //TODO afficher une erreur
+    // swal({
+    //   title: "Oops...",
+    //   text: "Erreur 500!",
+    //   icon: "error",
+    //   button: "OK",
+    // });
+  }
+}
+
+function updateList(datas){
+   //TODO update Liste on data
+   updateListIfChangeWord(false)
+   console.log(datas)
+   const finalResult=[]
+   for(let data of datas){
+      finalResult.push({
+        id_fan: parseInt(data.user_id),
+        photo_fan:data.photo_profil,
+        fullName:data.firstname + " " + data.lastname,
+        isactive: false,
+        myid: parseInt(document.querySelector(".information_user_conected_jheo_js").dataset.userId),
+      })
+   }
+   createListeFans("modal_Partage_Message_Faniry_js > .result_search",
+   finalResult,
+   "fan_who_selected_prtg_msgfaniry_js",
+   false,
+   "Resultats des recherches",
+   "result_search_faniry_js",
+   true,
+   "search")
+   listenCheckBoxChecked()
+   listenMe("fan_who_selected_prtg_msgfaniry_js")
+}
+
+/**
+ * @author faniry <faniryandriamihaingo@gmail.com> doesn't disturb me when I'm off
+ * cette fonction va générer la liste des amis avec qui vous aller pouvoir partger le message
+ * et puis envoyé le message
+ */
+async function createFanListToShareMessage(event){
+  document.querySelector("#patager_message_faniry_js").disabled=true
+  const fans =await generateListFanConnected();
+  const idMessage=event.target.dataset.onFuture
+  document.querySelector("#patager_message_faniry_js").dataset.onFuture=btoa(idMessage)
+  //enlevez le resultat de recherche
+  if(document.querySelector("#modal_Partage_Message_Faniry_js > .result_search"))
+      document.querySelector("#modal_Partage_Message_Faniry_js > .result_search").innerHTML="";
+  
+  createListeFans("modal_Partage_Message_Faniry_js > .contacts",
+      fans,
+      "fan_who_selected_prtg_msgfaniry_js",
+      true,
+      "Contacts",
+      "",
+      false,
+      "contact");
+  listenCheckBoxChecked();
+  listenMe("fan_who_selected_prtg_msgfaniry_js");
+}
+
+/**
+ * @author faniry
+ */
+function listenMe(inputClassToSeleted="fan_who_selected_faniry_js"){
+  if( document.querySelectorAll(".selected_all_fans_js").length > 0 ){
+    Array.from( document.querySelectorAll(".selected_all_fans_js")).forEach(item=>{
+        item.addEventListener("input",(e)=>{
+            if(e.target.checked){
+               
+                const c=e.target.parentElement.classList[1];
+                const ul=document.querySelector(`li.${c}`).parentElement
+                console.log(ul)
+                const inputs=ul.querySelectorAll(`input.${inputClassToSeleted}`)
+                console.log(inputs)
+                if(inputs.length > 0){
+                    const isSomeChecked=[]
+                    Array.from(inputs)
+                    .forEach(input=>{
+                        input.checked=true
+                        if(input.checked)
+                            isSomeChecked.push(true)
+                      
+                    })
+                    
+                    if(isSomeChecked.indexOf(true)  >= 0 ){
+                      
+                      document.querySelector("#patager_message_faniry_js").disabled=false
+                    }else{
+                      document.querySelector("#patager_message_faniry_js").disabled=true
+                    }
+                  
+                }
+               
+               
+                
+            }else{
+              const c=e.target.parentElement.classList[1];
+              const ul=document.querySelector(`li.${c}`).parentElement
+              const inputs=ul.querySelectorAll(`input.${inputClassToSeleted}` )
+              if(inputs.length > 0){
+                const isSomeChecked=[]
+                Array.from(inputs)
+                .forEach(input=>{
+                    input.checked=false
+                    if(!input.checked)
+                      isSomeChecked.push(false)
+                })
+                if(isSomeChecked.indexOf(true) < 0 ){
+                      
+                  document.querySelector("#patager_message_faniry_js").disabled=true
+                }else{
+                  document.querySelector("#patager_message_faniry_js").disabled=false
+                }
+              }
+            }
+
+        })
+    })
+    
+  }
+}
+
+/**
+ * @author faniry
+ * lance le visio de groupe
+ */
+async function createVisoGroup() {
+  const fans = await generateListFanConnected();
+  createListeFans("visioGroupContentForMessage", fans)
+  listenMe();
   $("#visioGroupModalForMessage").modal("show");
   document
     .querySelector("#confirmVisioGroupForMessage")
@@ -1397,9 +1674,11 @@ async function createVisoGroup() {
  * le fichier se trouve dans chatHome.js
  */
 function generateListFanConnected() {
+createLoader()
   return new Promise((resolve, reject) => {
     fetch("/user/get/allfans").then((r) => {
       if (r.status === 200 && r.ok) {
+createLoader(true)
         r.json().then((datas) => {
           let length = {
             tribuT: 1,
@@ -1410,6 +1689,7 @@ function generateListFanConnected() {
           for (let j = 0, l = datas.length; j < l; j++) {
             if (j === 0) {
               //index 0 correpond au tribu t
+if(datas[j][0]){
               let data = datas[j][0].amis;
               length.tribuT = data === undefined ? 0 : data.length;
               for (let value of data) {
@@ -1425,8 +1705,11 @@ function generateListFanConnected() {
                   myid: value.my_id,
                 });
               }
-            } else {
+            }
+              
+            }else{
               let data = datas[j];
+if(data){
               length.tribug = data.length;
               for (let value of data) {
                 const photoProfil =
@@ -1441,6 +1724,8 @@ function generateListFanConnected() {
                   myid: value.my_id,
                 });
               }
+            }
+
             }
           }
           const ids = [];
@@ -1464,6 +1749,7 @@ function generateListFanConnected() {
   });
 }
 /**
+* @author Elie
  * Function selecting one or more user to meeting
  * @constructor
  * @param {node} params : li element
@@ -2179,4 +2465,110 @@ if (document.querySelector("#input-file")) {
     ///run event load in file reader.
     reader_doc.readAsDataURL(e.target.files[0]);
   });
+}
+
+
+
+//* Transférer le message à d'autre fan/
+if(document.querySelector("#patager_message_faniry_js")){
+   const messageShare=document.querySelector("#patager_message_faniry_js")
+   messageShare.addEventListener("click",(event)=>{
+      createLoader()
+      let  userIDSharingMsg=[]
+      const idMessage=event.target.dataset.onFuture
+      userIDSharingMsg=Array.from(document.querySelectorAll(".fan_who_selected_prtg_msgfaniry_js")).
+      filter(item=>item.checked).
+      map(item=>cryptageJs(item.dataset.roof))
+      console.log(userIDSharingMsg)
+      const request =new Request("/user/sharing/message",{
+        method:"POST",
+        headers:{
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body:JSON.stringify({
+            idMessage:cryptageJs(idMessage),
+            usr:userIDSharingMsg
+          })
+      })
+
+      fetch(request).then(response=>{
+        if(response.status === 200 && response.ok){
+            createLoader(true)
+
+            new swal({
+              title: "Fait",
+              text: "Message transféré.",
+              icon: "success",
+              button: "OK",
+            });
+        }else{
+            new swal({
+              title: "Oops...",
+              text: "Erreur 500",
+              icon: "error",
+              button: "OK",
+            });
+        }
+      })
+   })
+}else{
+  // swal({
+  //   title: "Oops...",
+  //   text: "Aucun utilisateur n'a été sélectionné!",
+  //   icon: "info",
+  //   button: "OK",
+  // });
+}
+
+/**on met les input selectionez tous à checked = false  lorsqu'on ferme les modal*/
+if(document.querySelector("#canceled_message_shared_faniry_js")){
+  document.querySelector("#canceled_message_shared_faniry_js").
+  addEventListener("click",()=>{
+    if( document.querySelectorAll(".selected_all_fans_js").length > 0 ){
+      Array.from( document.querySelectorAll(".selected_all_fans_js")).forEach(item=>{
+          if(item.checked)
+             item.checked=false
+      })
+    }
+  })
+}
+
+/**on met les input selectionez tous à checked = false  lorsqu'on ferme les modal*/
+if(document.querySelector("#close_message_shared_faniry_js")){
+  document.querySelector("#close_message_shared_faniry_js").
+  addEventListener("click",()=>{
+    if( document.querySelectorAll(".selected_all_fans_js").length > 0 ){
+      Array.from( document.querySelectorAll(".selected_all_fans_js")).forEach(item=>{
+        if(item.checked) 
+            item.checked=false
+      })
+    }
+  })
+}
+
+/**on met les input selectionez tous à checked = false  lorsqu'on ferme les modal*/
+if(document.querySelector("#canceled_visio_shared_faniry_js")){
+  document.querySelector("#canceled_visio_shared_faniry_js").
+  addEventListener("click",()=>{
+    if( document.querySelectorAll(".selected_all_fans_js").length > 0 ){
+      Array.from( document.querySelectorAll(".selected_all_fans_js")).forEach(item=>{
+          if(item.checked)
+              item.checked=false
+      })
+    }
+  })
+}
+
+/**on met les input selectionez tous à checked = false  lorsqu'on ferme les modal*/
+if(document.querySelector("#close_visio_shared_faniry_js")){
+  document.querySelector("#close_visio_shared_faniry_js").
+  addEventListener("click",()=>{
+    if( document.querySelectorAll(".selected_all_fans_js").length > 0 ){
+      Array.from( document.querySelectorAll(".selected_all_fans_js")).forEach(item=>{
+          if(item.checked)
+              item.checked=false
+      })
+    }
+  })
 }

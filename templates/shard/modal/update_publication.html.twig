@@ -1,4 +1,4 @@
-<div class="modal fade" id="modal_publication_modif" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+{# <div class="modal fade" id="modal_publication_modif" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header">
@@ -36,7 +36,7 @@
                             <div class="image-title-wrap">
                                 <button type="button" class="remove-image-uplaod remove_image_upload_jheo_js">
                                     Change l'image
-                                    {# <span class="image-title">Uploaded Image</span> #}
+                                    <span class="image-title">Uploaded Image</span>
                                 </button>
                             </div>
                         </div>
@@ -49,5 +49,49 @@
             </div>
         </div>
     </div>
+</div> #}
+
+<!-- templates/shard/modal/-->
+<!-- Modal update publication-->
+<div class="modal fade" id="modal_publication_modif" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Modifier publication</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <input type="hidden" name="hiddenUpdate" id="hiddenElementUpdate">
+                    <label for="message-text" class="col-form-label">Message</label>
+                    <textarea id="publication_update_legend" name="contenu" class="form-control"></textarea>
+                </div>
+				<div class="mb-3">
+                    <label for="formFileMultiple" class="form-label">Confidentialité</label>
+                    <select id="publication_update_confidentiality" name="confidentialite" class="form-select">
+                        <option value="1">A tous les fans</option>
+                        <option value="2">Moi uniquement</option>
+                    </select>
+                </div>
+                <img src="" alt="" width="100" id="image-publication-tribu-t" class="d-none">
+                <div class="mb-3">
+                    <label for="formFileMultiple" class="form-label" id="editPictureLabel">Photo<button type="button" style="display:none;">Modifier la photo</button></label>
+                    {% include 'shard/input/inputImageDragDrop.html.twig' with {'id': 'publicsation_photo', 'name':'photo'} %}
+                </div>
+                <div class="d-flex flex-column text-center">
+                    <span>ou</span>
+                    <label onclick="showModalPictureTribu('pub', true)" class="labelPrisePhoto" data-bs-target="#mediaModalTribu" data-bs-toggle="modal">
+                            <i class="bi bi-camera-fill pictureOnBoth"></i>
+                            Prendre une photo?
+                    </label>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+                <input type="button" class="btn btn-primary" value="Modifier" onclick="updatePublication()" id="updtMdlPub">
+            </div>
+        </div>
+    </div>
 </div>
+<!-- End Modal-->
 

@@ -22,6 +22,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Repository\BddRestoUserModifRepository;
+use App\Service\MailService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
@@ -100,6 +101,7 @@ class RestaurantController extends AbstractController
         SerializerInterface $serialize,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
         AvisRestaurantRepository $avisRestaurantRepository
     ) {
         $arrayIdResto = [];
@@ -110,6 +112,11 @@ class RestaurantController extends AbstractController
         //// description tribu T with ID restaurant pastille
         $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
 
+//// list resto pastille dans le tribu G
+        $restoPastilleInTribuG= $tributGService->getEntityRestoPastilled($this->getUser()); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+        
+        $arrayIdResto= array_merge( $arrayIdResto, $restoPastilleInTribuG );
+
         if($request->query->has("minx") && $request->query->has("miny") ){
 
             $minx = $request->query->get("minx");
@@ -118,6 +125,11 @@ class RestaurantController extends AbstractController
             $maxy = $request->query->get("maxy");
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+
+            if( $request->query->has("isFirstResquest")){
+                //// update data result to add all resto pastille in the Tribu T
+                $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
+            }
 
             $ids=array_map('self::getIdAvisResto',$datas);
 
@@ -221,6 +233,11 @@ class RestaurantController extends AbstractController
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep, $codinsee, 50);
 
+            if( $request->query->has("isFirstResquest")){
+                //// update data result to add all resto pastille in the Tribu T
+                $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
+            }
+
             $ids=array_map('self::getIdAvisResto',$datas);
 
             $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
@@ -273,6 +290,11 @@ class RestaurantController extends AbstractController
             $maxy = $request->query->get("maxy");
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $dep);
+
+            if( $request->query->has("isFirstResquest")){
+                //// update data result to add all resto pastille in the Tribu T
+                $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
+            }
 
             $ids=array_map('self::getIdAvisResto',$datas);
 
@@ -752,6 +774,7 @@ class RestaurantController extends AbstractController
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
+
         $userConnected = $status->userProfilService($this->getUser());
         $datas = $code->getAllCodinsee($codeDep);
         
@@ -835,7 +858,9 @@ class RestaurantController extends AbstractController
 
         $datas = [];
 
-        $restos = $bddResto->getAllRestoIdForSpecificDepartement($codeDep);
+        // $restos = $bddResto->getAllRestoIdForSpecificDepartement($codeDep,$codinsee);
+        // dd($codinsee);
+        $restos = $bddResto->getCoordinateAndRestoIdForSpecific($codeDep,$codinsee);
         foreach ($restos as $data){
             $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($data["id"]);
 
@@ -963,6 +988,50 @@ class RestaurantController extends AbstractController
     /** 
      * DON'T CHANGE THIS ROUTE: It's use in js file. 
      * 
+     * @Route("/api/restaurant/one_data/{id_restaurant}" , name="api_one_data_resto" , methods="GET" )
+     */
+    public function getOneDataResto(
+        $id_restaurant,
+        Request $request,
+        BddRestoRepository $bddResto,
+        Status $status,
+        AvisRestaurantRepository $avisRestaurantRepository,
+    ): Response {
+        $statusProfile = $status->statusFondateur($this->getUser());
+        $details= $bddResto->getOneRestaurant(null, $id_restaurant)[0];
+
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($details["id"]);
+
+        $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
+
+        $isAlreadyCommented= false;
+        $avis= ["note" => null, "text" => null  ];
+        
+        $note_temp=0;
+        foreach ($global_note as $note ) {
+            if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
+                $isAlreadyCommented = true;
+                $avis = [ "note" => $note["note"], "text" => $note["avis"] ];
+            }
+            $note_temp += $note["note"]; 
+        }
+
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto,
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
+        ];
+
+        return $this->json([
+            "details" => $details,
+        ], 200);
+    }
+
+
+    /** 
+     * DON'T CHANGE THIS ROUTE: It's use in js file. 
+     * 
      * @Route("/restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="app_detail_restaurant" , methods="GET" )
      * @Route("/api/restaurant/{nom_dep}/{id_dep}/details/{id_restaurant}" , name="api_detail_restaurant" , methods="GET" )
      */
@@ -976,6 +1045,7 @@ class RestaurantController extends AbstractController
         $id_restaurant,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
         AvisRestaurantRepository $avisRestaurantRepository,
         Filesystem $filesyst
     ): Response {
@@ -1019,12 +1089,13 @@ class RestaurantController extends AbstractController
         $arrayTribu = [];
         $arrayTribuRestoPast = [];
         $arrayTribuRestoJoinedPast = [];
+        $arrayTribuGRestoPastille = [];
         
         if($this->getUser()){
+            $user= $this->getUser();
 
+            //// list tribu T owned
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
-
-            // dd($tribu_t_owned);
     
             foreach ($tribu_t_owned as $key) {
                 $tableTribu = $key["table_name"];
@@ -1040,6 +1111,7 @@ class RestaurantController extends AbstractController
                 }
             }
 
+            /// list tribu T joined
             $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
             // dd($tribu_t_joined);
             foreach ($tribu_t_joined as $key) {
@@ -1056,6 +1128,25 @@ class RestaurantController extends AbstractController
                 }
             }
 
+            // tribut G pastille
+            $current_profil= $statusProfile["profil"][0];
+            $tributG_table_name= $current_profil->getTributG();
+            $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $id_restaurant);
+            if( count($isPastilled) > 0 ){
+                $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
+                array_push($arrayTribuGRestoPastille, $profil_tribuG);
+            }
+
+            // $all_table_tribuG= $tributGService->getAllTableTribuG();
+            // foreach($all_table_tribuG as $table_tribuG){
+            //     $tributG_table_name= $table_tribuG["table_name"];
+            //     $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $id_restaurant);
+
+            //     if( count($isPastilled) > 0 ){
+            //         $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
+            //         array_push($arrayTribuGRestoPastille, $profil_tribuG);
+            //     }
+            // }
         }
 
         $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/restaurant/".$id_restaurant."/";
@@ -1091,21 +1182,28 @@ class RestaurantController extends AbstractController
             "tribu_t_can_pastille" => $arrayTribu,
             "tribu_t_resto_pastille" => $arrayTribuRestoPast,
             "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
+            "tribu_g_resto_pastille" => $arrayTribuGRestoPastille,
             "photos" => $tabPhoto,
         ]);
     }
+
+
 
     /*
     *use this API to know what tribu T had pastilled an rastaurant or not
     *DON'T CHANGE THIS ROUTE: It's use in js file.
     */
     #[Route("/restaurant/pastilled/checking/{idRestaurant}", name:"app_resto_pastilled_checked",methods:["GET"])]
-    public function checkedIfRestaurantIsPastilled($idRestaurant,
-    UserRepository $userRepository,
-    Tribu_T_Service $tribu_T_Service,
-    SerializerInterface $serializerInterface
+    public function checkedIfRestaurantIsPastilled(
+        $idRestaurant,
+        Status $status,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
+        SerializerInterface $serializerInterface
     ){
         $arrayTribu = [];
+        $arrayTribuGRestoPastille = [];
         if($this->getUser()){
 
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
@@ -1123,10 +1221,31 @@ class RestaurantController extends AbstractController
                     }
                 }
             }
+        
+            $statusProfile = $status->statusFondateur($this->getUser());
+
+            // tribut G pastille
+            $current_profil= $statusProfile["profil"][0];
+            $tributG_table_name= $current_profil->getTributG();
+
+            $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $this->getUser()->getId());
+            $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $idRestaurant);
+
+            array_push($arrayTribuGRestoPastille, [
+                "table_name" => $profil_tribuG["table_name"], 
+                "name_tribu_t_muable" => $profil_tribuG["name"], 
+                "logo_path" => $profil_tribuG["avatar"], 
+                "isPastilled"=> count($isPastilled) > 0 ? true: false
+            ]);
         }
 
-        $datas = $serializerInterface->serialize($arrayTribu, 'json');
-        return new JsonResponse($datas, 200, [], true);
+        // dd($arrayTribu);
+        return $this->json([
+            "listResto" => $arrayTribu,
+            "tribuGProfil" => $arrayTribuGRestoPastille
+        ]);
+        // $datas = $serializerInterface->serialize($arrayTribu, 'json');
+        // return new JsonResponse($datas, 200, [], true);
     }
 
     /** 
@@ -1368,7 +1487,13 @@ class RestaurantController extends AbstractController
     }
 
     #[Route("/user/make/modif/new/resto", name:"app_make_modif_user_resto", methods:["POST"])]
-    public function makeModif(Request $request,BddRestoUserModifRepository $bddRepo){
+    public function makeModif(
+        Request $request,
+        BddRestoUserModifRepository $bddRepo,
+        UserRepository $userRepo,
+        MailService $mailServ,
+        BddRestoRepository $bddResto,
+        Status $status){
         // try{
         $contents=json_decode($request->getContent(),true);
         $bddRestoUserModif=new BddRestoUserModif();
@@ -1398,7 +1523,25 @@ class RestaurantController extends AbstractController
             ->setRestoId(intval(($contents["restoId"])))
             ->setStatus(-1);
 
-            $bddRepo->save($bddRestoUserModif,true);
+            $success=$bddRepo->save($bddRestoUserModif,true);
+            if($success){
+
+                $resto=$bddResto->getOneItemByID((intval($contents["restoId"])));
+                $user=$this->getUser();
+                $profil=$status->userProfilService($user);
+                $emailsCorp="L'étabillsement ".
+                            $resto["denominationF"].
+                            " a été modifié par ". 
+                            $profil["firstname"]." ".$profil["lastname"]." Veuillez le vérifier s'il vous plaît.";
+                $validators=$userRepo->getAllValidator();
+                foreach($validators  as $validator){
+                        $emails=$validator->getEmail();
+                        //TODO send email
+                        $mailServ->sendEmail($emails,"", "établissement modifié", $emailsCorp);
+                        
+                }
+
+            }
         // }catch(Exception $e){
         //     if($_ENV["APP_ENV"]=="dev")
         //         dd($e);
@@ -1613,5 +1756,9 @@ class RestaurantController extends AbstractController
        //  $last_photo = $tabPhoto[count($tabPhoto)-1];
    }
 
-    
+    #[Route("/test", name:"test")]
+    public function t(UserRepository $u){
+        
+        return $this->json($u->getAllValidator());
+    }
 }

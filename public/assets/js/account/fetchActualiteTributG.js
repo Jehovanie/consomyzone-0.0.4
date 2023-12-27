@@ -57,6 +57,8 @@ if( document.querySelector("#fetch_actialite_tribug_jheo_js")){
                 console.error(error)
             })
             .then( response => {
+                let trbGName = document.querySelector(".tributG_profile_name").textContent.trim()
+                document.querySelector(".textIndicationNantaJs").textContent = "Actualité de " + trbGName
                 if( document.querySelector(".content_bloc_jheo_js")){
                     document.querySelector(".content_bloc_jheo_js").innerHTML = response;
                 }

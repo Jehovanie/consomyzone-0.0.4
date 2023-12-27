@@ -130,7 +130,8 @@
     }
 
     .content_right_actualite .exprime-pub {
-        margin-top: 0px !important;
+        margin-top: 40px !important;
+        border-radius: 10px;
     }
 
     .btn-spec{
@@ -230,13 +231,13 @@
         font-size: 7pt !important;
     }
 
-    .span-btn-menu-tribut{
+    /* .span-btn-menu-tribut{
         width: 130px !important;
-    }
+    } */
 
-    .span-btn-menu-en-lign{
+    /* .span-btn-menu-en-lign{
         width: 215px !important;
-    }
+    } */
 
     .right_side_body {
         margin-top: 30px !important;
@@ -253,7 +254,7 @@
     }
 
     .descrp-tribu-t {
-        margin-left: 131px !important;
+        /* margin-left: 131px !important; */
         font-size: 9pt;
     }
 
@@ -662,7 +663,7 @@
     .navleft-detail-mobile {
         transform: translate(1vw, 1vh) !important;
         width: 355px;
-        /* z-index: 10404 !important; */
+        z-index: 1001 !important;
     }
     .swal-overlay--show-modal{
         z-index: 10405 !important;
@@ -1095,8 +1096,8 @@
 
     .btn-navright-tribut{
         position: absolute;
-        top: 105px;
-        right: 0px;
+        top: 145px;
+        left: 0px;
     }
 
     .btn-ferme-tribut {
@@ -1115,7 +1116,7 @@
 
     .content_right_actualite {
         width: 100% !important;
-        height: 100vh !important;
+        /* height: 100vh !important; */
         overflow-y: scroll;
         /* overflow-x: hidden; */
         position: relative !important;
@@ -1232,7 +1233,8 @@
 
     #profilTribu {
         text-align: center;
-        margin-left: 10px !important;
+        margin-left: auto !important;
+        margin-right: auto !important;
         height: 60px;
         border-radius: 10px;
     }
@@ -1264,18 +1266,17 @@
 
    .card-couverture-pub-tribu-t {
        width: 91vw !important;
-        height: 35vh !important;
+        height: 25vh !important;
        margin-top: 0px !important;
    }
 
-
-
     .card-couverture-pub-tribu-t .content-couverture {
         width: 100vw !important;
+height: auto !important;
     }
 
     .card-couverture-pub-tribu-t .content-couverture h1 {
-        margin-left: 150px !important;
+        /* margin-left: 150px !important; */
     }
 
     .card-couverture-pub-tribu-t .content-couverture .p-mobile {
@@ -1300,7 +1301,7 @@
     }
 
     .content-tribu-t-name {
-        margin-left: -150px;
+        /* margin-left: -150px; */
     }
 
     .content-tribu-t {
@@ -1396,6 +1397,7 @@
         width: 100%;
         position: absolute;
         bottom: 10px;
+z-index: 1000 !important;
     }
 
     .swal-overlay{
@@ -1485,7 +1487,7 @@
         position: absolute !important;
         top: 93px !important;
         right: 18px !important;
-        width: 575px !important;
+        width: 92vw !important;
     }
     .list-amie-message-perso {
         width: 100% !important;
@@ -1495,8 +1497,7 @@
         font-size: 9pt;
     }
     .content-pub {
-        /* margin-top: 273px !important; */
-        margin-top: 0px !important;
+        margin-top: -13px !important;
     }
 
     .content_list_p_tG {
@@ -1647,6 +1648,100 @@
         width: 350px!important;
     }
                 
+.image_tommy_home_js_css{
+        width:40px !important;
+        height: 40px !important;
+        max-width: none !important;
+    }
+    .cta_actu_navbar{
+
+    }
+
+    .content-actualite-connected {
+        padding-top: 7.5rem !important;
+    }
+
+    #calendar {
+        padding-top: 15px;
+    }
+
+    #calendar .fc-today-button {
+        font-size: 9pt;
+    }
+
+    #calendar .fc-button-group {
+        font-size: 9pt;
+    }
+
+    #calendar .fc-header-toolbar h2 {
+        font-size: 14pt;
+    }
+
+    .name-tribu-g .p-title {
+        color: #000;
+        font-weight: 500;
+        font-size: 14pt;
+    }
+
+    .head-pub .name-content {
+        justify-content: start !important;
+        align-items: start !important;
+    }
+
+    .margin-top-230{
+        margin-top: 230px !important;
+    }
+
+    .nav-message .nav-tabs .nav-item{
+        padding-left: 0rem !important;
+    }
+
+    .search_input_message {
+        width: 90% !important;
+    }
+
+    .lookup_fan_result {
+        width: 90% !important;
+        right: 5% !important;
+        z-index: 2 !important;
+    }
+
+    .piece-join-tomm-js{
+        width: 100%;
+    }
+
+    .content_entete_msg_jheo_js{
+        margin-left: 15px;
+    }
+
+    .publiate_on .p-title {
+        font-size: 15pt;
+        color: #000;
+        font-weight: 600;
+    }
+
+    .content-actualite-connected-t {
+        padding-top: 4.5rem !important;
+    }
+
+    .setting-nav-tribu-t {
+        position: absolute !important;
+        top: 165px;
+        right: 15px;
+    }
+
+    .user_profile_list_elie h3 {
+        margin-left: 25px;
+    }
+
+    .nav-tribu-g{
+        margin-left: -15px;
+    }
+
+    .setting-nav-tribu-g {
+        margin-left: 20px;
+        margin-top: 15px;
+    }
 }
 
 @media screen and (max-width:400px) and (min-width:300px) {
@@ -2793,7 +2888,7 @@
     }
     
     .result_container_resto_spec .navbar-light-left{
-	    margin-top: 35px !important;
+	    margin-top: 0px !important;
     }
 
     /* .result_container_resto_spec .head-left{
@@ -2808,9 +2903,9 @@
 	    padding-top: 70px !important;
     }
 
-    .result_container_resto_spec .navbar-light-left{
+    /* .result_container_resto_spec .navbar-light-left{
 	    margin-top: 35px !important;
-    }
+    } */
 
     /* .result_container_resto_spec .head-left{
 	 padding-top: 70px !important;
@@ -2878,6 +2973,9 @@
     .left_menu {
         height: 930px;
     }
+    .navbar-light-left .fa-x {
+        margin-left: 8px !important;
+    }
 }
 
 /* **************respensif height************ */
@@ -2886,4 +2984,11 @@
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
         height: 15vh !important;
     }
+}
+
+/*100% Image Width on Smaller Screens*/
+@media only screen and (max-width: 991px) {
+	.content_icon_draggable {
+		display: none;
+	}
 }

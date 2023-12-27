@@ -63,6 +63,7 @@ class Status {
         if($currentTribug!=""){
             
             $tribuAvatar=$this->tributGService->getAvatar($currentTribug)[0]["avatar"];
+            $profilTribuG= $this->tributGService->getProfilTributG( $currentTribug , intval($userId ) );
         }
         return [
             "id" => $user->getId(),
@@ -80,11 +81,12 @@ class Status {
             "commune"=>  $profil ? $profil->getCommune():"",
             "quartier"=>$profil ? $profil->getQuartier() :"",
             "code_postal" =>$profil ?  $profil->getCodePostal() :"",
-            "tribugAvatar"=> $tribuAvatar !=null ? "/uploads/tribus/photos/".$tribuAvatar :"/uploads/tribus/avatar_tribu.jpg"
+            "tribugAvatar"=> $tribuAvatar !=null ? "/uploads/tribus/photos/".$tribuAvatar :"/uploads/tribus/avatar_tribu.jpg",
+            "tribuG_name_muable" => $profilTribuG['name'],
         ];
     }
 
     public function convertUnicodeToUTF8($str){
         return mb_convert_encoding($str, "UTF-8", mb_detect_encoding($str));
     }
-}
+} 

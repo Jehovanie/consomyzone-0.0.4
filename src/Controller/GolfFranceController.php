@@ -110,6 +110,7 @@ class GolfFranceController extends AbstractController
 
     #[Route('/api/golf', name: 'api_golf_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
+        Request $request,
         GolfFranceRepository $golfFranceRepository,
         AvisGolfRepository $avisGolfRepository,
         GolfFranceService $golfFranceService,
@@ -118,6 +119,23 @@ class GolfFranceController extends AbstractController
         $golfs = [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
 
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas = $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+            
+            $ids=array_map('App\Service\SortResultService::getIdFromData', $datas);
+            $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
+
+            $golfs= $golfFranceService->mergeDatasAndAvis($datas, $moyenneNote);
+
+            return $this->json([ "success" => true, "data" => $golfs ], 200);
+        }
+
         $data = $golfFranceRepository->getSomeDataShuffle($userID);
 
         
@@ -125,7 +143,6 @@ class GolfFranceController extends AbstractController
         $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
 
         $golfs= $golfFranceService->mergeDatasAndAvis($data, $moyenneNote);
-
 
         return $this->json([
             "success" => true,
@@ -228,8 +245,8 @@ class GolfFranceController extends AbstractController
      */
     public function getPeripheriqueData(
         Request $request, 
-        GolfFranceRepository $golfFranceRepository)
-    {
+        GolfFranceRepository $golfFranceRepository
+    ){
         if($request->query->has("minx") && $request->query->has("miny") ){
             
             $dep = ( $request->query->get("dep")) ?  $request->query->get("dep") : null;
@@ -438,34 +455,27 @@ class GolfFranceController extends AbstractController
         ], 200);
     }
 
-    #[Route('/golf/departement/{nom_dep}/{id_dep}/{golfID}', name: 'single_golf_france', methods: ["GET"])]
-    public function oneGolf(
-        $nom_dep,
-        $id_dep,
+    #[Route("/api/golf/one_data/{golfID}" , name:"api_one_data_golf" , methods:"GET" )]
+    public function getOneDataGolf(
         $golfID,
         GolfFranceRepository $golfFranceRepository,
         AvisGolfRepository $avisGolfRepository,
-        UserRepository $userRepository,
-        Status $status,
-        Tribu_T_Service $tribu_T_Service,
-        Filesystem $filesyst,
     ){
         ///current user connected
         $user = $this->getUser();
         $userID = ($user) ? intval($user->getId()) : null;
 
-        $details = $golfFranceRepository->getOneGolf(intval($golfID),$userID);
+        $details = $golfFranceRepository->getOneGolf(intval($golfID), $userID);
 
         $nbr_avis_resto = $avisGolfRepository->getNombreAvis($details["id"]);
 
         $global_note  = $avisGolfRepository->getNoteGlobale($details["id"]);
 
         $isAlreadyCommented= false;
+        $isHaveTribuPastille= false;
+
         $avis= ["note" => null, "text" => null  ];
 
-        $arrayTribu = [];
-        $isPastilled = false;
-        
         $note_temp=0;
         foreach ($global_note as $note ) {
             if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
@@ -482,6 +492,59 @@ class GolfFranceController extends AbstractController
             "avisPerso" => $avis
         ];
 
+        return $this->json([
+            "details" => $details,
+        ], 200);
+    }
+
+    #[Route('/golf/departement/{nom_dep}/{id_dep}/{golfID}', name: 'single_golf_france', methods: ["GET"])]
+    public function oneGolf(
+        $nom_dep,
+        $id_dep,
+        $golfID,
+        GolfFranceRepository $golfFranceRepository,
+        AvisGolfRepository $avisGolfRepository,
+        UserRepository $userRepository,
+        Status $status,
+        Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
+        Filesystem $filesyst,
+    ){
+        ///current user connected
+        $user = $this->getUser();
+        $userID = ($user) ? intval($user->getId()) : null;
+
+        $details = $golfFranceRepository->getOneGolf(intval($golfID),$userID);
+
+        $nbr_avis_resto = $avisGolfRepository->getNombreAvis($details["id"]);
+
+        $global_note  = $avisGolfRepository->getNoteGlobale($details["id"]);
+
+        $isAlreadyCommented= false;
+        $isHaveTribuPastille= false;
+
+        $avis= ["note" => null, "text" => null  ];
+
+        $note_temp=0;
+        foreach ($global_note as $note ) {
+            if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
+                $isAlreadyCommented = true;
+                $avis = [ "note" => $note["note"], "text" => $note["avis"] ];
+            }
+            $note_temp += $note["note"]; 
+        }
+
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto,
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
+        ];
+
+        $arrayTribu = []; // tribut T (own) pastille
+        $arrayTribuJoined= []; // tribut T join pastille
+        $array_tribug_pastilled= [];  // tribut G pastille
+
         if ($this->getUser()) {
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
 
@@ -497,9 +560,38 @@ class GolfFranceController extends AbstractController
                         array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
                     } else {
                         array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
-                        $isPastilled = true;
+                        $isHaveTribuPastille= true;
                     }
                 }
+            }
+
+            $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+            foreach ($tribu_t_joined as $key) {
+                $tbtJoined = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                $tableExtensionTbtJoined = $tbtJoined . "_golf";
+                if($tribu_T_Service->checkExtension($tbtJoined, "_golf") > 0){
+                    if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"], true)){
+                        array_push($arrayTribuJoined, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => true]);
+                        $isHaveTribuPastille= true;
+                    }else{
+                        array_push($arrayTribuJoined, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable, "isPastilled" => false]);
+                    }
+                }
+            }
+
+            $statusProfile = $status->statusFondateur($this->getUser());
+
+            $current_profil= $statusProfile["profil"][0];
+            $tributG_table_name= $current_profil->getTributG();
+
+            $isPastilled = $tributGService->isPastilled($tributG_table_name."_golf", $golfID);
+
+            if( count($isPastilled) > 0 ){
+                $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
+                array_push($array_tribug_pastilled, ["table_name" => $profil_tribuG["table_name"], "logo_path" => $profil_tribuG["avatar"], "name_tribu_g_muable" => $profil_tribuG["name"], "isPastilled" => true]);
+                $isHaveTribuPastille= true;
             }
         }
 
@@ -529,7 +621,10 @@ class GolfFranceController extends AbstractController
             "nom_dep" => $nom_dep,
             "details" => $details,
             "tribu_t_pastilleds" => $arrayTribu,
+            "tribu_t_joined_pastille" => $arrayTribuJoined,
+            "tribu_g_pastilleds" => $array_tribug_pastilled,
             "photos" => $tabPhoto,
+            "isHaveTribuPastille" => $isHaveTribuPastille
         ]);
     }
 
@@ -825,7 +920,18 @@ class GolfFranceController extends AbstractController
         if ($isnumeric && intval($golfID) > 0) {
             $golf = $golfFranceRepository->findOneBy(["id" => $golfID]);
             if (!is_null($golf)) {
+                $isFinished = $golfRepo->findOneBy(['golf_id' => intval($golfID), 'user_id' => $userID, 'a_faire' => 1]);
+                if (!$isFinished) {
 
+                    $isHasGolf = $golfRepo->findOneBy(['golf_id' => intval($golfID), 'user_id' => $userID]);
+
+                    if($isHasGolf){
+                        $isHasGolf->setFait(0);
+                        $isHasGolf->setAfaire(1);
+                        $isHasGolf->setMonGolf(0);
+                        $isHasGolf->setARefaire(0);
+                        $entityManager->persist($isHasGolf);
+                    }else{
                 $golfFinished = new GolfFinished();
                 $golfFinished->setGolfId($golfID);
                 $golfFinished->setUserId($userID);
@@ -836,6 +942,8 @@ class GolfFranceController extends AbstractController
 
                 $entityManager->persist($golfFinished);
 
+            }
+
                 $entityManager->flush();
 
                 $notificationService->sendNotificationForOne(
@@ -844,10 +952,17 @@ class GolfFranceController extends AbstractController
                     "Marquez un golf à faire.",
                     "Vous avez marqué le golf " . $golf->getNomGolf() . " à faire."
                 );
+
                 return $this->json([
                     "success" => true,
                     "message" => "Golf finished successfully"
                 ], 201);
+            }else{
+                    return $this->json([
+                        "success" => false,
+                        "message" => "Golf déjà à faire"
+                    ], 201);
+                }
             } else {
                 return $this->json([
                     "response" => "bad",
@@ -885,7 +1000,7 @@ class GolfFranceController extends AbstractController
         $isnumeric = (bool)preg_match('/[0-9]/', $golfID, $numerics);
         $userID = $user->getId();
         if ($isnumeric && intval($golfID) > 0) {
-            $golf = $golfFranceRepository->findOneBy(["id" => $golfID]);
+            $golf = $golfRepo->findOneBy(["id" => $golfID]);
             if (!is_null($golf)) {
                 $golfFinished = new GolfFinished();
                 $golfFinished->setGolfId($golfID);
@@ -932,10 +1047,11 @@ class GolfFranceController extends AbstractController
         if (!$this->getUser()) {
             return $this->json(["success" => false, "message" => "Unauthorized"], 403);
         }
+$userID = $this->getUser()->getId();
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
 
-        $isFinished = $golfFinishedRepository->findOneBy(['golf_id' => intval($golfID)]);
+        $isFinished = $golfFinishedRepository->findOneBy(['golf_id' => intval($golfID), 'user_id' => $userID]);
         if (!$isFinished) {
             return $this->json(["success" => false, "message" => "This golf is not yet finished"], 200);
         }
@@ -945,8 +1061,7 @@ class GolfFranceController extends AbstractController
         $entityManager->flush();
 
         // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
-        $userID = $this->getUser()->getId();
-        $notificationService->sendNotificationForOne($userID, $userID, "Golf a refaire.", "Vous avez annulé un golf terminé.");
+                $notificationService->sendNotificationForOne($userID, $userID, "Golf a refaire.", "Vous avez annulé un golf terminé.");
 
 
         return $this->json([

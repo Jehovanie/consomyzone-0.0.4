@@ -18,6 +18,8 @@ var workerGetCommentaireTribuT = IS_DEV_MODE
 var image_tribu_t;
 var descriptionTribuT = "";
 
+let __userLoggedId = document.querySelector('.information_user_conected_jheo_js').dataset.toggleUserId
+
 ///Jehovanie: this variable is use for the list of the piece joint
 /// in the send email on the invitation tribu T
 let email_piece_joint_list = [];
@@ -545,7 +547,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
       }
       if (tribu_t[0].extension != null && tribu_t[0].extension.golf == 1) {
         golfExtension = ` <li class="listNavBarTribu golfNotHide">
-                                <a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="showGolf('${tribu_t_name_0}')" data-value="golf">Mon Golf</a>
+                                <a style="cursor:pointer;" class="btn_grise_non_actif_js_Elie" onclick="showGolf('${tribu_t_name_0}')" data-value="golf">Golf</a>
                             </li>`;
       }
     }
@@ -582,6 +584,71 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                             </li>`
       : "";
 
+let canUpdateTribuInfoMob = !document
+      .querySelector("#activeTribu")
+      .classList.contains("other")
+      ? `<li class="listNavBarTribu">
+                                <a style="cursor:pointer;" id="settingTribuT" class="dropdown-item" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
+                            </li>`
+      : "";
+    let navMenuTribuT = ""
+    if (screen.width < 1000) {
+      navMenuTribuT = `<nav class=" mx-auto ">
+                    <ul id="navBarTribu" class="navBarTribu-t">
+                        <li class="listNavBarTribu">
+                            <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
+                        </li>
+                        ${restExtension}
+                        ${golfExtension}
+                                              
+                    </ul>
+                    <div class="dropdown setting-nav-tribu-t">
+                        <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+                          <i class="fa-solid fa-bars"></i>
+                        </a>
+
+                        <ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                          <li class="listNavBarTribu invitation">
+                              <a style="cursor:pointer;" onclick="showInvitations()" class="dropdown-item">Invitations</a>
+                          </li>  
+                            <li class="listNavBarTribu partisantT">
+                              <a style="cursor:pointer;" class="dropdown-item">Fans</a>
+                          </li>
+                          <li class="listNavBarTribu">
+                              <a style="cursor:pointer;" id="see-gallery" class="dropdown-item">Photos</a>
+                          </li>
+
+                          ${canUpdateTribuInfoMob}
+                        </ul>
+                      </div>
+                </nav>`
+    } else {
+      navMenuTribuT = `<nav class=" mx-auto">
+                    <ul id="navBarTribu" class="navBarTribu-t">
+                        <li class="listNavBarTribu">
+                            <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
+                        </li>
+
+
+                        ${restExtension}
+                        ${golfExtension}
+
+                        <li class="listNavBarTribu invitation">
+                            <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
+                        </li>
+                        <li class="listNavBarTribu partisantT">
+                            <a style="cursor:pointer;">Fans</a>
+                        </li>
+                        <li class="listNavBarTribu">
+                            <a style="cursor:pointer;" id="see-gallery">Photos</a>
+                        </li>
+
+                        ${canUpdateTribuInfo}
+
+                    </ul>
+                </nav>`
+    }
+
     document.querySelector("#content-pub-js").innerHTML = `
             <div class="card-couverture-pub-tribu-t ">
                 <div class="content-couverture mt-3">
@@ -614,30 +681,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                        dataFirst.pseudo
                      }</span></p>
                 </div>
-                <nav class=" mx-auto">
-                    <ul id="navBarTribu" class="navBarTribu-t">
-                        <li class="listNavBarTribu">
-                            <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
-                        </li>
-
-
-                        ${restExtension}
-                        ${golfExtension}
-
-                        <li class="listNavBarTribu invitation">
-                            <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
-                        </li>
-                        <li class="listNavBarTribu partisantT">
-                            <a style="cursor:pointer;">Fans</a>
-                        </li>
-                        <li class="listNavBarTribu">
-                            <a style="cursor:pointer;" id="see-gallery">Photos</a>
-                        </li>
-
-                        ${canUpdateTribuInfo}
-
-                    </ul>
-                </nav>
+                ${navMenuTribuT}
             </div>
 
             <div id="tribu_t_conteuneur" class="exprime-pub">
@@ -649,7 +693,9 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                 <img src="${
                                   document.querySelector(".userProfil > img")
                                     .src
-                                }" alt="">
+                                }" alt=""
+                                  data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)"
+                                >
                             </div>
                             <div class="name-content-h">
                                 <div class="name-content">
@@ -749,7 +795,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                             </ul>
                                         </span>
                                     </div>`
-            : "";
+            : ""
 
         contentPublication = `<div id="${
           tribu_t_name_0 + "_" + data[i].id
@@ -762,10 +808,13 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="${_profilImg}" alt="">
+                                                        <img src="${_profilImg}" 
+                                                          alt=""
+                                                          data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)"
+                                                        >
                                                     </div>
                                                     <div class="name-content-h">
-                                                        <div class="name-content">
+                                                        <div class="name-content responsif-none">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
                                                             <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name
                                                               .replace(
@@ -776,6 +825,20 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                 "_",
                                                                 " "
                                                               )}</span></p></div>
+                                                        </div>
+<div class="publiate_on responsif-none-pc"><p  class="p-title"><span>${tribu_t[0].name
+                                                          .replace(
+                                                            /tribu_t_[0-9]+_/,
+                                                            ""
+                                                          )
+                                                          .replaceAll(
+                                                            "_",
+                                                            " "
+                                                          )}</span></p>
+                                                        </div>
+                                                        <div class="name-content responsif-none-pc">
+                                                            <h5> &ensp;${_fullName} &ensp;</h5>
+                                                            
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${
@@ -805,10 +868,10 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                    tribu_t[0]
                                                                      .name
                                                                                                                         }_${
-                                                                  data.id
-                                                                }" onclick="getAllReaction('${data.id}', 
+                                                                  data[i].id
+                                                                }" onclick="getAllReaction('${data[i].id}', 
                                                         '${tribu_t[0].name}', '${
-                                                                  data.user_id
+                                                                  data[i].user_id
                                                                 }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
                                                                                                                 <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s)</span>
                                                
@@ -816,7 +879,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                     <div class="reaction-icon d-flex">
                                                         <i style="cursor:pointer;" class="${
                                                           data[i].reaction == 1
-                                                            ? "bi-heart-fill"
+                                                            ? (__userLoggedId == data[i].user_id_react ? "bi-heart-fill" : "bi-heart")
                                                             : "bi-heart"
                                                         } like reaction_${
                               tribu_t[0].name
@@ -883,10 +946,13 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="${_profilImg}" alt="">
+                                                        <img src="${_profilImg}" 
+                                                          alt=""
+                                                          data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)"
+                                                        >
                                                     </div>
                                                     <div class="name-content-h">
-                                                        <div class="name-content">
+                                                        <div class="name-content  responsif-none">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
                                                             <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name
                                                               .replace(
@@ -897,6 +963,20 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                 "_",
                                                                 " "
                                                               )}</span></p></div>
+                                                        </div>
+<div class="publiate_on responsif-none-pc"><p  class="p-title"><span>${tribu_t[0].name
+                                                          .replace(
+                                                            /tribu_t_[0-9]+_/,
+                                                            ""
+                                                          )
+                                                          .replaceAll(
+                                                            "_",
+                                                            " "
+                                                          )}</span></p>
+                                                        </div>
+                                                        <div class="name-content responsif-none-pc">
+                                                            <h5> &ensp;${_fullName} &ensp;</h5>
+                                                            
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${
@@ -969,17 +1049,17 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                         <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${
                                                           tribu_t[0].name
                                                         }_${
-                                                    data.id
-                                                  }" onclick="getAllReaction('${data.id}', 
+                                                    data[i].id
+                                                  }" onclick="getAllReaction('${data[i].id}', 
                                         '${tribu_t[0].name}', '${
-                                                    data.user_id
+                                                    data[i].user_id
                                                   }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
                                                                                                 <span class="nbr_comment_jheo_js">  ${dataNbr} commentaire(s) </span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
                                                         <i style="cursor:pointer;" class="${
                                                           data[i].reaction == 1
-                                                            ? "bi-heart-fill"
+                                                            ?  (__userLoggedId == data[i].user_id_react ? "bi-heart-fill" : "bi-heart")
                                                             : "bi-heart"
                                                         } like reaction_${
                                       tribu_t[0].name
@@ -1109,10 +1189,13 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
                                                     <div class="pdp-content">
-                                                        <img src="${_profilImg}" alt="">
+                                                        <img src="${_profilImg}" 
+                                                          alt=""
+                                                          data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)"
+                                                        >
                                                     </div>
                                                     <div class="name-content-h">
-                                                        <div class="name-content">
+                                                        <div class="name-content responsif-none">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
                                                             <div class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name
                                                               .replace(
@@ -1123,6 +1206,20 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                 "_",
                                                                 " "
                                                               )}</span></p></div>
+                                                        </div>
+<div class="publiate_on responsif-none-pc"><p  class="p-title"><span>${tribu_t[0].name
+                                                          .replace(
+                                                            /tribu_t_[0-9]+_/,
+                                                            ""
+                                                          )
+                                                          .replaceAll(
+                                                            "_",
+                                                            " "
+                                                          )}</span></p>
+                                                        </div>
+                                                        <div class="name-content responsif-none-pc">
+                                                            <h5> &ensp;${_fullName} &ensp;</h5>
+                                                            
                                                         </div>
                                                         <div class="status-content d-flex">
                                                             <p class="p-heure"> ${
@@ -1192,7 +1289,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                     <div class="reaction-icon d-flex">
                                                         <i style="cursor:pointer;" class="${
                                                           dataG.reaction == 1
-                                                            ? "bi-heart-fill"
+                                                            ?  (__userLoggedId == data[i].user_id_react ? "bi-heart-fill" : "bi-heart")
                                                             : "bi-heart"
                                                         } like reaction_${
                   tribu_t[0].name
@@ -2140,6 +2237,7 @@ function loadFile(event) {
 
 function showActualites() {
   document.querySelector("#activeTribu").click();
+document.querySelector(".fermet-tribu-t-tomm-js").click(); 
 }
 
 if (document.querySelector("#submit-publication-tribu-t")) {
@@ -2500,11 +2598,11 @@ function showInvitations() {
           .then((result) => {
             // input_principal.value = null;
             // description.value = null;
-            object.value = null;
+            // object.value = null;
 
             //init Ckeditor for description by Elie
 
-            editor.setData("Ecrivez votre message ici.");
+            //editor.setData("Ecrivez votre message ici.");
 
             //Send data invitation story into tribu
             let table_trib = document
@@ -2515,13 +2613,24 @@ function showInvitations() {
             saveInvitationStory(table_trib, result.data);
             //saveInvitationStory(table_trib, input_cc.value);
 
-            input_principal.value = null;
+            /// RESET DATA AFTER THE SENDING
+            // input_principal.value = null;
             // input_cc.value = null;
-            email_piece_joint_list = [];
+            // email_piece_joint_list = [];
+// editor.setData("Ecrivez votre message ici.");
 
-            document.querySelectorAll(".chip").forEach((item) => {
-              item.parentElement.removeChild(item);
-            });
+            // document.querySelectorAll(".chip").forEach((item) => {
+              // 	item.parentElement.removeChild(item);
+            // });
+
+            // if (document.querySelector(".content_list_piece_joint_jheo_js")) {
+            // 	document.querySelector(".content_list_piece_joint_jheo_js").innerHTML = "";
+
+            // 	if (!content_list_piece_joint.classList.contains("d-none")) {
+            // 		content_list_piece_joint.classList.add("d-none");
+            // 	}
+            // }
+            /// END OF THE RESET DATA.
 
             form_parent
               .querySelector(".btn_send_invitation_js_jheo")
@@ -2530,23 +2639,8 @@ function showInvitations() {
               ".btn_send_invitation_js_jheo"
             ).textContent = "Envoyer l'invitation";
 
-            if (document.querySelector(".content_list_piece_joint_jheo_js")) {
-              document.querySelector(
-                ".content_list_piece_joint_jheo_js"
-              ).innerHTML = "";
-
-              if (!content_list_piece_joint.classList.contains("d-none")) {
-                content_list_piece_joint.classList.add("d-none");
-              }
-            }
-
             document.querySelector("#successSendingMail").style.display =
               "block";
-
-            // swal({
-            //         text: "Votre invitation par e-mail pour joindre la tribu T est envoyée avec succès au destinataire.",
-            //         icon: "info",
-            // });
 
             setTimeout(() => {
               document.querySelector("#successSendingMail").style.display =
@@ -3577,7 +3671,10 @@ function showEtabDetail(event, nom_dep, id_dep, id_etab) {
 function openPopupActionGolf(
   id_pastille = null,
   denomination_f = null,
-  adresse = null
+  adresse = null,
+  note,
+  create,
+  type
 ) {
   let tableTribu = document.querySelector("#activeTribu").dataset.tableName;
 
@@ -3596,6 +3693,11 @@ function openPopupActionGolf(
   btn.dataset.id = id_pastille;
   btn.dataset.name = denomination_f;
   btn.dataset.tbname = tableTribu;
+
+  document.querySelector(".add_attribut_tomm_js").setAttribute("id", "details-coord");
+  document.querySelector(".add_attribut_tomm_js").setAttribute("data-toggle-type", type)
+  document.querySelector(".add_attribut_tomm_js").setAttribute("data-toggle-id-golf", id_pastille)
+
 }
 
 // function depastilleGolf(selector){

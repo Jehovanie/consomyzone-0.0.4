@@ -43,7 +43,10 @@
 			<button  class="responsif-none-pc vu jc g  pa nj xr ni bj wr _k uo qh btn-navright-tribut btn-navright-tribut-tomm-js">
 				<span class="jc h cg bf sd span-btn-menu-tribut menu-tribut-tomm-js">
 					<span class="du-block g m yd vc span-menu-tribut-tomm-js">
-						<span class="">Menu tribu T</span>
+						<span class="">
+							{# Menu tribu T #}
+							<i class="fa-solid fa-t"></i>
+						</span>
 					</span>
 					<i class="fa-solid fa-xmark btn-ferme-tribut fermet-tribu-t-tomm-js responsif-none"></i>
 				</span>
@@ -56,9 +59,11 @@
 
 				<div class="account listTribu_t_mobile content_right_actualite" id="container-mobile">
 					<div id="content-pub-js">
+						<h3 class="text-primary">Actualité de mes Tribus T</h3>
 						{% if publications|length > 0 %}
 							{% for item in publications %}
-								{% include "tribu_t/card/card.twig" with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
+								{# {% include "tribu_t/card/card.twig" with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %} #}
+								{% include "tribu_t/card/card_actualite.twig" with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %}
 							{% endfor %}
 						{% else %}
 							<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr mt-3">
@@ -291,7 +296,7 @@
 					<div class="container text-center">
 						<i class="fas fa-question-circle fs-1 text-info"></i><br>
 						<p class="questionAction">Quelle action voulez-vous pour ce golf?</p>
-						<div class="container mb-4 mt-5 content_btns_nanta_js">
+						<div class="container mb-4 mt-5 content_btns_nanta_js add_attribut_tomm_js">
 							{# <button type="button" id="data-note-nanta-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button> #}
 							<button type="button" id="data-note-nanta-js" class="btn btn-primary mt-1" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis"></i> Notez</button>
 							<button type="button" id="data-event-nanta-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"></i> Créer un évènement</button>
@@ -347,5 +352,6 @@
     {% include 'shard/modal/addLinkInvitation.html.twig' %}
 	{% include 'shard/modal/modal_show_gallery.twig' %}
 	{% include 'shard/modal/liste_reacteur.html.twig' %}
+	{% include 'shard/modal/modal_detail_publication.twig' %}
 
 {% endblock %}

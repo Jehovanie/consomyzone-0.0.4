@@ -36,26 +36,29 @@
 					<div class="container-fluid">
 						<div class="collapse navbar-collapse" id="navbarSuperAdmin">
 							<ul class="navbar-nav me-auto mb-2 mb-lg-0">
+								{% if app.user.roles[0] is same as("ROLE_GODMODE") %}
+									<li class="nav-item">
+										<a class="nav-link list-tribu-g text-primary" data-target="list-tribu-g">Liste des tribus G</a>
+									</li>
+									{# <li class="nav-item non_active">
+										<a class="nav-link list-tribu-t disabled-link" data-target="list-tribu-t">Liste des tribus T</a>
+									</li> #}
+									<li class="nav-item">
+										<a class="nav-link list-partenaire" data-target="list-demande-partenaire" onclick="getListeDemandePartenariat(event)">Liste des demande de partenariats</a>
+									</li>
+								{% endif %}
+								
+
 								<li class="nav-item">
-									<a class="nav-link list-tribu-g text-primary" data-target="list-tribu-g">Liste des tribus G</a>
-								</li>
-								{# <li class="nav-item non_active">
-									<a class="nav-link list-tribu-t disabled-link" data-target="list-tribu-t">Liste des tribus T</a>
-								</li> #}
-								<li class="nav-item">
-									<a class="nav-link list-partenaire" data-target="list-demande-partenaire" onclick="getListeDemandePartenariat(event)">Liste des demande de partenariats</a>
+									<a class="nav-link list-infoAvalider addr_faniry_js" data-target="list-infoAvalider" onclick="getListeInfoTovalidate(event)">Validation adresse</a>
 								</li>
 
 								<li class="nav-item">
-									<a class="nav-link list-infoAvalider" data-target="list-infoAvalider" onclick="getListeInfoTovalidate(event)">Validation adresse</a>
+									<a class="nav-link list-infoAvalider phtR_faniry_js" data-target="list-infoAvalider" onclick='getListePhotoTovalidate(event, "restaurant")'>Photo restaurant</a>
 								</li>
 
 								<li class="nav-item">
-									<a class="nav-link list-infoAvalider" data-target="list-infoAvalider" onclick='getListePhotoTovalidate(event, "restaurant")'>Photo restaurant</a>
-								</li>
-
-								<li class="nav-item">
-									<a class="nav-link list-infoAvalider" data-target="list-infoAvalider" onclick='getListePhotoTovalidate(event, "golf")'>Photo golf</a>
+									<a class="nav-link list-infoAvalider phtG_faniry_js" data-target="list-infoAvalider" onclick='getListePhotoTovalidate(event, "golf")'>Photo golf</a>
 								</li>
 								
 							</ul>
@@ -63,6 +66,7 @@
 					</div>
 				</nav>
 
+{% if app.user.roles[0] is same as("ROLE_GODMODE") %}
 				<div class="row content_right_actualite content-super-admin mb-4" id="list-tribu-g">
 					<div class="content_list">
 						<div class="entete mb-2 ms-3">
@@ -98,6 +102,7 @@
 						</div>
 					</div>
 				</div>
+
 				<div class="row content_right_actualite content-super-admin mb-4" style="display:none;" id="list-demande-partenaire">
 					{# {% include 'user/dashboard_super_admin/admin_fournisseur.html.twig' %} #}
 					<div class="content_list">
@@ -118,7 +123,7 @@
 					</div>
 					
 				</div>
-
+{% endif %}
 				<div class="row content_right_actualite content-super-admin mb-4" style="display:none;" id="list-infoAvalider">
 					<div class="content_list">
 						<div class="entete mb-2 ms-3">

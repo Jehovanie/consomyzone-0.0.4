@@ -414,7 +414,7 @@ class GolfFranceRepository extends ServiceEntityRepository
             } else {
                 $golfFinishedRepository = new GolfFinishedRepository($this->registry);
                 $user = $golfFinishedRepository->findOneBy(["user_id" => $userID, "golf_id" => $data[$i]["id"]]);
-                $data[$i]["user_status"] = ($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait(), "mon_golf" => $user->getMonGolf() , 'refaire' => $user->getRefaire()]  : ["a_faire" => null, "fait" => null, "mon_golf" => null, 'refaire' => null];
+                $data[$i]["user_status"] = ($user) ? ["a_faire" => $user->getAfaire(), "fait" => $user->getFait(), "mon_golf" => $user->getMonGolf() , 'refaire' => $user->getARefaire()]  : ["a_faire" => null, "fait" => null, "mon_golf" => null, 'refaire' => null];
                 $data[$i]["user_id"] = $userID;
             }
         }
@@ -574,7 +574,8 @@ class GolfFranceRepository extends ServiceEntityRepository
                     ] : [
                         "a_faire" => null, 
                         "fait" => null, 
-                        "mon_golf"=>null
+                        "mon_golf"=>null,
+                        "refaire" => null
                     ];
                 $results[$i]["user_id"]=$userID;
             }
@@ -683,7 +684,8 @@ class GolfFranceRepository extends ServiceEntityRepository
                 $results[$i]["user_status"]= [
                     "a_faire" => null, 
                     "fait" => null, 
-                    "mon_golf" => null
+                    "mon_golf" => null,
+                    "refaire" => null
                 ];
                 $results[$i]["user_id"]=null;
             }else{
@@ -708,7 +710,7 @@ class GolfFranceRepository extends ServiceEntityRepository
         return [ $results , count($results) , "golf"];
     }
 
-    public function getGolfAfaire() {
+    public function getGolfAfaire($userId) {
         
         return $this->createQueryBuilder('g')
         ->select("g.id as id_etab,".
@@ -719,7 +721,8 @@ class GolfFranceRepository extends ServiceEntityRepository
                 "g.site_web as siteweb","gf"
         )
         ->leftJoin("App\Entity\GolfFinished", "gf", Join::WITH, "g.id = gf.golf_id ")
-        ->where('gf.a_faire= 1')
+        ->where('gf.a_faire= 1 AND gf.user_id = :userId')
+->setParameter('userId', $userId)
         ->orderBy('g.id',"ASC")
         ->getQuery()->getResult();
     }
@@ -752,3 +755,4 @@ class GolfFranceRepository extends ServiceEntityRepository
         ->getQuery()->getResult();
     }
 }
+ 

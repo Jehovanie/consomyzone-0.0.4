@@ -1005,10 +1005,14 @@ function initCKEditor(idElement, callback) {
   }
 }
 
+/**
+ * cette fonction montre l'editeur de texte pour l'invitation par email
+ * dans les agendas
+ * @param {*} isG boolean si tribu G
+ * @param {*} isListeInfile boolean si il y a des pièce jointe
+ * @returns
+ */
 function showModalEditor(isG, isListeInfile = false) {
-
-
-
   let fullname = document
     .querySelector(".use-in-agd-nanta_js_css")
     .textContent.trim();
@@ -1030,12 +1034,46 @@ function showModalEditor(isG, isListeInfile = false) {
 
   let agenda = JSON.parse(sessionStorage.getItem("agenda"));
 
-  if(document.querySelector("#object_share_event"))
-      document.querySelector("#object_share_event").value=agenda.title+", "+fullname
+  let dEvent = agenda
+    ? agenda.dateStart
+      ? new Date(agenda.dateStart)
+      : new Date()
+    : new Date();
+
+  let back;
+
+  let diffDate = Date.parse(dEvent) - Date.parse(new Date());
+
+  diffDate = diffDate / 86400000;
+
+  if (diffDate <= 0) {
+    back = Date.parse(dEvent);
+  } else {
+    if (diffDate >= 21) {
+      back = Date.parse(dEvent) - 86400000 * 21;
+    } else if (diffDate < 21 && diffDate >= 14) {
+      back = Date.parse(dEvent) - 86400000 * 14;
+    } else if (diffDate < 14 && diffDate >= 7) {
+      back = Date.parse(dEvent) - 86400000 * 7;
+    } else if (diffDate < 7 && diffDate > 0) {
+      back = Date.parse(dEvent) - 86400000;
+    }
+  }
+
+  // date limite de confirmation par défaut (3 semaine avant la date de l'événement)
+  let dateOld = new Intl.DateTimeFormat("fr-FR", { dateStyle: "full" }).format(
+    new Date(back)
+  );
+
+  if (document.querySelector("#object_share_event"))
+    document.querySelector("#object_share_event").value =
+      agenda.title + ", " + fullname;
   // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité
   //</span>
-  if ( agenda && agenda.isVisioCMZ == 1) {
-    let img= agenda.file_path ? `<img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js"></img>`:""
+  if (agenda && agenda.isVisioCMZ == 1) {
+    let img = agenda.file_path
+      ? `<img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js"></img>`
+      : "";
     return (html = ` 
         <p>Madame / Monsieur 
         <br>
@@ -1057,7 +1095,7 @@ function showModalEditor(isG, isListeInfile = false) {
         <span id="descriptionText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">${agenda.description}</span>
         </p>
         <p id="remerciementText" >Je vous remercie de bien vouloir confirmer votre présence avant le 
-        <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
+        <span contenteditable="true" style="background-color:cyan" id="threeWeekBefore"> ${dateOld}</span></p>
         <p id="confirmationText">en cliquant sur le lien</p>
         <a id="mail_link_Natenaina_js_css" href="" disabled contenteditable="false" style="text-decoration:underline">Confirmation</a>
         <p id="free_place" > 
@@ -1068,9 +1106,10 @@ function showModalEditor(isG, isListeInfile = false) {
             ${fullname} 
          </span>
         `);
-  } else if(agenda && agenda.isVisioCMZ != 1){
-    
-    let img= agenda.file_path ? `<img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js"></img>`:""
+  } else if (agenda && agenda.isVisioCMZ != 1) {
+    let img = agenda.file_path
+      ? `<img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js"></img>`
+      : "";
     return (html = ` 
         <p>Madame / Monsieur 
         <br>
@@ -1099,7 +1138,7 @@ function showModalEditor(isG, isListeInfile = false) {
         <span id="descriptionText" contenteditable="false" style="background-color:rgba(252, 130, 29, 1);">${agenda.description}</span>
         </p>
         <p id="remerciementText" >Je vous remercie de bien vouloir confirmer votre présence avant le 
-        <span contenteditable="true" style="background-color:cyan"> à remplir par vous</span></p>
+        <span contenteditable="true" style="background-color:cyan" id="threeWeekBefore"> ${dateOld}</span></p>
         <p id="confirmationText">en cliquant sur le lien</p>
         <a id="mail_link_Natenaina_js_css" href="" disabled contenteditable="false" style="text-decoration:underline">Confirmation</a>
         <p id="free_place" > 
@@ -1340,9 +1379,10 @@ function showReponsePartenaire() {
   const nameTribuT = document.querySelector(
     "#tribu_t_name_main_head"
   )?.textContent;
-  let userSender="";
-  if(document.querySelector(".information_user_conected_jheo_js"))
-      userSender=document.querySelector(".information_user_conected_jheo_js").dataset.userfullname
+  let userSender = "";
+  if (document.querySelector(".information_user_conected_jheo_js"))
+    userSender = document.querySelector(".information_user_conected_jheo_js")
+      .dataset.userfullname;
   return (html = `
         <span>Madame, Monsieur,</span></br>
 
@@ -2009,106 +2049,86 @@ function showNextImage() {
 }
 
 function agrandirImage(ev) {
-  console.log(ev.target);
-  ev.target.style = "transform:scale(1.2)";
+    ev.target.style = "transform:scale(1.2)";
 }
 
 function resetImage(ev) {
-  // console.log(ev.target)
-  ev.target.style = "transform:scale(1)";
+    ev.target.style = "transform:scale(1)";
 }
 
 function createPopUp(ev) {
   let tribuName = ev.target.dataset.name;
-  console.log(ev);
-  $("#modalCreatePopUp").modal("show");
-  console.log(document.querySelector("#modalCreatePopUp"));
-  document.querySelector("#modalCreatePopUpLabel").textContent =
+    $("#modalCreatePopUp").modal("show");
+    document.querySelector("#modalCreatePopUpLabel").textContent =
     "Tribu T " + tribuName;
   document.querySelector("#modalCreatePopUp .textInfos").textContent =
     "Ce restaurant est pastillé par la tribu " + tribuName;
   document.querySelector("#modalCreatePopUp .tbtName").textContent = tribuName;
 }
 
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+ *
+ * @overide for the function 'createPopUP' created by Nantenaina.
+ *
+ * @param {*} ev
+ */
+function createPopUpTribuG(ev) {
+  $("#modalCreatePopUp").modal("show");
+
+  const type = document.querySelector(".select_action_golf_nanta_js")
+    ? "golf"
+    : "restaurant";
+
+  let tribuName = ev.target.dataset.name;
+  document.querySelector("#modalCreatePopUpLabel").textContent =
+    "Tribu G " + tribuName;
+  document.querySelector(
+    "#modalCreatePopUp .textInfos"
+  ).textContent = `Ce ${type} est pastillé par la tribu ${tribuName}`;
+
+  document.querySelector("#modalCreatePopUp .tbtName").textContent = tribuName;
+}
+
+/**
+ * @update by Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * Goal checking befor the type of the tribu <Tribu G or Tribu T>
+ */
 function showLogoAndNameTribus() {
   let modalBody = document.querySelector("#modalShowTribusInfos .modal-body");
   modalBody.innerHTML = "";
+
   $("#modalShowTribusInfos").modal("show");
+
   let allTribusT = document.querySelectorAll(".img_nantenaina > img");
 
   allTribusT.forEach((tribu) => {
-    modalBody.innerHTML += `<div class="divContainerImgOnModal mb-3"><div><img onclick="createPopUp(event)" src="${tribu.src}" alt="${tribu.dataset.name}" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"></div><div class="tribuTName" onclick="createPopUp(event)" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"> ${tribu.dataset.name}</div></div>`;
+    if (tribu.dataset.type === "tribuG") {
+      modalBody.innerHTML += `
+                <div class="divContainerImgOnModal mb-3">
+                    <div>
+                        <img onclick="createPopUpTribuG(event)" src="${tribu.src}" alt="${tribu.dataset.name}" data-name="${tribu.dataset.name}" data-bs-dismiss="modal">
+                    </div>
+                    <div class="tribuTName" onclick="createPopUpTribuG(event)" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"> 
+                        ${tribu.dataset.name}
+                    </div>
+                </div>
+            `;
+  } else if (tribu.dataset.type === "tribuT") {
+      modalBody.innerHTML += `
+                <div class="divContainerImgOnModal mb-3">
+                    <div>
+                        <img onclick="createPopUp(event)" src="${tribu.src}" alt="${tribu.dataset.name}" data-name="${tribu.dataset.name}" data-bs-dismiss="modal">
+                    </div>
+                    <div class="tribuTName" onclick="createPopUp(event)" data-name="${tribu.dataset.name}" data-bs-dismiss="modal"> 
+                        ${tribu.dataset.name}
+                    </div>
+                </div>
+            `;
+    }
   });
 }
-
-// window.onload = (event) => {
-
-//     // document.querySelector("#visioMessageElie").style="display :none !important;"
-//     // document.querySelector("#minimizeVisio").style="display :none !important;"
-
-//     if(localStorage.getItem("room_name")){
-//         let room = localStorage.getItem("room_name")
-
-//         document.querySelector("#visioMessageElie").style="display :none !important;"
-//         document.querySelector("#minimizeVisio").style="display :block !important;"
-
-//         joinMeet(room, 'minimizeVisio', this)
-
-//         let btn_expand = document.createElement("button")
-//         btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
-//         btn_expand.setAttribute('type', 'button')
-//         btn_expand.classList = "btn-close btn-expand-elie"
-//         btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
-
-//         document.querySelector("#minimizeVisio").appendChild(btn_expand)
-
-//         btn_expand.addEventListener("click", function () {
-//             // $("#visioMessageElie").modal("show")
-//             document.querySelector("#visioMessageElie").style="display:block !important"
-//             document.querySelector("#minimizeVisio").innerHTML = ""
-//             document.querySelector("#minimizeVisio").style="display:none !important"
-//         })
-//     }else{
-//         if(document.querySelector("#minimizeVisio")){
-
-//             document.querySelector("#minimizeVisio").style="display :none !important;"
-//         }
-//     }
-
-// };
-
-// if(document.querySelector(".btn-minimize-elie")){
-
-//     document.querySelector(".btn-minimize-elie").addEventListener("click", function (e) {
-
-//         document.querySelector("#visioMessageElie").style ="translate(25px, 25px); display:none !important;"
-
-//         let room_link = localStorage.getItem("room_link")
-
-//         document.querySelector("#minimizeVisio").style="display:block !important;"
-
-//         let room = document.querySelector(".btn-minimize-elie").getAttribute("data-room")
-
-//         joinMeet(room, 'minimizeVisio', this)
-
-//         let btn_expand = document.createElement("button")
-//         btn_expand.setAttribute('onclick', "joinMeet('" + room + "','bodyVisioMessageElie', this)")
-//         btn_expand.setAttribute('type', 'button')
-//         btn_expand.classList = "btn-close btn-expand-elie"
-//         btn_expand.innerHTML = '<i class="fa-solid fa-expand"></i><span class="tooltiptext tooltiptextAgrandir">Agrandir</span>'
-
-//         document.querySelector("#minimizeVisio").appendChild(btn_expand)
-
-//         btn_expand.addEventListener("click", function () {
-//             // $("#visioMessageElie").modal("show")
-//             document.querySelector("#visioMessageElie").style="display:block !important"
-//             document.querySelector("#minimizeVisio").innerHTML = ""
-//             document.querySelector("#minimizeVisio").style="display:none;"
-//         })
-
-//     })
-
-// }
 
 function expand(e) {
   e.setAttribute("onclick", "reduire(this)");
@@ -2451,6 +2471,8 @@ if (document.querySelector(".btn-navright-tribut-tomm-js")) {
       document
         .querySelector(".menu-tribut-tomm-js")
         .classList.toggle("span-btn-menu-tribut");
+      document.querySelector(".btn-navright-tribut-tomm-js").style.display =
+        "block";
     });
 }
 
@@ -2473,11 +2495,32 @@ if (document.querySelector(".btn-navright-en-lign-tomm-js")) {
     });
 }
 if (document.querySelector(".fermet-en-lign-tomm-js")) {
-    document.querySelector(".fermet-en-lign-tomm-js").addEventListener('click', () => {
-      document.querySelector(".span-menu-en-lign-tomm-js").classList.toggle("responsif-none");
-      document.querySelector(".btn-navright-en-lign-tomm-js").style.display = "block";
-      document.querySelector(".span-menu-en-lign-tomm-js").classList.toggle("responsif-none");
-    })
+  document
+    .querySelector(".fermet-en-lign-tomm-js")
+    .addEventListener("click", () => {
+      document
+        .querySelector(".span-menu-en-lign-tomm-js")
+        .classList.toggle("responsif-none");
+      document.querySelector(".btn-navright-en-lign-tomm-js").style.display =
+        "block";
+      document
+        .querySelector(".span-menu-en-lign-tomm-js")
+        .classList.toggle("responsif-none");
+    });
+}
+if (document.querySelector(".fermet-en-lign-tomm-js")) {
+  document
+    .querySelector(".fermet-en-lign-tomm-js")
+    .addEventListener("click", () => {
+      document
+        .querySelector(".span-menu-en-lign-tomm-js")
+        .classList.toggle("responsif-none");
+      document.querySelector(".btn-navright-en-lign-tomm-js").style.display =
+        "block";
+      document
+        .querySelector(".span-menu-en-lign-tomm-js")
+        .classList.toggle("responsif-none");
+    });
 }
 if (document.querySelector(".ref_tom_js")) {
   sendHeartBeat();

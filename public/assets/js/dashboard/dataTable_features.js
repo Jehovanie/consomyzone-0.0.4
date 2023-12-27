@@ -16,13 +16,13 @@ var __markerOld1 = null,
   __markerOld2 = null;
 var __map1, __map2;
 window.addEventListener("load", () => {
+if(document.querySelector("#list-tribu-g")){
   document.querySelector(".content_global_super_admin_js_jheo").innerHTML = `
         <div class="content_chargement content_chargement_js_jheo">
             <div class="spinner-border spinner-border text-info" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
-        </div>
-    `;
+        </div>`;
   fetch("/user/dashboard/tribug_json")
     .then((response) => response.json())
     .then((result) => {
@@ -141,6 +141,10 @@ window.addEventListener("load", () => {
         label.appendChild(input_search);
       }
     });
+}else{
+    getListeInfoTovalidate()
+  }
+  
 });
 
 function dataFormat(dataToFormat) {
@@ -330,10 +334,19 @@ function getListeInfoTovalidate(e) {
     if (link.classList.contains("text-primary"))
       link.classList.remove("text-primary");
   });
+if(e){
   e.target.classList.add("text-primary");
+}else{
+    document.querySelector(".addr_faniry_js").classList.add("text-primary")
+  }
+  
+  if(document.querySelector("#list-tribu-g"))
   document.querySelector("#list-tribu-g").style.display = "none";
   // document.querySelector("#list-tribu-t").style.display = "none"
+if(document.querySelector("#list-demande-partenaire"))
   document.querySelector("#list-demande-partenaire").style.display = "none";
+
+  if(document.querySelector("#list-infoAvalider"))
   document.querySelector("#list-infoAvalider").style.display = "block";
   document.querySelector(
     ".content_list_infoAvalider_js"
@@ -343,9 +356,10 @@ function getListeInfoTovalidate(e) {
   let _table = `<table class="table" id="listeRestoAvaliderTable">
                     <thead>
                         <tr>
+<th scope="col">Nom de l'établissement à valider</th>
                             <th scope="col">Nouveau Nom</th>
-                            <th scope="col">Nouveau Adresse</th>
-                            <th scope="col">Nouveau Téléphone</th>
+                            <th scope="col">Nouvelle Adresse</th>
+                          
                             <th scope="col">Demandeur</th>
                             <th scope="col">Status</th>
                             <th scope="col">Action</th>
@@ -353,7 +367,7 @@ function getListeInfoTovalidate(e) {
                     </thead>
                     <tbody>
                     `;
-
+// <th scope="col">Nouveau Téléphone</th>
   fetch("/user/liste/information/to/update")
     .then((response) => response.json())
     .then((r) => {
@@ -362,6 +376,7 @@ function getListeInfoTovalidate(e) {
       if (r.length > 0) {
         for (const items of r) {
           let item = items.info;
+          const originaInfo=items.original_resto;
           let _adresse =
             item.numvoie +
             " " +
@@ -399,14 +414,16 @@ function getListeInfoTovalidate(e) {
           const tel = item.tel != "" ? item.tel : "non renseigné.";
 
           _tr += `<tr style="text-align:center;vertical-align:middle;">
+                            <td>${originaInfo.denominationF}</td>
                             <td>${denomination_f}</td>
                             <td>${adresse}</td>
-                            <td>${tel}</td>
+                            
                             <td><a href="/user/profil/${item.userId}" style="color:blue;">${items.userFullName}</a></td>
                             <td><span style="background-color:${_bgColor}; border-radius:5px; color:white; padding:5px">${_status}</span></td>
                             <td><button class="btn btn-info" onclick="getRestoInfoToValidate(${item.restoId}, ${item.userId})">Voir</button></td>
                         </tr>`;
         }
+//<td>${tel}</td>
       } else {
         _tr = `<tr><td colspan="4">Aucune information à valider</td></tr>`;
       }
@@ -708,10 +725,23 @@ function getListePhotoTovalidate(e, rubrique) {
     if (link.classList.contains("text-primary"))
       link.classList.remove("text-primary");
   });
+
+  if(e){
   e.target.classList.add("text-primary");
+}else{
+    if(rubrique==="golf"){
+      document.querySelector(".phtG_faniry_js").classList.add("text-primary");
+    }else{
+      document.querySelector(".phtR_faniry_js").classList.add("text-primary");
+    }
+  }
+  if(document.querySelector("#list-tribu-g"))
   document.querySelector("#list-tribu-g").style.display = "none";
   // document.querySelector("#list-tribu-t").style.display = "none"
+if(document.querySelector("#list-demande-partenaire"))
   document.querySelector("#list-demande-partenaire").style.display = "none";
+
+  if(document.querySelector("#list-infoAvalider"))
   document.querySelector("#list-infoAvalider").style.display = "block";
 
   document.querySelector("#titre-info").textContent =

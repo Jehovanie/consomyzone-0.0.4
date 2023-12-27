@@ -514,28 +514,36 @@ class TributGController extends AbstractController
         TributGService $tributGService,
         UserService $userService,
     ) {
-        if (!$this->getUser()) {
+        $user = $this->getUser();
+        if (!$user) {
             return $this->json(["result" => "Unauthorized"], 401,);
         }
         $data = json_decode($request->getContent(), true);
         extract($data); /// $id_publication
 
-        $user = $this->getUser();
-
+        $isTribuT = explode("_", $table)[0] === "tribu";
+        if ($isTribuT) {
+            $result  = $tributGService->deletePublication($user->getId(), $id_publication, $table);
+        } else {
         $result  = $tributGService->deletePublication($user->getId(), $id_publication);
-
-        if (!$result) {
-            return $this->json(["result" => "Service Not Found"], 503);
         }
 
         ///remove the old image in the directory : uploads
-        $filesystem = new Filesystem();
-        $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/assets/publications/photos/' . $result);
+        if ($result != "") {
+            $filesystem = new Filesystem();
+            //$filesystem->remove($this->getParameter('kernel.project_dir') . '/public/assets/publications/photos/' . $result);
+            if (str_contains($result, "/public/")) {
+                $fileToDelete = $this->getParameter('kernel.project_dir') . $result;
+                if(file_exists($fileToDelete))
+                    $filesystem->remove($fileToDelete);
+            } else {
+                $fileToDelete = $this->getParameter('kernel.project_dir') . '/public' . $result;
+                if(file_exists($fileToDelete))
+                    $filesystem->remove($fileToDelete);
+            }
+        }
 
-        return $this->json([
-            "result" => "sucess",
-            "data" => $data
-        ], 204);
+        return $this->json("Ok supprimée");
     }
 
     #[Route("/user/acount/tributG/publication/update", name: "app_update_pub_tributG", methods: "PUT")]
@@ -828,13 +836,29 @@ class TributGController extends AbstractController
 
         }
 
-        return $this->json(["status"=>"ok","id_golf"=>$golf_id, "table"=>$tribu_g."_golf", "golf"=> $golf_name]);
+        $profil_tribuG= $tribuGService->getProfilTributG($tribu_g, $this->getUser()->getId());
+
+        return $this->json([
+            "status"=>"ok",
+            "id_golf"=>$golf_id, 
+            "table"=>$tribu_g."_golf", 
+            "profil_tribuG" =>  [
+                "table_name" => $tribu_g, 
+                "logo_path" => $profil_tribuG["avatar"], 
+                "name_tribu_t_muable" => $profil_tribuG["name"], 
+                "isPastilled" => true
+            ],
+            "golf"=> $golf_name
+        ]);
         
         
     }
 
     #[Route("/user/tribu_g/depastille/golf", name:"tribu_g_depastille_golf", methods:["POST"])]
-    public function depastilleGolfForTribuT(Request $resquest, TributGService $tribuGService){
+    public function depastilleGolfForTribuT(
+        Request $resquest, 
+        TributGService $tribuGService
+    ){
 
         $jsonParsed=json_decode($resquest->getContent(),true);
 
@@ -846,22 +870,54 @@ class TributGController extends AbstractController
 
         $tribuGService->depastilleOrPastilleRestaurant($tribu_g."_golf", $golf_id, 0);
 
-        return $this->json(["status"=>"ok","id_golf"=>$golf_id, "table"=>$tribu_g."_golf", "golf"=> $golf_name]);
+        $profil_tribuG= $tribuGService->getProfilTributG($tribu_g, $this->getUser()->getId());
+
+        return $this->json([
+            "status"=>"ok",
+            "id_golf"=>$golf_id, 
+            "table"=>$tribu_g."_golf",
+            "profil_tribuG" =>  [
+                "table_name" => $tribu_g, 
+                "logo_path" => $profil_tribuG["avatar"], 
+                "name_tribu_t_muable" => $profil_tribuG["name"], 
+                "isPastilled" => false
+            ],
+            "golf"=> $golf_name
+        ]);
 
         
     }
 
-    #[Route("/user/tribu_g/isPastilled/{table}/{id_resto}", name:"tribu_g_isPastilled", methods:["GET"])]
-    public function isPastilled($table, $id_resto, Request $resquest, TributGService $tribuGService){
+    #[Route("/user/tribu_g/isPastilled/{table}/{golfId}", name:"tribu_g_isPastilled", methods:["GET"])]
+    public function isPastilled(
+        $table, 
+        $golfId, 
+        Request $resquest, 
+        TributGService $tribuGService
+    ){
 
-        $res = $tribuGService->isPastilled($table, $id_resto);
+        $res = $tribuGService->isPastilled($table, $golfId);
 
-        if(count($res)>0){
-
-            return $this->json(true);
-        }else{
-            return $this->json(false);
+        if( str_contains($table, "_golf")){
+            $table_tribuG_name= str_replace("_golf", "", $table);
+        }else if( str_contains($table, "_restaurant")){
+            $table_tribuG_name= str_replace("_restaurant", "", $table); 
         }
+
+        $profil_tribuG= $tribuGService->getProfilTributG($table_tribuG_name, $this->getUser()->getId());
+
+        $isPastilled = (count($res)>0) ? true : false;;
+
+        return $this->json([
+            "isPastilled" => $isPastilled,
+            "profil_tribuG" =>  [
+                "table_name" => $table_tribuG_name, 
+                "logo_path" => $profil_tribuG["avatar"], 
+                "name_tribu_t_muable" => $profil_tribuG["name"], 
+                "isPastilled" => false
+            ],
+            "gold_id" => $golfId
+        ]);
     }
 
     /**

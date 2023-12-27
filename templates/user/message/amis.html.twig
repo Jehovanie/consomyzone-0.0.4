@@ -31,7 +31,10 @@
         <button  class="responsif-none-pc vu jc g  pa nj xr ni bj wr _k uo qh btn-navright-tribut btn-navright-en-lign-tomm-js">
             <span class="jc h cg bf sd span-btn-menu-en-lign menu-en-lign-tomm-js">
                 <span class="du-block g m yd vc span-menu-en-lign-tomm-js">
-                    <span class=""><i class="fa-solid fa-circle text-success text-point-7"></i>Vos messages</span>
+                    <span class="">
+                        {# <i class="fa-solid fa-circle text-success text-point-7"></i>Vos messages #}
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
                 </span>
                 <i class="fa-solid fa-xmark btn-ferme-tribut fermet-en-lign-tomm-js responsif-none"></i>
             </span>
@@ -63,7 +66,7 @@
                             </ul> #}
 
                             <div class="all_mpcmz_faniry_js content_list_tribuG_jheo_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
-                                {% if amisTributG|length > 0 %}
+                                {% if amisTributG|length > 0 or allTribuT|length > 0 %}
                                     <!-- Chat List Item -->
                                     {% set isZeroMessage = {'noMessage': 'oui', 'haveMessage':'non'} %}
                                     {% for item in amisTributG %}
@@ -112,7 +115,7 @@
                                 {% else %}
                                     <div class="cg lc mg sh ol rl tq is">
                                         <div class="bg-light bg-gradient p-3">
-                                            <p class="text-center text-danger">Actuellement, vous êtes seul partisan en ligne dans votre tribu G.</p>
+                                            <p class="text-center text-danger">Actuellement, vous êtes seul fan en ligne dans votre tribu G.</p>
                                         </div>
                                     </div>
                                 {% endif %}
@@ -136,12 +139,12 @@
                         </div>
                     </div>
                     <!-- ====== Chat List End -->
-                </div>
+                </div> 
 
                 {# ===== chat content ===================== #}
                 <div class="vc lc hg xi yi bj wr w-100">
                     <!-- ====== Chat Box Start -->
-                    <div class="lc mg qg vi bj wr ql vl">
+                    <div class="lc mg qg vi bj wr ql ">
                         <div class="lc mg content_entete_msg_jheo_js" data-userToFirstname={{userToProfil.firstname}} data-userToLastname={{userToProfil.lastname}}  data-toggle-id-user-to={{userToProfil.id}}>
                             <div class="ob xc yd pf nh th">
                                 <img src="{{(userToProfil.photo_profile) ? "/public" ~ userToProfil.photo_profile  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userToProfil.firstname}}" class="vc yd qk rk"/>
@@ -181,11 +184,26 @@
                             {% for message in userToProfil.messages %}
                                 {% if message.isForMe|number_format is same as("1") %}
                                     <div class="qf" id="{{'message_' ~ message.id ~ '_jheo_js'}}">
-                                        <p class="qb mn un">
+                                        
+                                        <div class="d-flex align-items-center">
+                                            <div class="flex-shrink-0 xc yd pf nh th">
+                                                <img src="{{(userToProfil.photo_profile) ? '/public' ~ userToProfil.photo_profile  : '/public/uploads/users/photos/default_pdp.png'}}" 
+                                                alt="{{userToProfil.firstname}}" style="width:80%; height:80%; clip-path:circle(40%)"
+                                                data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"
+                                                />
+                                            </div>
+
+                                            <p class="flex-grow-1 qb mn un">
                                             {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
                                         </p>
-                                        <div class="qb vh hi vj yr el yl">
-                                            
+                                        </div>
+                                        
+                                        <div class="qb vh hi vj yr el yl position-relative">
+                                            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary " 
+                                                data-bs-toggle="modal" data-bs-target="#modalPartageMessage" 
+                                                data-on-future="{{ random('abcdefghijklmnopqrstuvwxyz') ~ message.id}}" onclick="createFanListToShareMessage(event)" >
+                                                <i class="fa-solid fa-ellipsis" style="color: #ffffff;" data-on-future="{{ random('abcdefghijklmnopqrstuvwxyz') ~ message.id}}"></i>
+                                            </span>
                                             {% if message.message_type is same as('text') %}
                                                 <p>{{message.content.text | raw}}</p>
                                             {% else  %}
@@ -221,9 +239,16 @@
                                     </div>
 
                                 {% else %}
+                                    {# message que j'ai envoyé #}
                                     
-                                    <div class="qf rb" id="{{'message_' ~ message.id ~ '_jheo_js'}}">
+                                    <div class="qf rb position-relative" id="{{'message_' ~ message.id ~ '_jheo_js'}}">
+<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-secondary " 
+                                                data-bs-toggle="modal" data-bs-target="#modalPartageMessage" 
+                                                data-on-future="{{ random('abcdefghijklmnopqrstuvwxyz') ~ message.id}}" onclick="createFanListToShareMessage(event)" >
+                                            <i class="fa-solid fa-ellipsis" style="color: #ffffff;" data-on-future="{{ random('abcdefghijklmnopqrstuvwxyz') ~ message.id}}"></i>
+                                        </span>
                                         <div class="qb vh ii oj el yl">
+
                                             {% if message.message_type is same as('text') %}
                                                 <p class="eo">{{message.content.text | raw}}</p>
                                             {% else %}
@@ -361,13 +386,13 @@
     <div class="modal-content">
       <div class="modal-header">
         <h1 class="modal-title fs-5" id="exampleModalLabel">Veuillez inviter vos amis</h1>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" id="close_visio_shared_faniry_js" aria-label="Close"></button>
       </div>
       <div class="modal-body" id="visioGroupContentForMessage">
        
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-close"></i> Pas maintenant</button>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" id="canceled_visio_shared_faniry_js"><i class="fas fa-close"></i> Pas maintenant</button>
         <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="confirmVisioGroupForMessage"><i class="fas fa-arrow-right"></i> Démarrer la conférence</button>
       </div>
     </div>
@@ -385,7 +410,7 @@
             </div>
         </div>
     </div>
-{# {{include('user/message/visio_message_modal.html.twig')}} #}
+{{include('shard/modal/partage_message.html.twig')}}
 {# {{include('user/message/amis_mobile.html.twig')}} #}
 
     {# list des amis dans le tribu G 

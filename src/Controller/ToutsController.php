@@ -321,7 +321,8 @@ class ToutsController extends AbstractController
         TabacRepository $tabacRepository,
         AvisRestaurantRepository $avisRestaurantRepository,
         RestaurantController $restaurantController,
-        Tribu_T_Service $tribu_T_Service
+        Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService
     ){
 
         $arrayIdResto = [];
@@ -331,6 +332,11 @@ class ToutsController extends AbstractController
         //// description tribu T with ID restaurant pastille
         $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
         
+        //// list resto pastille dans le tribu G
+        $restoPastilleInTribuG= $tributGService->getEntityRestoPastilled($this->getUser()); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+        
+        $arrayIdResto= array_merge( $arrayIdResto, $restoPastilleInTribuG );
+
         
         if($request->query->has("minx") && $request->query->has("miny") ){
             $minx = $request->query->get("minx");
@@ -339,17 +345,26 @@ class ToutsController extends AbstractController
             $maxy = $request->query->get("maxy");
 
             $restos = $bddRestoRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+            if( $request->query->has("isFirstResquest")){
+                //// update data result to add all resto pastille in the Tribu T
+                $restos = $bddRestoRepository->appendRestoPastille($restos, $arrayIdResto);
+            }
 
             $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$restos);
-             
             $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+            
+
+            $golfs= $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy ,null ,null, 100);
+            $ids_golf= array_map('App\Service\SortResultService::getIdFromData', $golfs);
+            $moyenne_golfs= $avisGolfRepository->getAllNoteById($ids_golf);
             
             return $this->json([
                 "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, "", "", 100),
                 "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, 100),
                 "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
-                "golf" => $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy ,null ,null, 100),
+                "golf" => $golfFranceService->mergeDatasAndAvis($golfs, $moyenne_golfs),
                 "tabac" => $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, 100),
+                "allIdRestoPastille" => $arrayIdResto
             ]);
         }
 

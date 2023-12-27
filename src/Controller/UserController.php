@@ -2628,12 +2628,15 @@ class UserController extends AbstractController
         SerializerInterface $serializerInterface,
         BddRestoUserModifRepository $bddRestoUserModifRepository,
         TributGService $tributGService,
-        PDOConnexionService $pDOConnexionService
+        PDOConnexionService $pDOConnexionService,
+        BddRestoRepository $bddRepo
+        
     ){
         $fields = $bddRestoUserModifRepository->findAll();
         $tab = [];
         if(count($fields) > 0)
             foreach ($fields as $key) {
+                $resto=$bddRepo->findOneBy(["id"=>($key->getRestoId())]);
                 $temp = [];
                 $key->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true));
                 $key->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true));
@@ -2641,6 +2644,7 @@ class UserController extends AbstractController
                 $key->setCompvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true));
                 $key->setVillenorm(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true));
                 $key->setCommune(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true));
+                $temp["original_resto"]= $resto;
                 $temp["info"] = $key;
                 $temp["userFullName"] = $tributGService->getFullName($key->getUserId());
                 array_push($tab, $temp);

@@ -1,19 +1,21 @@
+<!-- templates/shard/modal/-->
+<!-- Modal Delete Pub-->
 <div class="modal fade" id="deletePubModalConfirm" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
       <div class="modal-header">
-        <h1 class="modal-title fs-5" id="exampleModalLabel_pub">Suppression de publication</h1>
+        <h1 class="modal-title fs-5" id="exampleModalLabel_pub">Suppression</h1>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body modal_body_jheo_js" >
-        <span>Voulez-vous confirmer la suppression de cette publication ?</span>
+      <div class="modal-body">
+        <input type="hidden" name="hidden" id="hiddenElement">
+        <span>Voulez-vous confirmer la suppression ?</span>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline-success" data-bs-dismiss="modal"><i class="bi bi-x-circle"></i> Annuler</button>
-        <button type="button" class="btn btn-outline-danger confirm_delete_pub_jheo_js" ><i class="bi bi-trash3"></i> Oui</button>
-
-        <button class="d-none close_modal_jheo_js" data-bs-dismiss="modal"></button>
+        <button type="button" class="btn btn-outline-danger" id="data-pub-id" onclick="removePublication(this)"><i class="bi bi-trash3"></i> Oui</button>
       </div>
     </div>
   </div>
 </div>
+<!-- End Modal -->

@@ -1612,6 +1612,49 @@ class MessageController extends AbstractController
        
     }
 
+   #[Route("/user/sharing/message",name:"app_share_message")]
+    public function shareMessage(
+        Request $request,
+        MessageService $messageService
+    ){
+
+        $currentUserId=$this->getUser()->getId();
+
+        $content=json_decode($request->getContent(),true);
+        
+        $key = hex2bin("000102030405060708090a0b0c0d0e0f");
+        $iv = hex2bin("101112131415161718191a1b1c1d1e1f");
+       
+        $idMessageBase64Decode=base64_decode($content["idMessage"],true);
+        if(!$idMessageBase64Decode){
+            return $this->json([
+                "msg" =>"erreur"
+            ],500);
+        }else{
+            $decryptedIdMessage = openssl_decrypt($idMessageBase64Decode, "AES-128-CBC", 
+            $key, 0, $iv);
+            $decryptedIdMessage=preg_replace('/[^0-9]/i','',base64_decode($decryptedIdMessage,true)) ;
+            foreach($content["usr"] as $usr){
+                $userIdBase64Decode=base64_decode($usr,true);
+                if(!$userIdBase64Decode){
+                    return $this->json([
+                        "msg" =>"erreur"
+                    ],500);
+                }else{
+                    $decryptedUserId = openssl_decrypt($userIdBase64Decode, "AES-128-CBC", 
+                    $key, 0, $iv);
+                    $messageService->transferMessage($currentUserId,
+                    intval($decryptedUserId),
+                    intval($decryptedIdMessage));
+                }
+            }
+        }
+        
+        
+        return $this->json([
+            "msg" =>"ok" 
+        ]);
+    }
    
 
 }

@@ -1,0 +1,74 @@
+<button type="button" class="d-none modal_liste_resto_pastille_nante_js" data-bs-toggle="modal" data-bs-target="#restoPastilleModal"></button>
+<div class="modal fade" id="restoPastilleModal" aria-hidden="true" aria-labelledby="restoPastilleModal_label" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title listResto_title_jheo_js" id="restoPastilleModal_label">Choisir une tribu via laquelle vous allez pastiller le restaurant</h5>
+                <button type="button" class="btn-close cta_close_list_resto_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body custom_modal">
+
+                <ul class="nav nav-tabs">
+                    <li class="nav-item">
+                        <a class="nav-link active elie-tribu-t" aria-current="page" href="#" onclick="setViewTribu('g','t')">Tribu T</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link elie-tribu-g" href="#" onclick="setViewTribu('t','g')">Tribu G</a>
+                    </li>
+                </ul>
+
+                <div class="content_list_resto content_list_resto_js">
+                    <div class="list_resto_detail_for_pastille">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Logo</th>
+                                    <th scope="col">Tribu T</th>
+                                    <th scope="col">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="m-2 content_list_resto_js_g d-none">
+
+                    <div class="d-flex justify-content-between">
+                        {% if app.user %}
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Logo</th>
+                                        <th scope="col">Tribu G</th>
+                                        <th scope="col">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="content_list_state_tribuG_jheo_js">
+                                    <tr style="vertical-align: middle;">
+                                        <td class="col-logo">
+                                            <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" 
+                                                src={{"/public" ~ userConnected.tribugAvatar}} alt="Avart tribu G"
+                                                >
+                                        </td>
+                                        <td class="col-tribuT">
+                                            <span>{{userConnected.tribuG_name_muable }}</span>
+                                        </td>
+                                        <td class="col-action">
+                                            <button class="btn btn-success btn-sm" id="btn-pastille-elie-tbg" data-tbname ="{{userConnected.tableTribuG}}" data-velona={{"/public" ~ userConnected.tribugAvatar}}>
+                                                Pastiller
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        {% endif %}
+                    </div>
+                    
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>

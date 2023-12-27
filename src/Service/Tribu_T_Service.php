@@ -90,7 +90,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                     user_id int(11) NOT NULL,
 
-                    publication VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
+                    publication TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NULL,
 
                     confidentiality TINYINT(1) NOT NULL,
 
@@ -1489,23 +1489,35 @@ class Tribu_T_Service extends PDOConnexionService
         }
     }
 
-    public function getAllRestoPastiledForAllTable($id)
+    public function getAllRestoPastiledForAllTable($id, $data = [])
     {
         $results = [];
-        /// all tribu T
-        $all_tribuT = $this->showTribuT($id, "_restaurant");
-
-
-
+        
+        $all_tribuT = count($data) > 0 ? $data : $this->showTribuT($id, "_restaurant");
+        
+        if(count($data) > 0){
+            foreach ($all_tribuT as $trib) {
+                $tableResto = $trib["table_name"] . "_restaurant";
+                if ($this->hasTableResto($tableResto)) {
+                    $statement = $this->getPDO()->prepare("SELECT id, id_resto,denomination_f as name FROM $tableResto WHERE isPastilled = 1;");
+                    $statement->execute();
+                    $restos = $statement->fetchAll(PDO::FETCH_ASSOC);
+    
+                    $results = array_merge($results, $restos);
+                }
+            }
+        }else{
         foreach ($all_tribuT as $trib) {
             if ($this->hasTableResto($trib[0])) {
-                $statement = $this->getPDO()->prepare("SELECT id, id_resto,denomination_f as name FROM $trib[0];");
+                $statement = $this->getPDO()->prepare("SELECT id, id_resto,denomination_f as name FROM $trib[0]  WHERE isPastilled = 1;");
                 $statement->execute();
                 $restos = $statement->fetchAll(PDO::FETCH_ASSOC);
 
                 $results = array_merge($results, $restos);
             }
         }
+}
+
         return $results;
     }
 

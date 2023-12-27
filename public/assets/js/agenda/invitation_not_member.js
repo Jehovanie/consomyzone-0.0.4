@@ -22,7 +22,8 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
     })*/
 
     let agenda = JSON.parse(sessionStorage.getItem("agenda"))
-    object.value = agenda.title
+    object.value = agenda.title+", "+ (document.querySelector(".information_user_conected_jheo_js") ? 
+        document.querySelector(".information_user_conected_jheo_js").dataset.userfullname :"")
 
     input_principal.addEventListener("input", () => {
         input_principal.style.border = "1px solid black";
@@ -73,7 +74,8 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
 
         let agendaId = agenda.id
 
-        let objectTitle = agenda.title
+        let objectTitle = agenda.title+", "+(document.querySelector(".information_user_conected_jheo_js") ? 
+        document.querySelector(".information_user_conected_jheo_js").dataset.userfullname :"")
 
         let status = true;
 
@@ -179,40 +181,38 @@ if (document.querySelector(".content_form_send_invitation_email_js_jheo")) {
                 if (!response.ok && response.status != 200) {
                     throw new Error("ERROR: " + response.status)
                 }
-                return response.json()
-            }).then(result => {
-
-                swal("Bravo!", "Invitation envoyée avec succès!", "success")
-                    .then((value)=>{
-                        input_principal.value = null;
+                return response.json();
+            })
+				.then((result) => {
+                swal("Bravo!", "Invitation envoyée avec succès!", "success").then((value) => {
+						/// RESET DATA AFTER THE SENDING
+						// input_principal.value = null;
                         // input_cc.value = null;
-                        email_piece_joint_list= [];
-
+                        // email_piece_joint_list = [];
                         // editor.setData("");
-                        object.value = null;
+                        // object.value = null;
 
-                        document.querySelectorAll(".chip").forEach(item => {
-                            item.parentElement.removeChild(item);
-                        })
-
-                        btnSend.disabled = false
-                        btnSend.textContent = "Envoyer l'invitation"
-
-                        if( document.querySelector(".content_list_piece_joint_jheo_js")){
-                            document.querySelector(".content_list_piece_joint_jheo_js").innerHTML = "";
+                        // document.querySelectorAll(".chip").forEach((item) => {
+                            // 	item.parentElement.removeChild(item);
+                        // });
+						// if (document.querySelector(".content_list_piece_joint_jheo_js")) {
+						// 	document.querySelector(".content_list_piece_joint_jheo_js").innerHTML = "";
         
-                            if( !content_list_piece_joint.classList.contains("d-none")){
-                                content_list_piece_joint.classList.add("d-none")
-                            }
-                        }
-                    })
+                            // 	if (!content_list_piece_joint.classList.contains("d-none")) {
+						// 		content_list_piece_joint.classList.add("d-none");
+						// 	}
+						// }
+						/// END OF THE RESET DATA.
 
-            }).catch((e) => { console.log(e); });
-
-        }
-    })
-
-
+						btnSend.disabled = false;
+						btnSend.textContent = "Envoyer l'invitation";
+					});
+				})
+				.catch((e) => {
+					console.log(e);
+				});
+		}
+    });
 }
 
 if( document.querySelector(".message_tooltip_piece_joint_jheo_js")){

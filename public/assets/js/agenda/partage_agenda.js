@@ -219,6 +219,11 @@ function sendInvitation(event){
             }
             
         }
+    var templateDiv = document.createElement('div');
+        templateDiv.innerHTML = data;
+        templateDiv.querySelector("a#mail_link_Natenaina_js_css").href=`${window.location.origin}/agenda/confirmation/${agenda.id}`
+        templateDiv.querySelector("a#mail_link_Natenaina_js_css").disabled=false
+        infos.data = templateDiv.outerHTML
     }
 
     let dataEmail={
@@ -368,8 +373,8 @@ function getUserInfoForSharing(isG, dataInfos,data,mailObject){
                 var tempDiv = document.createElement('div');
                 tempDiv.innerHTML = data;
                 console.log(data)
-                tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${agenda.id}`
-                tempDiv.querySelector("a").disabled=false
+                tempDiv.querySelector("a#mail_link_Natenaina_js_css").href=`${window.location.origin}/agenda/confirmation/${agenda.id}`
+                tempDiv.querySelector("a#mail_link_Natenaina_js_css").disabled=false
                 data=tempDiv.outerHTML
                 dataInfos.push({
                     agendaId:agenda.id,
@@ -402,8 +407,8 @@ function getUserInfoForSharing(isG, dataInfos,data,mailObject){
                 let email = allTr[i].querySelector(".email").textContent
                 var tempDiv = document.createElement('div');
                 tempDiv.innerHTML = data;
-                tempDiv.querySelector("a").href=`${window.location.origin}/agenda/confirmation/${agenda.id}`
-                tempDiv.querySelector("a").removeAttribute("disabled")
+                tempDiv.querySelector("a#mail_link_Natenaina_js_css").href=`${window.location.origin}/agenda/confirmation/${agenda.id}`
+                tempDiv.querySelector("a#mail_link_Natenaina_js_css").removeAttribute("disabled")
                 data=tempDiv.outerHTML
                 dataInfos.push({
                     agendaId:agenda.id,

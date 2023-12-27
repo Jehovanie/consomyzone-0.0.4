@@ -50,11 +50,15 @@
 					</a>
 				</li>
 
-				{% if userConnected.isSuperAdmin is same as(true) %}
+				{% if userConnected.isSuperAdmin is same as(true)  or app.user.roles[0] is same as("ROLE_VALIDATOR")%}
 					<li class="">
 						<a class="list-nav-left nr h un lc mg sg qh gp dp nl rl _q qq" id="link-super-admin" href="{{ path("app_dashboard") }}">
 							<i class="fa-solid fa-chart-line fa-users   fa-lg"></i>
-							Super Admin
+							{% if userConnected.isSuperAdmin is same as(true) %}
+								Super Admin
+							{% elseif app.user.roles[0] is same as("ROLE_VALIDATOR")%}
+								Validation de données
+							{% endif %}
 						</a>
 					</li>
 				{% endif %}

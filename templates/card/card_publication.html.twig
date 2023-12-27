@@ -1,12 +1,17 @@
-<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub_{{tribu.table}}_{{publication.id}}_jheo_js" id="ID_{{tribu.table}}_{{publication.id}}_jheo_js" >
+{# <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub_{{tribu.table}}_{{publication.id}}_jheo_js" id="ID_{{tribu.table}}_{{publication.id}}_jheo_js" > #}
+<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub pub_{{tribu.table}}_{{publication.id}}_jheo_js" id="{{tribu.table ~ '_' ~ publication.id}}" data-name = "{{tribu.table}}" data-id="{{publication.id}}" data-confid="{{publication.confidentiality}}">
     <div class="head-pub content_header_pub">
         <div class="content_pub_info">
             <div class="pdp-content">
-                <img class="profil_publication" src="{{(userOwnPub.profil) ? '/public' ~ userOwnPub.profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userOwnPub.fullName}}">
+                <img class="profil_publication" 
+                    src="{{(userOwnPub.profil) ? '/public' ~ userOwnPub.profil : '/public/uploads/users/photos/default_pdp.png' }}" 
+                    alt="{{userOwnPub.fullName}}"
+                    data-bs-toggle="modal" data-bs-target="#modal_show_photo" onclick="setPhotoTribu(this)"
+                >
             </div>
            
             <div class="name-content-h">
-                <div class="name-content">
+                <div class="name-content responsif-none">
                     <h5> &ensp;{{userOwnPub.fullName}} &ensp;</h5>
                     <div class="">
                         <p  class="p-title"> a publié sur <span id="btnGroupDrop0" 
@@ -19,22 +24,30 @@
                         {# | split('_', 4)|last|replace({'_':' '})|capitalize #}
                     </div>
                 </div>
+<div class="name-tribu-g responsif-none-pc">
+                    <p  class="p-title"><span id="btnGroupDrop0" 
+                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" 
+                    class="tribu_name_jheo_js">{{tribu.name | split('_', 4)|last|replace({'_':' '})|capitalize }}</span></p>
+                </div>
+                <div class="name-content responsif-none-pc">
+                    <h5> &ensp;{{userOwnPub.fullName}} &ensp;</h5>
+                </div>
                 <div class="status-content d-flex">
                     <p class="p-heure">{{ publication.createdAt }}</p>
                     <div class="btn-group" role="group" aria-label="Button group with nested dropdown">
                         
-                        {% if userOwnPub.id is same as( app.user.id) %}
+                        {% if userOwnPub.id == app.user.id %}
                             <div class="btn-group" role="group">
                                 <button id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                    {% if publication.confidentiality is same as(1) %}
+                                    {% if publication.confidentiality == 1 %}
                                         <i class="fa-solid fa-earth-oceania config_jheo_js" data-confid="1"></i>
                                     {% else %}
                                         <i class="bi bi-lock-fill config_jheo_js" data-confid="0"></i>
                                     {% endif %}
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                    <a data-id="{{publication.id}}" data-name="{{tribu.table}}" class="{{ (publication.confidentiality is same as(1)) ? "dropdown-item active" : "dropdown-item"}}" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
-                                    <a data-id="{{publication.id}}" data-name="{{tribu.table}}" class="{{ (publication.confidentiality is same as(1)) ? "dropdown-item" : "dropdown-item active"}}" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
+                                    <a data-id="{{publication.id}}" data-name="{{tribu.table}}" class="{{ (publication.confidentiality == 1) ? "dropdown-item active" : "dropdown-item"}}" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les fans </a>
+                                    <a data-id="{{publication.id}}" data-name="{{tribu.table}}" class="{{ (publication.confidentiality == 1) ? "dropdown-item" : "dropdown-item active"}}" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
                                 </div>
                             </div>
                         {% endif %}
@@ -51,15 +64,15 @@
                     </span>
                     <ul class="dropdown-menu">
                         {# <li data-bs-toggle="modal" data-bs-target="#modal_publication_modif" onclick="bindDataUpdatePub('{{tribu.table}}','{{publication.id}}')"> #}
-                        <li class="non_active" onclick="openSwalNonActif()">
-                            {# <button class="text-primary dropdown-item"> #}
-                            <button class="text-secondary dropdown-item">
+                        <li>
+                            <button onclick="setHiddenValue('{{tribu.table}}', 'Update', '{{publication.id}}')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item">
                                 <i class="fas fa-edit"></i>
                                 Modifier
                             </button>
                         </li>
-                        <li  data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" onclick="removePublication('{{publication.id}}', '{{tribu.table}}')">
-                            <button class="text-danger dropdown-item">
+                        {# <li  data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" onclick="removePublication('{{publication.id}}', '{{tribu.table}}')"> #}
+                        <li>
+                            <button onclick="setHiddenValue('{{tribu.table}}', '', '{{publication.id}}')" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
                                 <i class="fas fa-trash" aria-hidden="true"></i>
                                 Supprimer
                             </button>
@@ -82,7 +95,7 @@
     <div class="card-reaction">
        
           <p class="text-comment content_nbr_comment_jheo_js"  onclick="">
-            <span class="nbr_comment_jheo_js cursor-pointer" data-bs-toggle="modal" data-bs-target="#listeReacteur" id="nbr_reaction_pub_{{tribu.table}}_{{publication.id}}"
+            <span class="nbr_reaction_elie_js cursor-pointer" data-bs-toggle="modal" data-bs-target="#listeReacteur" id="nbr_reaction_pub_{{tribu.table}}_{{publication.id}}"
                 onclick="getAllReaction('{{publication.id}}', '{{tribu.table}}', '{{userOwnPub.id}}')" >{{ publication.reactions|length ~ (publication.reactions|length > 1 ? " réactions" : " réaction" ) }} </span>
 
             <span  class="nbr_comment_jheo_js">{{ publication.comments|length ~ (publication.comments|length > 1 ? " commentaires" : " commentaire" ) }} </span>

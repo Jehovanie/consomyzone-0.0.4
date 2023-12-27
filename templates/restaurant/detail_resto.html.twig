@@ -3,83 +3,13 @@
 		<div class="description" id="details-coord" data-toggle-type="resto" data-toggle-id-resto="{{details.id}}" data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX) ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
 			<div class="content_titre_details">
 				<div class="titre text-center">
-					<div class="mb-2 restoNameWithLogoTribu">
-						<div class="mt-2 ms-3 me-1 text-center">
-							<b>{{details.denominationF | raw}}</b>
-						</div>
-						{% if (app.user and app.user.type!='Type') %}
-							<div class="super_container_js_nantenaina">
-								<div class="mainContainerLogoTribu">
-									{% if tribu_t_resto_pastille|length > 0 %}
-										{% for item in tribu_t_resto_pastille %}
-											{% if item["isPastilled"]%}
-												{% if item["logo_path"] != "" %}
-													{# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt=""> #}
-													<div onclick="createPopUp(event)" onmouseout="resetImage(event)" 
-															onmouseover="agrandirImage(event)" class="img_nantenaina" 
-															data-bs-toggle="tooltip" data-bs-placement="top" 
-															title="Tribu T {{item["name_tribu_t_muable"]}}" 
-															data-name="{{item["name_tribu_t_muable"]}}" 
-															id="{{item["table_name"]}}">
-														<img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}">
-													</div>
-												{% else %}
-													{# <img  width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
-													<div onclick="createPopUp(event)"
-													onmouseout="resetImage(event)" 
-													onmouseover="agrandirImage(event)" 
-													class="img_nantenaina" 
-													data-bs-toggle="tooltip" 
-													data-bs-placement="top" 
-													title="Tribu T {{item["name_tribu_t_muable"]}}" 
-													data-name="{{item["name_tribu_t_muable"]}}" 
-													id="{{item["table_name"]}}">
-													<img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
-												{% endif %}
-											{% endif %}
-										{% endfor %}
-									{% endif %}
-
-									{% if tribu_t_resto_joined_pastille|length > 0 %}
-										{% for item in tribu_t_resto_joined_pastille %}
-											{% if item["isPastilled"] %}
-												{% if item["logo_path"] != "" %}
-													{# <img class="ms-1" width="36" src="/public{{asset(item["logo_path"])}}" alt="">#}
-													<div onclick="createPopUp(event)" 
-															onmouseout="resetImage(event)" 
-															onmouseover="agrandirImage(event)" 
-															class="img_nantenaina" 
-															data-bs-toggle="tooltip" 
-															data-bs-placement="top" 
-															title="Tribu T {{item["name_tribu_t_muable"]}}" 
-															data-name="{{item["name_tribu_t_muable"]}}" 
-															id="{{item["table_name"]}}">
-														<img src="/public{{asset(item["logo_path"])}}" alt="{{item["name_tribu_t_muable"]}}"
-														data-name="{{item["name_tribu_t_muable"]}}">
-													 </div>
-												{% else %}
-													{# <img class="ms-1" width="36" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt=""> #}
-													<div onclick="createPopUp(event)" onmouseout="resetImage(event)" 
-													onmouseover="agrandirImage(event)" 
-													class="img_nantenaina" 
-													ata-bs-toggle="tooltip" 
-													data-bs-placement="top" 
-													title="Tribu T {{item["name_tribu_t_muable"]}}" 
-													data-name="{{item["name_tribu_t_muable"]}}" 
-													id="{{item["table_name"]}}"><img src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="{{item["name_tribu_t_muable"]}}" data-name="{{item["name_tribu_t_muable"]}}"></div>
-												{% endif %}
-											{% endif %}
-										{% endfor %}
-									{% endif %}
-								</div>
+					<div class="restoNameWithLogoTribu mb-2 mt-2">
+						<div class="col-12 mt-2">
+							<div class="text-center">
+								<p>{{details.denominationF | raw}}</p>
 							</div>
-							<div class="iconePlus_nanta_js d-none">
-								<a href="#" onclick="showLogoAndNameTribus()">
-									<i class="bi bi-plus"></i>
-								</a>
-							</div>
-						{% endif %}
-					</div>
+														</div>
+											</div>
 
 					<figcaption class="blockquote-footer card-text cmz-adresse">
 						Adresse :
@@ -91,6 +21,125 @@
 							{{details.villenorm|lower}}
 						</a>
 					</figcaption>
+
+					{% set tribu_pastille_total = tribu_t_resto_joined_pastille|length + tribu_t_resto_pastille|length + tribu_g_resto_pastille|length   %}
+
+					{% if (app.user and app.user.type != 'Type' and (tribu_pastille_total > 0 )  ) %}
+						<div class="row_content_tribu_pastille  row mb-2 row_content_tribu_pastille_jheo_js">
+							<div class="col-8 flex_content_start content_tribuT_pastille_jheo_js">
+								<div class="super_container_js_nantenaina">
+									<div class="mainContainerLogoTribu">
+										{% set count_tribu_pastille = 0 %}
+
+										{% if tribu_t_resto_pastille|length > 0 %}
+
+											{% for item in tribu_t_resto_pastille %}
+
+												{% if item["isPastilled"]%}
+
+													<div id="{{item["table_name"]}}"
+														 class="img_nantenaina content_logo_tribu_pastille {{ count_tribu_pastille > 0 ? 'translate_left' : '' }}" 
+														 onclick="createPopUp(event)" 
+														 onmouseout="resetImage(event)" 
+														 onmouseover="agrandirImage(event)"  
+														 data-bs-toggle="tooltip" 
+														 data-bs-placement="top" 
+														 title="Tribu T {{item["name_tribu_t_muable"]}}" 
+														 data-name="{{item["name_tribu_t_muable"]}}" >
+
+														<img class="logo_tribu_pastille"
+															src="{{ item["logo_path"] != "" ? "/public" ~ asset(item["logo_path"]) : "/public/uploads/tribu_t/photo/avatar_tribu.jpg" }}" 
+															alt="tT" 
+															data-name="{{item["name_tribu_t_muable"]}}" 
+															data-type="tribuT">
+													</div>
+													
+													{% set count_tribu_pastille = count_tribu_pastille + 1 %}
+													
+												{% endif %}
+
+											{% endfor %}
+										{% endif %}
+
+										{% if tribu_t_resto_joined_pastille|length > 0 %}
+
+											{% for item in tribu_t_resto_joined_pastille %}
+
+												{% if item["isPastilled"] %}
+
+													<div id="{{item["table_name"]}}"
+														 class="img_nantenaina {{ count_tribu_pastille > 0 ? 'translate_left' : '' }}" 
+														 onclick="createPopUp(event)" 
+														 onmouseout="resetImage(event)" 
+														 onmouseover="agrandirImage(event)" 
+														 data-bs-toggle="tooltip" 
+														 data-bs-placement="top" 
+														 title="Tribu T {{item["name_tribu_t_muable"]}}" 
+														 data-name="{{item["name_tribu_t_muable"]}}">
+
+														<img class="logo_tribu_pastille"
+															src="{{ item["logo_path"] != "" ? "/public" ~ asset(item["logo_path"]) : "/public/uploads/tribu_t/photo/avatar_tribu.jpg" }}" 
+															src="{{asset(item["logo_path"])}}" 
+															data-name="{{item["name_tribu_t_muable"]}}" 
+															data-type="tribuT"
+															alt="tT">
+													</div>
+
+													{% set count_tribu_pastille = count_tribu_pastille + 1 %}
+
+												{% endif %}
+											{% endfor %}
+										{% endif %}
+
+
+									</div>
+								</div>
+								<div class="{{ count_tribu_pastille > 4 ? 'iconePlus_nanta_js': 'iconePlus_nanta_js d-none'}}">
+									<a href="#" onclick="showLogoAndNameTribus()">
+										<i class="bi bi-plus"></i>
+									</a>
+								</div>
+							</div>
+							<div class="col-4 flex_content_end content_tribuG_pastille_jheo_js">
+								<div class="super_container_js_nantenaina">
+									<div class="mainContainerLogoTribu">
+
+										{% if tribu_g_resto_pastille|length > 0 %}
+
+											{% for item in tribu_g_resto_pastille %}
+
+												<div id="{{item["table_name"]}}"
+													class="img_nantenaina content_logo_tribu_pastille" 
+													onclick="createPopUpTribuG(event)" 
+													onmouseout="resetImage(event)" 
+													onmouseover="agrandirImage(event)" 
+													data-bs-toggle="tooltip" 
+													data-bs-placement="top" 
+													title="Tribu G {{item["name"]}}" 
+													data-name="{{item["name"]}}">
+												
+													<img class="logo_tribu_pastille"
+														src="{{ item["avatar"] != ""  ?  '/public/uploads/tribus/photos/' ~ item["avatar"] : '/public/uploads/tribu_t/photo/avatar_tribu.jpg' }}" 
+														data-name="{{item["description"]}}" 
+														data-type="tribuG"
+														alt="tG"> 
+												</div>
+
+											{% endfor %}
+										{% endif %}
+
+									</div>
+								</div>
+								<div class="iconePlus_nanta_js d-none">
+									<a href="#" onclick="showLogoAndNameTribus()">
+										<i class="bi bi-plus"></i>
+									</a>
+								</div>
+							</div>
+						</div>
+
+					{% endif %}
+
 
 					<div class="d-flex justify-content-center align-items-stretch flex-gap-2 content_btn_avis">
 						<span>
@@ -177,7 +226,7 @@
 						<i class="fa-solid fa-camera"></i>
 						 Ajouter des photos
 					</label>
-					<input type="file" id="photo-upload-detail" class="d-none" onchange='addPhotoToGallery(this,"restaurant")' data-id="{{details.id}}" accept="image/*" />
+					<input type="file" id="photo-upload-detail" class="d-none" onchange='addPhotoToGallery(this,"restaurant")' data-id="{{details.id}}" accept="image/*"/>
 					{% endif %}
 					{% if len > 0 %}
 
@@ -284,7 +333,11 @@
 				<div class="content_tow_cta">
 					{% if details.site1 != "" %}
 						<div class="site_web">
-							<a class="btn btn-success" href="{{details.site1 | raw}}" target="_blank">Lien :  site Web</a>
+							{% if 'http://' in details.site1 or 'https://' in details.site1 %}
+								<a class="btn btn-success" href="{{details.site1 | raw}}" target="_blank">Lien :  site Web</a>
+							{% else %}
+								<a class="btn btn-success" href="{{ 'https://' ~ details.site1 | raw}} " target="_blank">Lien :  site Web</a>
+							{% endif %}
 						</div>
 					{% endif %}
 				</div>
@@ -385,7 +438,6 @@
 						{% endif %}
 					</ul>
 					<hr>
-
 				</div>
 
 

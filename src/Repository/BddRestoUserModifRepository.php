@@ -24,12 +24,14 @@ class BddRestoUserModifRepository extends ServiceEntityRepository
 
 
 
-    public function save(BddRestoUserModif $entity, bool $flush = false): void
+    public function save(BddRestoUserModif $entity, bool $flush = false)
     {
         $this->getEntityManager()->persist($entity);
 
         if ($flush) {
             $this->getEntityManager()->flush();
         }
+
+        return $this->getEntityManager()->contains($entity);
     }
 }

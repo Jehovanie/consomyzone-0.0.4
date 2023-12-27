@@ -31,7 +31,10 @@
         <button  class="responsif-none-pc vu jc g  pa nj xr ni bj wr _k uo qh btn-navright-tribut btn-navright-en-lign-tomm-js">
             <span class="jc h cg bf sd span-btn-menu-en-lign menu-en-lign-tomm-js">
                 <span class="du-block g m yd vc span-menu-en-lign-tomm-js">
-                    <span class=""><i class="fa-solid fa-circle text-success text-point-7"></i>Vos message de groupe.</span>
+                    <span class="">
+                        {# <i class="fa-solid fa-circle text-success text-point-7"></i>Vos message de groupe. #}
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
                 </span>
                 <i class="fa-solid fa-xmark btn-ferme-tribut fermet-en-lign-tomm-js responsif-none"></i>
             </span>
@@ -193,9 +196,18 @@
 
                                 {% else %} {# other message#}
                                     <div class="qf" id="{{'message_' ~ message.id_msg ~ '_jheo_js'}}" style="color:black">
-                                            <p class="qb mn un">
-                                                {{message.firstname ~ " " ~ message.lastname }}
-                                            </p>
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0 xc yd pf nh th">
+                                                    <img src="{{(message.photo_profil) ? '/public' ~ message.photo_profil : '/public/uploads/users/photos/default_pdp.png'}}" 
+                                                    alt="{{message.firstname}}" style="width:80%; height:80%; clip-path:circle(40%)"
+                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)"
+                                                    />
+                                                </div>
+
+                                                <p class="flex-grow-1 qb mn un">
+                                                    {{message.firstname ~ " " ~ message.lastname }}
+                                                </p>
+                                            </div>
                                             <div class="qb vh hi vj yr el yl">
                                                 
                                                 {% if message.msg != null %}
