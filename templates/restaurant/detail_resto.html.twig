@@ -24,7 +24,7 @@
 
 					{% set tribu_pastille_total = tribu_t_resto_joined_pastille|length + tribu_t_resto_pastille|length + tribu_g_resto_pastille|length   %}
 
-					{% if (app.user and app.user.type != 'Type' and (tribu_pastille_total > 0 )  ) %}
+					{% if (app.user and app.user.type != 'Type') %}
 						<div class="row_content_tribu_pastille  row mb-2 row_content_tribu_pastille_jheo_js">
 							<div class="col-8 flex_content_start content_tribuT_pastille_jheo_js">
 								<div class="super_container_js_nantenaina">
