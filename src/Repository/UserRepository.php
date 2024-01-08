@@ -173,5 +173,15 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->getQuery()
         ->execute();
     }
+
+    public function getAllValidator(){
+        return $this->createQueryBuilder("u")
+        ->select("u")
+        ->where('u.roles =:r1 or u.roles=:r2')
+        ->setParameter("r1","[\"ROLE_VALIDATOR\"]")
+        ->setParameter("r2","[\"ROLE_GODMODE\"]")
+        ->getQuery()
+        ->getResult();
+}
     
 }

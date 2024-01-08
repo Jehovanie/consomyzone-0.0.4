@@ -1065,7 +1065,7 @@ function showModalEditor(isG, isListeInfile = false) {
     new Date(back)
   );
 
-  if (document.querySelector("#object_share_event"))
+  if (document.querySelector("#object_share_event") && agenda)
     document.querySelector("#object_share_event").value =
       agenda.title + ", " + fullname;
   // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité
