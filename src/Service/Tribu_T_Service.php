@@ -8,13 +8,9 @@ use PDO;
 use Exception;
 use PDOException;
 use ArgumentCountError;
-use App\Repository\BddRestoRepository;
 
 class Tribu_T_Service extends PDOConnexionService
 {
-
-
-
 
     /**
      * create data_base table tribu-T
@@ -2551,5 +2547,23 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
    
+    function getProfilTributT($tableName, $userId, $userRepository ){
+        $statement = $this->getPDO()->prepare("SELECT * FROM $tableName WHERE user_id = $userId LIMIT 1");
+        $statement->execute();
+        $data = $statement->fetch(PDO::FETCH_ASSOC);
 
+        $detailsTribuT= $userRepository->getDetailsTribuT($tableName);
+
+        $result = [
+            "id" => $data['id'],
+            "user_id" => $data['user_id'],
+            "roles" => $data["roles"],
+            "name" => $detailsTribuT['name_tribu_t_muable'],
+            "description" => $detailsTribuT['description'],
+            "avatar" => $detailsTribuT['logo_path'],
+            "datetime" => $detailsTribuT['datetime'],
+            "table_name" => $tableName
+        ];
+        return $result;
+    }
 }

@@ -417,7 +417,6 @@ if(document.querySelector("#list-demande-partenaire"))
                             <td>${originaInfo.denominationF}</td>
                             <td>${denomination_f}</td>
                             <td>${adresse}</td>
-                            
                             <td><a href="/user/profil/${item.userId}" style="color:blue;">${items.userFullName}</a></td>
                             <td><span style="background-color:${_bgColor}; border-radius:5px; color:white; padding:5px">${_status}</span></td>
                             <td><button class="btn btn-info" onclick="getRestoInfoToValidate(${item.restoId}, ${item.userId})">Voir</button></td>
@@ -430,6 +429,15 @@ if(document.querySelector("#list-demande-partenaire"))
       _table += _tr + "</tbody></table>";
       document.querySelector(".content_list_infoAvalider_js").innerHTML =
         _table;
+
+      if (r.length > 0){
+        $("#listeRestoAvaliderTable").DataTable({
+          language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+          },
+        });
+      }
+
     });
 }
 
@@ -795,11 +803,13 @@ if(document.querySelector("#list-demande-partenaire"))
       document.querySelector(".content_list_infoAvalider_js").innerHTML =
         _table;
 
-      $("#listeRestoAvaliderTable").DataTable({
-        language: {
-          url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
-        },
-      });
+      if (r.length > 0){
+        $("#listeRestoAvaliderTable").DataTable({
+          language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+          },
+        });
+      }
     });
 }
 function rejectAdresseValidate(ev) {
@@ -898,4 +908,72 @@ function cancelAdresseValidate(ev) {
       });
     }
   });
+}
+
+function showValidationStory(){
+  $("#validationStoryModal").modal("show")
+  let validationStoryContainer = document.querySelector(".validationStoryContainer_Nanta_js")
+  validationStoryContainer.innerHTML = `
+      <div class="spinner-border spinner-border text-info mt-5" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+  `
+  let table = `<table class="table" id="validationStoryTable">
+                  <thead>
+                    <tr>
+                      <th scope="col">Nom de l'établissement</th>
+                      <th scope="col">Adresse</th>
+                      <th scope="col">Demandeur</th>
+                      <th scope="col">Validateur</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Date</th>
+                    </tr>
+                  </thead>
+                <tbody>`
+
+  fetch("/user/get/validation/story")
+    .then((response) => response.json())
+    .then((data) => {
+        let results = data.results
+        let tr = ""
+        if(results.length > 0){
+            for (const item of results) {
+              let _statusValidation = ""
+              let _bgColor = "";
+              if (item.status == 1) {
+                _statusValidation = "Validé";
+                _bgColor = "green";
+              } else if (item.status == 0) {
+                _statusValidation = "Refusé";
+                _bgColor = "grey";
+              } else {
+                _statusValidation = "Annulé";
+                _bgColor = "blue";
+              }
+              tr += `<tr style="text-align:center;vertical-align:middle;">
+              <td>${item.resto.name}</td>
+              <td>${item.resto.adresse}</td>
+              <td><a href="/user/profil/${item.user_modify.id}" style="color:blue;">${item.user_modify.name}</a></td>
+              <td><a href="/user/profil/${item.user_validator.id}" style="color:blue;">${item.user_validator.name}</a></td>
+              <td><span style="background-color:${_bgColor}; border-radius:5px; color:white; padding:5px">${_statusValidation}</span></td>
+              <td>${settingDateToStringMonthDayAndYear(item.date)}</td>
+            </tr>`
+          }
+          table += tr
+          table += `</tbody>
+          </table>`;
+          $("#validationStoryTable").DataTable({
+            language: {
+              url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+            },
+          });
+        }else{
+          tr += `<tr style="text-align:center;vertical-align:middle;"><td colspan="6">Aucun historique</td></tr>`
+          table += tr
+          table += `</tbody>
+          </table>`;
+        }
+
+        validationStoryContainer.innerHTML = table
+    })
 }

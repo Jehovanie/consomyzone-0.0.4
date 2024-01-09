@@ -10,12 +10,12 @@
         <div class="container content_input_create_agenda_jheo_js">
             <div class="mb-3">
               <label for="eventTitle" class="form-label text_black">Titre de l'événement</label>
-              <input type="text" name="eventTitle" class="form-control input_black" id="eventTitle" placeholder="Texte">
+              <input type="text" name="eventTitle" class="form-control input_black" id="eventTitle" placeholder="Texte" onchange="changeDescription()">
             </div>
             <div class="mb-3">
                 <div>
                   <label for="typeEvent" class="form-label text_black">Type de l'événement</label>
-                  <input type="text" name="typeEvent" class="form-control input_black" id="typeEvent"  placeholder="Texte">
+                  <input type="text" name="typeEvent" class="form-control input_black" id="typeEvent" onchange="changeDescription()"  placeholder="Texte" value="Evènement">
                 </div>
             </div>
 

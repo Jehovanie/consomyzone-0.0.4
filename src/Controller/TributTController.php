@@ -2873,4 +2873,146 @@ class TributTController extends AbstractController
 
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
+
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenieram@gmail.com>
+     */
+    #[Route("/tributT/new_letter_fans/{tribuTName}", name: "app_tributT_new_letter_fans", methods: ["GET"])]
+    public function fetchCallActionNewletterFansTribuG(
+        $tribuTName,
+        Tribu_T_Service $tribuTService,
+        UserService $userService,
+        UserRepository $userRepository
+    ){
+        if($tribuTName === "" || !$tribuTService->isTableExist($tribuTName)){
+            return $this->json([ "success" => false, "message" => "Tribu not found."], 401 );
+        }
+
+        if( !$this->getUser() || $this->getUser()->getType() === "Type" ){
+            return $this->json([ "success" => false, "message" => "User not connected"], 401 );
+        }
+
+        $user_connected= $this->getUser();
+        $user_profil= $userService->getUserProfileFromId($user_connected->getId());
+
+        $apropos_tribuT= $tribuTService->getProfilTributT( $tribuTName, $user_connected->getId(), $userRepository );
+
+        if( $apropos_tribuT["roles"] !== "Fondateur" ){
+            return $this->json([ "success" => false, "message" => "User not founder"], 401 );
+        }
+
+        return $this->json([
+            "apropos_tribuT" => $apropos_tribuT,
+            "user_profil" => [
+                "id" => $user_profil->getUserId()->getId(),
+                "firstname" => $user_profil->getFirstname(),
+                "lastname" => $user_profil->getLastname(),
+                "email" => $user_profil->getUserId()->getEmail(),
+                "pseudo" => $user_profil->getUserId()->getPseudo(),
+            ]
+        ]);
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenieram@gmail.com>
+     * Send news information to all fans in tribu G
+     */
+    #[Route("/tributT/sendNewLetter/for_all", name: "app_tribuT_send_newsLetter", methods: ["POST"])]
+    public function tribuGSendNewsLetterForAll(
+        Request $request,
+        Tribu_T_Service $tribuTService,
+        UserService $userService,
+        MailService $mailService,
+        Filesystem $filesyst,
+        NotificationService $notificationService,
+        UserRepository $userRepository
+    ){
+        if( !$this->getUser() && $this->getUser()->getType() === "Type" ){
+            return $this->json([ "success" => false, "message" => "User not connected"], 401 );
+        }
+
+        $data = json_decode($request->getContent(), true);
+        extract($data); /// $object, $description, $piece_joint, $table_name
+
+
+        $user_connected= $this->getUser();
+        $user_connnected_id= $user_connected->getId();
+        $user_profil= $userService->getUserProfileFromId($user_connnected_id);
+        $full_name_user_connected=  $user_profil->getLastname() . " " . $user_profil->getFirstname();
+
+        $apropos_tribuT= $tribuTService->getProfilTributT( $table_name, $user_connected->getId(), $userRepository );
+        if( $apropos_tribuT["roles"] !== "Fondateur" ){
+            return $this->json([ "success" => false, "message" => "User not founder"], 401 );
+        }
+        
+
+        $piece_with_path = [];
+        if (count($piece_joint) > 0) {
+            // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/piece_joint/user_' . $user_connnected_id . "/";
+            
+            $dir_exist = $filesyst->exists($path);
+            if ($dir_exist === false) {
+                $filesyst->mkdir($path, 0777);
+            }
+
+            foreach ($piece_joint as $item) {
+                $name = $item["name"];
+
+                $char_spec = ["-", " "];
+                $name = str_replace($char_spec, "_", $name);
+                $path_name = $path . $name;
+                ///name file, file base64
+                file_put_contents($path_name, file_get_contents($item["base64File"]));
+
+
+                $item["path"] = $path . $name;
+
+                array_push($piece_with_path, $item);
+            }
+        }
+
+        $context["object_mail"] = $object;
+        $context["template_path"] = "emails/mail_news_letter.html.twig";
+        $context["content_mail"] = $description;
+        $context["piece_joint"] = $piece_with_path;
+        
+
+        $all_fans_tribuT= $tribuTService->getPartisanOfTribuT($table_name); /// user_id, ...
+        $all_user_receiver= [];
+        foreach($all_fans_tribuT as $fans_tribuT){
+            $user_id_fans= $fans_tribuT["user_id"];
+
+            if( intval($user_id_fans) !== intval($user_connected->getId())){
+                $user_fans_profil= $userService->getUserProfileFromId(intval($user_id_fans));
+                $user_fullName= $user_fans_profil->getLastname() . " " . $user_fans_profil->getFirstname();
+                
+                $temp= [
+                    "id" => $user_fans_profil->getUserId()->getId(),
+                    "email" => $user_fans_profil->getUserId()->getEmail(),
+                    "fullName" => $user_fullName
+                ];
+                array_push($all_user_receiver, $temp);
+            }
+        }
+
+        $mailService->sendEmailNewsLetter($user_connected->getEmail(), $full_name_user_connected, $all_user_receiver, $context );
+
+        foreach($all_user_receiver as $user_receiver ){
+
+            $notificationService->sendNotificationForOne(
+                $user_connnected_id,
+                $user_receiver["id"],
+                "Une nouvelle lettre d'information",
+                "Veuillez consulter votre boîte e-mail, le fondateur de votre tribu T vient vous envoyer une lettre d'information."
+            );
+        }
+        
+        return $this->json([
+            "success" => true
+        ]);
+    }
 }

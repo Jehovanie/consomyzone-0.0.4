@@ -263,9 +263,10 @@ function showPartisan() {
 					if (json.infos_profil !== null) {
 						profilInfo = JSON.parse(json.infos_profil);
 						let profil =
-							profilInfo.photo_profil != null
-								? "/public" + profilInfo.photo_profil
-								: "/public/assets/image/img_avatar3.png";
+							profilInfo.photo_profil != null ? profilInfo.photo_profil : "/assets/image/img_avatar3.png";
+
+						profil = IS_DEV_MODE ? profil : "/public" + profil;
+
 						let lastName = profilInfo.lastName;
 						let firstName = profilInfo.firstName;
 						let tribuG = profilInfo.tribuG.replace("tribug_01_", "");
@@ -511,10 +512,15 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 		if (tribu_t[0].logo_path) {
 			// image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
 			//public
-			image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">`; //PROD
+			let avatarTribuT = tribu_t[0].logo_path;
+			avatarTribuT = IS_DEV_MODE ? avatarTribuT : "/public" + avatarTribuT;
+
+			image_tribu_t = `<img id="avatarTribuT" src="${avatarTribuT}" alt="123">`; //PROD
 			// image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
 		} else {
-			image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="123">`;
+			let avatarTribuT = "/uploads/tribu_t/photo/avatar_tribu.jpg";
+			avatarTribuT = IS_DEV_MODE ? avatarTribuT : "/public" + avatarTribuT;
+			image_tribu_t = `<img id="avatarTribuT"  src="${avatarTribuT}" alt="123">`;
 		}
 
 		let canChangeTribuPicture = "";
@@ -541,10 +547,17 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                 <a style="cursor:pointer;" id="settingTribuT" class="dropdown-item" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
                             </li>`
 			: "";
+
+		let newsLetterTribuT = !document.querySelector("#activeTribu").classList.contains("other")
+			? ` <li class="listNavBarTribu">
+            <a style="cursor:pointer;" id="fetch_new_letter_fans_tribuT_jheo_js" class="dropdown-item">Lettre d'information</a>
+          </li>`
+			: "";
+
 		let navMenuTribuT = "";
 		if (screen.width < 1000) {
 			navMenuTribuT = `<nav class=" mx-auto ">
-                    <ul id="navBarTribu" class="navBarTribu-t">
+                    <ul id="navBarTribu" class="navBarTribu-t content_list_navBarTribuT_jheo_js">
                         <li class="listNavBarTribu">
                             <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
                         </li>
@@ -569,12 +582,14 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                           </li>
 
                           ${canUpdateTribuInfoMob}
+
+                          ${newsLetterTribuT}
                         </ul>
                       </div>
                 </nav>`;
 		} else {
 			navMenuTribuT = `<nav class=" mx-auto">
-                    <ul id="navBarTribu" class="navBarTribu-t">
+                    <ul id="navBarTribu" class="navBarTribu-t content_list_navBarTribuT_jheo_js">
                         <li class="listNavBarTribu">
                             <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
                         </li>
@@ -594,6 +609,8 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                         </li>
 
                         ${canUpdateTribuInfo}
+
+						${newsLetterTribuT}
 
                     </ul>
                 </nav>`;
@@ -662,6 +679,8 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
             </div>
             
     `;
+
+		bindActionNewsLetterTribuT(tribu_t_name);
 	}
 
 	//
@@ -3676,37 +3695,6 @@ function addPieceJointImage(input) {
 			});
 		}
 	}
-}
-
-/**
- * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
- *
- * This function create single elemment html like to piece joint
- * on the send email invitation on the tribu T
- *
- * @param {*} name : file name
- * @param {*} id : unique id to identifie the element in the object.
- *
- * @return void
- */
-function createListItemPiece(name, id) {
-	////content block the list item piece joint.
-	const content_list_piece_joint = document.querySelector(".content_list_piece_joint_jheo_js");
-
-	//// display the block when it's hidden.
-	if (content_list_piece_joint.classList.contains("d-none")) {
-		content_list_piece_joint.classList.remove("d-none");
-	}
-
-	/// structure html the single element
-	const list_item = `
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <p>${name}</p>
-            <button type="button" class="btn btn-outline-danger fa_solid_${id}_jheo_js" onclick="removeListeItem(this, '${id}')"><i class="fa-solid fa-trash-can"></i></button>
-        </li>
-    `;
-	/// insert the single element.
-	content_list_piece_joint.innerHTML += list_item;
 }
 
 /**

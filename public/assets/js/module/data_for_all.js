@@ -606,13 +606,21 @@ function makeUserModifResto() {
 	});
 
 	fetch(request).then((response) => {
+		$("#userModifResto").modal("hide");
 		if (response.status === 201) {
-			$("#userModifResto").modal("hide");
 			swal(
 				"Votre modification a été prise en compte, " +
 					"nous procéderons à des vérifications puis nous" +
 					"vous recontacterons très prochainement. Merci !"
 			).then(() => {
+				CURRENT_MAP_INSTANCE.markers.eachLayer((marker) => {
+					if (parseInt(marker.options.id) === parseInt(restoId)) {
+						marker.dragging.disable();
+					}
+				});
+			});
+		} else if (response.status === 205) {
+			swal("Il y a une demande de modification en cours pour ce restaurant.").then(() => {
 				CURRENT_MAP_INSTANCE.markers.eachLayer((marker) => {
 					if (parseInt(marker.options.id) === parseInt(restoId)) {
 						marker.dragging.disable();
