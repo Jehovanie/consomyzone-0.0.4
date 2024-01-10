@@ -179,7 +179,7 @@
                     <div class="vd mh ip fh ql wl content_discussion_jheo_js" id="content_discussion_elie">
                         {% if userToProfil.messages|length > 0  %}
 
-                            {% set defaultFile = "/assets/image/type_file.png" %}
+                            {% set defaultFile = "/public/assets/image/type_file.png" %}
 
                             {% for message in userToProfil.messages %}
                                 {% if message.isForMe|number_format is same as("1") %}

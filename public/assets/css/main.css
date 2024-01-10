@@ -1257,7 +1257,7 @@ li a .station {
 .navbar-light-left .fa-x {
 	/* margin-left: 140px;
     margin-top: 15px; */
-	margin-left: 25px;
+	margin-left: 0px;
 }
 
 input::-ms-reveal,
@@ -2999,3 +2999,62 @@ Responsive card publication
     padding: 5px 15px !important;
 }
 /* End card publication actalite by Elie*/
+
+/*nouvelle ajout, position navleft resto arrndissmnt*/
+.navleft .list-depart-all-specific-arrond {
+    height: 80vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    margin-top: 60px;
+}
+
+.navleft .list-depart-all-specific-arrond ul .card-list {
+    list-style: none;
+    background-color: #ffffff;
+    width: 24vw;
+    height: auto;
+    padding: 15px;
+    /* margin-left: -40px; */
+    margin-left: -10px;
+    margin-bottom: 20px;
+    border-radius: 40px;
+    box-shadow: 0px 10px 15px rgba(49, 49, 49, 0.3);
+    font-size: 11pt;
+    overflow: hidden;
+}
+
+.navleft .list-depart-all-specific-arrond ul .card-list:hover {
+    transform: scale(1.009);
+}
+
+/* .navleft .list-depart-all-specific-arrond-station ul .card-list {
+    height: 40vh !important;
+} */
+
+.navleft .list-depart-all-specific-arrond ul li h5 {
+    font-size: 12pt;
+}
+
+.navleft .list-depart-all-specific-arrond ul li .container-depart {
+    margin: auto auto auto auto;
+}
+
+.navleft .list-depart-all-specific-arrond ul li .container-depart svg {
+    fill: #28be21;
+    width: 5vw;
+    height: 5vh;
+    margin-left: -15px;
+    margin-top: 15px;
+}
+
+.navleft .list-depart-all-specific-arrond ul li .container-depart svg:hover {
+    fill: #000;
+    width: 5.5vw;
+    height: 5.5vh;
+    margin-left: -15px;
+    margin-top: 15px;
+}
+
+.account-message-conected {
+    margin-top: 30px !important;
+}

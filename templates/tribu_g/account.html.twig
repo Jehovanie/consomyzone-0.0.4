@@ -135,9 +135,11 @@
 									<a style="cursor:pointer;" href="#" id="fetch_golf_tribug_jheo_js">Golfs</a>
 								</li>
 
-								<li class="listNavBarTribu">
-									<a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Lettre d'information</a>
-								</li>
+								{% if tributG.profil.roles is same as("fondateur") %}
+                                    <li class="listNavBarTribu">
+                                        <a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Lettre d'information</a>
+                                    </li>
+                                {% endif %}
 
 
 							</ul>

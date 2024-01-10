@@ -270,7 +270,7 @@ function bindEventForAllDay(info) {
 
 	// if( info_date.getTime() >=  today.getTime()){
 	// }
-
+	initInputForm();
 	document.querySelector(".eventStart_jheo_js").value = info.dateStr;
 	document.querySelector(".eventEnd_jheo_js").value = info.dateStr;
 	let heure = today.getHours();
@@ -289,9 +289,9 @@ function bindEventForAllDay(info) {
 	$("#createAgenda").modal("show");
 	document.querySelector("#createOrEditBtn").disabled = false;
 	document.querySelector("#deleteAgendaBtn").disabled = false;
-	if (document.querySelector("#createOrEditBtn").textContent.toLowerCase().trim() == "modifier") {
-		initInputForm();
-	}
+	// if (document.querySelector("#createOrEditBtn").textContent.toLowerCase().trim() == "modifier") {
+		
+	// }
 
 	document.querySelector(".preview_image_nanta_js").classList.add("d-none");
 	document.querySelector("#image-preview").src = "";
@@ -1534,6 +1534,7 @@ function getObjectForNewAgenda(e) {
 			"veuillez renseigner l'heure de fin de votre événement",
 			containerMessageRequiredAgd
 		);
+		const descriptionParDefaut= document.querySelector("#eventTitle").value+". "+ document.querySelector("#typeEvent").value.trim()
 		agenda = {
 			title: document.querySelector("#eventTitle").value,
 			type:
@@ -1549,9 +1550,7 @@ function getObjectForNewAgenda(e) {
 			description:
 				document.querySelector("#eventDesc").value.trim() != ""
 					? document.querySelector("#eventDesc").value.trim()
-					: document.querySelector("#eventTitle").value +
-					  " " +
-					  document.querySelector("#typeEvent").value.trim(),
+					: descriptionParDefaut,
 			participant:
 				document.querySelector("#nbrParticipant").value.trim() != ""
 					? document.querySelector("#nbrParticipant").value.trim()
@@ -1719,6 +1718,10 @@ function initInputForm() {
 			j.value = null;
 		}
 	})*/
+	let classL=document.querySelector(".desc").classList
+	if(classL.contains("userInput")){
+		classL.remove("userInput")
+	}
 	document.querySelector("#eventTitle").value = null;
 	document.querySelector("#typeEvent").value = "Evènement";
 	document.querySelector("#eventDesc").value = "";
@@ -2262,6 +2265,19 @@ function getMyDepEtab() {
 }
 
 function changeDescription() {
-	document.querySelector("#eventDesc").value =
-		document.querySelector("#eventTitle").value.trim() + " " + document.querySelector("#typeEvent").value.trim();
+	const descriptionParDefaut= document.querySelector("#eventTitle").value +". "+document.querySelector("#typeEvent").value.trim();
+	if(!document.querySelector(".desc").classList.contains("userInput"))
+		document.querySelector("#eventDesc").value =descriptionParDefaut;
+	
+}
+/**
+ * @author Nantenaina x faniry
+ * ajoute une class dans la list class de l'element description
+ * 
+ */
+function setUserInput(){
+	let classL=document.querySelector(".desc").classList
+	if(!classL.contains("userInput")){
+		classL.add("userInput")
+	}
 }

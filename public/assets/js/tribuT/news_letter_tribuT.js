@@ -57,7 +57,7 @@ function bindActionNewsLetterTribuT(tribuTName) {
 			                                        <img src="${logo_tribu}" class="card-img-top" alt="tribu">
 			                                </div>
 			                                <h5 class="card-title">${apropos_tribuT.name}</h5>
-			                                <p class="card-text">${apropos_tribuT.description}</p>
+			                                <p class="card-text">${apropos_tribuT.description ? apropos_tribuT.description :""}</p>
 			                            </div>
 			                        </div>
 
@@ -118,28 +118,25 @@ function showTextInformationFans(showTextOption) {
 
 	// let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
 	return (html = `
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chers membres,</span> </br>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chers tous,</span> </br>
                 <p>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Je suis ravi de vous informer qu'une nouvelle fan vient d'arrive sur notre tribu
-                    et que je ne peux attendre pour la partager avec vous tous. 
-                    C'est une découverte, une histoire ou une expérience qui,
-                    je l'espère, ajoutera une touche d'enthousiasme à notre communauté.
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Un nouveau membre vient de rejoindre notre tribu.
+					C'est une histoire, une expérience qui renforcent l'enthousiasme de notre communauté.
                 </p>
     
                 <p>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ensemble, continuons à créer un espace où chaque membre contribue à l'épanouissement des autres.
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ensemble, continuons à nourrir cet espace où chacun contribue à l'épanouissement des autres.
                 </p>
                 </br>
                 <figure class="figure">
                     <figcaption class="figure-caption">À très bientôt,</figcaption>
                     <figcaption class="figure-caption">Fondateur tribu ${apropos_tribuT.name}</figcaption>
-                    <figcaption class="figure-caption">${apropos_tribuT.description}</figcaption>
+                    <figcaption class="figure-caption">${apropos_tribuT.description ? apropos_tribuT.description :""}</figcaption>
                     <figcaption class="figure-caption">${user_profil.lastname} ${user_profil.firstname} </figcaption>
                     <figcaption class="figure-caption">${user_profil.email}</figcaption>
                 </figure>
             `);
 }
-
 /**
  * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
  *

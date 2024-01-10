@@ -130,30 +130,28 @@ if (document.querySelector("#fetch_new_letter_fans_tribug_jheo_js")) {
 
 	function showTextInformationFans(showTextOption) {
 		const { data } = showTextOption;
-		const { apropos_tribuG, user_profil } = data;
-
+		const { apropos_tribuT, user_profil } = data;
+	
 		// let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
 		return (html = `
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chers membres,</span> </br>
-                <p>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Je suis ravi de vous informer qu'une nouvelle fan vient d'arrive sur notre tribu
-                    et que je ne peux attendre pour la partager avec vous tous. 
-                    C'est une découverte, une histoire ou une expérience qui,
-                    je l'espère, ajoutera une touche d'enthousiasme à notre communauté.
-                </p>
-    
-                <p>
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ensemble, continuons à créer un espace où chaque membre contribue à l'épanouissement des autres.
-                </p>
-                </br>
-                <figure class="figure">
-                    <figcaption class="figure-caption">À très bientôt,</figcaption>
-                    <figcaption class="figure-caption">Fondateur tribu ${apropos_tribuG.name}</figcaption>
-                    <figcaption class="figure-caption">${apropos_tribuG.description}</figcaption>
-                    <figcaption class="figure-caption">${user_profil.lastname} ${user_profil.firstname} </figcaption>
-                    <figcaption class="figure-caption">${user_profil.email}</figcaption>
-                </figure>
-            `);
+					<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chers tous,</span> </br>
+					<p>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Un nouveau membre vient de rejoindre notre tribu.
+						C'est une histoire, une expérience qui renforcent l'enthousiasme de notre communauté.
+					</p>
+		
+					<p>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Ensemble, continuons à nourrir cet espace où chacun contribue à l'épanouissement des autres.
+					</p>
+					</br>
+					<figure class="figure">
+						<figcaption class="figure-caption">À très bientôt,</figcaption>
+						<figcaption class="figure-caption">Fondateur tribu ${apropos_tribuT.name}</figcaption>
+						<figcaption class="figure-caption">${apropos_tribuT.description}</figcaption>
+						<figcaption class="figure-caption">${user_profil.lastname} ${user_profil.firstname} </figcaption>
+						<figcaption class="figure-caption">${user_profil.email}</figcaption>
+					</figure>
+				`);
 	}
 
 	/**

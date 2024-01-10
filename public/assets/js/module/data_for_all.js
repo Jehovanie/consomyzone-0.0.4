@@ -548,7 +548,7 @@ function makeMarkerDraggable(id) {
  * je veux: modifier les informations relatives à un établissement
  * si un utilisateur veut modifier une ou des informations
  */
-function makeUserModifResto() {
+function makeUserModifResto(e){
 	let denomination_f = document.querySelector("#restoNewDenominationF").value;
 	let numvoie = document.querySelector("#newNumVoie").value;
 	let typevoie = document.querySelector("#newTypeVoie").value;
@@ -605,6 +605,10 @@ function makeUserModifResto() {
 		},
 	});
 
+	// makeUserModifResto;
+	e.target.textContent = "Modification en cours...";
+	e.target.disabled = true;
+
 	fetch(request).then((response) => {
 		$("#userModifResto").modal("hide");
 		if (response.status === 201) {
@@ -613,6 +617,9 @@ function makeUserModifResto() {
 					"nous procéderons à des vérifications puis nous" +
 					"vous recontacterons très prochainement. Merci !"
 			).then(() => {
+				e.target.textContent = "Modifier";
+				e.target.disabled = false;
+
 				CURRENT_MAP_INSTANCE.markers.eachLayer((marker) => {
 					if (parseInt(marker.options.id) === parseInt(restoId)) {
 						marker.dragging.disable();

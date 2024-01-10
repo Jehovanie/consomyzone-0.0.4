@@ -4566,7 +4566,7 @@ function setDirForImage(e) {
  * @param {string} data source
  */
 function setPhotoAfterUpload(data) {
-	swal("Voulez-vous definir cette photo comme photo de profile?", {
+	swal("Voulez-vous definir cette photo comme photo de profil?", {
 		buttons: {
 			cancel: "Non, pas maintenant",
 			confirm: {

@@ -16,7 +16,7 @@ if (document.querySelector(".content-message-nanta-css .bloc-text-message")) {
     .classList.remove("text-white");
 }
 const imageType = ["jpg", "png", "gif", "jpeg"];
-const fileDefaults = "/assets/image/type_file.png";
+const fileDefaults = "/public/assets/image/type_file.png";
 ///check btn send and input msg
 if (
   document.querySelector(".btn_send_message_jheo_js") &&
@@ -841,7 +841,7 @@ function fan() {
           tribug: 1,
         };
         for (let j = 0; j < datas.length; j++) {
-          if (j === 0) {
+          if (j === 0 && datas[j][0]) {
             console.log(datas[j][0].amis);
             let data = datas[j][0].amis;
             length.tribuT = data === undefined ? 0 : data.length;
@@ -883,7 +883,7 @@ function fan() {
                             `;
               ul.appendChild(li);
             }
-          } else {
+          } else if (j != 0 && datas[j]){
             let data = datas[j];
             length.tribug = data.length;
             for (let value of data) {
