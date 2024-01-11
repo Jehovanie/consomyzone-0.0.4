@@ -1,0 +1,36 @@
+<!-- Modal for message-->
+<div class="modal fade" id="messageIframe" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header pt-2 pb-1">
+        <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fas fa-comment" style="color:#0d6efd;"></i> Messages</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="document.querySelector('#messageIframeBody > iframe')?document.querySelector('#messageIframeBody > iframe').remove() :''"></button>
+      </div>
+      <div class="modal-body p-0" style="height:100vh;" id="messageIframeBody">
+        
+      </div>
+      <div class="modal-footer pt-1 pb-1">
+        {# <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button> #}
+        <a href="/user/all/message" class="btn btn-sm btn-primary"><i class="fas fa-paper-plane"></i> Ouvrir la messagerie</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal for visio-->
+<div class="modal fade" id="visioIframe" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header pt-2 pb-1">
+        <h1 class="modal-title fs-5" id="exampleModalLabel"><i class="fas fa-video-camera" style="color:#0d6efd;"></i> Visioconférence</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" onclick="document.querySelector('#visioIframeBody > iframe')?document.querySelector('#visioIframeBody > iframe').remove() :''"></button>
+      </div>
+      <div class="modal-body p-0" style="height:100vh;" id="visioIframeBody">
+        
+      </div>
+      <div class="modal-footer pt-1 pb-1">
+        <a href="/user/all/message" class="btn btn-sm btn-primary"><i class="fas fa-paper-plane"></i> Ouvrir la messagerie</a>
+      </div>
+    </div>
+  </div>
+</div>

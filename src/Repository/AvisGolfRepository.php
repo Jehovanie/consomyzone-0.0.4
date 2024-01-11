@@ -41,12 +41,13 @@ class AvisGolfRepository extends ServiceEntityRepository
         }
     }
     
-    public function updateAvis($idGolf, $iduser, $avisID, $note, $comment)
+    public function updateAvis($idGolf, $iduser, $avisID, $note, $comment, $type)
     {
         return $this->createQueryBuilder("")
                 ->update(AvisGolf::class,"a")
                 ->set("a.note",":note")
                 ->set("a.avis",":comment")
+                ->set("a.type",":type")
                 ->where("a.golf = :idGolf")
                 ->andWhere("a.user = :iduser")
                 ->andWhere("a.id = :id")
@@ -55,6 +56,7 @@ class AvisGolfRepository extends ServiceEntityRepository
                 ->setParameter("idGolf",$idGolf)
                 ->setParameter("iduser", $iduser)
                 ->setParameter("id", $avisID)
+                ->setParameter("type", $type)
                 ->getQuery()
                 ->execute();
     }
@@ -93,6 +95,7 @@ class AvisGolfRepository extends ServiceEntityRepository
                 // "avis" => $avis->getAvis(),
                 "avis" => json_decode($avis->getAvis(), true),
                 "datetime" => $avis->getDatetime(),
+                "type" => $avis->getType(),
                 "resto" => [
                     "id" => $resto_id
                 ],

@@ -14,6 +14,9 @@
 		.content_right_actualite {
 			top: -50px;
 		}
+        .content_news_letter{
+			width: 95% !important;
+		}
 	</style>
 	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/Tribu_T/publication.css')}}">
@@ -25,6 +28,7 @@
 	<script src="{{ asset('assets/js/agenda/agenda.js') }}" defer></script>
 	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
+    <script src="{{asset('assets/js/tribuT/news_letter_tribuT.js')}}" defer></script>
 	{# <script src="{{asset('assets/js/golf/avis_golf_depart.js')}}" defer></script> #}
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
@@ -308,6 +312,58 @@
 			</div>
 		</div>
 	</div>
+
+	{# modale createAlbumTribuT #}
+	<div class="modal" tabindex="-1" id="createAlbumTribuT">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Création de votre album</h5>
+					<button type="button" class="btn-close btn-close-creer-album-tomm-js" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="container text-center">
+						<i class="fas fa-question-circle fs-1 text-info"></i><br>
+						<input type="text" class="input-album value-name-album-tomm-js" placeholder="Nom de votre album">
+						<div class="container mb-4 mt-5 content_btns_nanta_js add_attribut_tomm_js">
+						 	{# data-bs-toggle="modal" data-bs-target="#selectAddAlbum" #}
+							<button type="button" id="creation-album" class="btn btn-primary mt-1 creation-album-tribu-t-tomm-js" onclick="createAlbumTribuT()"></i> Créer une album</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{# modale selectAddAlbum #}
+	<div class="modal" tabindex="-1" id="selectAddAlbum">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Séléctionner les photos</h5>
+					<button type="button" class="btn-close btn-close-tomm-js" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="container text-center">
+						<div class="gallery-container">
+							<div>
+								<span class="h2">Vos photo</span>
+							</div>
+							<div id="gallery">
+								<div class="row all-galeri-to-album-tomm-js"></div>
+							</div>
+						</div>
+						<div class="container mb-4 mt-5 content_btns_nanta_js add_attribut_tomm_js">
+							<button type="button" id="copye-album" class="btn btn-secondary t-1 copye-album-tribu-t-tomm-js" ></i> Ajout dans l'album</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div> 
+
 
 	<div class="modal fade" id="detailEtabModal" aria-hidden="true" aria-labelledby="detailEtabModal_label" tabindex="-1">
 		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">

@@ -1147,6 +1147,7 @@ function injectNewCardNotification(allNotifications) {
               dateTime: item.datetime,
               isShow: !!parseInt(item.isShow),
               isRead: !!parseInt(item.isRead),
+              url: item.notification_type
             },
             {
               photo: item.photoDeProfil,
@@ -1253,6 +1254,7 @@ function createAndAddCardNotification(
     dateTime: null,
     isShow: false,
     isRead: false,
+    url: null
   },
   user = { photo: null, fullname: null, userID: null, isConnected: null }
 ) {
@@ -1279,7 +1281,7 @@ function createAndAddCardNotification(
       ? `<span class="g l m xe qd th pi jj sj ra"></span>`
       : "";
   notification_item.innerHTML = `
-        <a class="lc kg ug" href="#">
+        <a class="lc kg ug" href="${notification.url}">
             <div class="h sa wf uk th ni ej cb">
                 <img class="image_profil_navbar_msg" src="${
                   user.photo

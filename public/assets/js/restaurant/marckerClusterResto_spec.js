@@ -1,8 +1,8 @@
+const parsedUrl_current = new URL(window.location.href);
 
-const content_data = document.querySelector('.resto_specifique_dep_js_jheo');
-const id_dep= content_data.getAttribute("data-resto-codeDep");
-const dep_name= content_data.getAttribute("data-resto-nameDep");
-const codinsee= content_data.getAttribute("data-resto-codinsee") !== "null" ? content_data.getAttribute("data-resto-codinsee") : null;
+const id_dep= parsedUrl_current.searchParams.get("id_dep")
+const dep_name= parsedUrl_current.searchParams.get("nom_dep");
+const codinsee= parsedUrl_current.searchParams.get("codinsee") ? parsedUrl_current.searchParams.get("codinsee") : null;
 
 ////INSTANCE ///
 const OBJECT_MARKERS_RESTO= new MarckerClusterResto(dep_name,id_dep, codinsee)

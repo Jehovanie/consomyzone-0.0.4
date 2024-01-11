@@ -675,7 +675,8 @@ class GolfFranceController extends AbstractController
         AvisGolfRepository $avisGolfRepository,
         GolfFranceRepository $golfFranceRepository,
         Request $request,
-        $idGolf
+        $idGolf,
+        Filesystem $filesyst
     ){
 
         $user = $this->getUser();
@@ -685,14 +686,45 @@ class GolfFranceController extends AbstractController
         $requestJson = json_decode($request->getContent(), true);
         $avis = $requestJson["avis"];
         $note = $requestJson["note"];
+        $type = $requestJson["type"];
         
         //dd($user,$resto);
         // $avisGolf->setAvis($avis)
+
+        if($type == "audio"){
+
+            $path_file = '/public/uploads/avis-golf/audio/';
+
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/avis-golf/audio/';
+
+
+            $temp = explode(";", $avis);
+
+            $extension = explode("/", $temp[0])[1];
+
+            $newFilename = time() . '-' . uniqid() . "." . $extension;
+
+            ///save image in public/uploader folder
+
+            $dir_exist = $filesyst->exists($destination);
+            
+            if ($dir_exist == false) {
+                
+                $filesyst->mkdir($destination, 0777);
+            }
+
+            file_put_contents($destination . $newFilename, file_get_contents($avis));
+
+
+            $avis = $path_file . $newFilename;
+        }
+
         $avisGolf->setAvis(json_encode($avis))
             ->setnote($note)
             ->setUser($user)
             ->setDatetime(new \DateTimeImmutable())
-            ->setGolf($golf);
+            ->setGolf($golf)
+            ->setType($type);
 
         $avisGolfRepository->add($avisGolf, true);
 
@@ -720,17 +752,56 @@ class GolfFranceController extends AbstractController
         $idGolf,
         AvisGolfRepository $avisGolfRepository,
         SerializerInterface $serializer,
-        Request $request
+        Request $request,
+        Filesystem $filesyst
     ) {
 
         $rJson = json_decode($request->getContent(), true);
         $userId = $this->getUser()->getId();
+
+        $avis = $rJson["avis"];
+        $type = $rJson["type"];
+
+        if($rJson["type"] == "audio"){
+
+            $path_file = '/public/uploads/avis-golf/audio/';
+
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/avis-golf/audio/';
+
+
+            $temp = explode(";", $avis);
+
+            $extension = explode("/", $temp[0])[1];
+
+            $newFilename = time() . '-' . uniqid() . "." . $extension;
+
+            ///save image in public/uploader folder
+
+            $dir_exist = $filesyst->exists($destination);
+            
+            if ($dir_exist == false) {
+                
+                $filesyst->mkdir($destination, 0777);
+            }
+
+            file_put_contents($destination . $newFilename, file_get_contents($avis));
+
+
+            $avis = $path_file . $newFilename;
+
+        }
+
+        if($rJson["type"] == "audio_up"){
+            $type = "audio";
+        }
+
         $response = $avisGolfRepository->updateAvis(
             $idGolf,
             $userId,
             $rJson["avisID"],
             $rJson["note"],
-            $rJson["avis"],
+            $avis,
+            $type,
         );
         $response = $serializer->serialize($response, 'json');
 
@@ -792,7 +863,7 @@ class GolfFranceController extends AbstractController
                 $notificationService->sendNotificationForOne(
                     $userID,
                     $userID,
-                    "Marquez un golf fini..",
+                    "/golf",
                     "Vous avez marqué le golf " . $golf->getNomGolf() . " comme terminé."
                 );
                 return $this->json([
@@ -870,7 +941,7 @@ class GolfFranceController extends AbstractController
                 $notificationService->sendNotificationForOne(
                     $userID,
                     $userID,
-                    "Marquez un golf refaire.",
+                    "/golf",
                     "Vous avez marqué le golf " . $golf->getNomGolf() . " à refaire."
                 );
                 return $this->json([
@@ -932,32 +1003,32 @@ class GolfFranceController extends AbstractController
                         $isHasGolf->setARefaire(0);
                         $entityManager->persist($isHasGolf);
                     }else{
-                $golfFinished = new GolfFinished();
-                $golfFinished->setGolfId($golfID);
-                $golfFinished->setUserId($userID);
-                $golfFinished->setFait(0);
-                $golfFinished->setAfaire(1);
-                $golfFinished->setMonGolf(0);
-                $golfFinished->setARefaire(0);
+                        $golfFinished = new GolfFinished();
+                        $golfFinished->setGolfId($golfID);
+                        $golfFinished->setUserId($userID);
+                        $golfFinished->setFait(0);
+                        $golfFinished->setAfaire(1);
+                        $golfFinished->setMonGolf(0);
+                        $golfFinished->setARefaire(0);
+    
+                        $entityManager->persist($golfFinished);
 
-                $entityManager->persist($golfFinished);
+                    }
 
-            }
+                    $entityManager->flush();
 
-                $entityManager->flush();
+                    $notificationService->sendNotificationForOne(
+                        $userID,
+                        $userID,
+                        "/golf",
+                        "Vous avez marqué le golf " . $golf->getNomGolf() . " à faire."
+                    );
 
-                $notificationService->sendNotificationForOne(
-                    $userID,
-                    $userID,
-                    "Marquez un golf à faire.",
-                    "Vous avez marqué le golf " . $golf->getNomGolf() . " à faire."
-                );
-
-                return $this->json([
-                    "success" => true,
-                    "message" => "Golf finished successfully"
-                ], 201);
-            }else{
+                    return $this->json([
+                        "success" => true,
+                        "message" => "Golf finished successfully"
+                    ], 201);
+                }else{
                     return $this->json([
                         "success" => false,
                         "message" => "Golf déjà à faire"
@@ -1047,7 +1118,7 @@ class GolfFranceController extends AbstractController
         if (!$this->getUser()) {
             return $this->json(["success" => false, "message" => "Unauthorized"], 403);
         }
-$userID = $this->getUser()->getId();
+        $userID = $this->getUser()->getId();
         $requestContent = json_decode($request->getContent(), true);
         extract($requestContent); ///$golfID
 
@@ -1061,7 +1132,7 @@ $userID = $this->getUser()->getId();
         $entityManager->flush();
 
         // sendNotificationForOne(int $user_id_post, int $user_id, string $type, string $content, string $link= null )
-                $notificationService->sendNotificationForOne($userID, $userID, "Golf a refaire.", "Vous avez annulé un golf terminé.");
+        $notificationService->sendNotificationForOne($userID, $userID, "/golf", "Vous avez annulé un golf terminé.");
 
 
         return $this->json([
@@ -1106,7 +1177,7 @@ $userID = $this->getUser()->getId();
                 $notificationService->sendNotificationForOne(
                     $userID,
                     $userID,
-                    "Marquez un golf à faire.",
+                    "/golf",
                     "Vous venez d'indiquer que vous êtes membre au golf le " . $golf->getNomGolf()
                 );
                 return $this->json([
@@ -1290,6 +1361,8 @@ $userID = $this->getUser()->getId();
     {
 
         $not_valid = $userServ->getAllPhotoNotValidGolf();
+
+        $not_valid = mb_convert_encoding($not_valid, 'UTF-8', 'UTF-8');
 
         return $this->json($not_valid);
     }

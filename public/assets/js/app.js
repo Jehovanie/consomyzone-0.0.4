@@ -750,7 +750,7 @@ initCKEditor("editor-agenda-non-inscrit", showModalEditor);
  *
  * @param {*} idElement please give id
  */
-function initCKEditor(idElement, callback) {
+function initCKEditor(idElement, callback, options = false) {
   if (document.getElementById(`${idElement}`)) {
     CKEDITOR.ClassicEditor.create(document.getElementById(`${idElement}`), {
       // https://ckeditor.com/docs/ckeditor5/latest/features/toolbar/toolbar.html#extended-toolbar-configuration-format
@@ -997,8 +997,11 @@ function initCKEditor(idElement, callback) {
     }).then((newEditor) => {
       editor = newEditor;
 
-      let html = callback();
-      editor.setData(html);
+      let html = options ? callback(options) : callback();
+
+      if (html) {
+        editor.setData(html);
+      }
 
       // console.log(editor)
     });
@@ -1065,7 +1068,7 @@ function showModalEditor(isG, isListeInfile = false) {
     new Date(back)
   );
 
-  if (document.querySelector("#object_share_event"))
+  if (document.querySelector("#object_share_event") && agenda)
     document.querySelector("#object_share_event").value =
       agenda.title + ", " + fullname;
   // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité
@@ -2049,17 +2052,17 @@ function showNextImage() {
 }
 
 function agrandirImage(ev) {
-    ev.target.style = "transform:scale(1.2)";
+  ev.target.style = "transform:scale(1.2)";
 }
 
 function resetImage(ev) {
-    ev.target.style = "transform:scale(1)";
+  ev.target.style = "transform:scale(1)";
 }
 
 function createPopUp(ev) {
   let tribuName = ev.target.dataset.name;
-    $("#modalCreatePopUp").modal("show");
-    document.querySelector("#modalCreatePopUpLabel").textContent =
+  $("#modalCreatePopUp").modal("show");
+  document.querySelector("#modalCreatePopUpLabel").textContent =
     "Tribu T " + tribuName;
   document.querySelector("#modalCreatePopUp .textInfos").textContent =
     "Ce restaurant est pastillé par la tribu " + tribuName;
@@ -2115,7 +2118,7 @@ function showLogoAndNameTribus() {
                     </div>
                 </div>
             `;
-  } else if (tribu.dataset.type === "tribuT") {
+    } else if (tribu.dataset.type === "tribuT") {
       modalBody.innerHTML += `
                 <div class="divContainerImgOnModal mb-3">
                     <div>

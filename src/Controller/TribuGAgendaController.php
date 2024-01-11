@@ -83,7 +83,7 @@ class TribuGAgendaController extends AbstractController
         $content = $this->tributGService->getFullName($user_id). " a crée un ".$type." à partir du ".$from." au ".$to . " 
         si vous avez interéssé. <a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='#'>Voir plus...</a>";
 
-        $notif_service->sendNotificationForMany($user_id,$membre,"Agenda", $content);
+        $notif_service->sendNotificationForMany($user_id,$membre,"/user/tribu/agenda", $content);
 
 
         return  $this->json([
@@ -363,7 +363,7 @@ class TribuGAgendaController extends AbstractController
             $content = $this->tributGService->getFullName($user_id)." ". $verbe ." votre ".$membre["type"]." que vous avez créé.
             <a href='/user/tribut/get-detail-agenda/" .$agenda_table. "/" .$id. "'> Voir plus...</a>";
 
-            $notif_service->sendNotificationForOne($user_id, $membre["user_id"], "Action agenda", $content );
+            $notif_service->sendNotificationForOne($user_id, $membre["user_id"], "/user/tribu/agenda", $content );
         }
 
         return $this->json("Action bien fait!");

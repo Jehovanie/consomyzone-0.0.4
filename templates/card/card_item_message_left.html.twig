@@ -1,7 +1,8 @@
 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_{{id}}_jheo_js mpcm_faniry_js" data-toggle-user-id="{{id}}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
     <div class="h mb sc yd of th">
         {# /// photo de profil #}
-        <img src="{{(photo) ? "/public" ~ photo  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{firstname}}" class="vc yd qk rk elie-pdp-modif"/>
+        <img src="{{(photo) ? "/public" ~ photo  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{firstname}}" class="vc yd qk rk elie-pdp-modif"
+        style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
         
         {# //// state blue if in contact  #}
         {% if is_online == 1 %}

@@ -2622,7 +2622,7 @@ function convertUnicodeToUtf8(str) {
 
 /**
  * @author Nantenaina
-* @author update by Jehovanie Ramandrijoel <jehovanieram@gmail.com>
+ * @author update by Jehovanie Ramandrijoel <jehovanieram@gmail.com>
  */
 function showPastillTable(e, id) {
   document.querySelector(
@@ -2633,17 +2633,17 @@ function showPastillTable(e, id) {
   fetch("/restaurant/pastilled/checking/" + parseInt(id)).then((response) => {
     if ((response.status = 200 && response.ok)) {
       response.json().then((response) => {
-      const data = response.listResto;
+        const data = response.listResto;
 
         //// list tribu T extension.
         if (data.length > 0) {
           data.forEach((item) => {
             let status = item.isPastilled ? "Dépastiller" : "Pastiller";
-            
+
             let logo = item.logo_path
               ? item.logo_path
               : "/uploads/tribu_t/photo/avatar_tribu.jpg";
-                          let logoPath = IS_DEV_MODE ? logo : "/public" + logo;
+            let logoPath = IS_DEV_MODE ? logo : "/public" + logo;
 
             let tableTribuT = item.table_name;
             let nomTribuPars = tableTribuT
@@ -4248,7 +4248,7 @@ function getDataSpecFermeMobile(nom_dep, id_dep) {
 
 /**
  * @author Tomm
-* @author update by Jehovanie Ramandrijoel <jehovanieram@gmail.com>
+ * @author update by Jehovanie Ramandrijoel <jehovanieram@gmail.com>
  * @action add list specic station mobile on scrollLeft
  * @ou dans le specific_station_navleft_mobile.twig
  * @utiliser dans le station/data_station.js
@@ -4394,7 +4394,7 @@ function getDataSpecStationMobile(nom_dep, id_dep) {
 
 /**
  * @author Tomm
-* @author update by Jehovanie Ramandrijoel <jehovanieram@gmail.com>
+ * @author update by Jehovanie Ramandrijoel <jehovanieram@gmail.com>
  * @action add list specic golf mobile on scrollLeft
  * @ou dans le specific_golf_navleft.twig
  * @utiliser dans le golf/data_golf.js
@@ -4969,7 +4969,7 @@ function takePictureTribu(type, isModif = false) {
 
   let data = outputCanvas.toDataURL();
 
-if (isModif) {
+  if (isModif) {
     document.querySelector(
       "#modal_publication_modif img.image_upload_image_jheo_js"
     ).src = data;
@@ -4984,56 +4984,56 @@ if (isModif) {
       "#modal_publication_modif #imageUploadTribu > div.image-upload-content"
     ).style.display = "block";
   } else {
-  let preview;
+    let preview;
 
-  // Pour actualité tribu G et T
-  if (window.location.href.includes("/user/actualite")) {
-    // console.log("send data tribu G");
-    document.querySelector("#mixte_publication_capture").value = data;
-    document.querySelector("#image-publication-tribu-t").src = data;
-    document.querySelector(".image_upload_image_jheo_js").src = data;
-    $("#newPublication").modal("show");
-    document
-      .querySelector("#imageUploadTribu > div.image-upload-wrap")
-      .classList.add("d-none");
-    document.querySelector(
-      "#imageUploadTribu > div.image-upload-content"
-    ).style.display = "block";
-  }
-
-  // Pour tribu G
-  if (window.location.href.includes("/user/account")) {
-    // console.log("send data tribu G");
-    document.querySelector("#publication_capture").value = data;
-    document.querySelector(".image_upload_image_jheo_js").src = data;
-    $("#modal_publication_tributG").modal("show");
-    document
-      .querySelector("#imageUploadTribu > div.image-upload-wrap")
-      .classList.add("d-none");
-    document.querySelector(
-      "#imageUploadTribu > div.image-upload-content"
-    ).style.display = "block";
-  } // POUR Tribu T
-  else if (window.location.href.includes("/user/tribu/my-tribu-t")) {
-    if (type == "pub") {
-      $("#modal_publication").modal("show");
-      preview = document.querySelector("#image-publication-tribu-t");
+    // Pour actualité tribu G et T
+    if (window.location.href.includes("/user/actualite")) {
+      // console.log("send data tribu G");
+      document.querySelector("#mixte_publication_capture").value = data;
+      document.querySelector("#image-publication-tribu-t").src = data;
       document.querySelector(".image_upload_image_jheo_js").src = data;
-      document.querySelector(".image-upload-content").style.display = "block";
-      document.querySelector(".image-upload-wrap").style.display = "none";
-      preview.setAttribute("data-file", "image");
-      preview.setAttribute("name", `capture-${new Date().getTime()}.png`);
-      preview.src = data;
-      preview.setAttribute("typeFile", "image/png");
+      $("#newPublication").modal("show");
+      document
+        .querySelector("#imageUploadTribu > div.image-upload-wrap")
+        .classList.add("d-none");
+      document.querySelector(
+        "#imageUploadTribu > div.image-upload-content"
+      ).style.display = "block";
     }
-    if (type == "pdp") {
-      // console.log("pdp");
-      updatePdpTribu_T(
-        dataURLtoFile(data, `capture-${new Date().getTime()}.png`)
-      );
+
+    // Pour tribu G
+    if (window.location.href.includes("/user/account")) {
+      // console.log("send data tribu G");
+      document.querySelector("#publication_capture").value = data;
+      document.querySelector(".image_upload_image_jheo_js").src = data;
+      $("#modal_publication_tributG").modal("show");
+      document
+        .querySelector("#imageUploadTribu > div.image-upload-wrap")
+        .classList.add("d-none");
+      document.querySelector(
+        "#imageUploadTribu > div.image-upload-content"
+      ).style.display = "block";
+    } // POUR Tribu T
+    else if (window.location.href.includes("/user/tribu/my-tribu-t")) {
+      if (type == "pub") {
+        $("#modal_publication").modal("show");
+        preview = document.querySelector("#image-publication-tribu-t");
+        document.querySelector(".image_upload_image_jheo_js").src = data;
+        document.querySelector(".image-upload-content").style.display = "block";
+        document.querySelector(".image-upload-wrap").style.display = "none";
+        preview.setAttribute("data-file", "image");
+        preview.setAttribute("name", `capture-${new Date().getTime()}.png`);
+        preview.src = data;
+        preview.setAttribute("typeFile", "image/png");
+      }
+      if (type == "pdp") {
+        // console.log("pdp");
+        updatePdpTribu_T(
+          dataURLtoFile(data, `capture-${new Date().getTime()}.png`)
+        );
+      }
     }
   }
-}
 
   $("#mediaModalTribu").modal("hide");
 }
@@ -5724,7 +5724,7 @@ function showGolf(tableGolfPastilled) {
 
 /**
  * @author nantenaina
-* @author update by Jehovanie Ramandrijoel <jehovanieram@gmail.com>
+ * @author update by Jehovanie Ramandrijoel <jehovanieram@gmail.com>
  */
 function pastilleGolf(element, table_tribu_t) {
   let id = element.dataset.id;
@@ -5759,7 +5759,7 @@ function pastilleGolf(element, table_tribu_t) {
           if (document.querySelector("#tribu_t_conteuneur")) {
             document.querySelector("#tribu_t_conteuneur").style.textAlign = "";
           }
-        
+
           if (document.querySelector(".content_tribuT_pastille_jheo_js")) {
             const content_tribuT_pastille = document.querySelector(
               ".content_tribuT_pastille_jheo_js"
@@ -5867,7 +5867,7 @@ function pastilleGolf(element, table_tribu_t) {
               }
 
               // if (document.querySelector(".logo-pastille-golf-tomm-js")) {
-                // 	document.querySelector(".logo-pastille-golf-tomm-js").style.width = i + "px";
+              // 	document.querySelector(".logo-pastille-golf-tomm-js").style.width = i + "px";
               // }
             }
 
@@ -5936,7 +5936,7 @@ function depastilleGolf(selector) {
           if (document.querySelector("#golf_" + id)) {
             document.querySelector("#golf_" + id).remove();
           }
-        
+
           if (document.querySelector(`#${tbl}`)) {
             document.querySelector(`#${tbl}`).remove();
           }
@@ -5982,47 +5982,47 @@ function depastilleGolf(selector) {
             }
           }
 
-      if (message.id_golf) {
-        fetch(`/golf/pastilled/checking/${message.id_golf}`)
-          .then((response) => response.json())
-          .then((datas) => {
-            let countIsPastilled = 0;
-            for (data of datas) {
-              if (data.isPastilled === true) {
-                countIsPastilled++;
-              }
-              if (data["isPastilled"] != true) {
-                if (
-                  document.querySelector(
-                    `.logo_path_${data["table_name"]}_tomm_js`
-                  )
-                ) {
-                  document
-                    .querySelector(
+          if (message.id_golf) {
+            fetch(`/golf/pastilled/checking/${message.id_golf}`)
+              .then((response) => response.json())
+              .then((datas) => {
+                let countIsPastilled = 0;
+                for (data of datas) {
+                  if (data.isPastilled === true) {
+                    countIsPastilled++;
+                  }
+                  if (data["isPastilled"] != true) {
+                    if (
+                      document.querySelector(
+                        `.logo_path_${data["table_name"]}_tomm_js`
+                      )
+                    ) {
+                      document
+                        .querySelector(
                           `.logo_path_${data["table_name"]}_tomm_js`
                         )
-                    .remove();
+                        .remove();
+                    }
+                  }
                 }
-              }
-            }
 
-            if (countIsPastilled <= 4) {
-              if (document.querySelector(".length-pastille-plus")) {
-                document.querySelector(".length-pastille-plus").remove();
-              }
-            } else {
-              document.querySelector(
-                ".logo-pastille-golf-tomm-js"
-              ).innerHTML += `<span class="length-pastille-plus">${countIsPastilled}+</span>`;
+                if (countIsPastilled <= 4) {
+                  if (document.querySelector(".length-pastille-plus")) {
+                    document.querySelector(".length-pastille-plus").remove();
+                  }
+                } else {
+                  document.querySelector(
+                    ".logo-pastille-golf-tomm-js"
+                  ).innerHTML += `<span class="length-pastille-plus">${countIsPastilled}+</span>`;
 
-              if (document.querySelector(".length-pastille-plus")) {
-                document.querySelector(".length-pastille-plus").remove();
-              }
-            }
-          });
-      }
-      showGolf(tbl);
-      }
+                  if (document.querySelector(".length-pastille-plus")) {
+                    document.querySelector(".length-pastille-plus").remove();
+                  }
+                }
+              });
+          }
+          showGolf(tbl);
+        }
       );
     })
     .catch((error) => console.log(error));
@@ -6053,9 +6053,9 @@ function showPastillGolfTribuT(id_golf, name_golf, adress_golf) {
       //   strVide = datas.length
       // }
 
-if (datas.length > 0) {
-      datas.forEach((data) => {
-        let logo =
+      if (datas.length > 0) {
+        datas.forEach((data) => {
+          let logo =
             data["logo_path"] != ""
               ? data["logo_path"]
               : "/uploads/tribu_t/photo/avatar_tribu.jpg";
@@ -6101,7 +6101,7 @@ if (datas.length > 0) {
                             `;
         });
       } else {
-          listTibuTPast = `
+        listTibuTPast = `
                                 <tr>
                                     <td></td>
                                     <td><h1 class="text-danger">Tribu T pastiller vide</h1></td>
@@ -6109,7 +6109,7 @@ if (datas.length > 0) {
                                     </td>
                                 </tr>
                             `;
-        }
+      }
 
       // console.log(datas);
 
@@ -6513,8 +6513,8 @@ function fecthGolfAction(goldID, action, selectElement) {
           // }
         }
       });
-    }
   }
+}
 
 /**
  * @author Elie
@@ -6620,8 +6620,8 @@ function pastilleForTribuG(e, type, id, name) {
             text: "Restaurant dépastillé avec succès dans votre tribu G.",
             icon: "success",
           }).then((response) => {
-          e.classList = "btn btn-success btn-sm";
-          e.innerText = "Pastiller";
+            e.classList = "btn btn-success btn-sm";
+            e.innerText = "Pastiller";
             e.setAttribute(
               "onclick",
               `pastilleForTribuG(this, true,"${e.dataset.id}","${e.dataset.name}")`
@@ -6772,8 +6772,8 @@ function pastilleGolfForTribuG(e, type, id, name) {
             text: "Golf dépastillé avec succès dans votre tribu G.",
             icon: "success",
           }).then(() => {
-          e.classList = "btn btn-success ms-1";
-          e.innerText = "Pastillé";
+            e.classList = "btn btn-success ms-1";
+            e.innerText = "Pastillé";
 
             e.setAttribute(
               "onclick",
@@ -7753,14 +7753,14 @@ function rejectPhoto(id_rubrique, id_gallery, file_path, rubrique) {
     }
   });
 }
-
+  
 /**
  * @author tomm
  * @constructor : fonction du gallery trier par tags et date
  * @localisation : myTribuT.js,
  * @utilisation dans le myTribuT.js
  */
-function galleryAll() {
+function galleryAll(tribu_t_types) {
   let photosContainer = document.querySelector("#tribu_t_conteuneur");
 
   photosContainer.innerHTML = `<div class="mt-3 d-flex justify-content-center">
@@ -7790,21 +7790,21 @@ function galleryAll() {
                     
                     
                 </div>`;
-      console.log(data);
+      // console.log(data);
       if (data.length > 0) {
         let li_img_pub = "";
         let li_img_agenda = "";
         let li_img_imp = "";
         let title = "";
         // let dateFusion = ''
-        console.log(data);
-        let count = 0;
+                let count = 0;
         for (let photos of data) {
           let globalPhoto = [];
           const map1 = new Map();
           let lastDateFussion = "";
           title = "";
           for (let photo of photos) {
+if (parseInt(photo.isAlbum) != 1) {
             let img_src = photo.photo; //replaceAll("/public","");
             let id = photo.id;
             let cheminFichier = img_src;
@@ -7835,7 +7835,10 @@ function galleryAll() {
                 }
 
                 lastDateFussion = dateFusion;
-              } else if (cheminFichier.indexOf("/photos/") > -1 && count == 1) {
+              } else if (
+                    cheminFichier.indexOf("/photos/") > -1 &&
+                    count == 1
+                  ) {
                 if (cheminFichier.indexOf("/tribu_t/") > -1) {
                   //TODO date for key and path array as value
 
@@ -7880,8 +7883,9 @@ function galleryAll() {
                 }
 
                 lastDateFussion = dateFusion;
+}
               }
-            }
+            } 
           }
           globalPhoto.push(map1);
           if (count == 0) {
@@ -7965,7 +7969,12 @@ function galleryAll() {
           count++;
         }
         //console.log(globalPhoto)
-
+let btnAddAlbum = ""
+        if (tribu_t_types == "tribu_T_owned") {
+          btnAddAlbum = `<button type="button" class="btn btn-light create-album"  data-bs-toggle="modal" data-bs-target="#createAlbumTribuT">
+                            <i class="fa-solid fa-plus"></i>
+                          </button>`
+        } 
         setGallerie(document.querySelectorAll(".img_gal"));
         photosContainer.innerHTML += `<div class="gallery-container">
                   <div>
@@ -7983,6 +7992,7 @@ function galleryAll() {
                           <a class="nav-link" id="gal-publication-t" data-status-nav="gal-publication-t" style="color: #0101DF">Publication</a>
                           <a class="nav-link" id="gal-agenda-t" data-status-nav="gal-agenda-t">Agenda</a>
                           <a class="nav-link" id="gal-telechargement-t" data-status-nav="gal-telechargement-t">Téléchargement</a>
+<a class="nav-link" id="gal-album-t" data-status-nav="gal-album-t" onclick="getAlbumTribuT('${tribu_t_types}')">Album</a>
                         </div>
                       </div>
                     </div>
@@ -8004,6 +8014,13 @@ function galleryAll() {
                       
                       <div class="row photo-imp-t-tomm-js">
                         ${li_img_imp} 
+                      </div>
+                    </div>
+<div class="content-album-tomm-js d-none" data-status="gal-album-t">
+                      
+                      <div class="row photo-imp-t-tomm-js album-tomm-js">
+                          ${btnAddAlbum}
+                          <div class="row insert-album-tomm-js"></div>
                       </div>
                     </div>
                   </div>
@@ -8029,12 +8046,16 @@ function galleryAll() {
               document
                 .querySelector(".content-telechargement-tomm-js")
                 .classList.add("d-none");
+document
+                .querySelector(".content-album-tomm-js")
+                .classList.add("d-none");
               document.querySelector("#gal-publication-t").style =
                 "color: #0101DF";
               document.querySelector("#gal-agenda-t").removeAttribute("style");
               document
                 .querySelector("#gal-telechargement-t")
                 .removeAttribute("style");
+document.querySelector("#gal-album-t").removeAttribute("style");
             }
           });
         document
@@ -8057,6 +8078,9 @@ function galleryAll() {
               document
                 .querySelector(".content-telechargement-tomm-js")
                 .classList.add("d-none");
+document
+                .querySelector(".content-album-tomm-js")
+                .classList.add("d-none");
               document.querySelector("#gal-agenda-t").style = "color: #0101DF";
               document
                 .querySelector("#gal-publication-t")
@@ -8064,6 +8088,7 @@ function galleryAll() {
               document
                 .querySelector("#gal-telechargement-t")
                 .removeAttribute("style");
+document.querySelector("#gal-album-t").removeAttribute("style");
             }
           });
         document
@@ -8086,10 +8111,45 @@ function galleryAll() {
               document
                 .querySelector(".content-telechargement-tomm-js")
                 .classList.remove("d-none");
+document
+                .querySelector(".content-album-tomm-js")
+                .classList.add("d-none");
               document.querySelector("#gal-telechargement-t").style =
                 "color: #0101DF";
               document
                 .querySelector("#gal-publication-t")
+.removeAttribute("style");
+              document.querySelector("#gal-agenda-t").removeAttribute("style");
+              document.querySelector("#gal-album-t").removeAttribute("style");
+            }
+          });
+        document.querySelector("#gal-album-t").addEventListener("click", () => {
+          if (
+            document
+              .querySelector("#gal-album-t")
+              .getAttribute("data-status-nav") ==
+            document
+              .querySelector(".content-album-tomm-js")
+              .getAttribute("data-status")
+          ) {
+            document
+              .querySelector(".content-agenda-tomm-js")
+              .classList.add("d-none");
+            document
+              .querySelector(".content-publication-tomm-js")
+              .classList.add("d-none");
+            document
+              .querySelector(".content-telechargement-tomm-js")
+              .classList.add("d-none");
+            document
+              .querySelector(".content-album-tomm-js")
+              .classList.remove("d-none");
+            document.querySelector("#gal-album-t").style = "color: #0101DF";
+            document
+              .querySelector("#gal-publication-t")
+              .removeAttribute("style");
+            document
+              .querySelector("#gal-telechargement-t")
                 .removeAttribute("style");
               document.querySelector("#gal-agenda-t").removeAttribute("style");
             }
@@ -8147,6 +8207,10 @@ function openGalleriesPhotoTribuT(elem) {
 
   if (elem.classList.contains("imp_img")) {
     container = document.querySelector(".photo-imp-t-tomm-js");
+  }
+
+  if (elem.classList.contains("album")) {
+    container = document.querySelector(".insert-photo-album-tomm-js");
   }
 
   let imgs = [];
@@ -8428,5 +8492,359 @@ function openDetailPublication(params) {
     document.querySelector("#detailImage").classList.remove("d-none");
   } else {
     document.querySelector("#detailImage").src = "";
+  }
+}
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * This function create single elemment html like to piece joint
+ * on the send email invitation on the tribu T
+ * utilise dans myTribuT.js, account/fetchNewLetterTribuG.js, tribuT/news_letter_tribuT.js
+ *
+ * @param {*} name : file name
+ * @param {*} id : unique id to identifie the element in the object.
+ *
+ * @return void
+ */
+function createListItemPiece(name, id) {
+  ////content block the list item piece joint.
+  const content_list_piece_joint = document.querySelector(
+    ".content_list_piece_joint_jheo_js"
+  );
+
+  //// display the block when it's hidden.
+  if (content_list_piece_joint.classList.contains("d-none")) {
+    content_list_piece_joint.classList.remove("d-none");
+  }
+
+  /// structure html the single element
+  const list_item = `
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <p>${name}</p>
+            <button type="button" class="btn btn-outline-danger fa_solid_${id}_jheo_js" onclick="removeListeItem(this, '${id}')"><i class="fa-solid fa-trash-can"></i></button>
+        </li>
+    `;
+  /// insert the single element.
+  content_list_piece_joint.innerHTML += list_item;
+}
+
+/**
+ * @author Elie
+ * cette fonction liste les messages groupé de tous les tribus utilisé dans iframe
+ * localisation: message.js
+ */
+function showListTribusIframe() {
+  fetch("/user/get/allTribu").then((response) => {
+    if (response.status === 200 && response.ok) {
+      response.json().then((jsons) => {
+        const ul = document.querySelector(".msg_grp_faniry_js");
+        ul.innerHTML = "";
+        for (let i = 0; i < jsons.length; i++) {
+          if (i === 0) {
+            //pour tribu G
+            const json = jsons[i];
+            const tribuGName = `tribu G ${json.commune} ${json.quartier}`;
+            const logoPath = json.tribugAvatar;
+            const link = `/api/tribu/msg_iframe?name=${json.tableTribuG}&type=g`;
+            const li = document.createElement("li");
+            li.setAttribute("class", "fan_activ_faniry_js");
+            li.dataset.toggleTribuGId = json.tableTribuG;
+            li.innerHTML = `
+                                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${json.id}_jheo_js" data-toggle-user-id="${json.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                    <div class="h mb sc yd of th">
+                                        <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
+                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                    </div>
+                                    <a href="${link}" class="yd">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h5 class="mn un zn gs">
+                                                    ${tribuGName}
+                                                </h5>
+    
+                                            </div>
+                                            <div class="col-4">
+                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            `;
+            ul.appendChild(li);
+          } else {
+            let tribuTs = jsons[i];
+            for (let tribut of tribuTs) {
+              const tribuTimmuable = tribut.table_name;
+              const tribuTname = tribut.name_tribu_t_muable;
+              const logoPath =
+                tribut.logo_path != ""
+                  ? tribut.logo_path
+                  : "/uploads/tribus/avatar_tribu.jpg";
+              const link = `/api/tribu/msg_iframe?name=${tribut.table_name}&type=t`;
+              const li = document.createElement("li");
+              li.setAttribute("class", "fan_activ_faniry_js");
+              li.dataset.toggleTribuGId = tribuTname;
+              li.innerHTML = `
+                                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${tribut.id}_jheo_js" data-toggle-user-id="${tribut.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                    <div class="h mb sc yd of th">
+                                        <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
+                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                    </div>
+                                    <a href="${link}" class="yd">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h5 class="mn un zn gs">
+                                                    ${tribuTname}
+                                                </h5>
+    
+                                            </div>
+                                            <div class="col-4">
+                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            `;
+              ul.appendChild(li);
+            }
+          }
+        }
+      });
+    }
+  });
+}
+
+/**
+ *@author Elie
+ *cette fonction affiche la liste des users actifs
+ *localisation message.js
+ */
+function fanIframe() {
+  fetch("/user/get/fan/online").then((r) => {
+    if (r.status === 200 && r.ok) {
+      r.json().then((datas) => {
+        if (document.querySelector(".only"))
+          document.querySelector(".only").textContent = "";
+        const ul = document.querySelector(".fan_actif_tom_js");
+        ul.innerHTML = ``;
+        let i = 0;
+        let length = {
+          tribuT: 1,
+          tribug: 1,
+        };
+        for (let j = 0; j < datas.length; j++) {
+          if (j === 0) {
+            console.log(datas[j][0].amis);
+            let data = datas[j][0].amis;
+            length.tribuT = data === undefined ? 0 : data.length;
+            for (let value of data) {
+              let li = document.createElement("li");
+              li.setAttribute("class", "fan_activ_i_faniry_js");
+              li.dataset.toggleUserId = value.id;
+              const photoProfil =
+                value.image_profil != null
+                  ? "/public" + value.image_profil
+                  : "/public/uploads/users/photos/default_pdp.png";
+              const link = "/api/message/perso_iframe?user_id=" + value.id;
+              const fullName = value.firstname + " " + value.lastname;
+              li.innerHTML = `
+                                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                    <div class="h mb sc yd of th">
+                                        <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
+                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                    </div>
+    
+                                   
+                                    <a href="${link}" class="yd">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h5 class="mn un zn gs">
+                                                    ${fullName}
+                                                </h5>
+    
+                                            </div>
+                                            <div class="col-4">
+                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                            </div>
+                                        </div>
+    
+    
+    
+                                    </a>
+                                </div>
+                            `;
+              ul.appendChild(li);
+            }
+          } else {
+            let data = datas[j];
+            length.tribug = data.length;
+            for (let value of data) {
+              let li = document.createElement("li");
+              li.setAttribute("class", "fan_activ_i_faniry_js");
+              li.dataset.toggleUserId = value.id;
+              const photoProfil =
+                value.image_profil != null
+                  ? "/public" + value.image_profil
+                  : "/public/uploads/users/photos/default_pdp.png";
+              const link = "/api/message/perso_iframe?user_id=" + value.id;
+              const fullName = value.firstname + " " + value.lastname;
+              li.innerHTML = `
+                                <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
+                                    <div class="h mb sc yd of th">
+                                        <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
+                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                    </div>
+    
+                                   
+                                    <a href="${link}" class="yd">
+                                        <div class="row">
+                                            <div class="col-8">
+                                                <h5 class="mn un zn gs">
+                                                    ${fullName}
+                                                </h5>
+    
+                                            </div>
+                                            <div class="col-4">
+                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                            </div>
+                                        </div>
+    
+    
+    
+                                    </a>
+                                </div>
+                            `;
+              ul.appendChild(li);
+            }
+          }
+        }
+        console.log(length);
+        if (length.tribuT === 0 && length.tribug === 0) {
+          if (document.querySelector(".only")) {
+            document.querySelector(".only").textContent = "";
+            document.querySelector(".only").textContent =
+              "Aucun fan n'est actif.";
+          } else {
+            ul.parentElement.innerHTML +=
+              '<span class="only">Aucun fan n\'est actif.</span>';
+          }
+        }
+
+        const fans = document.querySelectorAll(`.fan_activ_i_faniry_js`);
+        let results = removeReplicatedFan(fans);
+        if (results.length > 0) {
+          const fanOnlineContainer = document.querySelector(
+            "ul.fan_actif_tom_js"
+          );
+          fans.forEach((item) => {
+            try {
+              //console.log(item);
+              fanOnlineContainer.removeChild(item);
+            } catch (error) {
+              console.log(error);
+            }
+          });
+          results.forEach((item) => {
+            fanOnlineContainer.appendChild(item);
+          });
+        }
+      });
+    }
+  });
+}
+
+/**
+ *@author Elie
+*cette fonction recherche des amis 
+*@param {*} event
+*@param {*} myaction1 ce parametre est une fonction ,qui est utilisé que lorsque vous mettez useDefaulContainer à false,
+*@param {*} myaction2 ce parametre est une fonction et prend en parametre un json ,qui est utilisé que lorsque vous mettez useDefaulContainer à false,
+@param {boolean} [useDefaulAction=true]   
+*/
+function lookupFanIframe(
+  event,
+  useDefaulAction = true,
+  myaction1 = null,
+  myaction2 = null
+) {
+  const target = event.target;
+  clearTimeout(lookupFanDebounce);
+  if (target != null && target instanceof HTMLElement) {
+    let word = target.value;
+    if (word.length > 2) {
+      lookupFanDebounce = setTimeout(() => {
+        if (!useDefaulAction) createLoader();
+        fetch(`/user/look/${word}`, { method: "GET" }).then((r) => {
+          if (r.status === 200 && r.ok) {
+            if (useDefaulAction) {
+              const lookContainer = document.querySelector(
+                ".lookup_fan_result_tom_js"
+              );
+              lookContainer.innerHTML = "";
+              r.json().then((jsons) => {
+                if (jsons.length > 0) {
+                  for (let json of jsons) {
+                    const link =
+                      "/api/message/perso_iframe?user_id=" + json.user_id;
+                    const fullname = json.firstname + " " + json.lastname;
+                    const anchorElement = document.createElement("a");
+                    anchorElement.href = link;
+                    anchorElement.innerHTML = `<span class="fan_name fan_name_tom_js">${fullname}</span>`;
+                    lookContainer.appendChild(anchorElement);
+                  }
+                  lookContainer.classList.remove("d-none");
+                } else {
+                  const anchorElement = document.createElement("a");
+                  anchorElement.innerHTML = `<span class="fan_name fan_name_tom_js">Aucune résulta.</span>`;
+
+                  lookContainer.appendChild(anchorElement);
+                  document
+                    .querySelector(".lookup_fan_result_tom_js")
+                    .classList.toggle("d-none");
+                  swal({
+                    title: "Oops...",
+                    text: "Aucun résultat.",
+                    icon: "error",
+                    button: "OK",
+                  });
+                }
+              });
+            } else {
+              createLoader(true);
+              r.json().then((jsons) => {
+                if (jsons.length > 0) {
+                  myaction2(jsons);
+                } else {
+                  swal({
+                    title: "Oops...",
+                    text: "Erreur 500!",
+                    icon: "error",
+                    button: "OK",
+                  });
+                }
+              });
+            }
+          } else {
+            swal({
+              title: "Oops...",
+              text: "Erreur 500!",
+              icon: "error",
+              button: "OK",
+            });
+          }
+        });
+      }, 3000);
+    } else if (word.length === 0) {
+      if (useDefaulAction) {
+        const lookContainer = document.querySelector(
+          ".lookup_fan_result_tom_js"
+        );
+        lookContainer.classList.add("d-none");
+      } else {
+        //todo mettre à jour
+        myaction1();
+      }
+    }
   }
 }

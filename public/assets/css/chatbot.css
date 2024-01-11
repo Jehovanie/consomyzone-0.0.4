@@ -62,3 +62,25 @@
     border-right: 0 !important;
     /* margin-bottom: 2px !important; */
   }
+
+.tooltips-chathome{
+    visibility: hidden;
+    position: absolute;
+    min-width: 255px;
+    width: 260px;
+    top: -60%;
+    right: 70%;
+    background-color: #6f42c1;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 3px 3px;
+    font-size: small;
+}
+
+#openVisio:hover .tooltips-chathome, 
+#openMessage:hover .tooltips-chathome, 
+#openChat:hover .tooltips-chathome{
+    visibility: visible;
+    opacity: 1;
+}

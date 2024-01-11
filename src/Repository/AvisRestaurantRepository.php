@@ -41,12 +41,13 @@ class AvisRestaurantRepository extends ServiceEntityRepository
         }
     }
     
-    public function updateAvis($idrestaurant, $iduser, $avisID, $note, $comment)
+    public function updateAvis($idrestaurant, $iduser, $avisID, $note, $comment,$type)
     {
         return $this->createQueryBuilder("")
                 ->update(AvisRestaurant::class,"a")
                 ->set("a.note",":note")
                 ->set("a.avis",":comment")
+                ->set("a.type",":type")
                 ->where("a.restaurant = :idResto")
                 ->andWhere("a.user = :iduser")
                 ->andWhere("a.id = :id")
@@ -54,6 +55,7 @@ class AvisRestaurantRepository extends ServiceEntityRepository
                 ->setParameter("comment", json_encode($comment))
                 ->setParameter("idResto",$idrestaurant)
                 ->setParameter("iduser", $iduser)
+                ->setParameter("type", $type)
                 ->setParameter("id", $avisID)
                 ->getQuery()
                 ->execute();
@@ -91,6 +93,7 @@ class AvisRestaurantRepository extends ServiceEntityRepository
                 "note" => $avis->getNote(),
                 "avis" => json_decode($avis->getAvis(), true),
                 "datetime" => $avis->getDatetime(),
+                "type" => $avis->getType(),
                 "resto" => [
                     "id" => $resto_id
                 ],

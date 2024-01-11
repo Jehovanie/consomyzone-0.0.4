@@ -511,7 +511,8 @@ function handleMessageResponse(date, message, file_list = null, image, status) {
       const file = type === "image" ? name : fileDefaults;
       image_html_list += `
                 <div class="file_item">
-                    <img class="message_image_item" src="${file}" alt="image">
+                    <img class="message_image_item" src="${file}" alt="image" style="cursor:pointer;" 
+                      data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
                     <a class="icon_download_file" href="${name}" download>
                         <i class="fa-solid fa-download"></i>
                     </a>
@@ -858,7 +859,7 @@ function fan() {
               li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
-                                        <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
                                         <span class="g l m jc wc ce th pi ij xj"></span>
                                     </div>
     
@@ -899,7 +900,7 @@ function fan() {
               li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
-                                        <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
                                         <span class="g l m jc wc ce th pi ij xj"></span>
                                     </div>
     
@@ -1119,7 +1120,7 @@ function showListTribus() {
             li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${json.id}_jheo_js" data-toggle-user-id="${json.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
-                                        <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
                                         <span class="g l m jc wc ce th pi ij xj"></span>
                                     </div>
                                     <a href="${link}" class="yd">
@@ -1154,7 +1155,7 @@ function showListTribus() {
               li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${tribut.id}_jheo_js" data-toggle-user-id="${tribut.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
-                                        <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif"/>
+                                        <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
                                         <span class="g l m jc wc ce th pi ij xj"></span>
                                     </div>
                                     <a href="${link}" class="yd">

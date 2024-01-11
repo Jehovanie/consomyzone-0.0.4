@@ -242,7 +242,7 @@ class UserController extends AbstractController
             }
 
             ///send notification
-            $notificationService->sendNotificationForOne($userId, $userId, "Une nouvelle notification.", "Votre publication est publiée.");
+            $notificationService->sendNotificationForOne($userId, $userId, "/user/actualite", "Votre publication est publiée.");
 
             ///send notification for all partisant in tribu.
             
@@ -527,7 +527,7 @@ class UserController extends AbstractController
 
         }
 
-        $notificationService->sendNotificationForMany($userId, $allUsers, "Nouvelle etablissement", $content);
+        $notificationService->sendNotificationForMany($userId, $allUsers, "/user/account", $content);
 
         return $this->json("succes", 200);
     }
@@ -623,7 +623,7 @@ class UserController extends AbstractController
         $notificationService->sendNotificationForOne(
             $userPosterId,
             $id_receiver,
-            "Invitation",
+            "/user/invitation",
             $content
         );
 
@@ -1260,7 +1260,8 @@ class UserController extends AbstractController
 
         $admin = $userRepository->findByRolesUserSuperAdmin();
 
-        $type = "Validation d'administrer le tribu G";
+        //$type = "Validation d'administrer le tribu G";
+        $type = "/user/account";
 
         $notificationService->sendNotificationForOne(
             $admin->getId(),  /// user dispatch an action and send notification
@@ -2062,12 +2063,12 @@ class UserController extends AbstractController
             $requesting->setIsAccepted($tableRequestingNameOtherUser, $balise, intval($idR), $userPosterId);
 
             // $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
-            $notificationService->sendNotificationForOne($userPosterId, intval($idR), $type, $content);
+            $notificationService->sendNotificationForOne($userPosterId, intval($idR), "/user/tribu/my-tribu-t", $content);
 
             /* End Nantenaina */
         } else {
             $content = "$pseudo a accepté votre invitation pour devenir moderateur";
-            $notificationService->sendNotificationForOne($userPosterId, intval($idR), "invitation", $content);
+            $notificationService->sendNotificationForOne($userPosterId, intval($idR), "/user/account", $content);
             $tableTribuGName = $tr->getTableNameTributG($userPosterId);
 
             $tr->changeRole($tableTribuGName, $userPosterId);
@@ -2113,12 +2114,12 @@ class UserController extends AbstractController
             $content = $userFullname . " a supprimée l'invitation de rejoindre la tribu " . $balise;
 
             // $notificationService->sendForwardNotificationForUser($userPosterId, intval($idR), $type, $content);
-            $notificationService->sendNotificationForOne($userPosterId, intval($idR), $type, $content);
+            $notificationService->sendNotificationForOne($userPosterId, intval($idR), "/user/tribu/my-tribu-t", $content);
 
             /* End Nantenaina */
         } else {
             $content = "$pseudo a rejété votre invitation pour devenir moderateur";
-            $notificationService->sendNotificationForOne($userPosterId, intval($idR), "invitation", $content);
+            $notificationService->sendNotificationForOne($userPosterId, intval($idR), "/user/account", $content);
             $requesting->setIsRejected($tableRequestingName,  $balise, intval($idR), $userPosterId);
             $requesting->setIsRejected($tableRequestingNameOtherUser, $balise, intval($idR), $userPosterId);
         }
@@ -2159,7 +2160,7 @@ class UserController extends AbstractController
         } else {
 
             $content = "$pseudo a annulé votre invitation pour devenir moderateur";
-            $notificationService->sendNotificationForOne($userPosterId, intval($idR), "demande", $content);
+            $notificationService->sendNotificationForOne($userPosterId, intval($idR), "/user/account", $content);
             $requesting->setIsCancel($tableRequestingName, $balise, $userPosterId, intval($idR));
             $requesting->setIsCancel($tableRequestingNameOtherUser, $balise, $userPosterId, intval($idR));
         }
@@ -2554,6 +2555,10 @@ class UserController extends AbstractController
             $audioname
         );
 
+        $regex = "/\_publication+$/";
+
+        $table_tribu = preg_replace($regex, "", $tablePub);
+
         $full_name = $tribut->getFullName($this->getUser()->getId());
 
         if (intval($this->getUser()->getId()) != intval($authorID)) {
@@ -2561,7 +2566,7 @@ class UserController extends AbstractController
             $notificationService->sendNotificationForOne(
                 $this->getUser()->getId(),
                 $authorID,
-                "Comment publication.",
+                "/user/actualite#".$table_tribu."_".$pubID,
                 $full_name . " a commenté votre publication."
             );
         }

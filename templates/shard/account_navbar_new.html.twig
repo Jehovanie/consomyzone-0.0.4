@@ -190,7 +190,7 @@
 				{# <a href={{path('user_profil', { user_id: app.user.id })}} class="nav-bar-conected lc mg vg avatar-account-connected" href="#" @click.prevent="dropdownOpen = ! dropdownOpen"> #}
 				<a href={{path('user_profil', { user_id: app.user.id })}} class="nav-bar-conected lc mg vg avatar-account-connected" >
 					<span class="pc tu in">
-						<span class="jc un mn zn gs use-in-agd-nanta_js_css"> {{ userConnected.lastname ~ " " ~ " " ~ userConnected.firstname }} </span>
+						<span class="jc un mn zn gs use-in-agd-nanta_js_css status-tomm-js" data-status="{{ userConnected.status_tribuG }}"> {{ userConnected.lastname ~ " " ~ " " ~ userConnected.firstname }} </span>
 						<span class="jc nn toltip-hover-text" >
 							{% if userConnected.status_tribuG is same as('PARTISAN') %}
 								{{'Fan'}}

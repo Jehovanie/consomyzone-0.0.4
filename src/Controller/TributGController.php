@@ -12,6 +12,8 @@ use App\Service\UserService;
 
 use App\Service\TributGService;
 
+use App\Service\MailService;
+
 use App\Service\Tribu_T_Service;
 
 use App\Repository\UserRepository;
@@ -22,7 +24,7 @@ use App\Service\FilesUtils;
 
 use App\Service\AgendaService;
 
-use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\EntityManagerInterface; 
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -102,15 +104,11 @@ class TributGController extends AbstractController
             if (intval($is_like) === 1) {
 
                 // $message_notification = $full_name . " a réagi sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $pub_id . "_jheo'>Voir la publication</a>";
-                $message_notification = $full_name . " a réagi sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $pub_id . "_jheo'>Voir la publication</a>";
+                $message_notification = $full_name . " a réagi sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/actualite#".$table."_".$pub_id."'>Voir la publication</a>";
             } else {
 
                 // $message_notification = $full_name . " a supprimé sa réaction sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $pub_id . "_jheo'>Voir la publication</a>";
-                $message_notification = $full_name . " a supprimé sa réaction sur votre publication.
-                <br>
-                <a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $pub_id . "_jheo'>
-                    Voir la publication
-                </a>";
+                $message_notification = $full_name . " a supprimé sa réaction sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/actualite#".$table."_".$pub_id."'>Voir la publication</a>";
             }
 
             $notificationService->sendNotificationForOne(
@@ -119,7 +117,7 @@ class TributGController extends AbstractController
 
                 $author_id,
 
-                "Réaction publication.",
+                "/user/actualite#".$table."_".$pub_id,
 
                 $message_notification
 
@@ -390,7 +388,8 @@ class TributGController extends AbstractController
         for ($i = 0; $i < count($galeryPhotosPub); $i++) {
             array_push($photoDatePub, [
                 "photo" => $galeryPhotosPub[$i]["photo"],
-                "createdAt" => explode(' ', $galeryPhotosPub[$i]["datetime"])[0]
+                "createdAt" => explode(' ', $galeryPhotosPub[$i]["datetime"])[0],
+                "isAlbum" => $galeryPhotosPub[$i]["isAlbum"],
             ]);
         }
         //get id -> get repo-> get nom table -> get photo 
@@ -407,7 +406,8 @@ class TributGController extends AbstractController
 				array_push($photoAgenda, [
 					"photo" => $agendas[$a]["file_path"],
 					"photoSplit" =>  explode('/', $agendas[$a]["file_path"]),
-					"createdAt" =>  explode(' ', $agendas[$a]["datetime"])[0]
+					"createdAt" =>  explode(' ', $agendas[$a]["datetime"])[0],
+                    "isAlbum" => $agendas[$a]["isAlbum"],
 				]);
 			}
 		}
@@ -421,6 +421,8 @@ class TributGController extends AbstractController
         //     "photos" => $tributGService->getAllPhotos($table_tributG_name),
         // ]);
     }
+
+
 
 
 
@@ -1047,6 +1049,260 @@ class TributGController extends AbstractController
         $results=mb_convert_encoding($results, 'UTF-8', 'UTF-8');
 
         return $this->json($results);
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenieram@gmail.com>
+     */
+    #[Route("/tributG/new_letter_fans", name: "app_tributG_new_letter_fans", methods: ["GET"])]
+    public function fetchCallActionNewletterFansTribuG(
+        TributGService $tributGService,
+        UserService $userService
+    ){
+        if( !$this->getUser() || $this->getUser()->getType() === "Type" ){
+            return $this->json([ "success" => false, "message" => "User not connected"], 401 );
+        }
+        $user_connected= $this->getUser();
+        $user_profil= $userService->getUserProfileFromId($user_connected->getId());
+        $apropos_tribuG= $tributGService->getProfilTributG( $user_profil->getTributG(), $user_connected->getId() );
+
+        // if( $apropos_tribuG["roles"] !== "fondateur" ){
+        //     return $this->json([ "success" => false, "message" => "User not founder"], 401 );
+        // }
+        
+        return $this->json([
+            "apropos_tribuG" => $apropos_tribuG,
+            "user_profil" => [
+                "id" => $user_profil->getUserId()->getId(),
+                "firstname" => $user_profil->getFirstname(),
+                "lastname" => $user_profil->getLastname(),
+                "email" => $user_profil->getUserId()->getEmail(),
+                "pseudo" => $user_profil->getUserId()->getPseudo(),
+            ]
+        ]);
+    }
+
+     /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenieram@gmail.com>
+     * Send news information to all fans in tribu G
+     */
+    #[Route("/tributG/sendNewLetter/for_all", name: "app_tribuG_send_newsLetter", methods: ["POST"])]
+    public function tribuGSendNewsLetterForAll(
+        Request $request,
+        TributGService $tributGService,
+        UserService $userService,
+        MailService $mailService,
+        Filesystem $filesyst,
+        NotificationService $notificationService
+    ){
+        if( !$this->getUser() && $this->getUser()->getType() === "Type" ){
+            return $this->json([ "success" => false, "message" => "User not connected"], 401 );
+        }
+
+        $user_connected= $this->getUser();
+        $user_connnected_id= $user_connected->getId();
+        $user_profil= $userService->getUserProfileFromId($user_connnected_id);
+        $full_name_user_connected=  $user_profil->getLastname() . " " . $user_profil->getFirstname();
+
+        $apropos_tribuG= $tributGService->getProfilTributG( $user_profil->getTributG(), $user_connnected_id );
+        // if( $apropos_tribuG["roles"] !== "fondateur" ){
+        //     return $this->json([ "success" => false, "message" => "User not founder"], 401 );
+        // }
+        
+        $data = json_decode($request->getContent(), true);
+        extract($data); /// $object, $description, $piece_joint
+
+        $piece_with_path = [];
+        if (count($piece_joint) > 0) {
+            // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/piece_joint/user_' . $user_connnected_id . "/";
+            
+            $dir_exist = $filesyst->exists($path);
+            if ($dir_exist === false) {
+                $filesyst->mkdir($path, 0777);
+            }
+
+            foreach ($piece_joint as $item) {
+                $name = $item["name"];
+
+                $char_spec = ["-", " "];
+                $name = str_replace($char_spec, "_", $name);
+                $path_name = $path . $name;
+                ///name file, file base64
+                file_put_contents($path_name, file_get_contents($item["base64File"]));
+
+
+                $item["path"] = $path . $name;
+
+                array_push($piece_with_path, $item);
+            }
+        }
+
+        $context["object_mail"] = $object;
+        $context["template_path"] = "emails/mail_news_letter.html.twig";
+        $context["content_mail"] = $description;
+        $context["piece_joint"] = $piece_with_path;
+        
+
+        $all_fans_tribuG= $tributGService->getFullNameForAllMembers($user_profil->getTributG()); /// userID, fullName
+        $all_user_receiver= [];
+        foreach($all_fans_tribuG as $fans_tribuG){
+            $user_id_fans= $fans_tribuG["userID"];
+            $user_fullName= $fans_tribuG["fullName"];
+
+            if( intval($user_id_fans) !== intval($user_connected->getId())){
+                $user_fans_profil= $userService->getUserProfileFromId(intval($user_id_fans));
+                
+                $temp= [
+                    "id" => $user_fans_profil->getUserId()->getId(),
+                    "email" => $user_fans_profil->getUserId()->getEmail(),
+                    "fullName" => $user_fullName
+                ];
+                array_push($all_user_receiver, $temp);
+            }
+        }
+
+        $mailService->sendEmailNewsLetter($user_connected->getEmail(), $full_name_user_connected, $all_user_receiver, $context );
+
+        foreach($all_user_receiver as $user_receiver ){
+
+            $notificationService->sendNotificationForOne(
+                $user_connnected_id,
+                $user_receiver["id"],
+                "mailto:".$user_receiver["email"],
+                "Veuillez consulter votre boîte e-mail, le fondateur de votre tribu G vient vous envoyer une lettre d'information."
+            );
+        }
+        
+        return $this->json([
+            "success" => true
+        ]);
+    }
+
+
+    /**
+     * @author  Tomm
+     * cette route a pour but de charger les photos de la tribu-G
+     */
+    #[Route("/tributG/photos/album", name: "app_photos_tributG_album")]
+
+    public function fetchAllPhotosTributGAlbum(
+        TributGService $tributGService,
+        AgendaService $agendaService,
+        UserRepository $userRepository
+    ) {
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+
+        $galeryPhotosPub = $tributGService->getAllPublicationBrutes($table_tributG_name);
+        $photoDatePub = [];
+        for ($i = 0; $i < count($galeryPhotosPub); $i++) {
+            array_push($photoDatePub, [
+                "id" => $galeryPhotosPub[$i]["id"],
+                "photo" => $galeryPhotosPub[$i]["photo"],
+                "createdAt" => explode(' ', $galeryPhotosPub[$i]["datetime"])[0],
+                "isAlbum" => $galeryPhotosPub[$i]["isAlbum"]
+            ]);
+        }
+        $user_connected = $this->getUser();
+        $tributG_name = $tributGService->getTribuGtableForNotif($user_connected->getId());
+        $photoAgenda = [];
+        $all_user_id_tribug = $tributGService->getAllTributG($tributG_name);
+        foreach ($all_user_id_tribug as $user_id) {
+            $user = $userRepository->find(intval($user_id["user_id"]));
+            $table_agenda = $user->getNomTableAgenda();
+            $agendas = $agendaService->getOneAgendaPhoto($table_agenda);
+
+            for ($a = 0; $a < count($agendas); $a++) {
+                array_push($photoAgenda, [
+                    "id" => $agendas[$a]["id"],
+                    "photo" => $agendas[$a]["file_path"],
+                    "photoSplit" =>  explode('/', $agendas[$a]["file_path"]),
+                    "createdAt" =>  explode(' ', $agendas[$a]["datetime"])[0],
+                    "isAlbum" => $agendas[$a]["isAlbum"]
+                ]);
+            }
+        } 
+
+        return $this->json([$photoDatePub, $photoAgenda]);
+    }
+
+    #[Route('/user/tribu-g/photos/album', name: 'create_album_tribu_g')]
+    public function createAlbumG(
+        Request $request,
+        TributGService $tributGService
+    ) {
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $data = json_decode($request->getContent(), true);
+        $nameAlbum = $data["name_album"];
+        // $tributGService->createAlbumG($table_tributG_name, $nameAlbum);
+        $res = $tributGService->createAlbumG($table_tributG_name, $nameAlbum); 
+        return $this->json($res);
+    }
+
+    #[Route('/user/tribu-g/get/album', name: 'get_album_tribu_g')]
+    public function getAlbumG(
+        TributGService $tributGService
+    ) {
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $listAlbum = $tributGService->getAlbumG($table_tributG_name);
+        return $this->json($listAlbum);
+    }
+
+    #[Route('/user/tribu-g/get/copyer/album', name: 'get_copye_path_album_tribu_g')]
+    public function getCopyePathAlbumG(
+        TributGService $tributGService
+    ) {
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $listPhotoAlbum = $tributGService->getCopyePathAlbumG($table_tributG_name);
+        return $this->json($listPhotoAlbum);
+    }
+
+    #[Route('/user/tribu-g/photos/copyer/album', name: 'copye_path_album_tribu_g', methods: ['POST'])]
+    public function copyePathAlbumG(
+        Request $request,
+        TributGService $tributGService
+    ) {
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $data = json_decode($request->getContent(), true);
+        $pathAlbums = $data["valueAlbum"];
+        $albumId = $data["albumId"];
+        $idPub = $data["idPub"];
+        // dd(count($pathAlbums));
+
+        foreach ($pathAlbums as $pathAlbum) {
+            $tributGService->copyePathAlbumG($table_tributG_name, $pathAlbum['path'], $albumId, $pathAlbum['idPub']);
+        }
+        $isAlbum = 1;
+        foreach ($idPub as $id) {
+            $tributGService->modifIsAlbumPublicationG($table_tributG_name, $id, $isAlbum);
+            $tributGService->modifIsAlbumAgenda($userId, $id, $isAlbum);
+        }
+        return $this->json("Album ajouté avec succès");
+    }
+
+    #[Route('/user/tribu-g/delete/path/album', name: 'delete_path_album_tribu_g')]
+    public function deletePathAlbumG(
+        Request $request,
+        TributGService $tributGService
+    ) {
+        $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $data = json_decode($request->getContent(), true);
+        $isAlbum = 0;
+        $allIdPub = $data["allIdPub"];
+        $allIdAlbum = $data["albumId"];
+        foreach ($allIdPub as $id) {
+            $tributGService->modifIsAlbumPublicationG($table_tributG_name, $id, $isAlbum);
+            $tributGService->modifIsAlbumAgenda($userId, $id, $isAlbum);
+
+        }
+        foreach ($allIdAlbum as $id) {
+            $tributGService->deleteIsAlbumPath($table_tributG_name, $id);
+        }
+        return $this->json("succès");
     }
 
 }

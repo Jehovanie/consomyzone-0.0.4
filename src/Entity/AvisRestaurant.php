@@ -59,6 +59,14 @@ class AvisRestaurant
     private $restaurant;
 
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="text", nullable=false)
+     */
+    private $type;
+
+
 
     /**
      * Get the value of id
@@ -192,6 +200,30 @@ class AvisRestaurant
     public function setRestaurant(BddResto $restaurant)
     {
         $this->restaurant = $restaurant;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of type
+     *
+     * @return  string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set the value of type
+     *
+     * @param  string  $type
+     *
+     * @return  self
+     */
+    public function setType(string $type)
+    {
+        $this->type = $type;
 
         return $this;
     }

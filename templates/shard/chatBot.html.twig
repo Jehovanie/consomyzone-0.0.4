@@ -20,20 +20,29 @@
 		<div class="text-center" id="openChat" style="background-color: #69BC45;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;">
 			{# <i class="fas fa-quote-left" style="margin-top: 13%;font-size:28px;"></i> #}
 			<img src="/public/assets/icon/icon_cmz.jpg" alt="CMZ" class="vc-chat yd-chat qk-chat rk-chat" style="margin-top: 5%;width: 36px;height: 36px;margin-left: 5%;border-radius: 20%;" />
+			<span class="tooltips-chathome">Ouvrir l'assistant virtuel de CMZ.</span>
 
 		</div>
 
 		{% if (app.user and app.user.type!='Type')%}
 			{# <div class="text-center ms-2 non_active disabled-link" style="background-color: #0d6efd;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;">
 				<i class="fas fa-comment" style="margin-top: 13%;font-size:28px;"></i> #}
+			<div class="d-none information_user_conected_jheo_js" data-profil="{{userConnected.photo_profil}}" data-userFullName="{{ userConnected.lastname ~ " " ~ " " ~ userConnected.firstname }}" data-toggle-user-id={{app.user.id}} data-toggle-notif={{app.user.tablenotification}} data-toggle-msg={{app.user.tablemessage}}></div>
 			<div class="text-center ms-2" id="openMessage" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;">
 				<i class="fas fa-comment" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
+				<span class="content_badge_message_jheo_js">
+					<span class="top-0 badge rounded-pill bg-danger badge_message_jheo_js" style="transform: translate(60%,-250%)!important;">
+						0
+					</span> 
+				</span>
+				<span class="tooltips-chathome">Cliquez pour voir plus des messages.</span>
 
 			</div>
 
 			<div class="text-center ms-2" id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;">
 			{# <div class="text-center ms-2 non_active " id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #808080;cursor:pointer;"> #}
 				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
+				<span class="tooltips-chathome">Cliquez pour lancer une visioconférence.</span>
 
 			</div>
 
@@ -225,3 +234,5 @@
     </div>
   </div>
 </div>
+
+{% include 'shard/modal/modal_message_iframe.twig' %}

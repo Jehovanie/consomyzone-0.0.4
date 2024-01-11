@@ -1974,7 +1974,8 @@ if (document.querySelector("#closevisio")) {
 
 if (document.querySelector("#openMessage")) {
   document.querySelector("#openMessage").addEventListener("click", function () {
-    window.location.href = "/user/all/message";
+    // window.location.href = "/user/all/message";
+    openIframeMessageOrVisio("message");
 
     // openChat()
 
@@ -2108,7 +2109,8 @@ if (document.querySelector("#openChat")) {
 
 if (document.querySelector("#openVisio")) {
   document.querySelector("#openVisio").addEventListener("click", function () {
-    window.location.href = "/user/all/message";
+    // window.location.href = "/user/all/message";
+    openIframeMessageOrVisio("visio");
     // openChat()
 
     // document.querySelector("#chat_container").classList.add("chat_container_visio")
@@ -2572,3 +2574,76 @@ if(document.querySelector("#close_visio_shared_faniry_js")){
     }
   })
 }
+
+
+/**
+ * @author Elie
+ * @constructor : lancement d'une messagerie et chatbot dans une iframe
+ * localisation : chatHome.js
+ * utilisation : icon chat et visio sur la page d'accueil de la carte
+ */
+function openIframeMessageOrVisio(type){
+
+  let url = type=="visio"?"/api/message/perso_iframe":"/api/user/message_iframe";
+
+  if(document.querySelector("body > iframe")){
+
+    document.querySelector("body > iframe").remove()
+
+  }else{
+
+    let message_iframe = document.createElement("iframe")
+    message_iframe.id=type+"-iframe";
+    message_iframe.src = url
+    message_iframe.classList.add("message-iframe")
+
+    document.querySelector("#"+type+"IframeBody").appendChild(message_iframe)
+
+    $("#"+type+"Iframe").modal("show");
+
+  }
+}
+
+/**
+ * @author Elie
+ * location : chatHome.js
+ * utilisation : affichage de nombre de message non lu dans l'écran d'accueil sur la carte
+ */
+if (document.querySelector(".information_user_conected_jheo_js")) {
+  const contentInfoUser = document.querySelector(
+    ".information_user_conected_jheo_js"
+  );
+
+  //// GET NUMBER MESSAGE NOT SHOW  AND SETTINGS
+  const event_source_nbr_message = new EventSource(
+    "/user/show/nbrMessageNotShow"
+  );
+  event_source_nbr_message.onmessage = function (event) {
+    ///number message not show in the database
+    const new_nbr_message = JSON.parse(event.data);
+
+    /// check if different 0
+    const badge_msg = document.querySelector(".content_badge_message_jheo_js");
+    const old_nbr_message = document.querySelector(
+      ".badge_message_jheo_js"
+    ).innerText;
+    if (
+      parseInt(new_nbr_message) != 0 &&
+      parseInt(old_nbr_message) < parseInt(new_nbr_message)
+    ) {
+      if (badge_msg.classList.contains("d-none")) {
+        badge_msg.classList.remove("d-none");
+      }
+      document.querySelector(".badge_message_jheo_js").innerText = `${parseInt(
+        new_nbr_message
+      )}`;
+      notificationSong();
+    } else if (parseInt(new_nbr_message) === 0) {
+      if (!badge_msg.classList.contains("d-none")) {
+        badge_msg.classList.add("d-none");
+        document.querySelector(".badge_message_jheo_js").innerText = "0";
+      }
+    }
+  };
+}
+/** Fin Elie */

@@ -94,7 +94,7 @@ class AgendaController extends AbstractController
             $notificationService->sendNotificationForOne(
                 $this->getUser()->getId(),
                 intval($userID),
-                "Partage Agenda",
+                "/user/tribu/agenda",
                 "Je tenais à vous informer que je vous ai envoyé une invitation importante par courrier électronique. 
                 Si vous avez des questions ou des préoccupations, n'hésitez pas à me contacter par e-mail ou par téléphone."
             );
@@ -261,7 +261,7 @@ class AgendaController extends AbstractController
         $content = $tribu_t_service->getFullName($user_id). " a crée un ".$type." à partir du ".$from." au ".$to . " 
         si vous avez interéssé. <a href='/user/tribut/get-detail-agenda/" .$tribut_name. "/" .$id_agenda. "'>Voir plus...</a>";
 
-        $notif_service -> sendNotificationForMany($user_id,$membre,"Agenda", $content);
+        $notif_service -> sendNotificationForMany($user_id,$membre,"/user/tribu/agenda", $content);
 
         return  $this->json($type." enregistré avec succès");
     }
@@ -522,7 +522,7 @@ class AgendaController extends AbstractController
             $content = $tribu_t_service->getFullName($user_id)." ". $verbe ." votre ".$membre["type"]." que vous avez créé.
             <a href='/user/tribut/get-detail-agenda/" .$table_agenda. "/" .$id. "'> Voir plus...</a>";
 
-            $notif_service -> sendNotificationForOne($user_id, $membre["user_id"], "Action agenda", $content );
+            $notif_service -> sendNotificationForOne($user_id, $membre["user_id"], "/user/tribu/agenda", $content );
 
         }
 
@@ -636,7 +636,7 @@ class AgendaController extends AbstractController
             $membre = $tribu_t_service -> getUserIdInTribu($tribu_g, $user_id);
             $content = $tribu_t_service->getFullName($user_id). " a partagé un agenda dans votre tribu G
             si vous avez interéssé. <a href='/user/tribut/get-detail-agenda/" .$table_origin. "/" .$id_agenda. "'>Voir plus...</a>";
-            $notif_service -> sendNotificationForMany($user_id, $membre,"Partage Agenda", $content);
+            $notif_service -> sendNotificationForMany($user_id, $membre,"/user/tribu/agenda", $content);
 
         }else if($type=="tribu_t"){
 
@@ -645,7 +645,7 @@ class AgendaController extends AbstractController
                     $membre = $tribu_t_service -> getUserIdInTribu($list_tribu_t[$i], $user_id);
                     $content = $tribu_t_service->getFullName($user_id). " a partagé un agenda dans la tribu T ".$tribu_t_name."
                     si vous avez interéssé. <a href='/user/tribut/get-detail-agenda/" .$table_origin. "/" .$id_agenda. "'>Voir plus...</a>";
-                    $notif_service -> sendNotificationForMany($user_id, $membre,"Partage Agenda", $content);
+                    $notif_service -> sendNotificationForMany($user_id, $membre,"/user/tribu/agenda", $content);
                 }
                 
             }
@@ -1113,7 +1113,7 @@ class AgendaController extends AbstractController
         if( $agendaService->chackIfAlreadyAcceptedAgenda($table_partage_user_sender, $agendaID, $userID )){
 
             /// send notification for the user that his confirm
-            $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", "Vous avez déjà répond cet agenda partager." );
+            $notificationService->sendNotificationForOne($userID, $userID,"/user/tribu/agenda", "Vous avez déjà répondu cet agenda partagé." );
 
             return  $this->redirectToRoute("app_account");
         }
@@ -1133,15 +1133,15 @@ class AgendaController extends AbstractController
             }
 
             /// send  notification for the user that is request is reject because max atteint
-            $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", $message );
+            $notificationService->sendNotificationForOne($userID, $userID,"/user/tribu/agenda", $message );
             dd("Confirmation : REFUSE OU TAILLE MAX ATTEINT");
         }else if( intval($result) === 1 ){  //// accepted reussir
 
             /// send  notification for the user this is request is persist.
-            $notificationService->sendNotificationForOne($userID, $userID,"Accepted Agenda", "Vous avez accepté un agenda créer par " . $user_sender_fullname . ".");
+            $notificationService->sendNotificationForOne($userID, $userID,"/user/tribu/agenda", "Vous avez accepté un agenda créé par " . $user_sender_fullname . ".");
             
             /// send  notification for the user that is creat this agenda someone accept her partage.
-            $notificationService->sendNotificationForOne($userID, $userID_sender,"Accepted Agenda", $user_fullname . " a accepté votre agenda partager");
+            $notificationService->sendNotificationForOne($userID, $userID_sender,"/user/tribu/agenda", $user_fullname . " a accepté votre agenda partagé");
 
 
             //// Persiste agenda to the user accepte.
@@ -1294,7 +1294,7 @@ class AgendaController extends AbstractController
             $notificationService->sendNotificationForOne(
                 $this->getUser()->getId(),
                 $this->getUser()->getId(),
-                "Partage Agenda",
+                "/user/tribu/agenda",
                 "Vous  venez de partager votre agenda sur votre " . $tribu . "."
             );
 
@@ -1337,8 +1337,8 @@ class AgendaController extends AbstractController
                     $notificationService->sendNotificationForOne(
                         $this->getUser()->getId(),
                         $this->getUser()->getId(),
-                        "Partage Agenda",
-                        "Vous  venez de partager votre agenda sur votre Tribu G."
+                        "/user/tribu/agenda",
+                        "Vous venez de partager votre agenda sur votre Tribu G."
                     );
 
                 }else if( $confid === "Tribu-T" ){ /// $confid === "Trigu-T";
@@ -1372,8 +1372,8 @@ class AgendaController extends AbstractController
                 $notificationService->sendNotificationForOne(
                     $this->getUser()->getId(),
                     $this->getUser()->getId(),
-                    "Partage Agenda",
-                    "Vous  venez de partager votre agenda sur votre Tribu " . $tribuTChecked
+                    "/user/tribu/agenda",
+                    "Vous venez de partager votre agenda sur votre Tribu " . $tribuTChecked
                 );
             }
 
@@ -1454,7 +1454,7 @@ class AgendaController extends AbstractController
     
                     $agendaService->setTimeOut("partage_agenda_".$userId, $id, $agenda_id, 15, "M");
 
-                    $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id, "presence_link", $body, null);
+                    $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id, "/user/tribu/agenda", $body, null);
         
                     //array_push($list,$email_to);
                     //array_push($infos, ["id" => $id, "fromName" => $tributGService->getFullName($userId), "email_from" => $email_from, "toName" => $tributGService->getFullName($id), "email_to" => $email_to]);
@@ -1509,7 +1509,7 @@ class AgendaController extends AbstractController
                 $body
             );
 
-            $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_creator, "presence_agenda", $body, null);
+            $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_creator, "/user/tribu/agenda", $body, null);
 
             return $this->redirectToRoute("agenda_presence_success");
 

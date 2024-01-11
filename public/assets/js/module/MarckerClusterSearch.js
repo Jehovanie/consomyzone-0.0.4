@@ -59,110 +59,83 @@ class MarckerClusterSearch extends MapModule {
 		}
 	}
 
-	async getCenterFromOpenStreetMap() {
-		const memoryCenter = getDataInSessionStorage("memoryCenter")
-			? JSON.parse(getDataInSessionStorage("memoryCenter"))
-			: null;
-		let latLong = memoryCenter
-			? { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng, zoom: memoryCenter.zoom }
-			: { lat: null, long: null, zoom: null };
+    async getCenterFromOpenStreetMap(){
+        const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
+        let latLong = memoryCenter ? { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng, zoom : memoryCenter.zoom } : { lat: null, long: null, zoom: null };
 
-		try {
-			let data_origin_cle1 = this.data.origin_cles1.trim();
+        try{
+            let data_origin_cle1=this.data.origin_cles1.trim();
 
-			if (
-				(data_origin_cle1.length < 3 && parseInt(data_origin_cle1) > 0 && parseInt(data_origin_cle1) < 95) ||
-				data_origin_cle1.toLowerCase() === "nord"
-			) {
-				const depCode = data_origin_cle1.toLowerCase() === "nord" ? 59 : parseInt(data_origin_cle1);
-				latLong = { lat: centers[depCode].lat, long: centers[depCode].lng, zoom: centers[depCode].zoom };
-			} else {
-				const dataLink = [
-					{
-						regex: /(([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ'.]*\s)\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)*,)*\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+\s([\d]{5})\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']+/gm,
-						clesType: "completAdresss",
-						zoom: 17,
-						link: `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`,
-					},
-					{
-						regex: /[\d]{5}/g,
-						max_length: 5,
-						clesType: "codepostal",
-						zoom: 13,
-						link: `https://nominatim.openstreetmap.org/search?format=json&postalcode=${data_origin_cle1}&country=France&limit=1`,
-					},
-					{
-						regex: /([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+/g,
-						clesType: "city",
-						max_length: 10,
-						zoom: 13,
-						link: `https://nominatim.openstreetmap.org/search?format=json&city=${data_origin_cle1}&country=France&limit=1`,
-					},
-				];
+            if((data_origin_cle1.length < 3 && ( parseInt(data_origin_cle1) > 0 &&  parseInt(data_origin_cle1) < 95 ) || data_origin_cle1.toLowerCase() === "nord")){
+                const depCode= data_origin_cle1.toLowerCase() === "nord" ? 59 : parseInt(data_origin_cle1) ;
+                latLong=  { lat: centers[depCode].lat, long: centers[depCode].lng, zoom : centers[depCode].zoom };
+            }else{
+                const dataLink= [
+                    {
+                        regex : /(([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ'.]*\s)\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)*,)*\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+\s([\d]{5})\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']+/gm,
+                        clesType:"completAdresss",
+                        zoom: 17,
+                        link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`
+                    },
+                    {
+                        regex: /[\d]{5}/g,
+                        clesType:"codepostal",
+                        zoom: 13,
+                        link : `https://nominatim.openstreetmap.org/search?format=json&postalcode=${data_origin_cle1}&country=France&limit=1`
+                    },
+                    {
+                        regex: /([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+/g,
+                        clesType : "city",
+                        zoom: 13,
+                        link : `https://nominatim.openstreetmap.org/search?format=json&city=${data_origin_cle1}&country=France&limit=1`
+                    },
+                    
+                ]
+                
+                let useLink = dataLink.find(item =>item.regex.test(data_origin_cle1))
+                
+                const apiOpenStreetMap = useLink ? useLink.link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`;
+                let responsePos = await fetch(apiOpenStreetMap)
+                let address = await responsePos.json();
 
-				let useLink = dataLink.find((item) => {
-					if (item.regex.test(data_origin_cle1)) {
-						if (item.hasOwnProperty("max_length")) {
-							return data_origin_cle1.length === item.max_length;
-						}
-						return true;
-					}
-				});
+                if( address.length === 0) {
+                    responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`)
+                    address = await responsePos.json();
 
-				const apiOpenStreetMap = useLink
-					? useLink.link
-					: `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`;
-				let responsePos = await fetch(apiOpenStreetMap);
-				let address = await responsePos.json();
+                    if( address.length === 0 ){
+                        const cleWord= data_origin_cle1.replaceAll("-", " ").replaceAll("_", " ").split(" ");
+                        const regexCodepostal=/[\d]{5}/g;
 
-				if (address.length === 0) {
-					responsePos = await fetch(
-						`https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`
-					);
-					address = await responsePos.json();
+                        for(let i=0; i < cleWord.length; i++){
+                            const cle= cleWord[i];
 
-					if (address.length === 0) {
-						const cleWord = data_origin_cle1.replaceAll("-", " ").replaceAll("_", " ").split(" ");
-						const regexCodepostal = /[\d]{5}/g;
+                            if(regexCodepostal.test(cle)){
+                                responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&postalcode=${cle}&country=France&limit=1`)
+                                address = await responsePos.json();
 
-						for (let i = 0; i < cleWord.length; i++) {
-							const cle = cleWord[i];
+                            }else{
+                                // responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${cleWord[i]}&format=json&limit=1`)
+                                responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${cle}&country=France&limit=1`)
+                                address = await responsePos.json();
+                            }
 
-							if (regexCodepostal.test(cle)) {
-								responsePos = await fetch(
-									`https://nominatim.openstreetmap.org/search?format=json&postalcode=${cle}&country=France&limit=1`
-								);
-								address = await responsePos.json();
-							} else {
-								// responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${cleWord[i]}&format=json&limit=1`)
-								responsePos = await fetch(
-									`https://nominatim.openstreetmap.org/search?format=json&city=${cle}&country=France&limit=1`
-								);
-								address = await responsePos.json();
-							}
-
-							if (address.length !== 0) {
-								break;
-							}
-						}
-					}
-				}
-
-				//// In cas API openStreetMap failed or return empty
-				const memoryCenter = getDataInSessionStorage("memoryCenter")
-					? JSON.parse(getDataInSessionStorage("memoryCenter"))
-					: null;
-				latLong =
-					address.length > 0
-						? { lat: address[0].lat, long: address[0].lon, zoom: useLink.zoom }
-						: { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng, zoom: memoryCenter.zoom };
-			}
-		} catch (e) {
-			console.log(e);
-		} finally {
-			return latLong;
-		}
-	}
+                            if(address.length !== 0 ){
+                                break;
+                            }
+                        }
+                    }
+                }
+    
+                //// In cas API openStreetMap failed or return empty
+                const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
+                latLong= (address.length> 0) ? { lat: address[0].lat, long: address[0].lon, zoom: useLink.zoom } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng, zoom: memoryCenter.zoom };
+            }
+        }catch (e){
+            console.log(e)
+        }finally{
+            return latLong;
+        }
+    }
 
 	saveBoundsMap() {
 		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());

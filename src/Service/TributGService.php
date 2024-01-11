@@ -100,7 +100,7 @@ class TributGService extends PDOConnexionService{
 
                 $this->creaTableTeamMessage($name_table_tribuG);
                 
-                $query = "CREATE TABLE ".$name_table_tribuG."_publication(
+                $query = "CREATE TABLE ".$name_table_tribuG. "_publication(
 
                     id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 
@@ -115,6 +115,8 @@ class TributGService extends PDOConnexionService{
                     userfullname VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
 
                     datetime timestamp NOT NULL DEFAULT current_timestamp(),
+
+                    isAlbum TINYINT(1) NOT NULL DEFAULT 0,
 
                     FOREIGN KEY(user_id) REFERENCES user(id)
 
@@ -260,6 +262,39 @@ class TributGService extends PDOConnexionService{
 
 
                     $this->getPDO()->exec($sql_golf_comment);
+
+                    //creation table nom album
+                    $sqlCreateTableAlbum = " CREATE TABLE " . $name_table_tribuG . "_album(
+
+                        id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                        name_album varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+
+                        datetime datetime NOT NULL DEFAULT current_timestamp()
+
+                      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+
+                    $this->getPDO()->exec($sqlCreateTableAlbum);
+
+                    //creation table path album
+                    $sqlCreateTablePathAlbum = " CREATE TABLE " . $name_table_tribuG . "_album_path(
+
+                        id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                        path varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+
+    					album_id int(11) NOT NULL,
+
+    					id_pub int(11) NOT NULL,
+
+    					FOREIGN KEY (album_id) REFERENCES " . $name_table_tribuG . "_album(id),
+
+    					FOREIGN KEY (id_pub) REFERENCES " . $name_table_tribuG . "_publication(id)
+
+                      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+                    $this->getPDO()->exec($sqlCreateTablePathAlbum);
 
                     /** End restaurant table */
 
@@ -2013,4 +2048,121 @@ class TributGService extends PDOConnexionService{
 
             return $max_id->fetchAll(PDO::FETCH_ASSOC);
     }
+
+    /**
+     * @author Tomm 
+     * modifier le isAlbum 
+     */
+    public function modifIsAlbumAgenda($userId, $id, $isAlbum)
+    {
+        $query = "UPDATE agenda_" . $userId . " set isAlbum = " . $isAlbum . " WHERE id = " . $id;
+
+        $stmt = $this->getPDO()->prepare($query);
+
+        $stmt->execute([]);
+    }
+
+    /**
+     * @author Tomm 
+     * creation du nom album tribu G
+     */
+    public function createAlbumG($table, $nameAlbum)
+    {
+
+        $detectSql = "SELECT * FROM " . $table . "_album WHERE name_album = '" . $nameAlbum ."'";
+        $statement = $this->getPDO()->prepare($detectSql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $datetime = new \DateTime();
+        $datetime = $datetime->format('Y-m-d H:i:s');
+        if (count($result) <= 0) {
+            $sql = "INSERT INTO " . $table . "_album (  name_album, datetime) VALUES (:name_album,:datetime)";
+            $statement = $this->getPDO()->prepare($sql);
+            $statement->bindParam(':name_album', $nameAlbum, PDO::PARAM_STR);
+            $statement->bindParam(':datetime', $datetime, PDO::PARAM_STR);
+            $statement->execute();
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    /**
+     * @author Tomm
+     * select du nom album tribu G 
+     */
+    public function getAlbumG($table)
+    {
+
+        $sql = "SELECT id, name_album , datetime FROM " . $table . "_album";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    
+
+    /**
+     * @author Tomm
+     * envoyer le path album tribu T 
+     */
+    public function copyePathAlbumG($table, $path, $albumId, $idPub)
+    {
+        $detectSql = "SELECT * FROM " . $table . "_album_path WHERE id_pub = " . $idPub;
+        $statement = $this->getPDO()->prepare($detectSql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        
+        if(count($result) <= 0){
+            $sql = "INSERT INTO " . $table . "_album_path (path, album_id, id_pub) VALUES (:path,:album_id,:id_pub)";
+            $statement = $this->getPDO()->prepare($sql);
+            $statement->bindParam(':path', $path, PDO::PARAM_STR);
+            $statement->bindParam(':album_id', $albumId, PDO::PARAM_STR);
+            $statement->bindParam(':id_pub', $idPub, PDO::PARAM_STR);
+            $statement->execute();
+        }
+       
+    }
+
+    /**
+     * @author Tomm
+     * get le path album tribu G
+     */
+    public function getCopyePathAlbumG($table)
+    {
+        $sql = "SELECT id, path, album_id, id_pub FROM " . $table . "_album_path";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Tomm
+     * modifie le isAlbum du publication
+     */
+    public function modifIsAlbumPublicationG($tableName, $id , $isAlbum)
+    {
+        $query = "UPDATE $tableName" . "_publication" . " SET isAlbum = '" . $isAlbum . "' WHERE id = " . $id .";";
+
+        $stmt = $this->getPDO()->prepare($query);
+
+        $stmt->execute();
+    }
+
+    /**
+     * @author Tomm
+     * suprimer le isAlbum du publication
+     */
+    public function deleteIsAlbumPath($tableName, $id)
+    {
+        $query = "DELETE FROM $tableName" . "_album_path WHERE id = " . $id;
+        $stmt = $this->getPDO()->prepare($query);
+        $stmt->execute();
+    }
+
+   
 }

@@ -430,6 +430,15 @@ if(document.querySelector("#list-demande-partenaire"))
       _table += _tr + "</tbody></table>";
       document.querySelector(".content_list_infoAvalider_js").innerHTML =
         _table;
+
+      if (r.length > 0){
+        $("#listeRestoAvaliderTable").DataTable({
+          language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+          },
+        });
+      }
+
     });
 }
 
@@ -795,11 +804,13 @@ if(document.querySelector("#list-demande-partenaire"))
       document.querySelector(".content_list_infoAvalider_js").innerHTML =
         _table;
 
-      $("#listeRestoAvaliderTable").DataTable({
-        language: {
-          url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
-        },
-      });
+      if (r.length > 0){
+            $("#listeRestoAvaliderTable").DataTable({
+              language: {
+                url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+              },
+            });
+      }
     });
 }
 function rejectAdresseValidate(ev) {

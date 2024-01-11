@@ -1533,24 +1533,24 @@ function getObjectForNewAgenda(e) {
     let agenda={};
     try{
         checkRequiredInput(document.querySelector("#eventTitle"),"veuillez renseigner le titre de votre événement",containerMessageRequiredAgd)
-        checkRequiredInput(document.querySelector("#typeEvent"),"veuillez renseigner le type de votre événement",containerMessageRequiredAgd)
-        checkRequiredInput(document.querySelector("#eventDesc"),"veuillez renseigner la description de votre événement",containerMessageRequiredAgd)
-        checkRequiredInput(document.querySelector("#nbrParticipant"),"veuillez renseigner le nombre de participant de votre événement",containerMessageRequiredAgd)
+        //checkRequiredInput(document.querySelector("#typeEvent"),"veuillez renseigner le type de votre événement",containerMessageRequiredAgd)
+        //checkRequiredInput(document.querySelector("#eventDesc"),"veuillez renseigner la description de votre événement",containerMessageRequiredAgd)
+        //checkRequiredInput(document.querySelector("#nbrParticipant"),"veuillez renseigner le nombre de participant de votre événement",containerMessageRequiredAgd)
         checkRequiredInput(document.querySelector("#eventStart"),"veuillez renseigner la date de début de votre événement",containerMessageRequiredAgd)
         checkRequiredInput(document.querySelector("#eventEnd"),"veuillez renseigner la date de fin de votre événement",containerMessageRequiredAgd)
         checkRequiredInput(document.querySelector("#timeStart"),"veuillez renseigner l'heure de début de votre événement",containerMessageRequiredAgd)
         checkRequiredInput(document.querySelector("#timeEnd"),"veuillez renseigner l'heure de fin de votre événement",containerMessageRequiredAgd)
         agenda = {
             "title": document.querySelector("#eventTitle").value,
-            "type": document.querySelector("#typeEvent").value,
+            "type": document.querySelector("#typeEvent").value.trim() != "" ? document.querySelector("#typeEvent").value.trim() : "Evènement",
             "isEtabCMZ": isEtabCMZ,
             "isGolfCMZ": isGolfCMZ,
             "isRestoCMZ": isRestoCMZ,
             "isVisioCMZ": isVisioCMZ,
             "name": document.querySelector("#nomEtabEvent").value,
             "adresse": document.querySelector("#lieuEvent").value,
-            "description": document.querySelector("#eventDesc").value,
-            "participant": document.querySelector("#nbrParticipant").value,
+            "description": document.querySelector("#eventDesc").value.trim() != "" ? document.querySelector("#eventDesc").value.trim(): "Descro EVE + Type EVE",
+            "participant": document.querySelector("#nbrParticipant").value.trim() != "" ? document.querySelector("#nbrParticipant").value.trim() : "50",
             "place_libre": document.querySelector("#nbrParticipant").value,
             "dateStart": document.querySelector("#eventStart").value,
             "dateEnd": document.querySelector("#eventEnd").value,
@@ -1725,13 +1725,18 @@ function showEtabDetail(event,nom_dep, id_dep, id_etab) {
 
 function initInputForm() {
 
-    const all_input = document.querySelectorAll('.content_input_create_agenda_jheo_js input')
+    /*const all_input = document.querySelectorAll('.content_input_create_agenda_jheo_js input')
 
     all_input.forEach(j => {
         if (j.value !== null) {
             j.value = null;
         }
-    })
+    })*/
+    document.querySelector("#eventTitle").value = null;
+    document.querySelector("#typeEvent").value = "Evènement"
+    document.querySelector("#eventDesc").value = "Descro EVE + Type EVE"
+
+    document.querySelector("#nbrParticipant").value = "50"
 
     $("#createOrEditBtn").text("Créer")
 
@@ -1739,13 +1744,12 @@ function initInputForm() {
 
     document.querySelector('#createOrEditBtn').dataset.action = "create"
 
-    document.querySelector('.eventDesc_jheo_js').value = null
-
     // document.querySelector("#etabSelectOptions").value = 1
 
     document.querySelector("#golfRadio").checked = false
     document.querySelector("#autreRadio").checked = false
     document.querySelector("#restoRadio").checked = false
+    document.querySelector("#visioRadio").checked = false
 
     let nomEtab = document.querySelector("#containerNomEtab")
     let adresseContainer = document.querySelector(".lieuEventContainer")

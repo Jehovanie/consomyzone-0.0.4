@@ -1,5 +1,5 @@
 {# content_photos #}
-<div class="2xl:ud-max-w-230 content_photos_js_jheo">
+<div class="2xl:ud-max-w-230 content_photos_js_jheo" style="width: 67%;">
 	<div class="card p-3">
 		<!-- Gallery -->
 		<div>
@@ -38,6 +38,9 @@
 								<li class="nav-link">
 									<a id="gal-agenda-g" onclick="galAgendaG()" data-status-nav="gal-agenda-g">Agenda</a>
 								</li>
+<li class="nav-link">
+											<a id="gal-album-g" onclick="galAlbumG()" data-status-nav="gal-album-g">Album</a>
+										</li>
 							</ul>
                         </div>
                       </div>
@@ -50,6 +53,7 @@
                       <div class="row photo-pud-t-tomm-js" >
 					  {% set mergedArrayPub = {} %}
 						{% for single_photo in photosPub %}
+{% if single_photo['isAlbum'] == 0 %}
 							{% set createdAt = single_photo['createdAt'] %}
 							{% set photo = single_photo['photo'] %}
 							{% if not mergedArrayPub[createdAt] is defined %}
@@ -59,6 +63,8 @@
 									{% set mergedArrayPub = mergedArrayPub|merge({ (createdAt): mergedArrayPub[createdAt]|merge([photo]) }) %}
 								{% endif %}
 							{% endif %}
+{% endif %}
+							
 						{% endfor %}
 						{% for key,items in mergedArrayPub %}
 							<h6>{{ key }}</h6>
@@ -77,23 +83,25 @@
 					  {% set mergedArray = {} %}
 					  	
                         {% for single_photo in photosAgenda %}
-							{% set createdAt = single_photo['createdAt'] %}
-							{% set photo = single_photo['photo']  %}
-							{% set photoSplit = single_photo['photoSplit'] %}
-							{% if not mergedArray[createdAt] is defined %}
-								{% set mergedArray = mergedArray|merge({ (createdAt): [photo] }) %}
-							{% else %}
-								{% if mergedArray[createdAt] != single_photo['photo'] %}
-									{% set mergedArray = mergedArray|merge({ (createdAt): mergedArray[createdAt]|merge([photo]) }) %}
+							{% if single_photo['isAlbum'] == 0 %}
+								{% set createdAt = single_photo['createdAt'] %}
+								{% set photo = single_photo['photo']  %}
+								{% set photoSplit = single_photo['photoSplit'] %}
+								{% if not mergedArray[createdAt] is defined %}
+									{% set mergedArray = mergedArray|merge({ (createdAt): [photo] }) %}
+								{% else %}
+									{% if mergedArray[createdAt] != single_photo['photo'] %}
+										{% set mergedArray = mergedArray|merge({ (createdAt): mergedArray[createdAt]|merge([photo]) }) %}
+									{% endif %}
 								{% endif %}
 							{% endif %}
 						{% endfor %}
 						{% for key,items in mergedArray %}
-							<h6>{{ key }}</h6>
 							{% for item in items %}
 								{% if item %}
 									{% set photoSplit = item|split('/') %}
 								{% if photoSplit[3] is same as("tribu_g") %}
+									<h6>{{ key }}</h6>
 									<div class="col-lg-4 col-md-12 mb-4 mb-lg-0 galer" onclick="openGalleriesPhotoTribuT(this)">
 										<img src="{{ item }}" class="w-100 shadow-1-strong mb-4 galer" alt="Boat on Calm Water"/>
 									</div>
@@ -102,11 +110,20 @@
 					
 				{% endfor %}
 				
-{% endfor %}
+				{% endfor %}
 
                       </div>
                     </div>
-                    
+                    <div class="content-album-tomm-js d-none" data-status="gal-album-g">
+                      <div class="row photo-album-t-tomm-js album-tomm-js">
+
+						<div class="row insert-album-g-tomm-js">
+							<button type="button" class="btn btn-light create-album"  data-bs-toggle="modal" data-bs-target="#createAlbumTribuG">
+								<i class="fa-solid fa-plus"></i>
+							</button>
+						</div>
+                      </div>
+                    </div>
                   </div>
                 </div>
 				{# <div class="column-pg-cmz" >  #}
@@ -124,3 +141,91 @@
 					{# <div id="captionZoom"></div> #}
 	</div>
 </div>
+
+{# modale createAlbumTribuT #}
+<div class="modal" tabindex="-1" id="createAlbumTribuG">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Création de votre album</h5>
+				<button type="button" class="btn-close btn-close-creer-album-tomm-js" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container text-center">
+					<i class="fas fa-question-circle fs-1 text-info"></i><br>
+					<input type="text" class="input-album value-name-album-g-tomm-js" placeholder="Nom de votre album">
+					<div class="container mb-4 mt-5 content_btns_nanta_js add_attribut_tomm_js">
+						{# data-bs-toggle="modal" data-bs-target="#selectAddAlbum" #}
+						<button type="button" id="creation-album-g" class="btn btn-primary mt-1 creation-album-tribu-g-tomm-js" onclick="createAlbumTribuG()"></i>
+						Créer une album</button>
+					</div>
+				</div>
+
+			</div>
+		</div> 
+	</div>
+</div>
+
+{# modale selectAddAlbum #}
+<div class="modal" tabindex="-1" id="selectAddAlbumG"> 
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Séléctionner les photos</h5>
+				<button type="button" class="btn-close btn-close-tomm-js" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container text-center">
+					<div class="gallery-container">
+						<div>
+							<span class="h2">Vos photos</span>
+						</div>
+						<div id="gallery">
+							<div class="row all-galeri-to-album-tomm-js"></div>
+						</div>
+					</div>
+					<div class="container mb-4 mt-5 content_btns_nanta_js add_attribut_tomm_js">
+						<button type="button" id="copye-album" class="btn btn-primary mt-1 copye-album-tribu-g-tomm-js" disabled></i>
+						Ajoutez dans l'album</button>
+					</div>
+				</div>
+
+			</div>
+		</div>
+	</div>
+</div>
+
+
+{# modale selectAddAlbum #}
+<div class="modal" tabindex="-1" id="selectModifAlbumG">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Modifier les photos</h5>
+				<button type="button" class="btn-close btn-close-delet-tomm-js" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="container text-center">
+					<div class="gallery-container">
+						<div>
+							<span class="h2">Vos photos</span>
+						</div>
+						<div id="gallery">
+							<div class="row all-galeri-modif-album-tomm-js"></div>
+						</div>
+					</div>
+					<div class="container mb-4 mt-5 content_btns_nanta_js add_attribut_tomm_js">
+						<button type="button" id="supr-album" class="btn btn-danger mt-1 delete-album-tribu-g-tomm-js" disabled >
+							Suprimer dans l'album
+						</button>
+						{# <button type="button" id="modif-album" class="btn btn-primary mt-1 modif-album-tribu-g-tomm-js" disabled>
+							Changer l'album
+						</button> #}
+				</div>
+			</div>
+
+		</div>
+	</div>
+</div></div>
+
+

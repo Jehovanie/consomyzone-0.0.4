@@ -13,9 +13,6 @@ use App\Repository\BddRestoRepository;
 class Tribu_T_Service extends PDOConnexionService
 {
 
-
-
-
     /**
      * create data_base table tribu-T
      * 
@@ -99,6 +96,8 @@ class Tribu_T_Service extends PDOConnexionService
                     userfullname VARCHAR(250) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT 'inconnu',
 
                     datetime timestamp NOT NULL DEFAULT current_timestamp(),
+
+                    isAlbum TINYINT(1) NOT NULL DEFAULT 0,
 
                     FOREIGN KEY(user_id) REFERENCES user(id)
 
@@ -195,6 +194,8 @@ class Tribu_T_Service extends PDOConnexionService
 
                         datetime datetime NOT NULL DEFAULT current_timestamp(),
 
+                        isAlbum TINYINT(1) NOT NULL DEFAULT 0,
+
                         FOREIGN KEY (user_id) REFERENCES user (id)
 
                         ON DELETE CASCADE 
@@ -274,6 +275,36 @@ class Tribu_T_Service extends PDOConnexionService
                         ON UPDATE CASCADE
 
                       ) ENGINE=InnoDB";
+
+
+                    //creation table nom album
+                    $sqlCreateTableAlbum = " CREATE TABLE " . $output . "_album(
+
+                        id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                        name_album varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+
+                        datetime datetime NOT NULL DEFAULT current_timestamp()
+
+                      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+
+                    $this->getPDO()->exec($sqlCreateTableAlbum);
+
+                    //creation table path album
+                    $sqlCreateTablePathAlbum = " CREATE TABLE " . $output . "_album_path(
+
+                        id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                        path varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+
+    					album_id int(11) NOT NULL,
+
+    					FOREIGN KEY (album_id) REFERENCES " . $output . "_album(id)
+
+                      ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+                    $this->getPDO()->exec($sqlCreateTablePathAlbum);
 
 
                     
@@ -2121,7 +2152,8 @@ class Tribu_T_Service extends PDOConnexionService
                     "publication" => [
                         "image" => $d_pub['photo'],
                         "createdAt" => $d_pub["datetime"],
-                        "id" => $d_pub["id"]
+                        "id" => $d_pub["id"],
+                        "isAlbum" => $d_pub["isAlbum"]
                     ]
                 ];
 
@@ -2164,7 +2196,7 @@ class Tribu_T_Service extends PDOConnexionService
 
     public function getImportPhotoGalery($table_name)
     {
-        $sql = "SELECT id , path , datetime FROM " . str_replace("_publication", "_imp_img", $table_name);
+        $sql = "SELECT id , path , datetime, isAlbum FROM " . str_replace("_publication", "_imp_img", $table_name);
         //dd($sql);
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
@@ -2551,5 +2583,105 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
    
+    function getProfilTributT($tableName, $userId, $userRepository ){
+        $statement = $this->getPDO()->prepare("SELECT * FROM $tableName WHERE user_id = $userId LIMIT 1");
+        $statement->execute();
+        $data = $statement->fetch(PDO::FETCH_ASSOC);
 
+        $detailsTribuT= $userRepository->getDetailsTribuT($tableName);
+
+        $result = [
+            "id" => $data['id'],
+            "user_id" => $data['user_id'],
+            "roles" => $data["roles"],
+            "name" => $detailsTribuT['name_tribu_t_muable'],
+            "description" => $detailsTribuT['description'],
+            "avatar" => $detailsTribuT['logo_path'],
+            "datetime" => $detailsTribuT['datetime'],
+            "table_name" => $tableName
+        ];
+        return $result;
+    }
+    
+/**
+     * @author Tomm
+     * creation du nom album tribu T 
+     */
+    public function createAlbum($table, $nameAlbum)
+    {
+        $datetime = new \DateTime();
+        $datetime = $datetime->format('Y-m-d H:i:s');
+        $sql = "INSERT INTO " . $table . "_album (  name_album, datetime) VALUES (:name_album,:datetime)";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->bindParam(':name_album', $nameAlbum, PDO::PARAM_STR);
+        $statement->bindParam(':datetime', $datetime, PDO::PARAM_STR);
+        $statement->execute();
+    }
+
+    /**
+     * @author Tomm
+     * select du nom album tribu T 
+     */
+    public function getAlbum($table)
+    {
+
+        $sql = "SELECT id, name_album , datetime FROM " . $table . "_album";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Tomm
+     * envoyer le path album tribu T 
+     */
+    public function copyePathAlbum($table, $path, $albumId){
+        $sql = "INSERT INTO " . $table . "_album_path (path, album_id) VALUES (:path,:album_id)";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->bindParam(':path', $path, PDO::PARAM_STR);
+        $statement->bindParam(':album_id', $albumId, PDO::PARAM_STR);
+        $statement->execute();
+    }
+
+    /**
+     * @author Tomm
+     * get le path album tribu T 
+     */
+    public function getCopyePathAlbum($table)
+    {
+        $sql = "SELECT id, path, album_id FROM " . $table . "_album_path";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Tomm
+     * modifie le isAlbum du publication
+     */
+    public function modifIsAlbumPublication($tableName, $id)
+    {
+        $query = "UPDATE $tableName" . "_publication" . " set isAlbum = " . 1 . " WHERE id = " . $id;
+
+        $stmt = $this->getPDO()->prepare($query);
+
+        $stmt->execute([]);
+    }
+
+    /**
+     * @author Tomm
+     * modifie le isAlbum du inport
+     */
+    public function modifIsAlbumImpImg($tableName, $id)
+    {
+        $query = "UPDATE $tableName" . "_imp_img" . " set isAlbum = " . 1 . " WHERE id = " . $id;
+
+        $stmt = $this->getPDO()->prepare($query);
+
+        $stmt->execute([]);
+    }
 }

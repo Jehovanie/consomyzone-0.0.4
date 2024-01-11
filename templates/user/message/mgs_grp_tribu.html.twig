@@ -122,7 +122,8 @@
                         {% if isT == 1 %}
                             <div class="lc mg content_entete_msg_grp_jheo_js" data-roof={{app.user.id}} data-userToFirstname="" data-userToLastname=""  data-toggle-id-user-to={{group_send_to}} data-toggle-type="t">
                                 <div class="ob xc yd pf nh th">
-                                    <img src="{{(tribuTSelected.logo_path) ? "/public" ~ tribuTSelected.logo_path  : '/public/uploads/tribus/avatar_tribu.jpg' }}" alt="{{tribuTSelected.name_tribu_t_muable}}" class="vc yd qk rk"/>
+                                    <img src="{{(tribuTSelected.logo_path) ? "/public" ~ tribuTSelected.logo_path  : '/public/uploads/tribus/avatar_tribu.jpg' }}" alt="{{tribuTSelected.name_tribu_t_muable}}" class="vc yd qk rk"
+                                    style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)" />
                                 </div>
                                 <div>
                                     <p class="mn">
@@ -136,7 +137,8 @@
                         {% else %}
                             <div class="lc mg content_entete_msg_grp_jheo_js" data-roof={{app.user.id}} data-userToFirstname="" data-userToLastname=""  data-toggle-id-user-to={{group_send_to}} data-toggle-type="g">
                                 <div class="ob xc yd pf nh th">
-                                    <img src="{{(tribusG.tribugAvatar) ? "/public" ~ tribusG.tribugAvatar  :'/public/uploads/tribus/avatar_tribu.jpg' }}" alt="{{tribusG.name}}" class="vc yd qk rk"/>
+                                    <img src="{{(tribusG.tribugAvatar) ? "/public" ~ tribusG.tribugAvatar  :'/public/uploads/tribus/avatar_tribu.jpg' }}" alt="{{tribusG.name}}" class="vc yd qk rk"
+                                    style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)" />
                                 </div>
                                 <div>
                                     <p class="mn">
@@ -165,7 +167,7 @@
                                                         {% if message.images|length > 0 %}
                                                             {% for image in message.images %}
                                                                 <div class="file_item">
-                                                                    <img class="message_image_item" src="{{image}}" alt="image"
+                                                                    <img class="message_image_item" src="{{image}}" alt="image" style="cursor:pointer;"
                                                                     data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
                                                                     <a class="icon_download_file" href="{{image}}" download>
                                                                         <i class="fa-solid fa-download"  style="color:black"></i>
@@ -181,7 +183,7 @@
                                                         <div class="content_image_msg">    
                                                             {% for file in message.files %}
                                                                 <div class="file_item">
-                                                                    <img class="message_image_item" src="{{defaultFile}}" alt="File"
+                                                                    <img class="message_image_item" src="{{defaultFile}}" alt="File" style="cursor:pointer;"
                                                                     data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
                                                                     <a class="icon_download_file" href="{{file}}" download>
                                                                         <i class="fa-solid fa-download"  style="color:black"></i>
@@ -199,7 +201,7 @@
                                             <div class="d-flex align-items-center">
                                                 <div class="flex-shrink-0 xc yd pf nh th">
                                                     <img src="{{(message.photo_profil) ? '/public' ~ message.photo_profil : '/public/uploads/users/photos/default_pdp.png'}}" 
-                                                    alt="{{message.firstname}}" style="width:80%; height:80%; clip-path:circle(40%)"
+                                                    alt="{{message.firstname}}" style="width:80%; height:80%; clip-path:circle(40%);cursor:pointer;"
                                                     data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)"
                                                     />
                                                 </div>
@@ -219,7 +221,7 @@
                                                             {% for image in message.images %}
                                                                 <div class="file_item">
                                                                     <img class="message_image_item" src="{{image}}" alt="image"
-                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
+                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" style="cursor:pointer;" onclick="setPhotoMessage(this)">
                                                                     <a class="icon_download_file" href="{{image}}" download>
                                                                         <i class="fa-solid fa-download" style="color:black"></i>
                                                                     </a>
@@ -235,7 +237,7 @@
                                                             {% for file in message.files %}
                                                                 <div class="file_item">
                                                                     <img class="message_image_item" src="{{defaultFile}}" alt="File"
-                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
+                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" style="cursor:pointer;" onclick="setPhotoMessage(this)">
                                                                     <a class="icon_download_file" href="{{file}}" download>
                                                                         <i class="fa-solid fa-download"  style="color:black"></i>
                                                                     </a>

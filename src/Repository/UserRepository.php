@@ -101,21 +101,32 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             if(!array_key_exists("name", $arrayTribu_T_Owned)){
                 foreach($arrayTribu_T_Owned as $tribuT){
                     extract($tribuT);  /// $name
+                    $temp_date= $tribuT["date"];
+                    $datetime = date("Y-m-d H:i:s", $temp_date[0]);
+
                     $name_tribu_t_muable = isset($name_tribu_t_muable) ? $name_tribu_t_muable : null;
                     
                     array_push($results, [
                             "table_name" => $name, 
                             "name_tribu_t_muable" => $name_tribu_t_muable,
-                            "logo_path" => $logo_path
+                            "logo_path" => $logo_path,
+                            "datetime" => $datetime,
+                            "description" => $tribuT["description"],
                         ]
                     );
                 }
             }else{
                 $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $arrayTribu_T_Owned) ? $arrayTribu_T_Owned["name_tribu_t_muable"]:null;
+
+                $createdAt= $arrayTribu_T_Owned["date"];
+                $datetime = date("Y-m-d H:i:s", $createdAt[0]);
+                
                 array_push($results, [
                         "table_name" => $arrayTribu_T_Owned['name'],
                         "name_tribu_t_muable" => $name_tribu_t_muable,
-                        "logo_path" => $arrayTribu_T_Owned['logo_path']
+                        "logo_path" => $arrayTribu_T_Owned['logo_path'],
+                        "description" => $arrayTribu_T_Owned["description"],
+                        "datetime" => $datetime,
                     ]
                 );
             }
@@ -139,16 +150,32 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             if( !array_key_exists("name", $arrayTribu_T_Joined) ){
                 foreach($arrayTribu_T_Joined as $tribuT){
                     extract($tribuT);  /// $name
+
+                    $temp_date= $tribuT["date"];
+                    $datetime = date("Y-m-d H:i:s", $temp_date[0]);
+
                     $name_tribu_t_muable = isset($name_tribu_t_muable) ? $name_tribu_t_muable : null;
-                    array_push($results, ["table_name" => $name ,
-                    "name_tribu_t_muable" => $name_tribu_t_muable, 
-                    "logo_path" => $logo_path] );
+                    array_push($results, [
+                        "table_name" => $name ,
+                        "name_tribu_t_muable" => $name_tribu_t_muable, 
+                        "logo_path" => $logo_path,
+                        "description" => $tribuT["description"],
+                        "datetime" => $datetime
+                    ] );
                 }
             }else{
                 $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $arrayTribu_T_Joined) ? $arrayTribu_T_Joined["name_tribu_t_muable"]:null;
-                array_push($results, ["table_name" => $arrayTribu_T_Joined['name'], 
-                "name_tribu_t_muable" => $name_tribu_t_muable,
-                "logo_path" => $arrayTribu_T_Joined['logo_path']]);
+                
+                $createdAt= $arrayTribu_T_Joined["date"];
+                $datetime = date("Y-m-d H:i:s", $createdAt[0]);
+                
+                array_push($results, [
+                    "table_name" => $arrayTribu_T_Joined['name'], 
+                    "name_tribu_t_muable" => $name_tribu_t_muable,
+                    "logo_path" => $arrayTribu_T_Joined['logo_path'],
+                    "description" => $arrayTribu_T_Joined["description"],
+                    "datetime" => $datetime
+                ]);
             }
 
         }
@@ -163,6 +190,20 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         return  array_merge($tab_owned, $tab_joined);
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * Goal get details for one tribuT
+     */
+    public function getDetailsTribuT($tribuTName){
+        $allTribuT= $this->getListTableTribuT();
+        foreach($allTribuT as $tribuT){
+            if( $tribuT["table_name"] === $tribuTName ){
+                return $tribuT;
+            }
+        }
+        return false;
+    }
+
     public function updateByNameWhereIdis($column,$value,$idValue){
         return $this->createQueryBuilder("")
         ->update(User::class, "s")
@@ -174,4 +215,13 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         ->execute();
     }
     
+    public function getAllValidator(){
+            return $this->createQueryBuilder("u")
+            ->select("u")
+            ->where('u.roles =:r1 or u.roles=:r2')
+            ->setParameter("r1","[\"ROLE_VALIDATOR\"]")
+            ->setParameter("r2","[\"ROLE_GODMODE\"]")
+            ->getQuery()
+            ->getResult();
+    }
 }

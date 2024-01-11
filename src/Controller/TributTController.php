@@ -414,7 +414,8 @@ class TributTController extends AbstractController
 
 
 
-        $type = "Invitation pour rejoindre la tribu " . str_replace("$", "'", $tributName);
+        //$type = "Invitation pour rejoindre la tribu " . str_replace("$", "'", $tributName);
+$type = "/user/tribu/my-tribu-t";
 
 
 
@@ -482,7 +483,7 @@ class TributTController extends AbstractController
 
 
 
-        $type = "Invitation pour rejoindre la tribu " . str_replace("$", "'", $tributName);
+        $type = "/user/tribu/my-tribu-t";
 
 
 
@@ -1027,13 +1028,13 @@ class TributTController extends AbstractController
 
         $tribut->createComent($table_com, $user_id, $pub_id, $new_comment, $audioname);
 
-        $type = "commentaire";
+        $type = "/user/actualite#".$tribuTable."_".$pub_id;
 
         $publicationUrl = "#pub_number_" . $pub_id;
 
         $contentForDestinator = $tribut->getFullName($user_id) . " a commenté votre publication dans la tribu " . $tribut->showRightTributName($tribuTable)["name"];
 
-        $contentForDestinator .= "<a style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\" data-ancre=\"" . $publicationUrl . "\">Voir</a>";
+        $contentForDestinator .= "<a href='/user/actualite#" .$tribuTable. " _ " . $pub_id. "' style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\" data-ancre=\"" . $publicationUrl . "\">Voir</a>";
 
 
 
@@ -1146,15 +1147,15 @@ class TributTController extends AbstractController
 
         $tribut = new Tribu_T_Service();
 
-        $type = "reaction";
+        $type = "/user/actualite#".$tribuTable."_".$pub_id;
 
-        $publicationUrl = "#pub_number_" . $pub_id;
+        $publicationUrl = "#".$tribuTable."_".$pub_id;
 
 
 
         $contentForDestinator = $tribut->getFullName($user_id) . " a réagi votre publication dans la tribu " . $tribut->showRightTributName($tribuTable)["name"];
 
-        $contentForDestinator .= "<a style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\" data-ancre=\"" . $publicationUrl . "\">Voir</a>";
+        $contentForDestinator .= "<a href='".$type."' style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\" data-ancre=\"" . $publicationUrl . "\">Voir</a>";
 
         if ($user_id != $user_id_pub) {
 
@@ -1312,7 +1313,8 @@ class TributTController extends AbstractController
         $userFullname = $tribu_t->getFullName($userId);
         $tribu_name = $tribu_t->showRightTributName($table);
 
-        $type = "invitation";
+        //$type = "invitation";
+$type = "/user/invitation";
 
         // $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
         $invitLink = "";
@@ -1378,7 +1380,7 @@ class TributTController extends AbstractController
         $contentForDestinator = "Vous avez reçu une invitation de rejoindre la tribu " . $nomTribu;
 
 
-        $type = "invitation";
+        $type = "/user/invitation";
 
         $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
 
@@ -1485,7 +1487,8 @@ class TributTController extends AbstractController
             array_push($photoDatePub, [
                 "id" => $pulication[$i]["publication"]["id"],
                 "photo" => $pulication[$i]["publication"]["image"],
-                "createdAt" => $pulication[$i]["publication"]["createdAt"]
+                "createdAt" => $pulication[$i]["publication"]["createdAt"],
+                "isAlbum" => $pulication[$i]["publication"]["isAlbum"]
             ]);
         }
         $user = $this->getUser();
@@ -1497,7 +1500,8 @@ class TributTController extends AbstractController
                 "id" => $agendas[$a]["id"],
                 "photo" => $agendas[$a]["file_path"],
                 "photoSplit" =>  explode('/', $agendas[$a]["file_path"]),
-                "createdAt" => $agendas[$a]["datetime"]
+                "createdAt" => $agendas[$a]["datetime"],
+                "isAlbum" => $agendas[$a]["isAlbum"]
             ]);
         }
         $photoDatePub = (count($photoDatePub) > 0) ? $sortResultService->sortTapByKey($photoDatePub, "createdAt") : $photoDatePub;
@@ -1509,12 +1513,122 @@ class TributTController extends AbstractController
             array_push($importPhoto, [
                 "id"=>$importData[$a]["id"],
                 "photo" => $importData[$a]["path"],
-                "createdAt" => $importData[$a]["datetime"]
+                "createdAt" => $importData[$a]["datetime"],
+                "isAlbum" => $importData[$a]["isAlbum"]
             ]);
         }
 
 
         return $this->json([$photoDatePub, $photoAgenda, $importPhoto]);
+    }
+
+
+    #[Route('/user/tribu/photos/show/album/{table}', name: 'show_all_photos_in_album')]
+    public function showAllphotosTributInAlbum(
+        $table,
+        Tribu_T_Service $tribuTService,
+        AgendaService $agendaService,
+        SortResultService $sortResultService
+    ): Response {
+
+        $pulication = $tribuTService->getAllPublicationsPhotoUpdate($table);
+
+        $photoDatePub = [];
+        for ($i = 0; $i < count($pulication); $i++) {
+            array_push($photoDatePub, [
+                "id" => $pulication[$i]["publication"]["id"],
+                "photo" => $pulication[$i]["publication"]["image"],
+                "createdAt" => $pulication[$i]["publication"]["createdAt"],
+                "isAlbum" => $pulication[$i]["publication"]["isAlbum"]
+            ]);
+        }
+        $user = $this->getUser();
+        $table_agenda = $user->getNomTableAgenda();
+        $agendas = $agendaService->getOneAgendaPhoto($table_agenda);
+        $photoAgenda = [];
+        for ($a = 0; $a < count($agendas); $a++) {
+            array_push($photoAgenda, [
+                "id" => $agendas[$a]["id"],
+                "photo" => $agendas[$a]["file_path"],
+                "photoSplit" =>  explode('/', $agendas[$a]["file_path"]),
+                "createdAt" => $agendas[$a]["datetime"],
+                "isAlbum" => $agendas[$a]["isAlbum"]
+            ]);
+        }
+        $photoDatePub = (count($photoDatePub) > 0) ? $sortResultService->sortTapByKey($photoDatePub, "createdAt") : $photoDatePub;
+
+        $importData = $tribuTService->getImportPhotoGalery($table);
+        $importPhoto = [];
+        for ($a = 0; $a < count($importData); $a++) {
+            array_push($importPhoto, [
+                "id" => $importData[$a]["id"],
+                "photo" => $importData[$a]["path"],
+                "createdAt" => $importData[$a]["datetime"],
+                "isAlbum" => $importData[$a]["isAlbum"]
+            ]);
+        }
+
+
+        return $this->json([$photoDatePub, $photoAgenda]);
+    }
+
+
+
+    #[Route('/user/tribu/photos/album/{table}', name: 'create_album_tribu')]
+    public function createAlbum(
+        $table,
+        Request $request,
+        Tribu_T_Service $tribuTService
+    ){
+        $data = json_decode($request->getContent(), true);
+        $nameAlbum = $data["name_album"];
+        $tribuTService->createAlbum($table, $nameAlbum);
+
+        return $this->json("Album ajouté avec succès");
+    }
+
+    #[Route('/user/tribu/get/album/{table}', name: 'get_album_tribu')]
+    public function getAlbum(
+        $table,
+        Tribu_T_Service $tribuTService
+    ){
+        $listAlbum = $tribuTService->getAlbum($table);
+        return $this->json($listAlbum);
+    }
+
+
+    #[Route('/user/tribu/photos/copyer/album/{table}', name: 'copye_path_album_tribu', methods: ['POST'])]
+    public function copyePathAlbum(
+        $table,
+        Request $request,
+        Tribu_T_Service $tribuTService,
+        AgendaService $agendaService
+    ) {
+
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $data = json_decode($request->getContent(), true);
+        $pathAlbums = $data["path"];
+        $albumId = $data["albumId"];
+        $idPub = $data["idPub"];
+        foreach ($pathAlbums as $pathAlbum) {
+            $tribuTService->copyePathAlbum($table, $pathAlbum, $albumId);
+        }
+        foreach ($idPub as $id){
+            $tribuTService->modifIsAlbumPublication($table, $id);
+            $tribuTService->modifIsAlbumImpImg($table, $id);
+            $agendaService->modifIsAlbumAgenda($userId, $id);
+        }
+        return $this->json("Album ajouté avec succès");
+    }
+
+    #[Route('/user/tribu/get/copyer/album/{table}', name: 'get_copye_path_album_tribu')]
+    public function getCopyePathAlbum(
+        $table,
+        Tribu_T_Service $tribuTService
+    ) {
+        $listPhotoAlbum = $tribuTService->getCopyePathAlbum($table);
+        return $this->json($listPhotoAlbum);
     }
 
     #[Route('/user/tribu/restos-pastilles/{table_resto}', name: 'show_restos_pastilles')]
@@ -1799,7 +1913,7 @@ class TributTController extends AbstractController
 
        
 
-        $type = "invitation";
+        $type = "/user/invitation";
 
         $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
 
@@ -2872,5 +2986,147 @@ class TributTController extends AbstractController
         $json = $serializer->serialize($response, 'json');
 
         return new JsonResponse($json, Response::HTTP_OK, [], true);
+    }
+
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenieram@gmail.com>
+     */
+    #[Route("/tributT/new_letter_fans/{tribuTName}", name: "app_tributT_new_letter_fans", methods: ["GET"])]
+    public function fetchCallActionNewletterFansTribuG(
+        $tribuTName,
+        Tribu_T_Service $tribuTService,
+        UserService $userService,
+        UserRepository $userRepository
+    ){
+        if($tribuTName === "" || !$tribuTService->isTableExist($tribuTName)){
+            return $this->json([ "success" => false, "message" => "Tribu not found."], 401 );
+        }
+
+        if( !$this->getUser() || $this->getUser()->getType() === "Type" ){
+            return $this->json([ "success" => false, "message" => "User not connected"], 401 );
+        }
+
+        $user_connected= $this->getUser();
+        $user_profil= $userService->getUserProfileFromId($user_connected->getId());
+
+        $apropos_tribuT= $tribuTService->getProfilTributT( $tribuTName, $user_connected->getId(), $userRepository );
+
+        if( $apropos_tribuT["roles"] !== "Fondateur" ){
+            return $this->json([ "success" => false, "message" => "User not founder"], 401 );
+        }
+
+        return $this->json([
+            "apropos_tribuT" => $apropos_tribuT,
+            "user_profil" => [
+                "id" => $user_profil->getUserId()->getId(),
+                "firstname" => $user_profil->getFirstname(),
+                "lastname" => $user_profil->getLastname(),
+                "email" => $user_profil->getUserId()->getEmail(),
+                "pseudo" => $user_profil->getUserId()->getPseudo(),
+            ]
+        ]);
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenieram@gmail.com>
+     * Send news information to all fans in tribu G
+     */
+    #[Route("/tributT/sendNewLetter/for_all", name: "app_tribuT_send_newsLetter", methods: ["POST"])]
+    public function tribuGSendNewsLetterForAll(
+        Request $request,
+        Tribu_T_Service $tribuTService,
+        UserService $userService,
+        MailService $mailService,
+        Filesystem $filesyst,
+        NotificationService $notificationService,
+        UserRepository $userRepository
+    ){
+        if( !$this->getUser() && $this->getUser()->getType() === "Type" ){
+            return $this->json([ "success" => false, "message" => "User not connected"], 401 );
+        }
+
+        $data = json_decode($request->getContent(), true);
+        extract($data); /// $object, $description, $piece_joint, $table_name
+
+
+        $user_connected= $this->getUser();
+        $user_connnected_id= $user_connected->getId();
+        $user_profil= $userService->getUserProfileFromId($user_connnected_id);
+        $full_name_user_connected=  $user_profil->getLastname() . " " . $user_profil->getFirstname();
+
+        $apropos_tribuT= $tribuTService->getProfilTributT( $table_name, $user_connected->getId(), $userRepository );
+        if( $apropos_tribuT["roles"] !== "Fondateur" ){
+            return $this->json([ "success" => false, "message" => "User not founder"], 401 );
+        }
+        
+
+        $piece_with_path = [];
+        if (count($piece_joint) > 0) {
+            // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
+            $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/piece_joint/user_' . $user_connnected_id . "/";
+            
+            $dir_exist = $filesyst->exists($path);
+            if ($dir_exist === false) {
+                $filesyst->mkdir($path, 0777);
+            }
+
+            foreach ($piece_joint as $item) {
+                $name = $item["name"];
+
+                $char_spec = ["-", " "];
+                $name = str_replace($char_spec, "_", $name);
+                $path_name = $path . $name;
+                ///name file, file base64
+                file_put_contents($path_name, file_get_contents($item["base64File"]));
+
+
+                $item["path"] = $path . $name;
+
+                array_push($piece_with_path, $item);
+            }
+        }
+
+        $context["object_mail"] = $object;
+        $context["template_path"] = "emails/mail_news_letter.html.twig";
+        $context["content_mail"] = $description;
+        $context["piece_joint"] = $piece_with_path;
+        
+
+        $all_fans_tribuT= $tribuTService->getPartisanOfTribuT($table_name); /// user_id, ...
+        $all_user_receiver= [];
+        foreach($all_fans_tribuT as $fans_tribuT){
+            $user_id_fans= $fans_tribuT["user_id"];
+
+            if( intval($user_id_fans) !== intval($user_connected->getId())){
+                $user_fans_profil= $userService->getUserProfileFromId(intval($user_id_fans));
+                $user_fullName= $user_fans_profil->getLastname() . " " . $user_fans_profil->getFirstname();
+                
+                $temp= [
+                    "id" => $user_fans_profil->getUserId()->getId(),
+                    "email" => $user_fans_profil->getUserId()->getEmail(),
+                    "fullName" => $user_fullName
+                ];
+                array_push($all_user_receiver, $temp);
+            }
+        }
+
+        $mailService->sendEmailNewsLetter($user_connected->getEmail(), $full_name_user_connected, $all_user_receiver, $context );
+
+        foreach($all_user_receiver as $user_receiver ){
+
+            $notificationService->sendNotificationForOne(
+                $user_connnected_id,
+                $user_receiver["id"],
+                "mailto:".$user_receiver["email"],
+                "Veuillez consulter votre boîte e-mail, le fondateur de votre tribu T vient vous envoyer une lettre d'information."
+            );
+        }
+        
+        return $this->json([
+            "success" => true
+        ]);
     }
 }

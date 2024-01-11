@@ -89,12 +89,31 @@ function showAvis(currentUserId, idItem) {
  * Create new avis resto in first time
  */
 function addAvis(idItemRubrique = null) {
-	if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
-		msgErrorAlertAvis({ message: "no content" });
-		return 0;
+	let audioBase64 = document.querySelector(".vocal_display_elie_js > div > audio.create");
+
+	if (audioBase64) {
+		if (document.querySelector("#text-note").value === "") {
+			msgErrorAlertAvis({ message: "no content" });
+			return 0;
+		} else {
+			document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		}
 	} else {
-		document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
+			msgErrorAlertAvis({ message: "no content" });
+			return 0;
+		} else {
+			document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		}
 	}
+
+	// if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
+	// 	msgErrorAlertAvis({ message: "no content" });
+	// 	return 0;
+	// } else {
+	// 	document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+	// }
+
 
 	///// remove alert card empty avis and add chargement spinner
 	if (document.querySelector(".card_avis_empty_jheo_js")) {
@@ -125,12 +144,20 @@ function addAvis(idItemRubrique = null) {
 	let note = document.querySelector("#text-note").value;
 	note = note.replace(/,/g, ".");
 
+	let type_avis = "text"
+
+
+	if (audioBase64) {
+		type_avis = "audio"
+		avis = audioBase64.src
+	}
+
 	try {
 		mustBeInferior4(note, document.querySelector("#text-note"), true);
 	} catch (e) {
 		msgErrorAlertAvis(e);
 	}
-	const requestParam = { note: parseFloat(note), avis: avis };
+	const requestParam = { note: parseFloat(note), avis: avis, type: type_avis };
 
 	deleteOldValueInputAvis(); //// delet input and text
 
@@ -157,7 +184,7 @@ function addAvis(idItemRubrique = null) {
 	fetch(request)
 		.then((r) => r.json())
 		.then((response) => {
-			console.log(response);
+			// console.log(response);
 
 			///// generate list avis in modal
 			showModifArea(idItem, newUserId);
@@ -265,6 +292,8 @@ function showListAvie(idItem = null) {
 function deleteOldValueInputAvis() {
 	document.querySelector(".note_number_jheo_js") ? (document.querySelector(".note_number_jheo_js").value = "") : null;
 	document.querySelector(".note_avis_jheo_js") ? (document.querySelector(".note_avis_jheo_js").value = "") : null;
+	document.querySelector(".note_avis_jheo_js") ? (document.querySelector(".note_avis_jheo_js").disabled = false) : null;
+	document.querySelector(".vocal_display_elie_js").innerHTML = ""
 }
 
 /**
@@ -317,6 +346,26 @@ function createShowAvisAreas(json, currentUserId, idItem = 0, rubrique_type = nu
 	let rateYellow = rate * 100;
 	let rateBlack = 100 - rateYellow;
 
+	let modalebtnModife = "";
+
+	let avis_template = ""
+
+	if (json.type == "audio") {
+		avis_template = ` <audio controls src="${json.avis}">
+	  					</audio>`
+	} else {
+		avis_template = json.avis
+	}
+
+	modalebtnModife = `
+		<div class="content_action">
+			<button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id
+		}' ,'${json.note}' , '${json.avis.replace("\n", "")}', '${idItem}', '${rubrique_type}', '${json.type}')">
+				<i class="fa-solid fa-pen-to-square"></i>
+			</button>
+		</div>
+	`;
+
 	for (let i = 0; i < 4; i++) {
 		if (i < parseInt(json.note)) {
 			startIcon += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`;
@@ -330,16 +379,6 @@ function createShowAvisAreas(json, currentUserId, idItem = 0, rubrique_type = nu
 		}
 	}
 
-	let modalebtnModife = "";
-	modalebtnModife = `
-        <div class="content_action">
-            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${
-				json.id
-			}' ,'${json.note}' , '${json.avis.replace("\n", "")}', '${idItem}', '${rubrique_type}')">
-                <i class="fa-solid fa-pen-to-square"></i>
-            </button>
-        </div>
-    `;
 
 	const spec_selector = currentUserId == json.user.id && currentUserId != null ? "my_comment_jheo_js" : "";
 	const editHTMl = modalebtnModife;
@@ -360,12 +399,11 @@ function createShowAvisAreas(json, currentUserId, idItem = 0, rubrique_type = nu
                                     <img class="profil_image" src="${user_profil}" alt="User">
                                 </div>
                                 <div class="content_info">
-                                    <h5 class="text-point-9"> <small class="fw-bolder text-black"> ${
-										json.user.fullname
-									}</small></h5>
+                                    <h5 class="text-point-9"> <small class="fw-bolder text-black"> ${json.user.fullname
+		}</small></h5>
                                     <cite class="font-point-6"> ${settingDateToStringMonthDayAndYear(
-										json.datetime
-									)}</cite>
+			json.datetime
+		)}</cite>
                                 </div>
                             </div>
                             <div class="content_start">
@@ -375,7 +413,7 @@ function createShowAvisAreas(json, currentUserId, idItem = 0, rubrique_type = nu
                         </div>
 
                         <div class="mt-2">
-                            <p class="text-point-9"> ${json.avis} </p>
+                            <p class="text-point-9"> ${avis_template} </p>
                         </div>
                     </div>
                 </div>
@@ -448,11 +486,32 @@ function showNoteGlobale(idItem, globalNote = 0) {
 /**
  * Prepare update avis resto
  */
-function settingAvis(avisID, avisNote, avisText, idItem, rubriquType = null) {
+function settingAvis(avisID, avisNote, avisText, idItem, rubriquType = null, type) {
+	
 	document.querySelector(".title_modal_jheo_js").innerHTML = "Modifier votre avis.";
 
 	document.querySelector(".note_number_jheo_js").value = parseFloat(avisNote);
-	document.querySelector(".note_avis_jheo_js").value = avisText;
+	document.querySelector(".start_audio_avis_elie_js").classList.remove("d-none")
+
+	if (type == "audio") {
+		document.querySelector(".vocal_display_elie_js").classList.remove("d-none")
+		
+		document.querySelector(".vocal_display_elie_js").innerHTML = `
+			<div class="d-flex align-items-center clip">
+				<audio id="audio_0" controls="" class="ml-5 update" src="${avisText}"></audio>
+				<span style="color: red; margin-left: 5px; cursor: pointer; font-size: 16px;" onclick='document.querySelector(".vocal_display_elie_js").innerHTML ="";
+				document.querySelector(".audio-record").disabled=false;
+				document.querySelector(".note_avis_jheo_js").disabled=false;'>
+				<i class="fa-solid fa-trash"></i><label style="margin-left: 3px; cursor: pointer;"> Supprimer.</label>
+				</span>
+			</div>
+		`
+		document.querySelector(".note_avis_jheo_js").value = "";
+		document.querySelector(".note_avis_jheo_js").disabled = true;
+
+	} else {
+		document.querySelector(".note_avis_jheo_js").value = avisText;
+	}
 
 	const btn_update = document.querySelector(".send_avis_jheo_js");
 
@@ -464,12 +523,31 @@ function settingAvis(avisID, avisNote, avisText, idItem, rubriquType = null) {
 }
 
 function updateAvis(avisID, idItemRubrique) {
-	if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
-		msgErrorAlertAvis({ message: "no content" });
-		return 0;
+	let audioBase64 = document.querySelector(".vocal_display_elie_js > div > audio.create");
+	let audioBase64_up = document.querySelector(".vocal_display_elie_js > div > audio.update");
+
+	if (audioBase64 || audioBase64_up) {
+		if (document.querySelector("#text-note").value === "") {
+			msgErrorAlertAvis({ message: "no content" });
+			return 0;
+		} else {
+			document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		}
 	} else {
-		document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
+			msgErrorAlertAvis({ message: "no content" });
+			return 0;
+		} else {
+			document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		}
 	}
+
+	// if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
+	// 	msgErrorAlertAvis({ message: "no content" });
+	// 	return 0;
+	// } else {
+	// 	document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+	// }
 
 	let details = document.querySelector("#details-coord")
 		? document.querySelector("#details-coord")
@@ -493,6 +571,19 @@ function updateAvis(avisID, idItemRubrique) {
 
 	let note = document.querySelector("#text-note").value.replace(/,/g, ".");
 	let avis = document.querySelector("#message-text").value;
+
+	let type_avis = "text"
+
+	if (audioBase64) {
+		type_avis = "audio"
+		avis = audioBase64.src
+	}
+
+	if (audioBase64_up) {
+		type_avis = "audio_up"
+		avis = audioBase64_up.src
+	}
+
 	try {
 		mustBeInferior4(note, document.querySelector("#text-note"), true);
 	} catch (e) {
@@ -514,6 +605,7 @@ function updateAvis(avisID, idItemRubrique) {
 		avisID: avisID,
 		note: parseFloat(note),
 		avis: avis,
+		type: type_avis
 	};
 
 	deleteOldValueInputAvis(); //// delet input and text
@@ -671,12 +763,30 @@ function fetchListAvisInTribuT(idItem, rubrique_type) {
 function addAvisInTribuT(idItem, rubrique_type) {
 	let type = rubrique_type;
 
-	if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
-		msgErrorAlertAvis({ message: "no content" });
-		return 0;
+	let audioBase64 = document.querySelector(".vocal_display_elie_js > div > audio.create");
+
+	if (audioBase64) {
+		if (document.querySelector("#text-note").value === "") {
+			msgErrorAlertAvis({ message: "no content" });
+			return 0;
+		} else {
+			document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		}
 	} else {
-		document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
+			msgErrorAlertAvis({ message: "no content" });
+			return 0;
+		} else {
+			document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		}
 	}
+
+	// if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
+	// 	msgErrorAlertAvis({ message: "no content" });
+	// 	return 0;
+	// } else {
+	// 	document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+	// }
 
 	///// remove alert card empty avis and add chargement spinner
 	if (document.querySelector(".card_avis_empty_jheo_js")) {
@@ -698,12 +808,19 @@ function addAvisInTribuT(idItem, rubrique_type) {
 	let note = document.querySelector("#text-note").value;
 	note = note.replace(/,/g, ".");
 
+	let type_avis = "text"
+
+	if (audioBase64) {
+		type_avis = "audio"
+		avis = audioBase64.src
+	}
+
 	try {
 		mustBeInferior4(note, document.querySelector("#text-note"), true);
 	} catch (e) {
 		msgErrorAlertAvis(e);
 	}
-	const requestParam = { note: parseFloat(note), avis: avis };
+	const requestParam = { note: parseFloat(note), avis: avis, type: type_avis };
 
 	deleteOldValueInputAvis(); //// delet input and text
 
@@ -738,12 +855,32 @@ function addAvisInTribuT(idItem, rubrique_type) {
 }
 
 function updateAvisInTribuT(avisID, idItemRubrique, rubriqueType) {
-	if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
-		msgErrorAlertAvis({ message: "no content" });
-		return 0;
+	
+	let audioBase64 = document.querySelector(".vocal_display_elie_js > div > audio.create");
+	let audioBase64_up = document.querySelector(".vocal_display_elie_js > div > audio.update");
+
+	if (audioBase64 || audioBase64_up) {
+		if (document.querySelector("#text-note").value === "") {
+			msgErrorAlertAvis({ message: "no content" });
+			return 0;
+		} else {
+			document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		}
 	} else {
-		document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
+			msgErrorAlertAvis({ message: "no content" });
+			return 0;
+		} else {
+			document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+		}
 	}
+	
+	// if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
+	// 	msgErrorAlertAvis({ message: "no content" });
+	// 	return 0;
+	// } else {
+	// 	document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
+	// }
 
 	let type = rubriqueType;
 
@@ -760,6 +897,19 @@ function updateAvisInTribuT(avisID, idItemRubrique, rubriqueType) {
 
 	let note = document.querySelector("#text-note").value.replace(/,/g, ".");
 	let avis = document.querySelector("#message-text").value;
+	
+	let type_avis = "text"
+
+	if (audioBase64) {
+		type_avis = "audio"
+		avis = audioBase64.src
+	}
+
+	if (audioBase64_up) {
+		type_avis = "audio_up"
+		avis = audioBase64_up.src
+	}
+
 	try {
 		mustBeInferior4(note, document.querySelector("#text-note"), true);
 	} catch (e) {
@@ -781,6 +931,7 @@ function updateAvisInTribuT(avisID, idItemRubrique, rubriqueType) {
 		avisID: avisID,
 		note: parseFloat(note),
 		avis: avis,
+		type: type_avis
 	};
 
 	deleteOldValueInputAvis(); //// delet input and text
@@ -825,3 +976,159 @@ function updateViewState(new_state, idItem) {
 		document.querySelector(`.data-avis-${idItem}`).innerText = `${new_state.length} Avis`;
 	}
 }
+
+
+/** Avis audio */
+
+var mediaRecorder
+let record = document.querySelector(".start_audio_avis_elie_js")
+let stop = document.querySelector(".stop_audio_avis_elie_js")
+let soundClips = document.querySelector(".vocal_display_elie_js")
+let msgTxt = document.querySelector("#message-text")
+
+let open_modal_avis = document.querySelector(".btn_modal_avis_resto_jheo_js")
+
+if (open_modal_avis) {
+	open_modal_avis.addEventListener("click", function () {
+		document.querySelector(".audio-record").classList.remove("disabled")
+		document.querySelector(".start_audio_avis_elie_js").classList.remove("d-none")
+	})
+}
+
+let brn_open_modal_avis = document.querySelector("#data-note-elie-js")
+if(brn_open_modal_avis){
+	brn_open_modal_avis.addEventListener("click",function(){
+		document.querySelector(".audio-record").classList.remove("disabled")
+		document.querySelector(".start_audio_avis_elie_js").classList.remove("d-none")
+	})
+}
+
+let dateForName = new Date();
+let month = parseInt(dateForName.getMonth()) + 1
+if (String(month).length < 2) {
+	month = String("0" + month)
+}
+
+let dateString = dateForName.getDate() + "_" + month + "_" + dateForName.getFullYear();
+
+record.addEventListener('click', event => {
+
+	if (soundClips.querySelector("audio")) {
+		swal({
+			title: "Modification",
+			text: "Voulez-vous modifier l'audio déjà enregistré?",
+			icon: "warning",
+			buttons: ["Pas maintenant", "Ok, je vais modifier"],
+		  })
+		  .then((willDelete) => {
+			if (willDelete) {
+				document.querySelector(".note_avis_jheo_js").disabled = false
+				document.querySelector(".audio-record").classList.remove("disabled")
+				document.querySelector(".start_audio_avis_elie_js").classList.remove("d-none")
+				document.querySelector(".vocal_display_elie_js").innerHTML =""
+				
+			} 
+		});
+	} else {
+
+		if (navigator.mediaDevices) {
+
+			const constraints = { audio: true };
+			let chunks = [];
+
+			navigator.mediaDevices
+				.getUserMedia(constraints)
+				.then((stream) => {
+
+					mediaRecorder = new MediaRecorder(stream);
+
+					mediaRecorder.start();
+					// console.log("recorder started");
+					record.classList.add("d-none")
+					stop.classList.remove("d-none")
+
+					document.querySelector("#message-text").disabled = true
+
+					mediaRecorder.onstop = (e) => {
+
+						// console.log("data available after MediaRecorder.stop() called.");
+
+						const clipName = dateString + ".oga";
+						const clipContainer = document.createElement("div");
+						const iconContainer = document.createElement("div");
+						clipContainer.classList = "d-flex align-items-center";
+						const audio = document.createElement("audio");
+						audio.id = "audio_" + i;
+						audio.classList.add("create");
+						const deleteSpan = document.createElement("span");
+						const deleteButton = document.createElement("i");
+						const deleteLabel = document.createElement("label");
+						deleteLabel.textContent = " Supprimer."
+						deleteLabel.style.marginLeft = "3px"
+						deleteLabel.style.cursor = "pointer"
+
+						clipContainer.classList.add("clip");
+						iconContainer.classList.add("iconeDelete");
+						audio.setAttribute("controls", "controls");
+						audio.classList.add("ml-5");
+						deleteButton.classList = "fa-solid fa-trash";
+						deleteSpan.style.color = "red"
+						deleteSpan.style.marginLeft = "5px"
+						deleteSpan.style.cursor = "pointer"
+						deleteSpan.style.fontSize = "16px"
+						deleteSpan.appendChild(deleteButton)
+						deleteSpan.appendChild(deleteLabel)
+						clipContainer.appendChild(audio);
+						clipContainer.appendChild(deleteSpan);
+						soundClips.appendChild(clipContainer);
+
+						document.querySelector(".vocal_display_elie_js").classList.remove("d-none")
+
+						audio.controls = true;
+						const blob = new Blob(chunks, { type: "audio/mp3; codecs=opus" });
+						chunks = [];
+
+						let reader = new FileReader();
+						reader.readAsDataURL(blob);
+						reader.onloadend = function () {
+							let base64String = reader.result;
+							audio.src = base64String
+						}
+
+						deleteSpan.onclick = (e) => {
+							const evtTgt = e.target;
+							evtTgt.parentNode.parentNode.remove()
+							record.classList.remove("d-none")
+
+							document.querySelector("#message-text").disabled = false
+
+						};
+					};
+
+					mediaRecorder.ondataavailable = (e) => {
+						chunks.push(e.data);
+					};
+				})
+				.catch((err) => {
+					alert("Veuillez vérifier votre micro svp!");
+					// console.error(`The following error occurred: ${err}`);
+				});
+		}
+	}
+
+});
+
+stop.addEventListener('click', event => {
+	mediaRecorder.stop();
+	//console.log(mediaRecorder.state);
+	console.log("recorder stopped");
+	stop.classList.add("d-none")
+});
+
+msgTxt.addEventListener("keyup", event => {
+	if (event.target.value == "") {
+		document.querySelector(".audio-record").classList.remove("disabled")
+	} else {
+		document.querySelector(".audio-record").classList.add("disabled")
+	}
+})

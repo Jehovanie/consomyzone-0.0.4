@@ -111,8 +111,8 @@ class RestaurantController extends AbstractController
 
         //// description tribu T with ID restaurant pastille
         $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
-
-//// list resto pastille dans le tribu G
+        
+        //// list resto pastille dans le tribu G
         $restoPastilleInTribuG= $tributGService->getEntityRestoPastilled($this->getUser()); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
         
         $arrayIdResto= array_merge( $arrayIdResto, $restoPastilleInTribuG );
@@ -774,7 +774,7 @@ class RestaurantController extends AbstractController
         $dataRequest = $request->query->all();
         $nomDep = $dataRequest["nom_dep"];
         $codeDep = $dataRequest["id_dep"];
-
+        
         $userConnected = $status->userProfilService($this->getUser());
         $datas = $code->getAllCodinsee($codeDep);
         
@@ -1045,7 +1045,7 @@ class RestaurantController extends AbstractController
         $id_restaurant,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
-        TributGService $tributGService,
+TributGService $tributGService,
         AvisRestaurantRepository $avisRestaurantRepository,
         Filesystem $filesyst
     ): Response {
@@ -1096,7 +1096,7 @@ class RestaurantController extends AbstractController
 
             //// list tribu T owned
             $tribu_t_owned = $userRepository->getListTableTribuT_owned();
-    
+            
             foreach ($tribu_t_owned as $key) {
                 $tableTribu = $key["table_name"];
                 $logo_path = $key["logo_path"];
@@ -1111,7 +1111,7 @@ class RestaurantController extends AbstractController
                 }
             }
 
-            /// list tribu T joined
+/// list tribu T joined
             $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
             // dd($tribu_t_joined);
             foreach ($tribu_t_joined as $key) {
@@ -1346,7 +1346,8 @@ class RestaurantController extends AbstractController
         AvisRestaurantRepository $avisRestoRep,
         BddRestoRepository $resto,
         Request $request,
-        $idRestaurant
+        $idRestaurant,
+        Filesystem $filesyst
     ) {
 
         $user = $this->getUser();
@@ -1356,13 +1357,43 @@ class RestaurantController extends AbstractController
         $requestJson = json_decode($request->getContent(), true);
         $avis = $requestJson["avis"];
         $note = $requestJson["note"];
+        $type = $requestJson["type"];
+
+        if($type == "audio"){
+
+            $path_file = '/public/uploads/avis-restaurant/audio/';
+
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/avis-restaurant/audio/';
+
+
+            $temp = explode(";", $avis);
+
+            $extension = explode("/", $temp[0])[1];
+
+            $newFilename = time() . '-' . uniqid() . "." . $extension;
+
+            ///save image in public/uploader folder
+
+            $dir_exist = $filesyst->exists($destination);
+            
+            if ($dir_exist == false) {
+                
+                $filesyst->mkdir($destination, 0777);
+            }
+
+            file_put_contents($destination . $newFilename, file_get_contents($avis));
+
+
+            $avis = $path_file . $newFilename;
+        }
         
         //dd($user,$resto);
         $avisResto->setAvis(json_encode($avis))
             ->setnote($note)
             ->setUser($user)
             ->setDatetime(new \DateTimeImmutable())
-            ->setRestaurant($resto);
+            ->setRestaurant($resto)
+            ->setType($type);
 
         $avisRestoRep->add($avisResto, true);
         
@@ -1414,17 +1445,56 @@ class RestaurantController extends AbstractController
         AvisRestaurantRepository $avisRestaurantRepository,
         $idRestaurant,
         SerializerInterface $serializer,
-        Request $request
+        Request $request,
+        Filesystem $filesyst
     ) {
 
         $rJson = json_decode($request->getContent(), true);
         $userId = $this->getUser()->getId();
+
+        $avis = $rJson["avis"];
+        $type = $rJson["type"];
+
+        if($rJson["type"] == "audio"){
+
+            $path_file = '/public/uploads/avis-restaurant/audio/';
+
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/avis-restaurant/audio/';
+
+
+            $temp = explode(";", $avis);
+
+            $extension = explode("/", $temp[0])[1];
+
+            $newFilename = time() . '-' . uniqid() . "." . $extension;
+
+            ///save image in public/uploader folder
+
+            $dir_exist = $filesyst->exists($destination);
+            
+            if ($dir_exist == false) {
+                
+                $filesyst->mkdir($destination, 0777);
+            }
+
+            file_put_contents($destination . $newFilename, file_get_contents($avis));
+
+
+            $avis = $path_file . $newFilename;
+
+        }
+
+        if($rJson["type"] == "audio_up"){
+            $type = "audio";
+        }
+
         $response = $avisRestaurantRepository->updateAvis(
             $idRestaurant,
             $userId,
             $rJson["avisID"],
             $rJson["note"],
-            $rJson["avis"],
+            $avis,
+            $type,
         );
         $response = $serializer->serialize($response, 'json');
         
@@ -1529,7 +1599,7 @@ class RestaurantController extends AbstractController
                 $resto=$bddResto->getOneItemByID((intval($contents["restoId"])));
                 $user=$this->getUser();
                 $profil=$status->userProfilService($user);
-                $emailsCorp="L'étabillsement ".
+                $emailsCorp="L'établissement ".
                             $resto["denominationF"].
                             " a été modifié par ". 
                             $profil["firstname"]." ".$profil["lastname"]." Veuillez le vérifier s'il vous plaît.";
@@ -1717,6 +1787,8 @@ class RestaurantController extends AbstractController
     {
 
         $not_valid = $userServ->getAllPhotoNotValidResto();
+
+        $not_valid = mb_convert_encoding($not_valid, 'UTF-8', 'UTF-8');
 
         return $this->json($not_valid);
     }

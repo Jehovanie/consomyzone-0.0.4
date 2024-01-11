@@ -18,7 +18,9 @@ var workerGetCommentaireTribuT = IS_DEV_MODE
 var image_tribu_t;
 var descriptionTribuT = "";
 
-let __userLoggedId = document.querySelector('.information_user_conected_jheo_js').dataset.toggleUserId
+let __userLoggedId = document.querySelector(
+  ".information_user_conected_jheo_js"
+).dataset.toggleUserId;
 
 ///Jehovanie: this variable is use for the list of the piece joint
 /// in the send email on the invitation tribu T
@@ -170,10 +172,11 @@ function showBlockPub() {
       e.target.classList.add("active"); //p-2 list-nav-left active
       const id_c_u = e.target.dataset.tribuRank;
       const type = e.target.classList[1];
+      const tribu_t_types = e.target.classList[2];
       // const tribu_t_name=e.target.textContent  data-table-name
       const tribu_t_name = e.target.dataset.tableName; ///  data-table-name
       let data = await showdData(tribu_t_name);
-      console.log(data);
+      // console.log(data);
       showdDataContent(data, type, tribu_t_name, id_c_u);
 
       /**render pastiled resto */
@@ -210,7 +213,7 @@ function showBlockPub() {
         document.querySelector("#see-gallery").classList.add("active");
         document.querySelector("#tribu_t_conteuneur").innerHTML = "";
         // showPhotos()
-        galleryAll();
+        galleryAll(tribu_t_types);
       };
       /**end */
 
@@ -275,7 +278,7 @@ function showPartisan() {
   fetch(request).then((response) => {
     if (response.ok && response.status == 200) {
       response.json().then((jsons) => {
-        console.log(jsons);
+        // console.log(jsons);
 
         let head_table = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Liste des Fans</h5><table id="table_partisan_elie_js" class="display m-2 p-2" style="width:100%">
                     <thead>
@@ -402,7 +405,7 @@ function updatePdpTribu_T(files) {
           photoSize: files.size,
           tribu_t_name: tribu_t_name_0,
         };
-        console.log(param);
+        // console.log(param);
         const request = new Request("/user/tribu/set/pdp", {
           method: "POST",
           headers: {
@@ -439,7 +442,7 @@ function updatePdpTribu_T(files) {
  *  je veux : ajouter une photo par media screen navigateur
  */
 function sendPublication(formData) {
-  console.log(formData.values());
+  // console.log(formData.values());
   const fR = new FileReader();
 
   /**
@@ -462,7 +465,7 @@ function sendPublication(formData) {
         confidentialite: formData.get("confidentialite"),
       };
       // console.log(formData.get('photo'));
-      console.log(param);
+      // console.log(param);
       const request = new Request("/user/create-one/publication", {
         method: "POST",
         headers: {
@@ -481,7 +484,7 @@ function sendPublication(formData) {
     );
   } else {
     fR.addEventListener("load", (evt) => {
-      console.log("evt" + evt);
+      // console.log("evt" + evt);
       let param = {
         base64: evt.target.result,
         photoName: formData.get("photo").name,
@@ -528,7 +531,6 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
   let restExtension = "";
   let golfExtension = "";
   if (lastId == 0) {
-   
     // extension 'on' correspond à extension
     //restaurant dans les anciens version
     // ce bout de code est là pour assurer une prise en charge recurssive
@@ -555,10 +557,15 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
     if (tribu_t[0].logo_path) {
       // image_tribu_t = `<img src="../../..${tribu_t[0].logo_path}" alt="123">`
       //public
-      image_tribu_t = `<img id="avatarTribuT" src="/public${tribu_t[0].logo_path}" alt="123">`; //PROD
+      let avatarTribuT = tribu_t[0].logo_path;
+      avatarTribuT = IS_DEV_MODE ? avatarTribuT : "/public" + avatarTribuT;
+
+      image_tribu_t = `<img id="avatarTribuT" src="${avatarTribuT}" alt="123">`; //PROD
       // image_tribu_t = `<img id="avatarTribuT" src="${tribu_t[0].logo_path}" alt="123">` //DEV
     } else {
-      image_tribu_t = `<img id="avatarTribuT" src="/public/uploads/tribu_t/photo/avatar_tribu.jpg" alt="123">`;
+      let avatarTribuT = "/uploads/tribu_t/photo/avatar_tribu.jpg";
+      avatarTribuT = IS_DEV_MODE ? avatarTribuT : "/public" + avatarTribuT;
+      image_tribu_t = `<img id="avatarTribuT"  src="${avatarTribuT}" alt="123">`;
     }
 
     let canChangeTribuPicture = "";
@@ -584,17 +591,26 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                             </li>`
       : "";
 
-let canUpdateTribuInfoMob = !document
+    let canUpdateTribuInfoMob = !document
       .querySelector("#activeTribu")
       .classList.contains("other")
       ? `<li class="listNavBarTribu">
                                 <a style="cursor:pointer;" id="settingTribuT" class="dropdown-item" onclick="settingTribuT(event,'${tribu_t[0].name}')">Paramètre</a>
                             </li>`
       : "";
-    let navMenuTribuT = ""
+
+    let newsLetterTribuT = !document
+      .querySelector("#activeTribu")
+      .classList.contains("other")
+      ? ` <li class="listNavBarTribu">
+            <a style="cursor:pointer;" id="fetch_new_letter_fans_tribuT_jheo_js" class="dropdown-item">Lettre d'information</a>
+          </li>`
+      : "";
+
+    let navMenuTribuT = "";
     if (screen.width < 1000) {
       navMenuTribuT = `<nav class=" mx-auto ">
-                    <ul id="navBarTribu" class="navBarTribu-t">
+                    <ul id="navBarTribu" class="navBarTribu-t content_list_navBarTribuT_jheo_js">
                         <li class="listNavBarTribu">
                             <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
                         </li>
@@ -619,12 +635,14 @@ let canUpdateTribuInfoMob = !document
                           </li>
 
                           ${canUpdateTribuInfoMob}
+
+                          ${newsLetterTribuT}
                         </ul>
                       </div>
-                </nav>`
+                </nav>`;
     } else {
       navMenuTribuT = `<nav class=" mx-auto">
-                    <ul id="navBarTribu" class="navBarTribu-t">
+                    <ul id="navBarTribu" class="navBarTribu-t content_list_navBarTribuT_jheo_js">
                         <li class="listNavBarTribu">
                             <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
                         </li>
@@ -645,8 +663,10 @@ let canUpdateTribuInfoMob = !document
 
                         ${canUpdateTribuInfo}
 
+                        ${newsLetterTribuT}
+
                     </ul>
-                </nav>`
+                </nav>`;
     }
 
     document.querySelector("#content-pub-js").innerHTML = `
@@ -719,6 +739,8 @@ let canUpdateTribuInfoMob = !document
             </div>
             
     `;
+
+    bindActionNewsLetterTribuT(tribu_t_name);
   }
 
   //
@@ -731,7 +753,7 @@ let canUpdateTribuInfoMob = !document
 
     /*---------show 5 pub par defaut-----------------*/
     if (data.length > 0) var limits = data.length > 5 ? 5 : data.length;
-    let new_reaction_show ;
+    let new_reaction_show;
     for (let i = 0; i < limits; i++) {
       let dataNbr;
       if (data[i].nbr === null) {
@@ -740,7 +762,10 @@ let canUpdateTribuInfoMob = !document
         dataNbr = data[i].nbr + " ";
       }
 
-      new_reaction_show= data[i].nbr_reaction? (data[i].nbr_reaction + (data[i].nbr_reaction > 1?" réactions":" réaction")) : "0 réaction";
+      new_reaction_show = data[i].nbr_reaction
+        ? data[i].nbr_reaction +
+          (data[i].nbr_reaction > 1 ? " réactions" : " réaction")
+        : "0 réaction";
       let pub_photo = data[i].photo
         ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${
             data[i].photo /*.replace("/public","")*/
@@ -795,7 +820,7 @@ let canUpdateTribuInfoMob = !document
                                             </ul>
                                         </span>
                                     </div>`
-            : ""
+            : "";
 
         contentPublication = `<div id="${
           tribu_t_name_0 + "_" + data[i].id
@@ -827,14 +852,8 @@ let canUpdateTribuInfoMob = !document
                                                               )}</span></p></div>
                                                         </div>
 <div class="publiate_on responsif-none-pc"><p  class="p-title"><span>${tribu_t[0].name
-                                                          .replace(
-                                                            /tribu_t_[0-9]+_/,
-                                                            ""
-                                                          )
-                                                          .replaceAll(
-                                                            "_",
-                                                            " "
-                                                          )}</span></p>
+          .replace(/tribu_t_[0-9]+_/, "")
+          .replaceAll("_", " ")}</span></p>
                                                         </div>
                                                         <div class="name-content responsif-none-pc">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
@@ -867,31 +886,37 @@ let canUpdateTribuInfoMob = !document
                                                                  <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${
                                                                    tribu_t[0]
                                                                      .name
-                                                                                                                        }_${
-                                                                  data[i].id
-                                                                }" onclick="getAllReaction('${data[i].id}', 
-                                                        '${tribu_t[0].name}', '${
-                                                                  data[i].user_id
-                                                                }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
+                                                                 }_${
+          data[i].id
+        }" onclick="getAllReaction('${data[i].id}', 
+                                                        '${
+                                                          tribu_t[0].name
+                                                        }', '${
+          data[i].user_id
+        }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
                                                                                                                 <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s)</span>
                                                
                                                     </p>
                                                     <div class="reaction-icon d-flex">
                                                         <i style="cursor:pointer;" class="${
                                                           data[i].reaction == 1
-                                                            ? (__userLoggedId == data[i].user_id_react ? "bi-heart-fill" : "bi-heart")
+                                                            ? __userLoggedId ==
+                                                              data[i]
+                                                                .user_id_react
+                                                              ? "bi-heart-fill"
+                                                              : "bi-heart"
                                                             : "bi-heart"
                                                         } like reaction_${
-                              tribu_t[0].name
-                            }_${data[i].id}" onclick="isLike('${data[i].id}', '${
-                              data[i].user_id
-                            }', '${tribu_t[0].name}')"></i>
+          tribu_t[0].name
+        }_${data[i].id}" onclick="isLike('${data[i].id}', '${
+          data[i].user_id
+        }', '${tribu_t[0].name}')"></i>
                                                                             <i style="cursor:pointer;" class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
                                                             onclick="getAllComment('${
                                                               data[i].id
-                                                                                          }', '${
-                                        tribu_t[0].name
-                                      }', '${data[i].user_id}')"></i>
+                                                            }', '${
+          tribu_t[0].name
+        }', '${data[i].user_id}')"></i>
                                                                                   </div>
                                                 </div>
                                                 
@@ -965,14 +990,8 @@ let canUpdateTribuInfoMob = !document
                                                               )}</span></p></div>
                                                         </div>
 <div class="publiate_on responsif-none-pc"><p  class="p-title"><span>${tribu_t[0].name
-                                                          .replace(
-                                                            /tribu_t_[0-9]+_/,
-                                                            ""
-                                                          )
-                                                          .replaceAll(
-                                                            "_",
-                                                            " "
-                                                          )}</span></p>
+            .replace(/tribu_t_[0-9]+_/, "")
+            .replaceAll("_", " ")}</span></p>
                                                         </div>
                                                         <div class="name-content responsif-none-pc">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
@@ -1049,29 +1068,33 @@ let canUpdateTribuInfoMob = !document
                                                         <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${
                                                           tribu_t[0].name
                                                         }_${
-                                                    data[i].id
-                                                  }" onclick="getAllReaction('${data[i].id}', 
+            data[i].id
+          }" onclick="getAllReaction('${data[i].id}', 
                                         '${tribu_t[0].name}', '${
-                                                    data[i].user_id
-                                                  }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
+            data[i].user_id
+          }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
                                                                                                 <span class="nbr_comment_jheo_js">  ${dataNbr} commentaire(s) </span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
                                                         <i style="cursor:pointer;" class="${
                                                           data[i].reaction == 1
-                                                            ?  (__userLoggedId == data[i].user_id_react ? "bi-heart-fill" : "bi-heart")
+                                                            ? __userLoggedId ==
+                                                              data[i]
+                                                                .user_id_react
+                                                              ? "bi-heart-fill"
+                                                              : "bi-heart"
                                                             : "bi-heart"
                                                         } like reaction_${
-                                      tribu_t[0].name
-                                    }_${data[i].id}" onclick="isLike('${data[i].id}', '${
-                                      data[i].user_id
-                                    }', '${tribu_t[0].name}')"></i>
+            tribu_t[0].name
+          }_${data[i].id}" onclick="isLike('${data[i].id}', '${
+            data[i].user_id
+          }', '${tribu_t[0].name}')"></i>
                                                                                   <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
                                                         onclick="getAllComment('${
                                                           data[i].id
                                                         }', '${
-                                              tribu_t[0].name
-                                            }', '${data[i].user_id}')"></i>
+            tribu_t[0].name
+          }', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -1118,8 +1141,6 @@ let canUpdateTribuInfoMob = !document
       }
 
       showComment();
-
-      
     }
 
     //---------after shwo in each scroll ---------------
@@ -1134,54 +1155,52 @@ let canUpdateTribuInfoMob = !document
         const scrolled = window.scrollY;
         if (Math.ceil(scrolled) === scrollable) {
           //if (data) {
-            
-            // console.log("data id" + data.id);
-            // lastIdf = data.length > 0 ?  parseInt(data.id) : 0;
-            console.log("new c" + genCursorPos);
-            console.log("last id" + lastIdf);
-            if (genCursorPos === gen_length && genCursorPos > 0) {
-             
-              //TODO appel recurcive
-              showdDataContent(
-                dataFirst,
-                type,
-                tribu_t_name,
-                id_c_u,
-                lastIdf
-              );
-            } else{
-              
-              // console.log(data)
-              // console.log("last id " + lastId)
-              let dataG = gen.next().value;
-             
-              if (dataG !== undefined ) {
-                let dataNbr;
-                if (dataG.nbr === null) {
-                  dataNbr = 0 + " ";
-                } else {
-                  dataNbr = dataG.nbr + " ";
-                }
-          
-                new_reaction_show= dataG.nbr_reaction? (dataG.nbr_reaction + (dataG.nbr_reaction > 1?" réactions":" réaction")) : "0 réaction";
-                let pub_photo = dataG.photo
-                  ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${
+
+          // console.log("data id" + data.id);
+          // lastIdf = data.length > 0 ?  parseInt(data.id) : 0;
+          console.log("new c" + genCursorPos);
+          console.log("last id" + lastIdf);
+          if (genCursorPos === gen_length && genCursorPos > 0) {
+            //TODO appel recurcive
+            showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastIdf);
+          } else {
+            // console.log(data)
+            // console.log("last id " + lastId)
+            let dataG = gen.next().value;
+
+            if (dataG !== undefined) {
+              let dataNbr;
+              if (dataG.nbr === null) {
+                dataNbr = 0 + " ";
+              } else {
+                dataNbr = dataG.nbr + " ";
+              }
+
+              new_reaction_show = dataG.nbr_reaction
+                ? dataG.nbr_reaction +
+                  (dataG.nbr_reaction > 1 ? " réactions" : " réaction")
+                : "0 réaction";
+              let pub_photo = dataG.photo
+                ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${
                     dataG.photo /*.replace("/public","")*/
-                    }" alt="">`
-                  : `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;display:none;" onclick="setPhotoTribu(this)" src="" alt="">`;
-          
-                let confidentiality = parseInt(dataG.confidentiality, 10);
-                
-                let _fullName =
-                  dataG.user_profil.firstname + " " + dataG.user_profil.lastname;
-                let _profilImg = dataG.user_profil.photo_profil
-                  ? "/public" + dataG.user_profil.photo_profil
-                  : "/public/assets/image/img_avatar3.png";
-                lastIdf = dataG?.id;
-                new_reaction_show= dataG.nbr_reaction? (dataG.nbr_reaction + (dataG.nbr_reaction > 1?" réactions":" réaction")) : "0 réaction"
-                //console.log("data N°: " + i);
-                console.log(dataG);
-                const contentPublication = `
+                  }" alt="">`
+                : `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;display:none;" onclick="setPhotoTribu(this)" src="" alt="">`;
+
+              let confidentiality = parseInt(dataG.confidentiality, 10);
+
+              let _fullName =
+                dataG.user_profil.firstname + " " + dataG.user_profil.lastname;
+              let _profilImg = dataG.user_profil.photo_profil
+                ? "/public" + dataG.user_profil.photo_profil
+                : "/public/assets/image/img_avatar3.png";
+              lastIdf = dataG?.id;
+              new_reaction_show = dataG.nbr_reaction
+                ? dataG.nbr_reaction +
+                  (dataG.nbr_reaction > 1 ? " réactions" : " réaction")
+                : "0 réaction";
+              //console.log("data N°: " + i);
+              console.log(dataG);
+              const contentPublication = `
                                     <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${
                                       tribu_t[0].name
                                     }_${dataG.id}_jheo_js">
@@ -1208,14 +1227,8 @@ let canUpdateTribuInfoMob = !document
                                                               )}</span></p></div>
                                                         </div>
 <div class="publiate_on responsif-none-pc"><p  class="p-title"><span>${tribu_t[0].name
-                                                          .replace(
-                                                            /tribu_t_[0-9]+_/,
-                                                            ""
-                                                          )
-                                                          .replaceAll(
-                                                            "_",
-                                                            " "
-                                                          )}</span></p>
+                .replace(/tribu_t_[0-9]+_/, "")
+                .replaceAll("_", " ")}</span></p>
                                                         </div>
                                                         <div class="name-content responsif-none-pc">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
@@ -1279,29 +1292,37 @@ let canUpdateTribuInfoMob = !document
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js" onclick="">
                                                         <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${
-                                                          tribu_t[0].name}_${
-                                                            dataG.id
-                                                          }" onclick="getAllReaction('${dataG.id}', '${tribu_t[0].name}', '${dataG.user_id
-                                                          }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
+                                                          tribu_t[0].name
+                                                        }_${
+                dataG.id
+              }" onclick="getAllReaction('${dataG.id}', '${
+                tribu_t[0].name
+              }', '${
+                dataG.user_id
+              }')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
                                                                                                   <span class="nbr_comment_jheo_js"> ${dataNbr} commentaire(s) </span>
                                                     </p>
 
                                                     <div class="reaction-icon d-flex">
                                                         <i style="cursor:pointer;" class="${
                                                           dataG.reaction == 1
-                                                            ?  (__userLoggedId == data[i].user_id_react ? "bi-heart-fill" : "bi-heart")
+                                                            ? __userLoggedId ==
+                                                              data[i]
+                                                                .user_id_react
+                                                              ? "bi-heart-fill"
+                                                              : "bi-heart"
                                                             : "bi-heart"
                                                         } like reaction_${
-                  tribu_t[0].name
-                }_${dataG.id}" onclick="isLike('${dataG.id}', '${
-                  dataG.user_id
-                }', '${tribu_t[0].name}')"></i>
+                tribu_t[0].name
+              }_${dataG.id}" onclick="isLike('${dataG.id}', '${
+                dataG.user_id
+              }', '${tribu_t[0].name}')"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
                                                         onclick="getAllComment('${
                                                           dataG.id
                                                         }', '${
-                  tribu_t[0].name
-                }', '${dataG.user_id}')"></i>
+                tribu_t[0].name
+              }', '${dataG.user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -1309,16 +1330,18 @@ let canUpdateTribuInfoMob = !document
                                             <!-- ====== Chart One End -->
                                         </div>
                                     `;
-                document.querySelector(
-                  "#list-publicatiotion-tribu-t"
-                ).innerHTML += contentPublication;
-              }
+          if (document.querySelector("#list-publicatiotion-tribu-t")) {
+              document.querySelector(
+                "#list-publicatiotion-tribu-t"
+              ).innerHTML += contentPublication;
+          }
             }
+          }
 
-            //data = gen.next().value;
-            //console.log(data);
-           
-            genCursorPos++;
+          //data = gen.next().value;
+          //console.log(data);
+
+          genCursorPos++;
           //}
         }
       });
@@ -1326,7 +1349,6 @@ let canUpdateTribuInfoMob = !document
   };
   //showComment();
 }
-
 
 function showCommentaireTribu_T(event, idmin = 0, b) {
   event.preventDefault();
@@ -1351,13 +1373,13 @@ function showComment(id_resto) {
   // alert(id_resto)
 
   workerGetCommentaireTribuT.onmessage = (e) => {
-    console.log("afffichage comment");
-    console.log(e.data);
+    // console.log("afffichage comment");
+    // console.log(e.data);
     const datas = e.data[0];
     const index = e.data[0].length;
 
     for (let i = 0; i < index; i++) {
-      console.log(i);
+      // console.log(i);
       let lapstime = calculateDurationOfComment(datas[i].datetime);
       let commentaire = `<div class="media-comment">
                                             <a class="avatar-content" href="javascript://">
@@ -1463,7 +1485,7 @@ function putComment(event) {
       });
     }
   });
-  console.log(pubId, commentaire);
+  // console.log(pubId, commentaire);
 }
 
 function* genDataPubOfAllFans(data, index) {
@@ -1555,8 +1577,8 @@ function showResto(table_rst_pastilled, id_c_u) {
 
   workerRestoPastilled.onmessage = (e) => {
     let restos = e.data;
-    console.log("workerresto :::::");
-    console.log(restos);
+    // console.log("workerresto :::::");
+    // console.log(restos);
     let imgSrc = "";
     let avatar = ""; //"{{avatar}}"
     if (avatar != null) {
@@ -2113,7 +2135,7 @@ function showPhotos() {
   fetch(requete)
     .then((rqt) => rqt.json())
     .then((data) => {
-      console.log(data);
+      // console.log(data);
       photosContainer.innerHTML = `
                 <div class="intro">
                     <div class="alert alert-success" role="alert" style="display:none;" id="success_upload">
@@ -2181,9 +2203,11 @@ function loadFile(event) {
   new_photo.setAttribute("onclick", "setPhotoTribu(this)");
   new_photo.src = URL.createObjectURL(event.target.files[0]);
   div.appendChild(new_photo);
-  var div_photo = document.querySelector("#gallery");
+  // var div_photo = document.querySelector("#gallery");
+var div_photo = document.querySelector(".content-telechargement-tomm-js");
 
-  let first_photo = document.querySelector("#gallery >div> div:nth-child(1)");
+  // let first_photo = document.querySelector("#gallery >div> div:nth-child(1)");
+let first_photo = document.querySelector(".content-telechargement-tomm-js"); 
 
   if (first_photo) {
     first_photo.parentElement.insertBefore(div, first_photo);
@@ -2196,8 +2220,8 @@ function loadFile(event) {
   fileReader.onload = (event) => {
     const srcData = fileReader.result;
     const extensionFile = srcData.split(";")[0].split("/")[1];
-    console.log(event);
-    console.log(extensionFile);
+    // console.log(event);
+    // console.log(extensionFile);
     ///public/uploads/tribu_t/photo/tribu_t_1_banane_publication/photo.jpg
     let data = {
       extensionFile: extensionFile,
@@ -2237,7 +2261,7 @@ function loadFile(event) {
 
 function showActualites() {
   document.querySelector("#activeTribu").click();
-document.querySelector(".fermet-tribu-t-tomm-js").click(); 
+  document.querySelector(".fermet-tribu-t-tomm-js").click();
 }
 
 if (document.querySelector("#submit-publication-tribu-t")) {
@@ -2491,7 +2515,7 @@ function showInvitations() {
       let status = true;
 
       if (input_principal.value === "") {
-        console.log("Entre au moin une destination.");
+        // console.log("Entre au moin une destination.");
         input_principal.style.border = "1px solid red";
         status = false;
       }
@@ -2524,7 +2548,7 @@ function showInvitations() {
 
       ///object
       if (object.value === "") {
-        console.log("Veillez entre un Object.");
+        // console.log("Veillez entre un Object.");
         object.style.border = "1px solid red";
         status = false;
       } else {
@@ -2579,7 +2603,7 @@ function showInvitations() {
             btn_item.setAttribute("onclick", "");
           });
         }
-        console.log(data);
+        // console.log(data);
         //////fetch data
         fetch("/user/tribu/email/invitation", {
           method: "POST",
@@ -2617,10 +2641,10 @@ function showInvitations() {
             // input_principal.value = null;
             // input_cc.value = null;
             // email_piece_joint_list = [];
-// editor.setData("Ecrivez votre message ici.");
+            // editor.setData("Ecrivez votre message ici.");
 
             // document.querySelectorAll(".chip").forEach((item) => {
-              // 	item.parentElement.removeChild(item);
+            // 	item.parentElement.removeChild(item);
             // });
 
             // if (document.querySelector(".content_list_piece_joint_jheo_js")) {
@@ -3694,10 +3718,15 @@ function openPopupActionGolf(
   btn.dataset.name = denomination_f;
   btn.dataset.tbname = tableTribu;
 
-  document.querySelector(".add_attribut_tomm_js").setAttribute("id", "details-coord");
-  document.querySelector(".add_attribut_tomm_js").setAttribute("data-toggle-type", type)
-  document.querySelector(".add_attribut_tomm_js").setAttribute("data-toggle-id-golf", id_pastille)
-
+  document
+    .querySelector(".add_attribut_tomm_js")
+    .setAttribute("id", "details-coord");
+  document
+    .querySelector(".add_attribut_tomm_js")
+    .setAttribute("data-toggle-type", type);
+  document
+    .querySelector(".add_attribut_tomm_js")
+    .setAttribute("data-toggle-id-golf", id_pastille);
 }
 
 // function depastilleGolf(selector){
@@ -3753,7 +3782,7 @@ function fetchAllInvitationStory() {
       if (response.length > 0) {
         tbody_hist.innerHTML = "";
         for (const item of response) {
-          console.log(item);
+          // console.log(item);
 
           tbody_hist.innerHTML += `<tr>
                             <td>${item.email}</td>
@@ -4042,39 +4071,6 @@ function addPieceJointImage(input) {
 /**
  * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
  *
- * This function create single elemment html like to piece joint
- * on the send email invitation on the tribu T
- *
- * @param {*} name : file name
- * @param {*} id : unique id to identifie the element in the object.
- *
- * @return void
- */
-function createListItemPiece(name, id) {
-  ////content block the list item piece joint.
-  const content_list_piece_joint = document.querySelector(
-    ".content_list_piece_joint_jheo_js"
-  );
-
-  //// display the block when it's hidden.
-  if (content_list_piece_joint.classList.contains("d-none")) {
-    content_list_piece_joint.classList.remove("d-none");
-  }
-
-  /// structure html the single element
-  const list_item = `
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <p>${name}</p>
-            <button type="button" class="btn btn-outline-danger fa_solid_${id}_jheo_js" onclick="removeListeItem(this, '${id}')"><i class="fa-solid fa-trash-can"></i></button>
-        </li>
-    `;
-  /// insert the single element.
-  content_list_piece_joint.innerHTML += list_item;
-}
-
-/**
- * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
- *
  * This function remove the item on the list piece jointe
  * and update variable global `email_piece_joint_list` list of the piece joint
  *
@@ -4110,4 +4106,262 @@ function addLinkOnMailBody() {
   }
 
   cancelAddLink();
+}
+
+/**
+ * @author Tomm
+ * creater une album dan le tableao album du tribu t
+ * @param dans le tribuT.html.twig sur le modale createAlbumTribuT
+ */
+function createAlbumTribuT() {
+  const valueNameAlbum = document.querySelector(
+    ".value-name-album-tomm-js"
+  ).value.replaceAll("'", "").replaceAll('"', "");
+  const request = new Request(`/user/tribu/photos/album/${tribu_t_name_0}`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ name_album: valueNameAlbum }),
+  });
+  fetch(request).then(() => {
+    swal({
+        title: "Creation",
+        text: "Votre album a été bien créer.",
+        icon: "success",
+        button: "OK",
+      })
+  });
+  document.querySelector("#gal-album-t").click();
+  document.querySelector(".btn-close-creer-album-tomm-js").click();
+  // fetchAllGalereInAlbum()
+}
+
+/**
+ * @author Tomm
+ * fetch touts les photos dans tribuT
+ * @param dans
+ */
+function fetchAllGalereInAlbum(idAlbum) {
+  if (document.querySelector(".content-gal-all")) {
+    document
+      .querySelectorAll(".content-gal-all")
+      .forEach((item) => item.remove());
+  }
+  const requete = new Request(
+    "/user/tribu/photos/show/album/" + tribu_t_name_0 + "_publication",
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  fetch(requete)
+    .then((rqt) => rqt.json())
+    .then((data) => {
+      let li_img = "";
+      for (let photos of data) {
+        for (let photo of photos) {
+          let img_src = photo.photo;
+          console.log(img_src)
+          if (!img_src == "") {
+            const imgSplit = img_src.split("/")[6]
+            const imgNameSplit = imgSplit.split(".")[0]
+            const parser = new DOMParser();
+            const htmlDocument = parser.parseFromString(li_img, "text/html");
+            if (!htmlDocument.querySelector(`.photo_${imgNameSplit}`)) {
+              if (parseInt(photo.isAlbum) != 1) {
+                  li_img += `
+                        <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 content-gal-all photo_${imgNameSplit}">
+                          <input type="checkbox" class="select-album value-checked-album-tomm-js" data-id="${photo.id}" value="${img_src}"/>
+                          <img
+                          src="${img_src}"
+                          class="w-100 shadow-1-strong  mb-4"
+                          alt="Boat on Calm Water"
+                          />
+                        </div>
+                        `;
+              }
+            }
+          }
+        }
+      }
+      document.querySelector(".all-galeri-to-album-tomm-js").innerHTML +=
+        li_img;
+      clickCopyePathAlbumTribu(idAlbum);
+      
+    });
+}
+
+/**
+ * @author Tomm
+ * ajouter le photo dans l'album
+ * @param dans le tribuT.html.twig sur le modale selectAddAlbum
+ */
+function copyePathAlbumTribuT(idAlbum) {
+  const valuePathAlbum = document.querySelectorAll(
+    ".value-checked-album-tomm-js"
+  );
+  // const idAlbum = document.querySelector(".album-tomm-js").getAttribute("data-id-album");
+  let allValuePathAlbum = [];
+  let allIdPub = [];
+  for (let i = 0; i < valuePathAlbum.length; i++) {
+    if (valuePathAlbum[i].checked) {
+      allValuePathAlbum.push(valuePathAlbum[i].value);
+      let idPub = valuePathAlbum[i].dataset.id;
+      allIdPub.push(idPub);
+    }
+  }
+  const request = new Request(
+    `/user/tribu/photos/copyer/album/${tribu_t_name_0}`,
+    {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        path: allValuePathAlbum,
+        albumId: idAlbum,
+        idPub: allIdPub,
+      }),
+    }
+  );
+  fetch(request).then(() => {
+    swal({
+        title: "Photo Ajouté",
+        text: "Votre photo a été bien ajoutée dans l'album.",
+        icon: "success",
+        button: "OK",
+      })
+  });
+}
+
+function getAlbumTribuT(tribu_t_types) {
+  if (document.querySelector(".insert-album-tomm-js")) {
+    document
+      .querySelectorAll(".doc-album-tomm-js")
+      .forEach((item) => item.remove());
+  }
+  const requete = new Request(`/user/tribu/get/album/${tribu_t_name_0}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+  });
+  fetch(requete)
+    .then((response) => response.json())
+    .then((data) => {
+      let contentAlbum = document.querySelector(".insert-album-tomm-js");
+      for (let album of data) {
+        contentAlbum.innerHTML += `  
+          <div class="doc-album col-4 mb-2 album-${album.id}-tomm-js doc-album-tomm-js" onclick="docAlbumClick(${album.id}, '${album.name_album.replace("'", "").replace('"',"")}', '${tribu_t_types}')">
+            <i class="fa-regular fa-folder-open"></i>
+            <p>${album.name_album}</p>
+          </div>
+          `;
+      }
+    });
+}
+
+function docAlbumClick(idAlbum, nameAlbum, tribu_t_types) {
+  document.querySelector(".album-tomm-js").classList.toggle("d-none");
+
+  let contentAmbum = document.querySelector(".content-album-tomm-js");
+  let btnSelectImgAlbum = ""
+  if (tribu_t_types == "tribu_T_owned") {
+    btnSelectImgAlbum = ` 
+            <button type="button" class="btn btn-light create-album col-lg-4 col-md-12 mb-4 mb-lg-0 mb-3"  data-bs-toggle="modal" data-bs-target="#selectAddAlbum" onclick="fetchAllGalereInAlbum('${idAlbum}')">
+              <i class="fa-solid fa-plus"></i>
+            </button>`
+  } 
+  contentAmbum.innerHTML += `
+    <div class="row photo-imp-t-tomm-js photo-album-tomm-js" data-name-album="${nameAlbum}" data-id-album="${idAlbum}">
+      <div class="row">
+        <p class="col-2"><i class="fa-solid fa-arrow-left" onclick="closeAlbum()"></i></p>
+        <h3 class="col-6">Album : ${nameAlbum}</h3>
+      </div>
+
+        <div class="row insert-photo-album-tomm-js mt-3">
+          ${btnSelectImgAlbum}
+        </div>
+    </div>
+  `;
+  
+  getCopyePathAlbumTribuT(idAlbum);
+}
+
+function clickCopyePathAlbumTribu(idAlbum, nameAlbum) {
+  if (document.querySelector(".copye-album-tribu-t-tomm-js")) {
+    document.querySelectorAll(".select-album").forEach((event) => {
+      event.addEventListener("change", (e) => { 
+        if (event.checked) {
+          document.querySelector(".copye-album-tribu-t-tomm-js").addEventListener("click", () => {
+          document.querySelector(".btn-close-tomm-js").click();
+            document.querySelector(".album-tomm-js").classList.toggle("d-none");
+            document.querySelector(".photo-album-tomm-js").remove();
+            copyePathAlbumTribuT(idAlbum);
+          });
+          document.querySelector(".copye-album-tribu-t-tomm-js").classList.add("btn-primary")
+          document.querySelector(".copye-album-tribu-t-tomm-js").classList.remove("btn-secondary")
+          document.querySelector(".copye-album-tribu-t-tomm-js").removeAttribute("disabled")
+
+        } else {
+          let val = true
+          document.querySelectorAll(".select-album").forEach((event) => { 
+            if (event.checked) { 
+              val = false
+            }   
+          })
+          if (val) {
+            document.querySelector(".copye-album-tribu-t-tomm-js").setAttribute("disabled","")
+          }
+        }
+      })
+      
+    })
+    
+  }
+}
+
+
+function getCopyePathAlbumTribuT(idAlbum) {
+  const requete = new Request(
+    `/user/tribu/get/copyer/album/${tribu_t_name_0}`,
+    {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    }
+  );
+  fetch(requete)
+    .then((response) => response.json())
+    .then((data) => {
+      let contentPhotoAlbum = document.querySelector(
+        ".insert-photo-album-tomm-js"
+      );
+      for (let photoAlbum of data) {
+        let imageAlbum = "";
+        if (photoAlbum.album_id == idAlbum) {
+          imageAlbum = `
+            <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 album" data-floor=${photoAlbum.album_id} onclick="openGalleriesPhotoTribuT(this)">
+                <img src="${photoAlbum.path}" class="w-100 shadow-1-strong mb-4 album" data-floor=${photoAlbum.album_id} alt="Album"/>
+            </div>
+          `;
+        }
+        contentPhotoAlbum.innerHTML += imageAlbum;
+      }
+      
+    });
+}
+
+function closeAlbum() {
+  document.querySelector(".album-tomm-js").classList.toggle("d-none");
+  document.querySelector(".photo-album-tomm-js").remove();
 }

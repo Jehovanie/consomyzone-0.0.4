@@ -16,7 +16,7 @@ function cancelGolfFinished(event,goldID) {
 
 function setGolfRemake(goldID, event) {
     let selectElement = event.target;
-    fecthGolfAction(goldID, "remake", selectElement)
+    fecthGolfAction(goldID, "remake")
 }
 
 function executeActionForPastGolf(event, goldID){
@@ -120,7 +120,7 @@ function fecthGolfAction(goldID, action){
                     new swal("Bravo !","Vous avez marqué ce golf comme à refaire.", "success")
                     .then((value) => {
                         if(document.querySelector(".content_btn_golf_did_jheo_js")){
-                            selectElement.innerHTML= `
+                            document.querySelector(".content_btn_golf_did_jheo_js").innerHTML= `
                                 Voulez-vous annuler votre choix ? <span class="badge bg-danger btn_golf_did btn_golf_did_jheo_js" onclick="cancelGolfFinished(event,${goldID})">Oui</span>
                             `
                         }

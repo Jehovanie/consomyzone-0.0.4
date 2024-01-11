@@ -788,7 +788,7 @@ class SecurityController extends AbstractController
 
 
 
-            $type = "Tribu G";
+            $type = "/user/account";
             $all_user_sending_notification = $tributGService->getAllTributG($user_profil->getTributG()); /// [ ["user_id" => 1], ... ]
 
             foreach ($all_user_sending_notification as $user_to_send_notification) { ///["user_id" => 1]
@@ -1030,7 +1030,7 @@ class SecurityController extends AbstractController
             //// send notification for user send invitation.
             $content = $user->getEmail() . " a accepté l'invitation de rejoindre la tribu " . $tribuTtoJoined;
             $type = "Invitation pour rejoindre la tribu " . $tribuTtoJoined;
-            $notificationService->sendNotificationForOne($numero_table, intval($userPostID), $type, $content);
+            $notificationService->sendNotificationForOne($numero_table, intval($userPostID), "user/tribu/my-tribu-t", $content);
 
 
             ///update status of the user in table tribu T

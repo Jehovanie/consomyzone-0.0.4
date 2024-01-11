@@ -1,0 +1,410 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConsoMyZone
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/message/message.css')}}">
+
+{% endblock %}
+
+{% block javascripts %}
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+    {# <script src='https://8x8.vc/external_api.js'></script> #}
+    {# <script  src="{{ asset('assets/js/chatHome.js') }}" defer></script> #}
+    {# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
+    <script  src="{{ asset('assets/js/message/message.js') }}" defer></script>
+    <script  src="{{ asset('assets/js/message/eventStrem_message.js') }}" defer></script>
+
+	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+
+{% endblock %}
+
+{% block body %}
+
+<div class="nh">
+	{# {% include 'shard/account_navleft_new.html.twig' %}
+	{% include 'shard/account_navbar_new.html.twig' %} #}
+    <div class="fixed-top">
+        <button  class="responsif-none-pc vu jc g  pa nj xr ni bj wr _k uo qh btn-navright-tribut btn-navright-en-lign-tomm-js">
+            <span class="jc h cg bf sd span-btn-menu-en-lign menu-en-lign-tomm-js">
+                <span class="du-block g m yd vc span-menu-en-lign-tomm-js">
+                    <span class="">
+                        {# <i class="fa-solid fa-circle text-success text-point-7"></i>Vos message de groupe. #}
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </span>
+                </span>
+                <i class="fa-solid fa-xmark btn-ferme-tribut fermet-en-lign-tomm-js responsif-none"></i>
+            </span>
+        </button>
+    </div>
+    <!-- ===== Main Content Start ===== -->
+    <main class="wd account-message-conected">
+        <div class="jp nh" style="min-height: 100vh;">
+            <div class="vc tv nj xr d-flex">
+                <div class="responsif-none sv en-lign-mobile en-lign-mobile-tomm-js list-amie-message-perso">
+                    <!-- ====== Chat List Start -->
+                    <div class="vc xk">
+                        <a href="{{ path('app_all_message_iframe') }}" class="me-5">
+                            <i class="fa-solid fa-arrow-left"></i>
+                        </a>
+                        {# <button type="button" class="btn btn-outline-primary waves-effect mt-1 mb-2 d-inline" onclick="createVisoGroup()"><i class="fas fa-plus pe-2" aria-hidden="true" title="Créer une réunion avec les membres de votre tribu"></i>Créer une réunion</button> #}
+                        <div class="vd mh ip ch ib user_profile_list_elie">
+                            <h3>Tribus</h3>
+                            {# <div class="container-bar-recherche-message">
+                                <input type="text" class="search_input_message_perso" placeholder="Recherche...">                
+                            </div> #}
+                            {# <ul class="nav nav-tabs">
+                                <li class="nav-item" data-type="tribuG" onclick="toggleAmisTribu(this)">
+                                    <a class="nav-link linkToActive_jheo_js {{ isInTribut is same as(true) ? '' : 'active' }}" data-selector-list="content_list_tribuG_jheo_js">Tribu G</a>
+                                </li>
+                                <li class="nav-item" data-type="tribuT"  onclick="toggleAmisTribu(this)">
+                                    <a class="nav-link linkToActive_jheo_js {{ isInTribut is same as(true) ? 'active' : '' }}" data-selector-list="content_list_tribuT_jheo_js" href="#">Tribu T</a>
+                                </li>
+                            </ul> #}
+
+                            <div class="all_mpcmz_faniry_js content_list_tribuG_jheo_js">
+                                {# {% if amisTributG|length > 0 %} #}
+                                    <!-- Chat List Item -->
+                                    {% set isZeroMessage = {'noMessage': 'oui', 'haveMessage':'non'} %}
+                                    {% if tribusG is defined %}
+                                        
+                                        {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
+                                        {% include 'card/card_item_message_grp_left_iframe.html.twig' with {'id':tribusG.id , 
+                                        'photo': tribusG.tribugAvatar, 'firstname': tribusG.name, 'lastname': '', 'is_online': 1, 'last_message': "text" ,"table":tribusG.tableTribuG, "type":"g" } %} 
+                                            
+                                    {% endif %}
+                                    {% if tribuT|length > 0%}
+                                        {% for item in tribuT %}
+                                            {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
+                                            {% include 'card/card_item_message_grp_left_iframe.html.twig' with {'id':0 , 'photo': item.logo_path, 
+                                            'firstname': item.name_tribu_t_muable, 'lastname': '', 'is_online': 1, 'last_message': "text","table":item.table_name, "type":"t" } %} 
+                                        {% endfor %}
+                                        
+                                    {% endif %}
+                                    {% if isZeroMessage.noMessage is same as('oui') and isZeroMessage.haveMessage is same as('non') %}
+                                         <div>Vous n'avez aucun message. Rechercher d'autres fan en ligne est envoyés leur des messages. </div>
+                                    {% endif %}
+                                {# {% else %} #}
+                                    {# <div class="cg lc mg sh ol rl tq is">
+                                        <div class="bg-light bg-gradient p-3">
+                                            <p class="text-center text-danger">Actuellement, vous êtes seul partisan en ligne dans votre tribu G.</p>
+                                        </div>
+                                    </div> #}
+                                {# {% endif %} #}
+                            </div>
+
+                            {# <div class="content_list_tribuT_jheo_js ">
+                                <ul class="list-group list-group-flush">
+                                    {% if allTribuT|length > 0 %}
+                                        
+                                    {% else %}
+                                        <li>
+                                            <div class="cg lc mg sh ol rl tq is">
+                                                <div class="bg-light bg-gradient p-3">
+                                                    <p class="text-center text-danger">Actuellement, vous n'avez pas encore créé ou rejoindre une tribu T.</p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    {% endif %}
+                                </ul>
+                            </div> #}
+                        </div>
+                    </div>
+                    <!-- ====== Chat List End -->
+                </div>
+
+                {# ===== chat content ===================== #}
+                <div class="vc lc hg xi yi bj wr w-100">
+                    <div class="lc mg qg vi bj wr ql vl">
+                        {% if isT == 1 %}
+                            <div class="lc mg content_entete_msg_grp_jheo_js" data-roof={{app.user.id}} data-userToFirstname="" data-userToLastname=""  data-toggle-id-user-to={{group_send_to}} data-toggle-type="t">
+                                <div class="ob xc yd pf nh th">
+                                    <img src="{{(tribuTSelected.logo_path) ? "/public" ~ tribuTSelected.logo_path  : '/public/uploads/tribus/avatar_tribu.jpg' }}" alt="{{tribuTSelected.name_tribu_t_muable}}" class="vc yd qk rk"
+                                    style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)" />
+                                </div>
+                                <div>
+                                    <p class="mn">
+                                    Discussion générale
+                                        <h5 class="un zn gs">
+                                            {{tribuTSelected.name_tribu_t_muable}}
+                                        </h5>
+                                    </p>
+                                </div>
+                            </div> 
+                        {% else %}
+                            <div class="lc mg content_entete_msg_grp_jheo_js" data-roof={{app.user.id}} data-userToFirstname="" data-userToLastname=""  data-toggle-id-user-to={{group_send_to}} data-toggle-type="g">
+                                <div class="ob xc yd pf nh th">
+                                    <img src="{{(tribusG.tribugAvatar) ? "/public" ~ tribusG.tribugAvatar  :'/public/uploads/tribus/avatar_tribu.jpg' }}" alt="{{tribusG.name}}" class="vc yd qk rk"
+                                    style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)" />
+                                </div>
+                                <div>
+                                    <p class="mn">
+                                    Discussion générale
+                                        <h5 class="un zn gs">
+                                            {{tribusG.name}}
+                                        </h5>
+                                    </p>
+                                </div>
+                            </div> 
+                        {% endif %}
+                    </div>
+                    {# ================== CONTENCT DISCUSSION ================== #}
+                    <div class="vd mh ip fh ql wl content_discussion_jheo_js" id="content_discussion_elie">
+                        {% if allMessage|length > 0 %}
+                          {% set defaultFile = "/public/assets/image/type_file.png" %}
+                            {% for message in allMessage %}
+                                {% if message.id_expediteur == app.user.id %} {# my message#}
+                                    <div class="qf rb" id="{{'message_' ~ message.id_msg ~ '_jheo_js'}}">
+                                            <div class="qb vh ii oj el yl">
+                                                {% if message.msg != null %}
+                                                    <p class="eo">{{message.msg| raw}}</p>
+                                                {% endif %}
+                                                {% if  message.images != null %}
+                                                    <div class="content_image_msg">
+                                                        {% if message.images|length > 0 %}
+                                                            {% for image in message.images %}
+                                                                <div class="file_item">
+                                                                    <img class="message_image_item" src="{{image}}" alt="image" style="cursor:pointer;"
+                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
+                                                                    <a class="icon_download_file" href="{{image}}" download>
+                                                                        <i class="fa-solid fa-download"  style="color:black"></i>
+                                                                    </a>
+                                                                </div>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    
+
+                                                    </div>
+                                                {% endif %}
+                                                {% if message.files is defined and  message.files|length > 0 %}
+                                                        <div class="content_image_msg">    
+                                                            {% for file in message.files %}
+                                                                <div class="file_item">
+                                                                    <img class="message_image_item" src="{{defaultFile}}" alt="File" style="cursor:pointer;"
+                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)">
+                                                                    <a class="icon_download_file" href="{{file}}" download>
+                                                                        <i class="fa-solid fa-download"  style="color:black"></i>
+                                                                    </a>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                {% endif %}
+                                            </div>
+                                            <p class="in nn">{{message.date_message_created}}</p>
+                                    </div>
+
+                                {% else %} {# other message#}
+                                    <div class="qf" id="{{'message_' ~ message.id_msg ~ '_jheo_js'}}" style="color:black">
+                                            <div class="d-flex align-items-center">
+                                                <div class="flex-shrink-0 xc yd pf nh th">
+                                                    <img src="{{(message.photo_profil) ? '/public' ~ message.photo_profil : '/public/uploads/users/photos/default_pdp.png'}}" 
+                                                    alt="{{message.firstname}}" style="width:80%; height:80%; clip-path:circle(40%);cursor:pointer;"
+                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" onclick="setPhotoMessage(this)"
+                                                    />
+                                                </div>
+
+                                                <p class="flex-grow-1 qb mn un">
+                                                    {{message.firstname ~ " " ~ message.lastname }}
+                                                </p>
+                                            </div>
+                                            <div class="qb vh hi vj yr el yl">
+                                                
+                                                {% if message.msg != null %}
+                                                    <p class="eo" style="color:black">{{message.msg| raw}}</p>
+                                                {% endif %}
+                                                {% if  message.images != null %}
+                                                    <div class="content_image_msg">
+                                                        {% if message.images|length > 0 %}
+                                                            {% for image in message.images %}
+                                                                <div class="file_item">
+                                                                    <img class="message_image_item" src="{{image}}" alt="image"
+                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" style="cursor:pointer;" onclick="setPhotoMessage(this)">
+                                                                    <a class="icon_download_file" href="{{image}}" download>
+                                                                        <i class="fa-solid fa-download" style="color:black"></i>
+                                                                    </a>
+                                                                </div>
+                                                            {% endfor %}
+                                                        {% endif %}
+                                                    
+
+                                                    </div>
+                                                {% endif %}
+                                                {% if message.files is defined and  message.files|length > 0 %}
+                                                        <div class="content_image_msg">    
+                                                            {% for file in message.files %}
+                                                                <div class="file_item">
+                                                                    <img class="message_image_item" src="{{defaultFile}}" alt="File"
+                                                                    data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess_grp" style="cursor:pointer;" onclick="setPhotoMessage(this)">
+                                                                    <a class="icon_download_file" href="{{file}}" download>
+                                                                        <i class="fa-solid fa-download"  style="color:black"></i>
+                                                                    </a>
+                                                                </div>
+                                                            {% endfor %}
+                                                        </div>
+                                                {% endif %}
+                                            </div>
+                                            <p class="nn">{{message.date_message_created}}</p>
+                                    </div>
+
+                                {% endif %}
+                            {% endfor %}
+                        {% else %}
+                             <p class="text-center start_discussion_jheo_js"> Envoyer un Hello!!!</p>
+                        {% endif %}
+                        
+                    </div >
+                    <div class=" nj xr ti bj wr sl ql content_form_message_jheo_js">
+
+                        <div class="content_image_input content_image_input_jheo_js"  data-toggle-type={{type}} data-toggle-userfrom-id={{app.user.id}} data-toggle-userto-id= {{group_send_to}} >
+                            <i class="fa-solid fa-file-import fa-xl ms-3 input_file_under_image_jheo_js"></i>
+                            {# <img class="image_input_item" src="{{asset('/uploads/users/photos/default_pdp.png')}}" alt="Image_msg">#}
+                        </div>
+                        <div class="lc mg qg hh">
+                            <div class="h yd">
+                                <input class="xc yd qh ni bj wr vj yr mm qm zn gs no vo fr input_message_jheo_js" type="text" placeholder="Envoyez-lui un message."/>
+                                
+                                <div class="g o j/2 nc -ud-translate-y-1/2 mg og ih">
+
+                                    <div class="zq input_file_show_jheo_js">
+                                        <svg width="18" height="18" viewbox="0 0 18 18" class="hk">
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M11.835 1.79102C11.2378 1.79102 10.6651 2.02824 10.2428 2.45051L3.3503 9.34302C2.64657 10.0467 2.25122 11.0012 2.25122 11.9964C2.25122 12.9917 2.64657 13.9461 3.3503 14.6499C4.05403 15.3536 5.0085 15.7489 6.00372 15.7489C6.99895 15.7489 7.95341 15.3536 8.65714 14.6499L15.5496 7.75736C15.8425 7.46446 16.3174 7.46446 16.6103 7.75736C16.9032 8.05025 16.9032 8.52512 16.6103 8.81802L9.7178 15.7105C8.73277 16.6956 7.39677 17.2489 6.00372 17.2489C4.61067 17.2489 3.27468 16.6956 2.28964 15.7105C1.30461 14.7255 0.751221 13.3895 0.751221 11.9964C0.751221 10.6034 1.30461 9.26739 2.28964 8.28236L9.18214 1.38985C9.88572 0.686279 10.84 0.291016 11.835 0.291016C12.83 0.291016 13.7842 0.686279 14.4878 1.38985C15.1914 2.09343 15.5866 3.04768 15.5866 4.04268C15.5866 5.03769 15.1914 5.99194 14.4878 6.69552L7.5878 13.588C7.16569 14.0101 6.59318 14.2473 5.99622 14.2473C5.39926 14.2473 4.82676 14.0101 4.40464 13.588C3.98253 13.1659 3.74539 12.5934 3.74539 11.9964C3.74539 11.3995 3.98253 10.827 4.40464 10.4049L10.7725 4.04454C11.0655 3.75182 11.5404 3.7521 11.8331 4.04517C12.1258 4.33823 12.1256 4.81311 11.8325 5.10583L5.4653 11.4655C5.32469 11.6063 5.24539 11.7974 5.24539 11.9964C5.24539 12.1956 5.32449 12.3865 5.4653 12.5274C5.60611 12.6682 5.79709 12.7473 5.99622 12.7473C6.19535 12.7473 6.38633 12.6682 6.52714 12.5274L13.4271 5.63486C13.8492 5.21261 14.0866 4.63973 14.0866 4.04268C14.0866 3.4455 13.8494 2.87278 13.4271 2.45051C13.0049 2.02824 12.4321 1.79102 11.835 1.79102Z"/>
+                                        </svg>
+                                    </div>
+
+                                    {# <input class="hidden input_file_hidden_jheo_js"  type="file" class="first-input" multiple aria-disabled  accept="image/png, image/jpeg, image/gif">  #}
+                                    <input class="hidden input_file_hidden_jheo_js send_msg_in_grp_faniry_js" accept=".jpeg, .png, .jpg, .csv, .txt, .json, .doc, .pdf"  type="file" class="first-input" multiple aria-disabled> 
+                                    
+                                    <div class="zq show_emojy_picker_jheo_js">
+                                        <svg width="19" height="18" viewbox="0 0 19 18" class="hk">
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M9.5 2.25C5.77208 2.25 2.75 5.27208 2.75 9C2.75 12.7279 5.77208 15.75 9.5 15.75C13.2279 15.75 16.25 12.7279 16.25 9C16.25 5.27208 13.2279 2.25 9.5 2.25ZM1.25 9C1.25 4.44365 4.94365 0.75 9.5 0.75C14.0564 0.75 17.75 4.44365 17.75 9C17.75 13.5564 14.0564 17.25 9.5 17.25C4.94365 17.25 1.25 13.5564 1.25 9Z"/>
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M7.09769 10.0469C6.84856 9.71825 6.38037 9.6523 6.05004 9.90004C5.71867 10.1486 5.65152 10.6187 5.90004 10.95L6.50004 10.5C5.90004 10.95 5.90022 10.9503 5.90041 10.9505L5.9008 10.9511L5.90167 10.9522L5.90372 10.9549L5.90913 10.962L5.9251 10.9824C5.93803 10.9988 5.95555 11.0204 5.97757 11.0467C6.02155 11.0991 6.08379 11.17 6.16363 11.2533C6.32269 11.4193 6.55512 11.6379 6.85579 11.8566C7.45424 12.2918 8.3559 12.75 9.50004 12.75C10.6442 12.75 11.5458 12.2918 12.1443 11.8566C12.445 11.6379 12.6774 11.4193 12.8365 11.2533C12.9163 11.17 12.9785 11.0991 13.0225 11.0467C13.0445 11.0204 13.0621 10.9988 13.075 10.9824L13.091 10.962L13.0964 10.9549L13.0984 10.9522L13.0993 10.9511L13.0997 10.9505C13.0999 10.9503 13.1 10.95 12.5 10.5L13.1 10.95C13.3486 10.6187 13.2814 10.1486 12.95 9.90004C12.6197 9.6523 12.1515 9.71825 11.9024 10.0469L11.8989 10.0514C11.8945 10.057 11.886 10.0676 11.8736 10.0823C11.8487 10.112 11.8084 10.1582 11.7535 10.2155C11.643 10.3308 11.477 10.4872 11.262 10.6435C10.8292 10.9583 10.2309 11.25 9.50004 11.25C8.76919 11.25 8.17084 10.9583 7.73805 10.6435C7.52309 10.4872 7.35709 10.3308 7.24661 10.2155C7.19168 10.1582 7.15139 10.112 7.12653 10.0823C7.11412 10.0676 7.10563 10.057 7.10117 10.0514L7.09769 10.0469Z"/>
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M6.5 6.75C6.5 6.33579 6.83579 6 7.25 6H7.2575C7.67171 6 8.0075 6.33579 8.0075 6.75C8.0075 7.16421 7.67171 7.5 7.2575 7.5H7.25C6.83579 7.5 6.5 7.16421 6.5 6.75Z"/>
+                                            <path fill-rule="evenodd" clip-rule="evenodd" d="M11 6.75C11 6.33579 11.3358 6 11.75 6H11.7575C12.1717 6 12.5075 6.33579 12.5075 6.75C12.5075 7.16421 12.1717 7.5 11.7575 7.5H11.75C11.3358 7.5 11 7.16421 11 6.75Z"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{include('card/card_emojy_pickert.html.twig')}}
+
+                            <button class="xc yd pf lc mg pg qh oj eo wq btn_send_message_jheo_j send_msg_grp_faniry_js">
+                                <svg width="24" height="24" viewbox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+
+                {# <div class="pc sv vv/4 my-profile-id-elie" data-my-id="{{userToProfil.id}}">
+
+                    <!-- ====== Profile Section Start -->
+                    <div class="zl">
+                        <div class="va rf db th">
+                            <img src="{{(userToProfil.photo_profile) ? "/public" ~ userToProfil.photo_profile : '/public/uploads/users/photos/default_pdp.png'}}" alt="{{userToProfil.firstname}}"  width="100" alt="profile"/>
+                        </div>
+
+                        <div class="hn">
+                            <h5 class="tn on zn gs">
+                                {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
+                            </h5>
+                            <p class="mn">  est un {{userToProfil.status is same as('CONSUMER') ? 'Partisan': 'Partenaire'}} dans ConsoMyZone.</p>
+
+                            <a href="#" class="tb lc mg pg un mn zn gs zq ns mt-5 btn_grise_non_actif_js_Elie" data-email="{{userToProfil.email}}">
+                                <span class="lm">
+                                    <svg width="18" height="18" viewbox="0 0 18 18" class="hk">
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M9 2.25C5.27208 2.25 2.25 5.27208 2.25 9C2.25 12.7279 5.27208 15.75 9 15.75C12.7279 15.75 15.75 12.7279 15.75 9C15.75 5.27208 12.7279 2.25 9 2.25ZM0.75 9C0.75 4.44365 4.44365 0.75 9 0.75C13.5564 0.75 17.25 4.44365 17.25 9C17.25 13.5564 13.5564 17.25 9 17.25C4.44365 17.25 0.75 13.5564 0.75 9Z"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0.75 9C0.75 8.58579 1.08579 8.25 1.5 8.25H16.5C16.9142 8.25 17.25 8.58579 17.25 9C17.25 9.41421 16.9142 9.75 16.5 9.75H1.5C1.08579 9.75 0.75 9.41421 0.75 9Z"/>
+                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M6.75017 8.99996C6.80157 11.3061 7.59469 13.5263 9 15.3369C10.4053 13.5263 11.1984 11.3061 11.2498 8.99996C11.1984 6.69383 10.4053 4.47359 9 2.66306C7.59469 4.47359 6.80157 6.69383 6.75017 8.99996ZM9 1.49996L8.44624 0.994141C6.44767 3.18214 5.31188 6.0216 5.25016 8.98434C5.24995 8.99475 5.24995 9.00517 5.25016 9.01558C5.31188 11.9783 6.44767 14.8178 8.44624 17.0058C8.58834 17.1613 8.78931 17.25 9 17.25C9.21069 17.25 9.41166 17.1613 9.55376 17.0058C11.5523 14.8178 12.6881 11.9783 12.7498 9.01558C12.7501 9.00517 12.7501 8.99475 12.7498 8.98434C12.6881 6.0216 11.5523 3.18214 9.55376 0.994141L9 1.49996Z"/>
+                                    </svg>
+                                </span>
+                                Envoyer-lui un email.
+                            </a>
+                            <div class="lc mg pg jh">
+                                <button class="ad th ni cj oj yl un mn eo wq">
+                                    <a class="cta_profil_message" href="{{path('user_profil', { user_id: userToProfil.id })}}">Voir son profil</a>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="visioMinimize fixed-bottom" id="minimizeVisio"></div> 
+                </div> #}
+            </div>
+        </div>
+    </main>
+</div>
+<div class="spid_js_faniry {{app.user.id}}" ></div>
+<!-- Modal pour visioner les  photos -->
+    <div class="modal fade" id="modal_show_photo_mess_grp" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <img id="img_modal_mess_grp_photo" style="width:100%">
+                </div>
+
+            </div>
+        </div>
+    </div>
+{# {{include('user/message/visio_message_modal.html.twig')}}
+
+
+<div class="modal fade" id="visioGroupModalForMessage" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="exampleModalLabel">Veuillez inviter vos amis</h1>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="visioGroupContentForMessage">
+       
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"><i class="fas fa-close"></i> Pas maintenant</button>
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" id="confirmVisioGroupForMessage"><i class="fas fa-arrow-right"></i> Démarrer la conférence</button>
+      </div>
+    </div>
+  </div>
+</div> #}
+{# {{include('user/message/visio_message_modal.html.twig')}} #}
+{# {{include('user/message/amis_mobile.html.twig')}} #}
+
+    {# list des amis dans le tribu G 
+        <div class="content_amis">
+            <h6> List de vos amis dans le tribu G:</h6>
+            <hr>
+            {% if amisTributG|length > 1 %}
+                <ul>
+                    {% for amis in amisTributG %}
+                        don't show current user connected
+                        {% if not (amis.id|number_format is same as(app.user.id|number_format)) %}
+                        
+                            <li>
+                                <a href="{{path('app_message') ~ '?user_id=' ~ amis.id }}"
+                                    data-toggle-user-id = {{amis.id}}
+                                    tooltip={{amis.email}} 
+                                    class="list_amis_to_chat">
+
+                                    <img src="{{ ( amis.photo != null) ? asset('uploads/users/photos/') ~ amis.photo : asset('uploads/users/photos/img_avatar.png')}}" alt="Avatar-Message">
+                                    <h6>{{amis.firstname ~ " " ~ amis.lastname }} </h6>
+                                </a>
+                            </li>
+                        
+                        {% endif %}
+
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <div class="alert alert-primary text-center" role="alert">
+                    Il n'existe pas encore d'autre personne dans votre groupe.
+                </div>
+            {% endif %}
+        </div>
+    </div> #}
+        <!-- ====== Profile Section End -->
+{% endblock %}

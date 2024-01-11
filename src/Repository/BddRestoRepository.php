@@ -240,6 +240,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
                         CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
                     )
+                    ->distinct('r.denominationF, r.poiX, r.poiY')
                     ->where("r.dep =:dep")
                     ->setParameter("dep",$dep);
 
@@ -250,10 +251,10 @@ class BddRestoRepository extends ServiceEntityRepository
                             ->setParameter("codinsee", $codinsee);
         }
 
-        $query= $query->groupBy("r.denominationF, r.poiX, r.poiY")
-                ->having('count(r.denominationF)=1')
-                ->andHaving('count(r.poiX)=1')
-                ->andHaving('count(r.poiY) =1');
+        //    $query= $query->groupBy("r.denominationF, r.poiX, r.poiY")
+                // ->having('count(r.denominationF)=1')
+                // ->andHaving('count(r.poiX)=1')
+                // ->andHaving('count(r.poiY) =1');
         return $query->orderBy('RAND()')
                 ->setMaxResults($limit)
                 ->getQuery()
@@ -306,12 +307,13 @@ class BddRestoRepository extends ServiceEntityRepository
                         CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
                         CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
             )
+            ->distinct('r.denominationF, r.poiX, r.poiY')
             ->where("r.dep =:dep")
-            ->setParameter("dep", $dep)
-            ->groupBy("r.denominationF, r.poiX, r.poiY")
-            ->having('count(r.denominationF)=1')
-            ->andHaving('count(r.poiX)=1')
-            ->andHaving('count(r.poiY) =1');
+            ->setParameter("dep", $dep);
+            // ->groupBy("r.denominationF, r.poiX, r.poiY")
+            // ->having('count(r.denominationF)=1')
+            // ->andHaving('count(r.poiX)=1')
+            // ->andHaving('count(r.poiY) =1');
 
         if ($codinsee) {
             $query = $query->andWhere("r.codinsee =:codinsee")
@@ -879,12 +881,13 @@ class BddRestoRepository extends ServiceEntityRepository
                 CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie) as rue,
                 CONCAT(r.numvoie,' ',r.typevoie, ' ',r.nomvoie, ' ',r.codpost, ' ',r.villenorm) as add"
             )
+            ->distinct('r.denominationF, r.poiX, r.poiY')
             ->where("r.codinsee =:codinsee")
             ->andWhere("r.dep =:dep")
-            ->groupBy("r.denominationF, r.poiX, r.poiY")
-            ->having('count(r.denominationF)=1')
-            ->andHaving('count(r.poiX)=1')
-            ->andHaving('count(r.poiY) =1')
+            // ->groupBy("r.denominationF, r.poiX, r.poiY")
+            // ->having('count(r.denominationF)=1')
+            // ->andHaving('count(r.poiX)=1')
+            // ->andHaving('count(r.poiY) =1')
             ->setParameter("codinsee", $codinsee)
             ->setParameter("dep", $dep)
             ->orderBy("r.denominationF", 'ASC')
@@ -1005,10 +1008,11 @@ class BddRestoRepository extends ServiceEntityRepository
                     r.tel,
                     r.poiX,
                     r.poiY")
-            ->groupBy("r.denominationF, r.poiX, r.poiY")
-            ->having('count(r.denominationF)=1')
-            ->andHaving('count(r.poiX)=1')
-            ->andHaving('count(r.poiY) =1')
+            ->distinct('r.denominationF, r.poiX, r.poiY')
+            // ->groupBy("r.denominationF, r.poiX, r.poiY")
+            // ->having('count(r.denominationF)=1')
+            // ->andHaving('count(r.poiX)=1')
+            // ->andHaving('count(r.poiY) =1')
             ->getQuery()
             ->getResult();
     }
@@ -1053,10 +1057,11 @@ class BddRestoRepository extends ServiceEntityRepository
                     r.tel,
                     r.poiX,
                     r.poiY")
-            ->groupBy("r.denominationF, r.poiX, r.poiY")
-            ->having('count(r.denominationF)=1')
-            ->andHaving('count(r.poiX)=1')
-            ->andHaving('count(r.poiY) =1')
+            ->distinct('r.denominationF, r.poiX, r.poiY')
+            // ->groupBy("r.denominationF, r.poiX, r.poiY")
+            // ->having('count(r.denominationF)=1')
+            // ->andHaving('count(r.poiX)=1')
+            // ->andHaving('count(r.poiY) =1')
             ->where('r.poiY BETWEEN :lat_min AND :lat_max')
             ->andWhere('r.poiX BETWEEN :lng_min AND :lng_max');
 
@@ -1264,6 +1269,7 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.poiX as long,
                         r.poiY as lat"
                     )
+                    ->distinct('r.denominationF, r.poiX, r.poiY')
                     ->where("r.poiX >= :minx")
                     ->andWhere("r.poiX <= :maxx")
                     ->andWhere("r.poiY >= :miny")
@@ -1271,11 +1277,11 @@ class BddRestoRepository extends ServiceEntityRepository
                     ->setParameter("minx", $minx)
                     ->setParameter("maxx", $maxx)
                     ->setParameter("miny", $miny)
-                    ->setParameter("maxy", $maxy)
-                    ->groupBy("r.denominationF, r.poiX, r.poiY")
-                    ->having('count(r.denominationF)=1')
-                    ->andHaving('count(r.poiX)=1')
-                    ->andHaving('count(r.poiY) =1');
+                    ->setParameter("maxy", $maxy);
+                    // ->groupBy("r.denominationF, r.poiX, r.poiY")
+                    // ->having('count(r.denominationF)=1')
+                    // ->andHaving('count(r.poiX)=1')
+                    // ->andHaving('count(r.poiY) =1');
                     
         if( $idDep ){
             $query = $query->andWhere("r.dep =:dep")
@@ -1458,4 +1464,3 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getResult();
     }
 }
- 
