@@ -243,6 +243,8 @@ class MarckerClusterFerme extends MapModule {
 			this.markers.refreshClusters();
 
 			this.renderFicheDetails(item);
+			if(document.querySelector("#dockableIcone_"+item.id))
+				document.querySelector("#dockableIcone_"+item.id).remove()
 		});
 	}
 

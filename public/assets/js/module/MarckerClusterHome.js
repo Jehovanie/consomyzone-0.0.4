@@ -544,6 +544,8 @@ class MarckerClusterHome extends MapModule {
 					true
 				);
 			}
+			if(document.querySelector("#dockableIcone_station_"+dataStation.id))
+				document.querySelector("#dockableIcone_station_"+dataStation.id).remove()
 		});
 	}
 
@@ -592,6 +594,9 @@ class MarckerClusterHome extends MapModule {
 			} else {
 				getDetailFerme(dataFerme.departement, dataFerme.departementName, dataFerme.id, true);
 			}
+
+			if(document.querySelector("#dockableIcone_ferme_"+dataFerme.id))
+				document.querySelector("#dockableIcone_ferme_"+dataFerme.id).remove()
 		});
 	}
 
@@ -658,6 +663,8 @@ class MarckerClusterHome extends MapModule {
 			} else {
 				getDetailResto(dataResto.dep, dataResto.depName, dataResto.id, true);
 			}
+			if(document.querySelector("#dockableIcone_resto_"+dataResto.id))
+				document.querySelector("#dockableIcone_resto_"+dataResto.id).remove()
 		});
 	}
 
@@ -723,6 +730,9 @@ class MarckerClusterHome extends MapModule {
 			} else {
 				getDetailGolf(item.dep, item.nom_dep, item.id, true);
 			}
+
+			if(document.querySelector("#dockableIcone_golf_"+item.id))
+				document.querySelector("#dockableIcone_golf_"+item.id).remove()
 		});
 	}
 
@@ -773,6 +783,8 @@ class MarckerClusterHome extends MapModule {
 			} else {
 				getDetailTabac(item.dep, item.nom_dep, item.id, true);
 			}
+			if(document.querySelector("#dockableIcone_tabac_"+item.id))
+				document.querySelector("#dockableIcone_tabac_"+item.id).remove()
 		});
 	}
 

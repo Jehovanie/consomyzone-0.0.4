@@ -629,3 +629,66 @@ function makeUserModifResto(e) {
 }
 
 function updataMarkerIntCarte(idItem) {}
+
+function dockFicheRubrique(nombre=1){
+	let closeDetailElement = document.querySelector(".close_details_jheo_js")
+	let markerInfo = CURRENT_MAP_INSTANCE.marker_last_selected.options
+	let idRubrique = markerInfo.id
+	let typeRubrique = markerInfo.type ? markerInfo.type : null
+	closeDetailElement.click()
+
+	if(nombre > 1){
+		let newDivContainer = document.createElement("div")
+		newDivContainer.setAttribute("class", "leaflet-control liste-icones d-none")
+		newDivContainer.innerHTML += `<div id="liste-icones-dock">
+					<button style="font-size: 1.1rem;">
+						<i class="fa-solid fa-file"></i>
+					</button>
+				</div>`
+		document.querySelector(".leaflet-top.leaflet-right").appendChild(newDivContainer)
+	}else{
+		let divParent = document.createElement("div")
+		divParent.setAttribute("onclick",`reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')`)
+		divParent.setAttribute("style","margin-left:30px;")
+		divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer"
+
+		if(typeRubrique){
+			divParent.id = "dockableIcone_" + typeRubrique + "_" + idRubrique
+		}else{
+			divParent.id = "dockableIcone_" + idRubrique
+		}
+
+		divParent.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Cliquer ici pour le réaffichage de la fiche</div>
+		
+		<button style="font-size: 1.1rem;">
+			<i class="fa-solid fa-file"></i>
+			<span class="number-of-icon d-none">+2</span>
+		</button>`
+
+		let dockableIconeElement = document.querySelectorAll(".dockableDetail")
+		let dockableIconeLength = dockableIconeElement.length
+
+		if(dockableIconeLength >= nombre){
+			dockableIconeElement[0].remove()
+		}
+
+		document.querySelector("#openFlottant").appendChild(divParent)
+	}
+
+	CURRENT_MAP_INSTANCE.bindTooltipsDockOnHover()
+	
+}
+
+function reAfficherFiche(element, idRubrique, typeRubrique){
+	element.remove()
+	if(typeRubrique){
+		if (CURRENT_MAP_INSTANCE.checkIsExist(idRubrique, typeRubrique)) {
+			CURRENT_MAP_INSTANCE.clickOnMarker(idRubrique, typeRubrique);
+		}	
+	}else{
+
+		if (CURRENT_MAP_INSTANCE.checkIsExist(idRubrique)) {
+			CURRENT_MAP_INSTANCE.clickOnMarker(idRubrique);
+		}
+	}
+}

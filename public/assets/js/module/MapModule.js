@@ -1167,6 +1167,20 @@ class MapModule {
 		});
 	}
 
+	bindTooltipsDockOnHover() {
+		let dockableIcone = document.querySelectorAll(`.dockableDetail`);
+
+		dockableIcone.forEach((item_control) => {
+			item_control.addEventListener("mouseover", () => {
+				item_control.querySelector(".message_tooltip_jheo_js").classList.remove("d-none");
+			});
+
+			item_control.addEventListener("mouseout", () => {
+				item_control.querySelector(".message_tooltip_jheo_js").classList.add("d-none");
+			});
+		});
+	}
+
 	leafletControlExtend(position = "topright") {
 		L.Control.Custom = L.Control.extend({
 			version: "1.0.1",

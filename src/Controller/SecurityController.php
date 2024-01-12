@@ -309,7 +309,7 @@ class SecurityController extends AbstractController
 
 
             ///stock the user
-            $entityManager->persist($user);
+            //$entityManager->persist($user);
             $entityManager->flush();
 
 
@@ -337,7 +337,7 @@ class SecurityController extends AbstractController
             $user->setIsConnected(0);
 
             ///stock the user
-            $entityManager->persist($user);
+            //$entityManager->persist($user);
             $entityManager->flush();
         }
           
@@ -503,7 +503,7 @@ class SecurityController extends AbstractController
         
 
         ///keep the change in the user information
-        $entityManager->persist($user);
+        // $entityManager->persist($user);
         $entityManager->flush();
 
 
@@ -998,7 +998,7 @@ class SecurityController extends AbstractController
             $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
             $agendaService->createAgendaStoryTable($numero_table);
 
-            $entityManager->persist($user);
+            // $entityManager->persist($user);
             $entityManager->flush();
 
             

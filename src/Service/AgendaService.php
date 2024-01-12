@@ -671,8 +671,8 @@ class AgendaService extends PDOConnexionService
             "`isRestoCMZ` tinyint(1) DEFAULT 0," .
             "`isVisioCMZ` tinyint(1) DEFAULT 0," .
             "`user_id` int(11) DEFAULT NULL,".
-            "`datetime` timestamp NOT NULL DEFAULT current_timestamp()".
-            "`isAlbum` TINYINT(1) NOT NULL DEFAULT 0,".
+            "`datetime` timestamp NOT NULL DEFAULT current_timestamp(),".
+            "`isAlbum` TINYINT(1) NOT NULL DEFAULT 0".
             " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
@@ -1176,7 +1176,7 @@ class AgendaService extends PDOConnexionService
         $user->setNomTableAgenda("agenda_".$userId);
         $user->setNomTablePartageAgenda("partage_agenda_". $userId);
         $user->setIdle(300);
-        $entityManager->persist($user);
+        //$entityManager->persist($user);
 
         $entityManager->flush();
 

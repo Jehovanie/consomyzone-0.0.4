@@ -479,6 +479,9 @@ class MarckerClusterSearch extends MapModule {
 			this.renderFicheDetails(item, type);
 
 			this.markers.refreshClusters();
+
+			if(document.querySelector("#dockableIcone_"+type+"_"+item.id))
+				document.querySelector("#dockableIcone_"+type+"_"+item.id).remove()
 		});
 	}
 
@@ -502,6 +505,8 @@ class MarckerClusterSearch extends MapModule {
 			this.renderFicheDetails(item, "resto");
 
 			this.markers.refreshClusters();
+			if(document.querySelector("#dockableIcone_resto_"+item.id))
+				document.querySelector("#dockableIcone_resto_"+item.id).remove()
 		});
 	}
 
@@ -526,6 +531,8 @@ class MarckerClusterSearch extends MapModule {
 			this.renderFicheDetails(item, "golf");
 
 			this.markers.refreshClusters();
+			if(document.querySelector("#dockableIcone_golf_"+item.id))
+				document.querySelector("#dockableIcone_golf_"+item.id).remove()
 		});
 	}
 
@@ -546,6 +553,8 @@ class MarckerClusterSearch extends MapModule {
 			this.renderFicheDetails(item, "tabac");
 
 			this.markers.refreshClusters();
+			if(document.querySelector("#dockableIcone_tabac_"+item.id))
+				document.querySelector("#dockableIcone_tabac_"+item.id).remove()
 		});
 	}
 
