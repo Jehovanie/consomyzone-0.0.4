@@ -2161,9 +2161,17 @@ $type = "/user/invitation";
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
         StringTraitementService $stringTraitementService,
-        BddRestoRepository $bddRestoRepository
+        BddRestoRepository $bddRestoRepository,
     ): Response {
         $userConnected = $status->userProfilService($this->getUser());
+
+        if($request->get("tribut") && $request->get("nature")){
+            return $this->redirectToRoute('app_single_tribu_t', [
+                "tribut" => $request->get("tribut"),
+                "nature" => $request->get("nature"),
+                "tribuRankID" => $request->get("tribuRankID")
+            ]);
+        }
 
         $defaultData = ['message' => 'Type your message here'];
         $form = $this->createFormBuilder($defaultData)
@@ -2287,6 +2295,12 @@ $type = "/user/invitation";
          * END LIST PUBLICATION
          */
         // dd($tribu_t_owned);
+        $profil_tribu_spec= false;
+        if( $request->get("tribut")){
+            $tribu_spec= $request->get("tribut");
+            $profil_tribu_spec= $tribu_T_Service->getProfilTributT($tribu_spec, $userId, $userRepository);
+        }
+
         return $this->render('tribu_t/tribuT.html.twig', [
             "publications" => $publications,
             "userConnected" => $userConnected,
@@ -2296,10 +2310,143 @@ $type = "/user/invitation";
             "tribu_T_joined" => $tribu_t_joined,
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
             "form" => $form->createView(),
+            "isForTribuSpec" => $profil_tribu_spec
         ]);
 
         //end publication seding 
     }
+
+    #[Route("/user/my-tribu-t/spec", name: "app_single_tribu_t")]
+    public function SingleTribuT(
+        Status $status,
+        Request $request,
+        TributGService $tributGService,
+        SluggerInterface $slugger,
+        Filesystem $filesyst,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service,
+        StringTraitementService $stringTraitementService,
+        BddRestoRepository $bddRestoRepository,
+    ): Response {
+        $userConnected = $status->userProfilService($this->getUser());
+
+        $defaultData = ['message' => 'Type your message here'];
+        $form = $this->createFormBuilder($defaultData)
+            ->add('upload', FileType::class, [
+                'label' => false,
+                'required' => false
+            ])
+            ->add('tribuTName', TextType::class, [
+                'label' => false
+            ])
+            ->add('extensionData', HiddenType::class, [
+                'label' => false,
+                'required' => false
+            ])
+            ->add('description', TextType::class, [
+                'label' => false,
+                'required' => false
+            ])
+            // ->add('adresse', TextType::class, [
+            //     'label' => false ,
+            //     'required' => false
+            // ])
+            ->add('extension', CheckboxType::class, [
+                'label' => 'Restaurant',
+                'required' => false
+            ])
+            ->add('extension_golf', CheckboxType::class, [
+                'label' => 'Golf',
+                'required' => false
+            ])
+            ->getForm();
+        //$form = $this->createFormB(FileUplaodType::class);
+        $user = $this->getUser();
+        $form->handleRequest($request);
+
+        $body = null;
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $data = $form->getData();
+            $tribuName = $data["tribuTName"];
+            $tribuTNameFinal = $stringTraitementService->normalizedString($tribuName);
+            $tribuTNameFinal = str_replace(" ", "_", strtolower($tribuTNameFinal));
+            $tribuTNameFinal = strlen($tribuTNameFinal) > 30 ? substr($tribuTNameFinal, 0, 30) : $tribuTNameFinal;
+
+            $path = '/public/uploads/tribu_t/photo/tribu_t_' . $user->getId() . "_" . $tribuTNameFinal . "/";
+            if (!($filesyst->exists($this->getParameter('kernel.project_dir') . $path)))
+                $filesyst->mkdir($this->getParameter('kernel.project_dir') . $path, 0777);
+
+            $fileUtils = new FilesUtils($data['upload'], $this->getParameter('kernel.project_dir') . $path);
+            $filename = $fileUtils->upload($slugger);
+            if (is_null($filename))
+                $path = null;
+            else
+                $path = $path . $filename;
+
+            //TODO create tribu-t
+
+            $body = array(
+                "path" => str_replace("/public", "", $path),
+                "tribu_t_name" => $tribuName,
+                "description" => $data["description"],
+                // "adresse"=>$data["adresse"], 
+                "extension" => $data["extension"],
+                "extension_golf" => $data["extension_golf"],
+                "extensionData" => $data["extensionData"]
+            );
+
+            $bool = $this->createTribu_T($body, $stringTraitementService, $status);
+            if ($bool) {
+                $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";
+            } else {
+                $message = "Tribu " . $data["tribuTName"] . " existe déjà.";
+            }
+
+
+            return $this->redirectToRoute("app_my_tribu_t", ["message" => $message]);
+        }
+
+        $user = $this->getUser();
+        $userId = $user->getId();
+
+        $profil = "";
+        $userType = $user->getType();
+        if ($userType == "consumer") {
+            $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+            $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
+
+        $tibu_T_data_owned = json_decode($user->getTribuT(), true);
+        $tibu_T_data_joined = json_decode($user->getTribuTJoined(), true);
+
+        $tribu_t_owned = !is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
+        $tribu_t_joined = !is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
+
+
+        // dd($tribu_t_owned);
+        $profil_tribu_spec= false;
+        if( $request->get("tribut")){
+            $tribu_spec= $request->get("tribut");
+            $profil_tribu_spec= $tribu_T_Service->getProfilTributT($tribu_spec, $userId, $userRepository);
+        }
+
+        return $this->render('tribu_t/single_tribuT.html.twig', [
+            "userConnected" => $userConnected,
+            "profil" => $profil,
+            "kernels_dir" => $this->getParameter('kernel.project_dir'),
+            "tribu_T_owned" => $tribu_t_owned,
+            "tribu_T_joined" => $tribu_t_joined,
+            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
+            "form" => $form->createView(),
+            "isForTribuSpec" => $profil_tribu_spec
+        ]);
+
+        //end publication seding 
+    }
+
+
     #[Route("/user/create-one/publication", name: "user_create_publication")]
     public function createOnePublication(
         Request $request,

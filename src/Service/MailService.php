@@ -362,6 +362,11 @@ class MailService extends AbstractController {
      */
     public function sendEmailNewsLetter($email_from, $fullName_from, $all_user_receiver, $context):void
     {
+
+        if( count($all_user_receiver) === 0 ){
+            return;
+        }
+
         $customMailer =  $this->configSendEmail();
 
         // Generates the email
@@ -402,6 +407,68 @@ class MailService extends AbstractController {
             'email' => new WrappedTemplatedEmail($this->twig, $email),
             'content' => $context["content_mail"],
         ]));
+
+        $customMailer->send($email);
+    }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * @param $all_user_receiver [ [ "email" => ... , "fullName" => ... ], ...]
+     * @param $context [ 
+     *                   "object_mail" => ...,
+     *                   "template_path" => ..., 
+     *                   "resto" => ["name" => ... ], 
+     *                   "user_modify" => ["fullname" => ... ], 
+     *                   "user_super_admin" => ["fullname" => ... ],
+     *                   "user_validator" => ["fullname" => ... ]
+     *                 ]
+     * 
+     */
+    public function sendEmailResponseModifPOI($email_from, $fullName_from, $all_user_receiver, $context):void
+    {
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender, $fullName_from))
+                // ->from(new Address($email_from ,$fullName_from)) 
+                ->subject($context["object_mail"]);
+
+        if( count( $all_user_receiver ) > 0 ){
+            $first_receiver= $all_user_receiver[0];
+            $email = $email->to(new Address($first_receiver["email"], $first_receiver["fullName"]));
+
+            if(count( $all_user_receiver ) > 1 ){
+                for( $i= 1; $i < count($all_user_receiver); $i++ ){
+                    $other_receiver= $all_user_receiver[$i];
+                    $email = $email->addTo(new Address($other_receiver["email"], $other_receiver["fullName"]));
+                }
+            }
+        }
+
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
+        $email= $email->html(
+                    $this->renderView(
+                        $context["template_path"],
+                        [
+                            'email' => new WrappedTemplatedEmail($this->twig, $email),
+                            'today' => $date_fr,
+                            'resto_modify_name' => $context["resto"]["name"],
+                            'resto_modify_adress' => $context["resto"]["adress"],
+                            'user_modify_fullname' => $context["user_modify"]["fullname"],
+                            'user_modify_email' => $context["user_modify"]["email"],
+                            'fullNameTo' =>  $context["user_super_admin"]["fullname"],
+                            'email_fullNameTo' => $context["user_super_admin"]["email"],
+                            'user_validator_fullname' => $context["user_validator"]["fullname"],
+                            'user_validator_email' => $context["user_validator"]["email"]
+                        ]
+                    )
+                );
 
         $customMailer->send($email);
     }

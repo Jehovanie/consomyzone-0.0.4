@@ -169,9 +169,17 @@
 						{% if (app.user and app.user.type!='Type') %}
 							<button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-primary  btn_modal_avis_resto_jheo_js modal-note-tomm-js" data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Donner votre avis</button>
 							<button style="font-size:smaller" type="button" data-name="{{details.denominationF | raw}}" class="mx-2  btn  btn-sm btn-success btn_modal_pastille_resto_nanta_js" data-status="pastille" data-bs-dismiss="modal" onclick="showPastillTable(event,'{{id_restaurant}}')">Pastiller</button>
-							<button type="button" class="btn btn-primary btn-sm" onclick="makeMarkerDraggable({{details.id}})" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement">
-								<i class="bi bi-pencil-square"></i>
-							</button>
+
+							{% if isWaiting %}
+								<button type="button" class="btn btn-secondary btn-sm" data-bs-placement="top" title="Modifier votre établissement" onclick="openSwalRequestWaiting()">
+									<i class="bi bi-pencil-square"></i>
+								</button>
+							{% else %}
+								<button type="button" class="btn btn-primary btn-sm" onclick="makeMarkerDraggable({{details.id}})" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement">
+									<i class="bi bi-pencil-square"></i>
+								</button>
+							{% endif %}
+
 						{% elseif ( app.user and app.user.type is same as('Type') )%}
 							<button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalProfilUnCompleted()">Donner votre avis</button>
 							<button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_gris_actif_js_Elie " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour pastiller un restaurant." onclick="openSwalProfilUnCompleted()">Pastiller</button>

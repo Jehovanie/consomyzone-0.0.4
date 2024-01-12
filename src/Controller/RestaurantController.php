@@ -1045,17 +1045,18 @@ class RestaurantController extends AbstractController
         $id_restaurant,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
-TributGService $tributGService,
+        TributGService $tributGService,
         AvisRestaurantRepository $avisRestaurantRepository,
-        Filesystem $filesyst
+        Filesystem $filesyst,
+        BddRestoUserModifRepository $bddRestoUserModifRepository,
+
     ): Response {
         $statusProfile = $status->statusFondateur($this->getUser());
         $details= $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0];
 
         $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($details["id"]);
-
         $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
-
+   
         $isAlreadyCommented= false;
         $avis= ["note" => null, "text" => null  ];
         
@@ -1075,7 +1076,9 @@ TributGService $tributGService,
             "avisPerso" => $avis
         ];
 
-        // dd($details);
+     
+        $field = $bddRestoUserModifRepository->findOneBy(["restoId" => $id_restaurant ]);
+        $isWaiting = $field && $field->getStatus() === -1 ? true : false;
 
         
         if(str_contains($request->getPathInfo(), '/api/restaurant')){
@@ -1083,6 +1086,7 @@ TributGService $tributGService,
                 "details" => $details,
                 "id_dep" => $id_dep,
                 "nom_dep" => $nom_dep,
+                "isWaiting" => $isWaiting
             ], 200);
         }
 
@@ -1174,6 +1178,7 @@ TributGService $tributGService,
         return $this->render("restaurant/detail_resto.html.twig", [
             "id_restaurant"=>$id_restaurant,
             "details" => $details,
+            "isWaiting" => $isWaiting,
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "profil" => $statusProfile["profil"],
@@ -1561,12 +1566,26 @@ TributGService $tributGService,
         Request $request,
         BddRestoUserModifRepository $bddRepo,
         UserRepository $userRepo,
+        UserService $userService,
         MailService $mailServ,
         BddRestoRepository $bddResto,
-        Status $status){
+        Status $status
+    ){
         // try{
         $contents=json_decode($request->getContent(),true);
+
+        $field = $bddRepo->findOneBy(["restoId" => intval($contents["restoId"]) ]);
+
+        $isWaiting = $field && $field->getStatus() === -1 ? true : false;
+
+        if( $isWaiting){
+             $response = new Response();
+            $response->setStatusCode(205);
+            return $response;
+        }
+
         $bddRestoUserModif=new BddRestoUserModif();
+
         $bddRestoUserModif->setDenominationF(json_encode($contents["denomination_f"]))
             ->setNumvoie(($contents["numvoie"]))
             ->setTypevoie(json_encode($contents["typevoie"]))
@@ -1594,23 +1613,65 @@ TributGService $tributGService,
             ->setStatus(-1);
 
             $success=$bddRepo->save($bddRestoUserModif,true);
+
             if($success){
 
                 $resto=$bddResto->getOneItemByID((intval($contents["restoId"])));
-                $user=$this->getUser();
-                $profil=$status->userProfilService($user);
-                $emailsCorp="L'établissement ".
-                            $resto["denominationF"].
-                            " a été modifié par ". 
-                            $profil["firstname"]." ".$profil["lastname"]." Veuillez le vérifier s'il vous plaît.";
-                $validators=$userRepo->getAllValidator();
-                foreach($validators  as $validator){
-                        $emails=$validator->getEmail();
-                        //TODO send email
-                        $mailServ->sendEmail($emails,"", "établissement modifié", $emailsCorp);
-                        
-                }
 
+                $user=$this->getUser();
+                // $profil=$status->userProfilService($user);
+                
+            // $emailsCorp="L'étabillsement ". $resto["denominationF"].  " a été modifié par ". 
+                            //         $profil["firstname"]." ".$profil["lastname"]." Veuillez le vérifier s'il vous plaît.";
+
+            // $validators=$userRepo->getAllValidator();
+
+            // foreach($validators  as $validator){
+            //         $emails=$validator->getEmail();
+            //         //TODO send email
+            //         $mailServ->sendEmail($emails,"", "établissement modifié", $emailsCorp);
+            // }
+
+            ////sendEmailResponseModifPOI
+            $all_user_receiver= [];
+                $validators=$userRepo->getAllValidator();
+                foreach ($validators as $validator){
+                        if( $validator->getType() != "Type"){
+                    $temp=[
+                        "email" => $validator->getEmail(),
+                        "fullName" => $userService->getFullName($validator->getId())
+                    ];
+                    array_push($all_user_receiver,$temp);
+                }
+            }
+            $adress_resto= $resto["numvoie"] . " " . $resto["typevoie"] . " " . $resto["nomvoie"] . " " . $resto["codpost"] . " " . $resto["villenorm"];
+            $context= [
+                "object_mail" => "Modification d'un établissement",
+                "template_path" => "emails/mail_for_new_modification_poi.html.twig",
+                "resto" => [
+                    "name" => $resto["denominationF"],
+                    "adress" => $adress_resto
+                ],
+                "user_modify" => [
+                    "fullname" => $userService->getFullName($user->getId()),
+                    "email" => $user->getEmail()
+                ],
+                "user_super_admin" => [
+                    "fullname" => "",
+                    "email" => ""
+                ],
+                "user_validator" => [
+                    "fullname" => "",
+                    "email" => ""
+                ]
+            ];
+
+            $mailServ->sendEmailResponseModifPOI(
+                $user->getEmail(),
+                $userService->getFullName($user->getId()),
+                $all_user_receiver,
+                $context
+            );
             }
         // }catch(Exception $e){
         //     if($_ENV["APP_ENV"]=="dev")

@@ -224,4 +224,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
             ->getQuery()
             ->getResult();
     }
+
+public function getUserSuperAdmin(){
+        $super_admin=  $this->createQueryBuilder("u")
+            ->select("u")
+            ->where('u.roles =:r1')
+            ->setParameter("r1","[\"ROLE_GODMODE\"]")
+            ->getQuery()
+            ->getSingleResult();
+            
+        return $super_admin ? $super_admin : null;
+    }
+    
 }

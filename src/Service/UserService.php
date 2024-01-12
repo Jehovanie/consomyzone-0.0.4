@@ -40,6 +40,10 @@ class UserService  extends PDOConnexionService{
         return $result["lastname"];
     }
 
+    public function getFullName($userId){
+        return $this->getUserFirstName($userId) . " " . $this->getUserLastName($userId);
+    }
+
 
     public function getUserProfileFromId( int $userId ){
 
@@ -66,11 +70,12 @@ class UserService  extends PDOConnexionService{
             $decode_tribuT_owned = json_decode($json_tribuT_owned , true);
             if( !array_key_exists("name", $decode_tribuT_owned['tribu_t']) ){
                 foreach($decode_tribuT_owned["tribu_t"] as $tribuT){
+
                     extract($tribuT);  /// $name
-                    array_push($all_tribuT,["table_name" => $name, "logo_path" => $logo_path, "role"=>"Fondateur"] );
+                    array_push($all_tribuT,["table_name" => $name, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "role"=>"Fondateur"] );
                 }
             }else{
-                array_push($all_tribuT, ["table_name" => $decode_tribuT_owned['tribu_t']['name'], "logo_path" => $decode_tribuT_owned['tribu_t']['logo_path'] , "role"=>"Fondateur"] );
+                array_push($all_tribuT, ["table_name" => $decode_tribuT_owned['tribu_t']['name'], "name_tribu_t_muable" => $decode_tribuT_owned['tribu_t']['name_tribu_t_muable'], "logo_path" => $decode_tribuT_owned['tribu_t']['logo_path'] , "role"=>"Fondateur"] );
             }
         }
 
@@ -83,10 +88,10 @@ class UserService  extends PDOConnexionService{
             if( !array_key_exists("name", $decode_tribuT_joined['tribu_t']) ){
                 foreach($decode_tribuT_joined["tribu_t"] as $tribuT){
                     extract($tribuT);  /// $name
-                    array_push($all_tribuT, ["table_name" => $name , "logo_path" => $logo_path, "role"=>"Membre"] );
+                    array_push($all_tribuT, ["table_name" => $name , "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "role"=>"Membre"] );
                 }
             }else{
-                array_push($all_tribuT, ["table_name" => $decode_tribuT_joined['tribu_t']['name'], "logo_path" => $decode_tribuT_joined['tribu_t']['logo_path'], "role"=>"Membre" ] );
+                array_push($all_tribuT, ["table_name" => $decode_tribuT_joined['tribu_t']['name'], "name_tribu_t_muable" => $decode_tribuT_joined['tribu_t']['name_tribu_t_muable'], "logo_path" => $decode_tribuT_joined['tribu_t']['logo_path'], "role"=>"Membre" ] );
             }
 
         }

@@ -23,7 +23,7 @@
 			{% for  tribus in tribu_T_owned %}
 			  		{# {{dump(tribus,tribus|length)}}   #}
 					{% if tribus.logo_path  is defined %}
-							<li class="mb-2">
+							<li class="mb-2" id="{{tribus.name}}">
 								<div class="row card-my-tribu-t">
 									<div class="col-2">
 									{# '/public' ~  #}
@@ -32,14 +32,14 @@
 									</div>
 									<div class="col-9">
 										<p>
-											 <a href="" class="tribu_t owned tribu_T_owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
+											 <a href=""  id="{{tribus.name ~ '_jheo_js' }}" class="tribu_t owned"  data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
 										</p>
 									</div>
 								</div>
 							</li>
 					{% else %}
 						{% for tribu in tribus %}
-							<li class="mb-2">
+							<li class="mb-2" id="{{'tribu_' ~ tribu.name}}">
 								<div class="row card-my-tribu-t">
 									<div class="col-2">
 									{# '/public'~ #}
@@ -49,7 +49,7 @@
 									</div>
 									<div class="col-9">
 										<p>
-											<a href="" class="tribu_t owned tribu_T_owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
+											<a href="" id="{{tribu.name ~ '_jheo_js' }}" class="tribu_t owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
 										</p>
 									</div>
 								</div>
@@ -68,7 +68,7 @@
 		<ul>
 			{% for  tribus in tribu_T_joined %}
 				{% if tribus.logo_path  is defined %}
-						<li class="mb-2">
+						<li class="mb-2" id="{{tribus.name}}">
 							<div class="row card-my-tribu-t">
 								<div class="col-2">
 										<img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? '/public' ~ tribus.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt=""> 
@@ -76,7 +76,7 @@
 								</div>
 								<div class="col-9">
 									<p>
-											<a href="" class="tribu_t owned tribu_T_joined other" data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
+											<a href="" id="{{tribus.name ~ '_jheo_js' }}" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
 									</p>
 								</div>
 							</div>
@@ -86,7 +86,7 @@
 					
 						{% set nameTribu = tribu.name|split('_') %}
 						{% set index = nameTribu|length -1  %}
-						<li class="mb-2">
+						<li class="mb-2" id="{{tribu.name}}">
 							<div class="row card-my-tribu-t">
 								<div class="col-2">
 									<img class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public' ~ tribu.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
@@ -94,7 +94,7 @@
 								</div>
 								<div class="col-9">
 									<p>
-										<a href="" class="tribu_t owned tribu_T_joined other" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :   tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
+										<a href="" id="{{tribu.name ~ '_jheo_js' }}" class="tribu_t owned other" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :   tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
 									</p>
 								</div>
 							</div>

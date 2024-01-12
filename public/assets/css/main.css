@@ -3047,3 +3047,11 @@ Responsive card publication
     background-color: #0dcaf0;
 	color: white;
 }
+
+
+.content_chargment_tribut {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	height: 60vh;
+}

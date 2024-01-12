@@ -1,0 +1,318 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Mes Tribus T
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/actualite.css')}}">
+	{# <link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}"> #}
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.2/font/bootstrap-icons.css">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
+	<style>
+		.content_right_actualite {
+			top: -50px;
+		}
+		.content_news_letter{
+			width: 95% !important;
+		}
+	</style>
+	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/Tribu_T/publication.css')}}">
+
+{% endblock %}
+
+{% block javascripts %}
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
+	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
+	<script src="{{asset('assets/js/tribuT/news_letter_tribuT.js')}}" defer></script>
+	{# <script src="{{asset('assets/js/golf/avis_golf_depart.js')}}" defer></script> #}
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
+	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
+	<script  src="{{ asset('assets/js/account/publication_event.js') }}" defer></script>
+
+	<script type="text/javascript" src="{{ asset('assets/js/module/avis_rubrique.js') }}" defer></script>
+
+{% endblock %}
+
+{% block body %}
+
+	<div class="nh">
+		{% include 'shard/account_navleft_new.html.twig' %}
+		{% include 'shard/account_navbar_new.html.twig' %}
+		
+		<div class="fixed-top">
+			<button  class="responsif-none-pc vu jc g  pa nj xr ni bj wr _k uo qh btn-navright-tribut btn-navright-tribut-tomm-js">
+				<span class="jc h cg bf sd span-btn-menu-tribut menu-tribut-tomm-js">
+					<span class="du-block g m yd vc span-menu-tribut-tomm-js">
+						<span class="">
+							{# Menu tribu T #}
+							<i class="fa-solid fa-t"></i>
+						</span>
+					</span>
+					<i class="fa-solid fa-xmark btn-ferme-tribut fermet-tribu-t-tomm-js responsif-none"></i>
+				</span>
+			</button>
+		</div>
+
+		<!-- ===== Main Content Start ===== -->
+		<main class="gv hm hv content-actualite-connected content_body_details_jheo_js" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
+			<div class="sk 2xl:ud-p-11 width-content-t">
+
+				<div class="account listTribu_t_mobile content_right_actualite" id="container-mobile">
+					<div id="content-pub-js">
+                        <div class="content_chargment_tribut content_chargment_tribut_jheo_js text-info">
+                            <div class="chargement_tribut">
+                                <div class="spinner-grow" style="width: 3rem; height: 3rem;" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+					</div>
+				</div>
+
+				<!-- ====== Chart Two Start -->
+				<div class="apropos-tribu-t yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al  back-tribu-t apropos-tribu-t-tomm-js responsif-none"  id="apropos-tribu-t">
+					{% include "shard/account_navleft_tribuT.html.twig" %}
+				</div>
+				<!-- ====== Chart Two End -->
+			</div>
+		</main>
+		<!-- ===== Main Content End ===== -->
+
+	</div>
+
+	{% include "tribu_t/modal_publication.html.twig" %}
+	{% include 'tribu_t/modal_add_picture.twig' %}
+	{% include 'shard/modal/media_modal_tribu.html.twig' %}
+
+	<!-- Modal Créer tribuT -->
+	<div class="modal fade ModalCreationTribuT" id="ModalCreationTribuT" tabindex="-1" aria-labelledby="creerTribuTModal" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title text-black" id="creerTribuTModal">
+						Créer un nouveau tribu-T</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mini-couvertur-tribu-t">
+						<img src="{{asset('assets/image/mini-couverture.jpg')}}" alt="">
+					</div>
+
+
+					{{ form_start(form, {'method': 'POST'}) }}
+
+					<label for="" class="label" id="uploadImage">
+						{{ form_row(form.upload, {'attr': {'class': 'input','accept' : 'image/*'}}) }}
+						<span class="label-uplaod-tribu-t"></span>
+					</label>
+
+					<div class="" style="margin-top: -70px;">
+						{{ form_label(form.tribuTName , "Nom de la tribu", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+						{{ form_widget(form.tribuTName, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr elie-border-black','placeholder': "Entrer ici le nom de la tribu"}}) }}
+
+						{{ form_label(form.description , "Description de la tribu", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+						{{ form_widget(form.description, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr elie-border-black', 'placeholder': "Entrer ici la description de la tribu"}}) }}
+
+						<p class="text-choisir">Choisir une extension</p>
+
+						<div class="form-check form-switch mt-6">
+							{{ form_row(form.extension, {'attr': {'class': 'form-check-input mt-5', 'role': "switch"}})}}
+						</div>
+						<div class="form-check form-switch mt-50px">
+							{{ form_row(form.extension_golf, {'attr': {'class': 'form-check-input mt-5', 'role': "switch"}})}}
+						</div>
+
+					</div>
+
+					<center class="mt-3">
+						<button class="btn-creer" type="submit">Créer</button>
+					</center>
+
+					{{form_end(form)}}
+
+				</div>
+
+
+			</div>
+		</div>
+	</div>
+
+
+	<!-- Modal Update Info tribuT -->
+	<div class="modal fade ModalUpdateTribuT" id="ModalUpdateTribuT" tabindex="-1" aria-labelledby="updateTribuTModal" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title text-black" id="updateTribuTModal">
+						Modifier les informations de la tribu T</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="mini-couvertur-tribu-t">
+						<img src="{{asset('assets/image/mini-couverture.jpg')}}" style="width: 468px;height: 160px;" alt="">
+					</div>
+					<div class="containerUpdateInfoT">
+						<label for="" class="label" id="uploadImageForUpdate">
+							<div class="mb-3">
+								<input type="file" id="form_upload_update" name="form_upload_update" class="input form-control" accept="image/*">
+							</div>
+							<span class="label-uplaod-tribu-t"></span>
+							<img class="img-update-tribu-t">
+						</label>
+						<div class="containerInfoTribuT">
+							<label class="jc un zn gs fb form-label required mt-3" for="updateTribuTName">Modifier le nom de la tribu</label>
+							<input type="text" id="updateTribuTName" name="update_name" required="required" class="yd nj qh ni bj jr fr ps zn gs il cm zr wr elie-border-black form-control" placeholder="Modifier le nom de la tribu">
+
+							<label class="jc un zn gs fb form-label mt-3" for="update_description">Modifier la description de la tribu</label>
+							<input type="text" id="update_description" name="update_description" class="yd nj qh ni bj jr fr ps zn gs il cm zr wr elie-border-black form-control" placeholder="Modifier la description de la tribu">
+
+							<div class="form-check form-switch">
+								<div class="mb-3">
+									<div class="mt-3 text-black" style="margin-left: -10%;">Modifier l'extension</div>
+									<div class="form-check">
+										<input type="checkbox" id="update_form_restaurant" name="update_form_restaurant" class="form-check-input form-check-input" role="switch">
+										<label for="form_extension">Restaurant</label>
+									</div>
+									<div class="form-check">
+										<input type="checkbox" id="update_form_golf" name="update_form_golf" class="form-check-input form-check-input" role="switch">
+										<label for="form_extension">Golf</label>
+									</div>
+								</div>
+							</div>
+
+						</div>
+
+						<center class="mt-3">
+							<button data-tbttbl="" class="btn btn-primary btn-update" id="updateTribuInfo" type="button" onclick="updateTribuTInfos(event)">Modifier</button>
+						</center>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- End Modal -->
+
+	<!-- Modal For Extension -->
+	<div class="modal fade" id="modalForExtension" tabindex="-1" aria-labelledby="extModalLabel" aria-hidden="true"> 
+		<div class="modal-dialog modal-dialog-scrollable modal-xl">
+			<div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
+				<div class="modal-header">
+					<h1 class="modal-title fs-5 text-primary" id="extModalLabel">Resultat de recherche restaurant</h1>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div id="elie-restou"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="modalDetailResto" tabindex="-1" aria-hidden="true">
+		<div class="modal-dialog modal-dialog-scrollable">
+			<div class="modal-content w-100 bg-white" style="max-width:100% !important; margin-left:0 !important;">
+				<div class="modal-header" id="restoModalLabel"></div>
+				<div class="modal-body">
+					<div id="elie-resto-detail"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Fermer</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal" tabindex="-1" id="detailOptionResto">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Plus d'options</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="container text-center">
+						<i class="fas fa-question-circle fs-1 text-info"></i><br>
+						{# <p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
+						<div class="container mb-4 mt-5 content_btns_nanta_js">
+							<button type="button" id="data-note-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
+							<button type="button" id="data-event-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
+							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button> #}
+						<p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>depastilleRestoTribuT
+						<div class="container mb-4 mt-5 content_btns_nanta_js">
+							<button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" ><i class="fas fa-edit"></i> Notez</button>
+							{# <button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button> #}
+							<button type="button" id="data-event-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
+							<button type="button" id="data-depastille-nanta-js" class="btn btn-warning mt-1" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal" tabindex="-1" id="detailOptionGolf">
+		<div class="modal-dialog modal-dialog-centered">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Plus d'options</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div class="container text-center">
+						<i class="fas fa-question-circle fs-1 text-info"></i><br>
+						<p class="questionAction">Quelle action voulez-vous pour ce golf?</p>
+						<div class="container mb-4 mt-5 content_btns_nanta_js add_attribut_tomm_js">
+							{# <button type="button" id="data-note-nanta-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button> #}
+							<button type="button" id="data-note-nanta-js" class="btn btn-primary mt-1" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis"></i> Notez</button>
+							<button type="button" id="data-event-nanta-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"></i> Créer un évènement</button>
+							<button type="button" id="data-depastilleGolf-nanta-js" class="btn btn-warning" onclick="depastilleGolf(this)">Dépastiller</button>
+						</div>
+					</div>
+
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="detailEtabModal" aria-hidden="true" aria-labelledby="detailEtabModal_label" tabindex="-1">
+		<div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+			<div class="modal-content">
+			<div class="modal-header">
+				{# <h5 class="modal-title">Détail</h5> #}
+				<div class="content_etab_detail">
+				</div>
+				<button type="button" class="btn-close" data-bs-target="#modalForExtension0" data-bs-toggle="modal" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				
+			</div>
+			<div class="modal-footer">
+				<button class="btn btn-danger" data-bs-target="#modalForExtension0" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="textEditorElie d-none" id="editorInvitationElie">
+		{# {% import 'tribu_t/textEditorInvitation.twig' as ck %} #}
+		{% import 'shard/input/textEditor.twig' as editor %}
+		{{ editor.textEditor(3)}}
+	</div>
+
+	{% include 'shard/modal/alert_flash.html.twig' %}
+	{% include 'shard/modal/commentaire.html.twig' %}
+	{% include 'shard/modal/list_avis.html.twig' %}
+    {% include 'shard/modal/modal_avis.html.twig' %}
+    {% include 'shard/modal/addLinkInvitation.html.twig' %}
+	{% include 'shard/modal/modal_show_gallery.twig' %}
+	{% include 'shard/modal/liste_reacteur.html.twig' %}
+	{% include 'shard/modal/modal_detail_publication.twig' %}
+
+{% endblock %}

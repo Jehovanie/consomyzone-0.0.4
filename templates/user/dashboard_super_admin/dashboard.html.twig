@@ -123,14 +123,23 @@
 					</div>
 					
 				</div>
-{% endif %}
+			{% endif %}
 				<div class="row content_right_actualite content-super-admin mb-4" style="display:none;" id="list-infoAvalider">
 					<div class="content_list">
 						<div class="entete mb-2 ms-3">
-							<h5 id="titre-info">
-								<i class="fa-solid  fa-list"></i>
-								Liste des restaurants à valider
-							</h5>
+							<ul style="display:flex;justify-content:flex-start">
+								<li>
+									<a href="#" class="text-primary">
+										<h5 id="titre-info">
+											<i class="fa-solid  fa-list"></i>
+											Liste des restaurants à valider
+										</h5>
+									</a>
+								</li>
+								<li class="ms-5">
+									<a href="#" id="validateStories" onclick="showValidationStory()"><h5>Historiques</h5></a>
+								</li>
+							</ul>
 						</div>
 						<div class="container content_global_super_admin content_global_super_admin_tribu_t_js_jheo">
 							<div class="content_list_infoAvalider_js" style="width:100%;">
@@ -428,6 +437,27 @@
 				<button type="button" class="btn btn-danger" data-bs-dismiss="modal" onclick="rejectAdresseValidate(event)" id="rejectAddTovalidate">Rejeter</button>
 				<button type="button" class="btn btn-primary" onclick="acceptAdresseValidate(event)" id="acceptAddTovalidate">Valider</button>
 				<button type="button" class="btn btn-danger me-3" onclick="cancelAdresseValidate(event)" id="cancelAddTovalidate">Annuler</button>
+			</div>
+			</div>
+		</div>
+	</div>
+
+<div class="modal fade" id="validationStoryModal" tabindex="-1" aria-labelledby="validationStoryModalLabel" aria-hidden="true" style="z-index: 10000;">
+		<div class="modal-dialog modal-fullscreen">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5" id="validationStoryModalLabel">Historiques de validation</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="text-center validationStoryContainer_Nanta_js" style="width:100%;">
+					<div class="spinner-border spinner-border text-info mt-5" role="status">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
 			</div>
 			</div>
 		</div>
