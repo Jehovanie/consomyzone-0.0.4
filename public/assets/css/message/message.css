@@ -792,9 +792,9 @@ div.img_slide_left {
 }
 
 .content_emojy_picker{
-  position: absolute;
-  top: 15%;
-  left: 45%;
+  position: fixed;
+  bottom: 10%;
+  right: 10%;
 }
 
 .list-amie-message{
