@@ -1077,11 +1077,10 @@ TributGService $tributGService,
             "avisPerso" => $avis
         ];
 
-        $field = $bddRestoUserModifRepository->findOneBy(["restoId" => $id_restaurant ]);
-        // $isWaiting = $field && $field->getStatus() === -1 ? true : false;
-        $isWaiting = false;
-        // dd($details);
 
+        $field = $bddRestoUserModifRepository->findOneBy(["restoId" => $id_restaurant ]);
+        $isWaiting = $field && $field->getStatus() === -1 ? true : false;
+        
         
         if(str_contains($request->getPathInfo(), '/api/restaurant')){
             return $this->json([
@@ -1366,11 +1365,11 @@ TributGService $tributGService,
         $note = $requestJson["note"];
         $type = $requestJson["type"];
 
-        if($type == "audio"){
+        if($type == "audio" || $type == "image" || $type == "video"){
 
-            $path_file = '/public/uploads/avis-restaurant/audio/';
+            $path_file = '/public/uploads/avis-restaurant/'.$type .'/';
 
-            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/avis-restaurant/audio/';
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/avis-restaurant/'.$type .'/';
 
 
             $temp = explode(";", $avis);
@@ -1462,11 +1461,11 @@ TributGService $tributGService,
         $avis = $rJson["avis"];
         $type = $rJson["type"];
 
-        if($rJson["type"] == "audio"){
+        if($type == "audio" || $type == "image" || $type == "video"){
 
-            $path_file = '/public/uploads/avis-restaurant/audio/';
+            $path_file = '/public/uploads/avis-restaurant/'.$type .'/';
 
-            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/avis-restaurant/audio/';
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/avis-restaurant/'.$type .'/';
 
 
             $temp = explode(";", $avis);
@@ -1493,6 +1492,13 @@ TributGService $tributGService,
 
         if($rJson["type"] == "audio_up"){
             $type = "audio";
+        }
+        
+        if($rJson["type"] == "image_up"){
+            $type = "image";
+        }
+        if($rJson["type"] == "video_up"){
+            $type = "video";
         }
 
         $response = $avisRestaurantRepository->updateAvis(
@@ -1619,6 +1625,7 @@ TributGService $tributGService,
             if($success){
 
                 $resto=$bddResto->getOneItemByID((intval($contents["restoId"])));
+
                 $user=$this->getUser();
                 $profil=$status->userProfilService($user);
                 $emailsCorp="L'établissement ".
@@ -1646,8 +1653,8 @@ TributGService $tributGService,
                 //         $mailServ->sendEmail($emails,"", "établissement modifié", $emailsCorp);
                 // }
 
-            ////sendEmailResponseModifPOI
-            $all_user_receiver= [];
+                ////sendEmailResponseModifPOI
+                $all_user_receiver= [];
                 $validators=$userRepo->getAllValidator();
                 foreach ($validators as $validator){
                         if( $validator->getType() != "Type"){

@@ -8,6 +8,7 @@ use PDO;
 use Exception;
 use PDOException;
 use ArgumentCountError;
+use App\Repository\BddRestoRepository;
 
 class Tribu_T_Service extends PDOConnexionService
 {
@@ -1891,6 +1892,7 @@ class Tribu_T_Service extends PDOConnexionService
                         'name' => $trib['name_tribu_t_muable'],
                         'description' => $trib['description'],
                         'avatar' => $trib['logo_path'],
+                        'fondateurId' => $id
                     ];
 
                     break;
@@ -1903,6 +1905,7 @@ class Tribu_T_Service extends PDOConnexionService
                     'name' =>  $object['tribu_t']['name_tribu_t_muable'],
                     'description' => $object['tribu_t']['description'],
                     'avatar' => $object['tribu_t']['logo_path'],
+                    'fondateurId' => $id
                 ];
             }
         }
@@ -2608,13 +2611,26 @@ class Tribu_T_Service extends PDOConnexionService
      */
     public function createAlbum($table, $nameAlbum)
     {
+        $detectSql = "SELECT * FROM " . $table . "_album WHERE name_album = '" . $nameAlbum ."'";
+        $statement = $this->getPDO()->prepare($detectSql);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
         $datetime = new \DateTime();
         $datetime = $datetime->format('Y-m-d H:i:s');
-        $sql = "INSERT INTO " . $table . "_album (  name_album, datetime) VALUES (:name_album,:datetime)";
-        $statement = $this->getPDO()->prepare($sql);
-        $statement->bindParam(':name_album', $nameAlbum, PDO::PARAM_STR);
-        $statement->bindParam(':datetime', $datetime, PDO::PARAM_STR);
-        $statement->execute();
+
+        if (count($result) <= 0) {
+        
+            $sql = "INSERT INTO " . $table . "_album (  name_album, datetime) VALUES (:name_album,:datetime)";
+            $statement = $this->getPDO()->prepare($sql);
+            $statement->bindParam(':name_album', $nameAlbum, PDO::PARAM_STR);
+            $statement->bindParam(':datetime', $datetime, PDO::PARAM_STR);
+            $statement->execute();
+
+            return true;
+        }else{
+            return false;
+        }
     }
 
     /**
@@ -2682,5 +2698,29 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt = $this->getPDO()->prepare($query);
 
         $stmt->execute([]);
+    }
+
+    /**
+     * @author Nantenaina a ne pas contacté pendant les congés
+     * où: on utilise cette fonction dans la rubrique resto et tous carte cmz,
+     * localisation du fichier: dans Tribu_T_Service.php,
+     * je veux: vérifier si une tribu T existe ou non
+     * @param int $user_id : identifiant de l'utilisateur connecté
+     * @param string $suffixe : suffixe de la table Tribu T 
+    */
+    public function checkIfDefaultTribuTExist($user_id, $suffixe)
+
+    {
+
+        $db = $_ENV["DATABASENAME"];
+
+        $query = "SHOW TABLES FROM $db like 'tribu_t_" . $user_id . "_" . $suffixe . "'";
+
+        $sql = $this->getPDO()->query($query);
+
+        $rowsNumber = $sql->rowCount();
+
+        return $rowsNumber;
+
     }
 }

@@ -632,7 +632,8 @@ class SecurityController extends AbstractController
         VerifyEmailHelperInterface $verifyEmailHelper,
         Filesystem $filesyst,
         ConsumerRepository $consumerRepository,
-        SupplierRepository $supplierRepository
+        SupplierRepository $supplierRepository,
+        Tribu_T_Service $tribu_T_Service
     ) {
         ///to get info
         ///id de l'utilisateur.
@@ -837,6 +838,52 @@ class SecurityController extends AbstractController
                     $message_notification,
                 );
             }
+
+            // Générer des tribus T ami et famille
+            $userId = $request->query->get('id');
+            $suffixeTableTribuTAmie = "_A";
+            $suffixeTableTribuTFamille = "_F";
+            $tableTribuTAmie = "tribu_t_" . $userId . "_" .$suffixeTableTribuTAmie;
+            $tableTribuTFamille = "tribu_t_" . $userId . "_" .$suffixeTableTribuTFamille;
+            $nomTribuTAmie = "Tribu A";
+            $descriptionTribuTAmie = "Tribu T pour mes amis";
+            $nomTribuTFamille = "Tribu F";
+            $descriptionTribuTFamille = "Tribu T pour ma famille";
+            $tribu_T_Service->createTribuTable($suffixeTableTribuTAmie, $userId, $nomTribuTAmie, $descriptionTribuTAmie);
+            $tribu_T_Service->createTribuTable($suffixeTableTribuTFamille, $userId, $nomTribuTFamille, $descriptionTribuTFamille);
+
+            $extension = [];
+            $extension["restaurant"] = 1;
+            $extension["golf"] = 1;
+
+            $tribu_T_Service->setTribuT($tableTribuTAmie, $descriptionTribuTAmie, "", $extension, $userId, "tribu_t_owned", $nomTribuTAmie);
+            $tribu_T_Service->setTribuT($tableTribuTFamille, $descriptionTribuTFamille, "", $extension, $userId, "tribu_t_owned", $nomTribuTFamille);
+
+            if ($extension["restaurant"] == 1) {
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "restaurant");
+
+                $tribu_T_Service->createTableComment($tableTribuTAmie, "restaurant_commentaire");
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "restaurant");
+
+                $tribu_T_Service->createTableComment($tableTribuTFamille, "restaurant_commentaire");
+            }
+
+            if ($extension["golf"] == 1) {
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "golf");
+
+                $tribu_T_Service->createTableComment($tableTribuTAmie, "golf_commentaire");
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "golf");
+
+                $tribu_T_Service->createTableComment($tableTribuTFamille, "golf_commentaire");
+            }
+
+            $tribu_T_Service->creaTableTeamMessage($tableTribuTAmie);
+            $tribu_T_Service->creaTableTeamMessage($tableTribuTFamille);
+
             ///// END NOTIFICATION ////
 
             return $authenticator->authenticateUser(
@@ -871,7 +918,7 @@ class SecurityController extends AbstractController
         VerifyEmailHelperInterface $verifyEmailHelper,
         CodeapeRepository $codeApeRep,
         AgendaService $agendaService,
-        RequestingService $requesting,
+        RequestingService $requesting
     ) {
 
         if ($this->getUser() || !$request->query->get("email") || !$request->query->get("tribu")) {
