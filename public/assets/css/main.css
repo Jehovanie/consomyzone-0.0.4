@@ -3153,13 +3153,12 @@ Responsive card publication
     cursor: pointer;
 }	
 .audio-record{
-	/* position: absolute;
-    width: 35px; */
+	position: absolute;
+    width: 35px;
     /* bottom: 25px; */
-	/* top: 74%;
-    float: right; */
-    /* right: 5px; */
-	width: 20px;
+	top: 74%;
+    float: right;
+    right: 5px;
     font-size: larger;
     color: blue;
 }
@@ -3458,4 +3457,45 @@ Responsive card publication
 
 .account-message-conected{
     margin-top: 15px;
+}
+
+.account-message-conected {
+	margin-top: 15px;
+}
+
+@media screen and (min-width: 360px) {
+	html {
+		height: 100% !important;
+	}
+
+	body {
+		height: 100% !important;
+	}
+
+	.body-onglet-msg {
+		background-color: #fff;
+	}
+
+}
+
+@media screen and (min-width: 480px) {
+	html{
+		height: 100% !important;
+	}
+
+	body {
+		height: 100% !important;
+	}
+
+	.body-onglet-msg{
+		background-color: #fff;
+	}
+
+	.name-msg-onglet {
+		width: 300px !important;
+	}
+
+	.footer-msg-onglet {
+		width: 100% !important;
+	}
 }
