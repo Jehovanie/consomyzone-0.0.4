@@ -26,6 +26,7 @@ if(document.querySelector("#list-tribu-g")){
   fetch("/user/dashboard/tribug_json")
     .then((response) => response.json())
     .then((result) => {
+      console.log(result)
       const { allTribuG } = result;
       const dataSet = dataFormat(allTribuG);
 
@@ -150,19 +151,15 @@ if(document.querySelector("#list-tribu-g")){
 function dataFormat(dataToFormat) {
   const data = [];
   t.forEach((item, index) => {
+    // console.log(item)
     const tribug =
       "tribug_" +
       item.d +
       "_" +
-      item.i
-        .split(" ")
-        .map((t) => t.toLowerCase())
-        .join("_") +
+      item.i.replace(/( )/g, "_") +
       "_" +
-      item.co
-        .split(" ")
-        .map((t) => t.toLowerCase())
-        .join("_");
+      item.co.replace(/( )/g, "_");
+    // console.log(tribug)
     const name_format =
       "tribug_" +
       item.d +
@@ -173,7 +170,30 @@ function dataFormat(dataToFormat) {
     const table_exist = dataToFormat.find((item) =>
       name_format.includes(item.table_name)
     );
+    console.log(table_exist)
     const table_tribug = tribug.length > 30 ? tribug.substr(0, 30) : tribug;
+    
+    		// $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
+		let quartier = item.i + " " + item.co;
+
+		const test_length = "tribug_" + item.d + "_" + quartier.split(" ").join("_");
+
+		if (test_length.length > 40) {
+			const data = quartier.split(" ");
+
+			let resolve_name = [];
+			for (let i = 0; i < (data.length - 1) / 2; i++) {
+				resolve_name.push(data[i]);
+			}
+
+			quartier = resolve_name.join("_");
+		}
+
+		const departement = item.d.length === 1 ? "0" + item.d : item.d;
+
+		let name_tributG = "tribug_" + departement + "_" + quartier.split(" ").join("_");
+		name_tributG = name_tributG.length > 40 ? name_tributG.substr(0, 30) : name_tributG;
+
     data.push([
       index + 1,
       item.d,
@@ -181,8 +201,11 @@ function dataFormat(dataToFormat) {
       item.co + " " + item.i,
       name_format,
       table_exist ? table_exist.count : 0,
+      // "<a class='btn btn-primary' href=/user/dashboard-membre?table=" +
+      //   table_tribug +
+      // ">Voir</a>",
       "<a class='btn btn-primary' href=/user/dashboard-membre?table=" +
-        table_tribug +
+        name_tributG +
         ">Voir</a>",
     ]);
     // data.push({
