@@ -483,14 +483,17 @@ class SecurityController extends AbstractController
         ///change the value temp: now this user have an ID, so change temp value
         $numero_table = $user->getId();
 
+        $userNew=$userRepository->findOneById($numero_table);
+
         ///with true value
-        $user->setTablemessage("tablemessage_" . $numero_table);
-        $user->setTablenotification("tablenotification_" . $numero_table);
-        $user->setTablerequesting("tablerequesting_" . $numero_table);
-        $user->setNomTableAgenda("agenda_" . $numero_table);
-        $user->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
+        $userNew->setTablemessage("tablemessage_" . $numero_table);
+        $userNew->setTablenotification("tablenotification_" . $numero_table);
+        $userNew->setTablerequesting("tablerequesting_" . $numero_table);
+        $userNew->setNomTableAgenda("agenda_" . $numero_table);
+        $userNew->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
 
-
+///keep the change in the user information
+        $entityManager->flush();
 
 
         ///create table dynamique

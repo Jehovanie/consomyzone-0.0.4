@@ -24,7 +24,11 @@
 	<script src="{{ asset('assets/js/account/fetchPhotosTributG.js') }}" defer></script>
 	<script src="{{ asset('assets/js/account/fetchRestoTributG.js') }}" defer></script>
 	<script src="{{ asset('assets/js/account/fetchGolfTributG.js') }}" defer></script>
+<<<<<<< HEAD
     <script src="{{ asset('assets/js/account/fetchNewLetterTribuG.js') }}" defer></script>
+=======
+	<script src="{{ asset('assets/js/account/fetchNewLetterTribuG.js') }}" defer></script>
+>>>>>>> release_v2
 
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer=""></script>
@@ -136,10 +140,11 @@
 								</li>
 
 								{% if tributG.profil.roles is same as("fondateur") %}
-									<li class="listNavBarTribu">
-										<a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Lettre d'information</a>
-									</li>
-								{% endif %}
+                                    <li class="listNavBarTribu">
+                                        <a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Lettre d'information</a>
+                                    </li>
+                                {% endif %}
+
 
 							</ul>
 							<div class="dropdown setting-nav-tribu-g">

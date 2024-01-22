@@ -40,6 +40,10 @@ class UserService  extends PDOConnexionService{
         return $result["lastname"];
     }
 
+    public function getFullName($userId){
+        return $this->getUserFirstName($userId) . " " . $this->getUserLastName($userId);
+    }
+
 
     public function getUserProfileFromId( int $userId ){
 

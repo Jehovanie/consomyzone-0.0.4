@@ -14,7 +14,8 @@
 /var/
 /vendor/
 /uploads/
-/uploads _2_.zip
+/public/uploads_old/
+/public/uploads _2_.zip
 /jwt/
 ###< symfony/framework-bundle ###
 

@@ -67,7 +67,7 @@
                             </ul>
 
                             <div class="all_mpcmz_faniry_js content_list_message_tomm_js {{ isInTribut is same as(true) ? 'd-none' : '' }}">
-                                {% if amisTributG|length > 0 %}
+                                {% if amisTributG|length > 0 or allTribuT|length > 0 %}
                                     <!-- Chat List Item -->
                                     {% set isZeroMessage = {'noMessage': 'oui', 'haveMessage':'non'} %}
                                     {% for item in amisTributG %}

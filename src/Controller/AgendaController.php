@@ -2066,7 +2066,11 @@ class AgendaController extends AbstractController
         $user = $this->getUser();
         $userId = $user->getId();
         $stories = $agendaService->invitationStoryAgenda("agenda_".$userId."_story","partage_agenda_".$userId);
-       
+    //     foreach($stories as &$story){
+
+    //        array_push($story,["agenda_name"=>]);
+    //     }
+    //    dd( $stories);
         return $this->json($stories);
     }
 }

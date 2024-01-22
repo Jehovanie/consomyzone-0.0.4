@@ -395,8 +395,13 @@ class AgendaService extends PDOConnexionService
         );
 
         if(!$isEtabCMZ){
-            $isGolfCMZ = false;
-            $isRestoCMZ = false;
+            $isGolfCMZ = 0;
+            $isRestoCMZ = 0;
+            $isEtabCMZ=0;
+        }else{
+            $isEtabCMZ= !$isEtabCMZ ? 0:  1;
+            $isGolfCMZ = !$isGolfCMZ ? 0 :1;
+            $isRestoCMZ = !$isRestoCMZ ? 0: 1;
         }
 
         $statement->bindParam(':title', $title);
@@ -436,10 +441,15 @@ class AgendaService extends PDOConnexionService
         );
 
         if(!$isEtabCMZ){
-            $isGolfCMZ = false;
-            $isRestoCMZ = false;
+            $isGolfCMZ = 0;
+            $isRestoCMZ = 0;
+            $isEtabCMZ=0;
+        }else{
+            $isEtabCMZ= !$isEtabCMZ ? 0:  1;
+            $isGolfCMZ = !$isGolfCMZ ? 0 :1;
+            $isRestoCMZ = !$isRestoCMZ ? 0: 1;
         }
-
+       
         $statement->bindParam(1, $title);
         $statement->bindParam(2, $name);
         $statement->bindParam(3, $description);

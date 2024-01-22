@@ -8,7 +8,6 @@ use PDO;
 use Exception;
 use PDOException;
 use ArgumentCountError;
-use App\Repository\BddRestoRepository;
 
 class Tribu_T_Service extends PDOConnexionService
 {

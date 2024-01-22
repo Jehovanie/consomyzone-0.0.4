@@ -10,12 +10,12 @@
         <div class="container content_input_create_agenda_jheo_js">
             <div class="mb-3">
               <label for="eventTitle" class="form-label text_black">Titre de l'événement</label>
-              <input type="text" name="eventTitle" class="form-control input_black" id="eventTitle" placeholder="Texte">
+              <input type="text" name="eventTitle" class="form-control input_black" id="eventTitle" placeholder="Texte" oninput="changeDescription()">
             </div>
             <div class="mb-3">
                 <div>
                   <label for="typeEvent" class="form-label text_black">Type de l'événement</label>
-                  <input type="text" name="typeEvent" class="form-control input_black" id="typeEvent"  placeholder="Texte" value="Evènement">
+                  <input type="text" name="typeEvent" class="form-control input_black" id="typeEvent" oninput="changeDescription()"  placeholder="Texte" value="Evènement">
                 </div>
             </div>
 
@@ -57,8 +57,13 @@
                 <input type="text" class="form-control input_black lieuEvent_jheo_js" id="lieuEvent" placeholder = "Texte" disabled>
             </div>
             <div class="mb-3">
+<<<<<<< HEAD
                 <label for="eventDesc" class="form-label text_black">Description</label>
                 <textarea class="form-control input_black eventDesc_jheo_js" id="eventDesc" rows="2" placeholder="Texte">Descro EVE + Type EVE</textarea>
+=======
+                <label for="eventDesc" class="form-label text_black desc" >Description</label>
+                <textarea class="form-control input_black eventDesc_jheo_js" id="eventDesc" rows="2" placeholder="Texte" oninput="setUserInput()"></textarea>
+>>>>>>> release_v2
             </div>
             <div class="mb-3">
                 <label for="nbrParticipant" class="form-label text_black">Nombre de participants</label>

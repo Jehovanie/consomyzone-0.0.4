@@ -1727,7 +1727,7 @@ class TributGService extends PDOConnexionService{
             $tribuG= $this->getTribuG($user->getId());
             $profil_tribuG= $this->getProfilTributG($tribuG, $user->getId());
 
-            $logo_tribuG= $profil_tribuG["avatar"] !== "" ? "/uploads/tribus/photos/" . $profil_tribuG["avatar"] : "/uploads/tribus/avatar_tribu.jpg";
+            $logo_tribuG= $profil_tribuG["avatar"] != "" ? "/uploads/tribus/photos/" . $profil_tribuG["avatar"] : "/uploads/tribus/avatar_tribu.jpg";
 
             $resto_pastielle = $this->getAllRestoTribuG($tribuG);
             

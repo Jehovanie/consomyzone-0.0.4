@@ -20,6 +20,7 @@ use App\Form\PublicationType;
 use App\Form\UserSettingType;
 
 use App\Entity\BddRestoBackup;
+use App\Entity\ValidationStory;
 
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
@@ -57,6 +58,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 use App\Repository\BddRestoUserModifRepository;
+use App\Repository\ValidationStoryRepository;
 
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -69,6 +71,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use App\Service\MailService;
 
 class UserController extends AbstractController
 {
@@ -112,7 +115,7 @@ class UserController extends AbstractController
     {
         $userConnected= $status->userProfilService($this->getUser());
         
-        if( $userConnected["userType"] === "Type"){
+        if($this->getUser()->getType() === "Type"){
             return $this->redirectToRoute('app_actu_non_active');
         }
 
@@ -2637,7 +2640,7 @@ class UserController extends AbstractController
         BddRestoRepository $bddRepo
         
     ){
-        $fields = $bddRestoUserModifRepository->findAll();
+        $fields = $bddRestoUserModifRepository->findBy([], ["id" => "DESC"]);
         $tab = [];
         if(count($fields) > 0)
             foreach ($fields as $key) {
@@ -2711,14 +2714,161 @@ class UserController extends AbstractController
     #[Route("/user/reject/etab/to/update", name:"app_reject_etab_update", methods:["POST"])]
     public function rejectAdresseValidate(
         BddRestoUserModifRepository $bddRestoUserModifRepository,
-        Request $request
+        Request $request,
+        BddRestoRepository $bddRestoRepository,
+        BddRestoBackupRepository $bddRestoBackupRepository,
+        MailService $mailService,
+        UserRepository $userRepository,
+        UserService $userService,
+        ValidationStoryRepository $validationStoryRepository
     ){
+        $user= $this->getUser();
+
         $data = json_decode($request->getContent(), true);
         extract($data); 
+
         $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
         $key->setStatus(0);
+
         $bddRestoUserModifRepository->save($key,true);
-        return $this->json("Bravo!");
+
+        $validationStory = new ValidationStory();
+        $validationStory->setRestoId(intval($restoId));
+        $validationStory->setUserModifiedId(intval($userId));
+        $validationStory->setUserValidatorId($user->getId());
+        $validationStory->setStatus(0);
+        $validationStory->setDateValidation(new \DateTimeImmutable());
+        
+        $validationStoryRepository->save($validationStory, true);
+        
+        /// SEND EMAIL FOR ALL THREE GROUP PERSON: user modified, all_validator, super admin.
+        $user_modify= $userRepository->findOneBy(["id" => intval($userId)]);
+
+        $user_modify_receiver= [
+            [
+                "email" => $user_modify->getEmail(),
+                "fullName" => $userService->getFullName($user_modify->getId())
+            ]
+        ];
+
+        $resto_modify=$bddRestoRepository->getOneItemByID(intval($restoId));
+
+        $adress_resto= $resto_modify["numvoie"] . " " . $resto_modify["typevoie"] . " " . $resto_modify["nomvoie"] . " " . $resto_modify["codpost"] . " " . $resto_modify["villenorm"];
+        
+        $context_for_user_modify= [
+            "object_mail" => "Rejet de demande de modification d'un établissement.",
+            "template_path" => "emails/mail_res_modif_poi_resto_reject.html.twig",
+            "resto" => [
+                "name" => $resto_modify["denominationF"],
+                "adress" => $adress_resto
+            ],
+            "user_modify" => [
+                "fullname" => $userService->getFullName(intval($userId)),
+                "email" => $user_modify->getEmail()
+            ],
+            "user_super_admin" => [
+                "fullname" => "",
+                "email" => "",
+            ],
+            "user_validator" => [
+                "fullname" => "",
+                "email" => ""
+            ]
+        ];
+
+        $mailService->sendEmailResponseModifPOI(
+            $user->getEmail(),
+            $userService->getFullName($user->getId()),
+            $user_modify_receiver,
+            $context_for_user_modify
+        );
+
+
+        $user_super_admin= $userRepository->getUserSuperAdmin();
+
+        $all_user_receiver= [];
+        $validators=$userRepository->getAllValidator();
+        foreach ($validators as $validator){
+            if($validator->getId() != $user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type"){
+                $temp=[
+                    "email" => $validator->getEmail(),
+                    "fullName" => $userService->getFullName($validator->getId())
+                ];
+                array_push($all_user_receiver,$temp);
+            }
+        }
+
+
+
+        $context_for_user_validator= [
+            "object_mail" => "Rejet de demande de modification d'un établissement.",
+            "template_path" => "emails/mail_res_modif_resto_validator_poi_reject.html.twig",
+            "resto" => [
+                "name" => $resto_modify["denominationF"],
+                "adress" => $adress_resto
+            ],
+            "user_modify" => [
+                "fullname" => $userService->getFullName(intval($userId)),
+                "email" => $user_modify->getEmail(),
+            ],
+            "user_super_admin" => [
+                "fullname" => $userService->getFullName($user_super_admin->getId()),
+                "email" => $user_super_admin->getEmail()
+            ],
+            "user_validator" => [
+                "email" => $user->getEmail(),
+                "fullname" => $userService->getFullName($user->getId()),
+            ]
+        ];
+
+        $mailService->sendEmailResponseModifPOI(
+            $user->getEmail(),
+            $userService->getFullName($user->getId()),
+            $all_user_receiver,
+            $context_for_user_validator
+        );
+
+
+
+        $user_super_admin= $userRepository->getUserSuperAdmin();
+        $user_super_admin_receiver= [
+            [
+                "email" => $user_super_admin->getEmail(),
+                "fullName" => $userService->getFullName($user_super_admin->getId()),
+            ]
+        ];
+
+        $context_for_super_admin= [
+            "object_mail" => "Rejet de demande de modification d'un établissement.",
+            "template_path" => "emails/mail_res_modif_resto_super_admin_reject.html.twig",
+            "resto" => [
+                "name" => $resto_modify["denominationF"],
+                "adress" => $adress_resto
+            ],
+            "user_modify" => [
+                "fullname" => $userService->getFullName(intval($userId)),
+                "email" => $user_modify->getEmail(),
+            ],
+            "user_super_admin" => [
+                "fullname" => $userService->getFullName($user_super_admin->getId()),
+                "email" => $user_super_admin->getEmail()
+            ],
+            "user_validator" => [
+                "email" => $user->getEmail(),
+                "fullname" => $userService->getFullName($user->getId()),
+            ]
+        ];
+        
+        $mailService->sendEmailResponseModifPOI(
+            $user->getEmail(),
+            $userService->getFullName($user->getId()),
+            $user_super_admin_receiver,
+            $context_for_super_admin
+        );
+        
+        return $this->json([
+            "message" => "Bravo!"
+        ]);
     }
 
     /**
@@ -2734,12 +2884,19 @@ class UserController extends AbstractController
         Request $request,
         BddRestoRepository $bddRestoRepository,
         BddRestoBackupRepository $bddRestoBackupRepository,
-        PDOConnexionService $pDOConnexionService
+        PDOConnexionService $pDOConnexionService,
+        MailService $mailService,
+        UserRepository $userRepository,
+        UserService $userService,
+        ValidationStoryRepository $validationStoryRepository
     ){
+        $user= $this->getUser();
         $data = json_decode($request->getContent(), true);
         extract($data);
+
         $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
         $key->setStatus(1);
+
         $bddRestoUserModifRepository->save($key,true);
         $resto = $bddRestoRepository->findOneById(intval($restoId));
 
@@ -2816,7 +2973,137 @@ class UserController extends AbstractController
             
         $bddRestoRepository->save($resto,true);
 
-        return $this->json("Bravo!");
+        $validationStory = new ValidationStory();
+        $validationStory->setRestoId(intval($restoId));
+        $validationStory->setUserModifiedId(intval($userId));
+        $validationStory->setUserValidatorId($user->getId());
+        $validationStory->setStatus(1);
+        $validationStory->setDateValidation(new \DateTimeImmutable());
+
+        $validationStoryRepository->save($validationStory, true);
+
+        /// SEND EMAIL FOR ALL THREE GROUP PERSON: user modified, all_validator, super admin.
+        $user_modify= $userRepository->findOneBy(["id" => intval($userId)]);
+
+        $user_modify_receiver= [
+            [
+                "email" => $user_modify->getEmail(),
+                "fullName" => $userService->getFullName($user_modify->getId())
+            ]
+        ];
+
+        $resto_modify=$bddRestoRepository->getOneItemByID(intval($restoId));
+
+        $adress_resto= $resto_modify["numvoie"] . " " . $resto_modify["typevoie"] . " " . $resto_modify["nomvoie"] . " " . $resto_modify["codpost"] . " " . $resto_modify["villenorm"];
+        $context_for_user_modify= [
+            "object_mail" => "Approbation de la demande de modification d'un établissement.",
+            "template_path" => "emails/mail_res_modif_poi_resto_accept.html.twig",
+            "resto" => [
+                "name" => $resto_modify["denominationF"],
+                "adress" => $adress_resto
+            ],
+            "user_modify" => [
+                "fullname" => $userService->getFullName(intval($userId)),
+                "email" => $user_modify->getEmail()
+            ],
+            "user_super_admin" => [
+                "fullname" => "",
+                "email" => "",
+            ],
+            "user_validator" => [
+                "fullname" => "",
+                "email" => ""
+            ]
+        ];
+
+        $mailService->sendEmailResponseModifPOI(
+            $user->getEmail(),
+            $userService->getFullName($user->getId()),
+            $user_modify_receiver,
+            $context_for_user_modify
+        );
+
+
+        $user_super_admin= $userRepository->getUserSuperAdmin();
+
+        $all_user_receiver= [];
+        $validators=$userRepository->getAllValidator();
+        foreach ($validators as $validator){
+            if($validator->getId() != $user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type"){
+                $temp=[
+                    "email" => $validator->getEmail(),
+                    "fullName" => $userService->getFullName($validator->getId())
+                ];
+                array_push($all_user_receiver,$temp);
+            }
+        }
+
+        $context_for_user_validator= [
+            "object_mail" => "Approbation de la demande de modification d'un établissement.",
+            "template_path" => "emails/mail_res_modif_resto_validator_poi_accept.html.twig",
+            "resto" => [
+                "name" => $resto_modify["denominationF"],
+                "adress" => $adress_resto
+            ],
+            "user_modify" => [
+                "fullname" => $userService->getFullName(intval($userId)),
+                "email" => $user_modify->getEmail(),
+            ],
+            "user_super_admin" => [
+                "fullname" => $userService->getFullName($user_super_admin->getId()),
+                "email" => $user_super_admin->getEmail()
+            ],
+            "user_validator" => [
+                "email" => $user->getEmail(),
+                "fullname" => $userService->getFullName($user->getId()),
+            ]
+        ];
+        $mailService->sendEmailResponseModifPOI(
+            $user->getEmail(),
+            $userService->getFullName($user->getId()),
+            $all_user_receiver,
+            $context_for_user_validator
+        );
+
+        $user_super_admin_receiver= [
+            [
+                "email" => $user_super_admin->getEmail(),
+                "fullName" => $userService->getFullName($user_super_admin->getId()),
+            ]
+        ];
+
+        $context_for_super_admin= [
+            "object_mail" => "Approbation de la demande de modification d'un établissement.",
+            "template_path" => "emails/mail_res_modif_resto_super_admin_accept.html.twig",
+            "resto" => [
+                "name" => $resto_modify["denominationF"],
+                "adress" => $adress_resto
+            ],
+            "user_modify" => [
+                "fullname" => $userService->getFullName(intval($userId)),
+                "email" => $user_modify->getEmail(),
+            ],
+            "user_super_admin" => [
+                "fullname" => $userService->getFullName($user_super_admin->getId()),
+                "email" => $user_super_admin->getEmail()
+            ],
+            "user_validator" => [
+                "email" => $user->getEmail(),
+                "fullname" => $userService->getFullName($user->getId()),
+            ]
+        ];
+
+        $mailService->sendEmailResponseModifPOI(
+            $user->getEmail(),
+            $userService->getFullName($user->getId()),
+            $user_super_admin_receiver,
+            $context_for_super_admin
+        );
+
+
+        return $this->json([
+            "message" => "Bravo!"
+        ]);
     }
 
     /**
@@ -2831,12 +3118,18 @@ class UserController extends AbstractController
         BddRestoUserModifRepository $bddRestoUserModifRepository,
         Request $request,
         BddRestoRepository $bddRestoRepository,
-        BddRestoBackupRepository $bddRestoBackupRepository
+        BddRestoBackupRepository $bddRestoBackupRepository,
+        MailService $mailService,
+        UserRepository $userRepository,
+        UserService $userService,
+        ValidationStoryRepository $validationStoryRepository
     ){
         /*$restoBackup = $bddRestoUserModifRepository->findOneBy(["userId" => 1, "restoId" => 918]);
         dd($restoBackup);*/
+        $user= $this->getUser();
         $data = json_decode($request->getContent(), true);
         extract($data);
+
         $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
         $key->setStatus(-1);
         $bddRestoUserModifRepository->save($key,true);
@@ -2869,7 +3162,141 @@ class UserController extends AbstractController
 
         $bddRestoRepository->save($resto,true);
 
-        return $this->json("Bravo!");
+        $validationStory = new ValidationStory();
+        $validationStory->setRestoId(intval($restoId));
+        $validationStory->setUserModifiedId(intval($userId));
+        $validationStory->setUserValidatorId($user->getId());
+        $validationStory->setStatus(-1);
+        $validationStory->setDateValidation(new \DateTimeImmutable());
+
+        $validationStoryRepository->save($validationStory, true);
+
+        
+        /// SEND EMAIL FOR ALL THREE GROUP PERSON: user modified, all_validator, super admin.
+        $user_modify= $userRepository->findOneBy(["id" => intval($userId)]);
+
+        $user_modify_receiver= [
+            [
+                "email" => $user_modify->getEmail(),
+                "fullName" => $userService->getFullName($user_modify->getId())
+            ]
+        ];
+
+        $resto_modify=$bddRestoRepository->getOneItemByID(intval($restoId));
+
+        $adress_resto= $resto_modify["numvoie"] . " " . $resto_modify["typevoie"] . " " . $resto_modify["nomvoie"] . " " . $resto_modify["codpost"] . " " . $resto_modify["villenorm"];
+        $context_for_user_modify= [
+            "object_mail" => "Annulation de validation d'un établissement.",
+            "template_path" => "emails/mail_res_modif_poi_resto_cancel.html.twig",
+            "resto" => [
+                "name" => $resto_modify["denominationF"],
+                "adress" => $adress_resto
+            ],
+            "user_modify" => [
+                "fullname" => $userService->getFullName(intval($userId)),
+                "email" => $user_modify->getEmail()
+            ],
+            "user_super_admin" => [
+                "fullname" => "",
+                "email" => "",
+            ],
+            "user_validator" => [
+                "fullname" => "",
+                "email" => ""
+            ]
+        ];
+
+        $mailService->sendEmailResponseModifPOI(
+            $user->getEmail(),
+            $userService->getFullName($user->getId()),
+            $user_modify_receiver,
+            $context_for_user_modify
+        );
+
+
+
+        $user_super_admin= $userRepository->getUserSuperAdmin();
+        $all_user_receiver= [];
+        $validators=$userRepository->getAllValidator();
+        foreach ($validators as $validator){
+            if($validator->getId() != $user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type"){
+                $temp=[
+                    "email" => $validator->getEmail(),
+                    "fullName" => $userService->getFullName($validator->getId())
+                ];
+                array_push($all_user_receiver,$temp);
+            }
+        }
+
+        $context_for_user_validator= [
+            "object_mail" => "Annulation de validation d'un établissement.",
+            "template_path" => "emails/mail_res_modif_resto_validator_poi_cancel.html.twig",
+            "resto" => [
+                "name" => $resto_modify["denominationF"],
+                "adress" => $adress_resto
+            ],
+            "user_modify" => [
+                "fullname" => $userService->getFullName(intval($userId)),
+                "email" => $user_modify->getEmail(),
+            ],
+            "user_super_admin" => [
+                "fullname" => $userService->getFullName($user_super_admin->getId()),
+                "email" => $user_super_admin->getEmail()
+            ],
+            "user_validator" => [
+                "email" => $user->getEmail(),
+                "fullname" => $userService->getFullName($user->getId()),
+            ]
+        ];
+
+        $mailService->sendEmailResponseModifPOI(
+            $user->getEmail(),
+            $userService->getFullName($user->getId()),
+            $all_user_receiver,
+            $context_for_user_validator
+        );
+
+
+
+        $user_super_admin= $userRepository->getUserSuperAdmin();
+        $user_super_admin_receiver= [
+            [
+                "email" => $user_super_admin->getEmail(),
+                "fullName" => $userService->getFullName($user_super_admin->getId()),
+            ]
+        ];
+
+        $context_for_super_admin= [
+            "object_mail" => "Annulation de validation d'un établissement.",
+            "template_path" => "emails/mail_res_modif_resto_super_admin_cancel.html.twig",
+            "resto" => [
+                "name" => $resto_modify["denominationF"],
+                "adress" => $adress_resto
+            ],
+            "user_modify" => [
+                "fullname" => $userService->getFullName(intval($userId)),
+                "email" => $user_modify->getEmail(),
+            ],
+            "user_super_admin" => [
+                "fullname" => $userService->getFullName($user_super_admin->getId()),
+                "email" => $user_super_admin->getEmail()
+            ],
+            "user_validator" => [
+                "email" => $user->getEmail(),
+                "fullname" => $userService->getFullName($user->getId()),
+            ]
+        ];
+        
+        $mailService->sendEmailResponseModifPOI(
+            $user->getEmail(),
+            $userService->getFullName($user->getId()),
+            $user_super_admin_receiver,
+            $context_for_super_admin
+        );
+
+        return $this->json([
+            "message" => "Bravo"
+        ]);
     }
 
     #[Route("/is/pseudo/{pseudo}",name:"app_check_pseudo", methods:["GET"])]
@@ -2953,5 +3380,46 @@ class UserController extends AbstractController
         $response = $userService->lookForOtherFan($word, $userIdle);
 
         return $this->json($response);
+    }
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet validation adresse de la rubrique Super Admin
+     * Localisation du fichier : UserController.php
+     * Je veux : afficher l'historique de la validation
+     * 
+     */
+    #[Route("/user/get/validation/story", name:"app_get_validatio_story", methods:["GET"])]
+    public function getValidationStory(
+        BddRestoRepository $bddRestoRepository,
+        UserRepository $userRepository,
+        UserService $userService,
+        ValidationStoryRepository $validationStoryRepository
+    ){
+        $allValidations = $validationStoryRepository->findAll();
+
+        $results = [];
+
+        foreach ($allValidations as $key) {
+            $resto=$bddRestoRepository->getOneItemByID($key->getRestoId());
+            $adress_resto= $resto["numvoie"] . " " . $resto["typevoie"] . " " . $resto["nomvoie"] . " " . $resto["codpost"] . " " . $resto["villenorm"];
+            $restoName = $resto["denominationF"];
+            $user_modify= $userRepository->findOneBy(["id" => $key->getUserModifiedId()]);
+            $user_validator= $userRepository->findOneBy(["id" => $key->getUserValidatorId()]);
+
+            //$datetime = date("Y-m-d H:i:s", $key->getDateValidation());
+
+            $temp = [
+                "resto" => ["id"=>$key->getRestoId(), "name"=>$restoName, "adresse"=>$adress_resto],
+                "user_modify" => ["id"=>$key->getUserModifiedId(), "name"=>$userService->getFullName($user_modify->getId())],
+                "user_validator" => ["id"=>$key->getUserValidatorId(), "name"=> $userService->getFullName($user_validator->getId())],
+                "status" => $key->getStatus(),
+                "date"=>$key->getDateValidation()
+            ];
+
+            array_push($results, $temp);
+
+        }
+
+        return $this->json(["results"=>$results]);
     }
 }

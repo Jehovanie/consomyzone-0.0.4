@@ -57,7 +57,7 @@ function bindActionNewsLetterTribuT(tribuTName) {
 			                                        <img src="${logo_tribu}" class="card-img-top" alt="tribu">
 			                                </div>
 			                                <h5 class="card-title">${apropos_tribuT.name}</h5>
-			                                <p class="card-text">${apropos_tribuT.description}</p>
+			                                <p class="card-text">${apropos_tribuT.description ? apropos_tribuT.description :""}</p>
 			                            </div>
 			                        </div>
 
@@ -131,13 +131,12 @@ function showTextInformationFans(showTextOption) {
                 <figure class="figure">
                     <figcaption class="figure-caption">À très bientôt,</figcaption>
                     <figcaption class="figure-caption">Fondateur tribu ${apropos_tribuT.name}</figcaption>
-                    <figcaption class="figure-caption">${apropos_tribuT.description}</figcaption>
+                    <figcaption class="figure-caption">${apropos_tribuT.description ? apropos_tribuT.description :""}</figcaption>
                     <figcaption class="figure-caption">${user_profil.lastname} ${user_profil.firstname} </figcaption>
                     <figcaption class="figure-caption">${user_profil.email}</figcaption>
                 </figure>
             `);
 }
-
 /**
  * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
  *

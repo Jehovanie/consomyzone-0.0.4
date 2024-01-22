@@ -18,8 +18,8 @@ class Status {
     }
 
     public function statusFondateur($user){
-        if (!$user || $user->getType()=="Type") {
-            return [ "profil" => "", "statusTribut" => "" ];
+        if (!$user || $user->getType() === "Type") {
+            return [ "profil" => "", "statusTribut" => "", "userType" => "Type" ];
         }
         
         $userType = $user->getType();
@@ -34,7 +34,8 @@ class Status {
        
         return [
             "profil" => $profil,
-            "statusTribut" => $this->tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId)
+            "statusTribut" => $this->tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
+            "userType" => $user->getType()
         ];
     }
 
@@ -47,8 +48,8 @@ class Status {
         $user
     ){
 
-        if (!$user) {
-            return ["profil" => "", "statusTribut" => ""];
+        if (!$user || $user->getType() === "Type" ) {
+            return ["profil" => "", "statusTribut" => "", "userType" => "Type" ];
         }
         $userType = $user->getType();
         $userId = $user->getId();

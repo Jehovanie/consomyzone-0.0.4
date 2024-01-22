@@ -1442,10 +1442,6 @@ thead > tr{
     border: 1px solid #ccd0d5;
 }
 
-
-
-
-
 /* .container {
     width: 78vw;
     padding-right: 15px;
@@ -1671,7 +1667,7 @@ thead > tr{
 .media-comment {
     display: flex;
     align-items: flex-start;
-    background:  #f7f7f7; 
+    background: #f7f7f7; 
     border-radius: 10px;
     padding: 7px;
     margin-bottom: 15px;

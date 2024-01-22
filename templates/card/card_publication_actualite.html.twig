@@ -15,9 +15,13 @@
 			<div class="d-flex head-publication-actualite">
 				<img class="profil_publication_actualite me-1" src="{{(userOwnPub.profil) ? '/public' ~ userOwnPub.profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userOwnPub.fullName}}">
 				<a href="/user/profil/{{userOwnPub.id}}" class="carbon-text" target="_blank" rel="noopener sponsored">
-					<span class="user-publication-actualite">{{userOwnPub.fullName}}</span> 
-					a publié sur 
-					<span class="tribu-publication-actualite">{{(tribu.type == "Tribu T" ? tribu.type : "") ~ " " ~ tribu.name | split('_', 4)|last|replace({'_':' '})|capitalize }} </span>
+					<span class="user-publication-actualite">{{userOwnPub.fullName}} </span> 
+					
+					
+				</a>
+				<span>&nbsp a publié dans &nbsp</span>
+				<a href={{tribu.type == "Tribu T" ? "/user/tribu/my-tribu-t" : "/user/account"}}>
+				   <span class="tribu-publication-actualite"> {{(tribu.type == "Tribu T" ? tribu.type : "") ~ " " ~ tribu.name | split('_', 4)|last|replace({'_':' '})|capitalize }} </span>
 					<i class="bi bi-clock-fill clock-publication-actualite"> {{ publication.createdAt }}</i>
 				</a>
 				{# {% if userOwnPub.id is same as( app.user.id) %} #}
@@ -87,7 +91,9 @@
 		{# class="nbr_comment_jheo_js" #}
 				<span class="nbr_reaction_elie_js cursor-pointer" data-bs-toggle="modal" data-bs-target="#listeReacteur" id="nbr_reaction_pub_{{tribu.table}}_{{publication.id}}"
 				onclick="getAllReaction('{{publication.id}}', '{{tribu.table}}', '{{userOwnPub.id}}')" >{{ publication.reactions|length ~ (publication.reactions|length > 1 ? " réactions" : " réaction" ) }} </span>
-				<span  class="nbr_comment_jheo_js">{{ publication.comments|length ~ (publication.comments|length > 1 ? " commentaires" : " commentaire" ) }} </span>
+				<span  style="cursor:pointer;"  class="nbr_comment_jheo_js" data-bs-toggle="modal" data-bs-target="#commentaire"  onclick="getAllComment('{{publication.id}}', '{{tribu.table}}', '{{userOwnPub.id}}')">
+							{{ publication.comments|length ~ (publication.comments|length > 1 ? " commentaires" : " commentaire" ) }} 
+				</span>
 		</p>
 
 		<div class="reaction-icon d-flex reaction-icon-actualite">

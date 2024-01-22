@@ -77,6 +77,7 @@ class AvisRestaurantRepository extends ServiceEntityRepository
     {
         $all_avis= $this->createQueryBuilder("r")
                 ->where("r.restaurant = :idResto ")
+                ->andWhere("r.user is not null")
                 ->setParameter("idResto", $idrestaurant)
                 ->orderBy("r.datetime", "DESC")
                 ->getQuery()
@@ -126,6 +127,7 @@ class AvisRestaurantRepository extends ServiceEntityRepository
         return $this->createQueryBuilder("r")
                     ->select("count(r.id)")
                     ->where("r.restaurant = :idResto ")
+                    ->andWhere("r.user is not null")
                     ->setParameter("idResto",$idrestaurant)
                     ->getQuery()
                     ->getSingleScalarResult();
@@ -142,6 +144,7 @@ class AvisRestaurantRepository extends ServiceEntityRepository
         return $this->createQueryBuilder("r")
                     ->select("AVG(r.note) as moyenne_note, IDENTITY(r.restaurant) as id_resto")
                     ->where("r.restaurant IN (:u)")
+                    ->andWhere("r.user IS NOT NULL")
                     ->setParameter("u",$a)
                     ->groupBy("r.restaurant")
                     ->getQuery()
@@ -153,6 +156,7 @@ class AvisRestaurantRepository extends ServiceEntityRepository
         return $this->createQueryBuilder("r")
                     ->select("AVG(r.note) as moyenne_note, IDENTITY(r.restaurant) as id_resto")
                     ->where("r.restaurant = :u ")
+                    ->andWhere("r.user IS NOT NULL")
                     ->setParameter("u",$id)
                     ->groupBy("r.restaurant")
                     ->getQuery()
@@ -168,6 +172,7 @@ class AvisRestaurantRepository extends ServiceEntityRepository
                 r.avis,
                 r.note")
             ->where("r.restaurant = :idResto ")
+            ->andWhere("r.user IS NOT NULL")
             ->setParameter("idResto",$idrestaurant)
             ->getQuery()
             ->getResult();

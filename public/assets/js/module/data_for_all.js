@@ -548,7 +548,7 @@ function makeMarkerDraggable(id) {
  * je veux: modifier les informations relatives à un établissement
  * si un utilisateur veut modifier une ou des informations
  */
-function makeUserModifResto(e) {
+function makeUserModifResto(e){
 	let denomination_f = document.querySelector("#restoNewDenominationF").value;
 	let numvoie = document.querySelector("#newNumVoie").value;
 	let typevoie = document.querySelector("#newTypeVoie").value;
@@ -605,19 +605,29 @@ function makeUserModifResto(e) {
 		},
 	});
 
-	e.target.textContent = "Modification en cours..."
-	e.target.disabled = true
+	// makeUserModifResto;
+	e.target.textContent = "Modification en cours...";
+	e.target.disabled = true;
 
 	fetch(request).then((response) => {
+		$("#userModifResto").modal("hide");
 		if (response.status === 201) {
-			$("#userModifResto").modal("hide");
 			swal(
 				"Votre modification a été prise en compte. " +
 					"Nous procédons à des vérifications et vous recontacterons prochainement. " +
 					"Merci."
 			).then(() => {
-				e.target.textContent = "Modifier"
-				e.target.disabled = false
+				e.target.textContent = "Modifier";
+				e.target.disabled = false;
+
+				CURRENT_MAP_INSTANCE.markers.eachLayer((marker) => {
+					if (parseInt(marker.options.id) === parseInt(restoId)) {
+						marker.dragging.disable();
+					}
+				});
+			});
+		} else if (response.status === 205) {
+			swal("Il y a une demande de modification en cours pour ce restaurant.").then(() => {
 				CURRENT_MAP_INSTANCE.markers.eachLayer((marker) => {
 					if (parseInt(marker.options.id) === parseInt(restoId)) {
 						marker.dragging.disable();
