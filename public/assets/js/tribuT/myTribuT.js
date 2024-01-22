@@ -3808,15 +3808,15 @@ function fetchAllGalereInAlbum(idAlbum) {
 						if (!htmlDocument.querySelector(`.photo_${imgNameSplit}`)) {
 							if (parseInt(photo.isAlbum) != 1) {
 								li_img += `
-                        <div class="col-lg-4 col-md-12 mb-4 mb-lg-0 content-gal-all photo_${imgNameSplit}">
-                          <input type="checkbox" class="select-album value-checked-album-tomm-js" data-id="${photo.id}" value="${img_src}"/>
-                          <img
-                          src="${img_src}"
-                          class="w-100 shadow-1-strong  mb-4"
-                          alt="Boat on Calm Water"
-                          />
-                        </div>
-                        `;
+									<div class="col-lg-4 col-md-12 mb-4 mb-lg-0 content-gal-all photo_${imgNameSplit}">
+									<input type="checkbox" class="select-album value-checked-album-tomm-js" data-id="${photo.id}" value="${img_src}"/>
+									<img
+									src="${img_src}"
+									class="w-100 shadow-1-strong  mb-4"
+									alt="Boat on Calm Water"
+									/>
+									</div>
+                        		`;
 							}
 						}
 					}

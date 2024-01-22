@@ -1582,9 +1582,9 @@ $type = "/user/invitation";
     ){
         $data = json_decode($request->getContent(), true);
         $nameAlbum = $data["name_album"];
-        $tribuTService->createAlbum($table, $nameAlbum);
+        $resp = $tribuTService->createAlbum($table, $nameAlbum);
 
-        return $this->json("Album ajouté avec succès");
+        return $this->json($resp);
     }
 
     #[Route('/user/tribu/get/album/{table}', name: 'get_album_tribu')]
@@ -1670,7 +1670,7 @@ $type = "/user/invitation";
 
         if ($has_golf == true) {
             $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
-            $golfs = mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+            // $golfs = mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
         }
         $r = $serialize->serialize($golfs, 'json');
 

@@ -276,13 +276,17 @@ class UserController extends AbstractController
 
         TributGService $tributGService,
 
-        UserRepository $userRepository
+        UserRepository $userRepository,
+
+        UserService $userService
 
     ): Response {
         $userConnected= $status->userProfilService($this->getUser());
         
         $user = $this->getUser();
-
+        if($this->getUser()->getType() === "Type"){
+            return $this->redirectToRoute('app_actu_non_active');
+        }
         $userType = $user->getType();
 
         $userId = $user->getId();
@@ -307,7 +311,7 @@ class UserController extends AbstractController
 
 
 
-        $flash = [];
+        //$flash = [];
 
 
 
@@ -355,8 +359,8 @@ class UserController extends AbstractController
                     );
                 }
 
-                /**
-                 * @author Elie
+                /*
+                 *Elie
                  * bloc capture si l'utilisateur utilise un camera direct de votre appareil
                  * utilisé dans Tribu G
                  */
@@ -385,7 +389,6 @@ class UserController extends AbstractController
         }
 
         // dd($tributGService->getAllPublicationsUpdate($profil[0]->getTributg()));
-
         
         return $this->render("tribu_g/account.html.twig", [
             "userConnected" => $userConnected,
