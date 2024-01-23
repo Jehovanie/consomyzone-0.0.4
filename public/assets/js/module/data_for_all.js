@@ -548,7 +548,7 @@ function makeMarkerDraggable(id) {
  * je veux: modifier les informations relatives à un établissement
  * si un utilisateur veut modifier une ou des informations
  */
-function makeUserModifResto(e){
+function makeUserModifResto(e) {
 	let denomination_f = document.querySelector("#restoNewDenominationF").value;
 	let numvoie = document.querySelector("#newNumVoie").value;
 	let typevoie = document.querySelector("#newTypeVoie").value;
@@ -640,47 +640,52 @@ function makeUserModifResto(e){
 
 function updataMarkerIntCarte(idItem) {}
 
-function dockFicheRubrique(nombre=1){
+function dockFicheRubrique(nombre=10){
 	let closeDetailElement = document.querySelector(".close_details_jheo_js")
 	let markerInfo = CURRENT_MAP_INSTANCE.marker_last_selected.options
 	let idRubrique = markerInfo.id
-	let typeRubrique = markerInfo.type ? markerInfo.type : null
+	let typeRubrique = markerInfo.type ? markerInfo.type : "none"
 	closeDetailElement.click()
-
+let divParent = document.createElement("div")
+let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim()
 	if(nombre > 1){
-		let newDivContainer = document.createElement("div")
-		newDivContainer.setAttribute("class", "leaflet-control liste-icones d-none")
-		newDivContainer.innerHTML += `<div id="liste-icones-dock">
-					<button style="font-size: 1.1rem;">
-						<i class="fa-solid fa-file"></i>
-					</button>
-				</div>`
-		document.querySelector(".leaflet-top.leaflet-right").appendChild(newDivContainer)
-	}else{
-		let divParent = document.createElement("div")
-		divParent.setAttribute("onclick",`reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')`)
-		divParent.setAttribute("style","margin-left:30px;")
-		divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer"
+		let containerIcones = document.querySelector(".container-icones")
 
-		if(typeRubrique){
-			divParent.id = "dockableIcone_" + typeRubrique + "_" + idRubrique
+		if(containerIcones){
+
+			let listeIcones = document.querySelectorAll(".liste-icones-dock")
+			let listeIconesLength = listeIcones.length;
+			createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, listeIconesLength,containerIcones)
 		}else{
-			divParent.id = "dockableIcone_" + idRubrique
-		}
+			let newDivContainer = document.createElement("div")
+			newDivContainer.setAttribute("class", "leaflet-control container-icones d-none")
 
-		divParent.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Cliquer ici pour le réaffichage de la fiche</div>
+		let btnId = ""
+			if(typeRubrique != "none"){
 		
-		<button style="font-size: 1.1rem;">
+		btnId = "dockableBtn_" + typeRubrique + "_" + idRubrique
+				if(document.querySelector("#"+btnId) === null){
+					newDivContainer.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
 			<i class="fa-solid fa-file"></i>
-			<span class="number-of-icon d-none">+2</span>
+			</button>`
+				}
+			}else{
+				btnId = "dockableBtn_" + idRubrique
+				if(document.querySelector("#"+btnId) === null){
+					newDivContainer.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+										<i class="fa-solid fa-file"></i>
 		</button>`
+}
+			}
 
-		let dockableIconeElement = document.querySelectorAll(".dockableDetail")
-		let dockableIconeLength = dockableIconeElement.length
+		document.querySelector(".leaflet-top.leaflet-right").appendChild(newDivContainer)
 
-		if(dockableIconeLength >= nombre){
-			dockableIconeElement[0].remove()
+		createDockableIcon(divParent, idRubrique, typeRubrique)
 		}
+
+}else{
+
+		createDockableIcon(divParent, idRubrique, typeRubrique)
 
 		document.querySelector("#openFlottant").appendChild(divParent)
 	}
@@ -690,8 +695,23 @@ function dockFicheRubrique(nombre=1){
 }
 
 function reAfficherFiche(element, idRubrique, typeRubrique){
+let iconeId = ""
+	if(typeRubrique != "none"){
+		iconeId = "dockableBtn_" + typeRubrique + "_" + idRubrique
+		if(document.querySelector("#"+iconeId))
+			document.querySelector("#"+iconeId).remove()
+	}else{
+		
+		iconeId = "dockableBtn_" + idRubrique
+		if(document.querySelector("#"+iconeId))
+			document.querySelector("#"+iconeId).remove()
+	}
+
 	element.remove()
-	if(typeRubrique){
+	
+	removeOrEditSpecificElement()
+
+	if(typeRubrique != "none"){
 		if (CURRENT_MAP_INSTANCE.checkIsExist(idRubrique, typeRubrique)) {
 			CURRENT_MAP_INSTANCE.clickOnMarker(idRubrique, typeRubrique);
 		}	
@@ -700,5 +720,120 @@ function reAfficherFiche(element, idRubrique, typeRubrique){
 		if (CURRENT_MAP_INSTANCE.checkIsExist(idRubrique)) {
 			CURRENT_MAP_INSTANCE.clickOnMarker(idRubrique);
 		}
+	}
+}
+
+function removeOrEditSpecificElement(){
+	if(document.querySelector(".container-icones")){
+		if(document.querySelector(".container-icones").children.length == 0)
+			document.querySelector(".container-icones").remove()
+	}
+	let dockDetail = document.querySelector(".dockableDetail")
+	if(dockDetail){
+		let iconesNumber = document.querySelector(".dockableDetail > button").textContent.replace(/\D/g, "")
+		iconesNumber != "" ? parseInt(iconesNumber) : 0
+		if(iconesNumber > 0){
+			iconesNumber = document.querySelectorAll('[id^="dockableBtn_"]').length;
+			if(iconesNumber >= 1){
+				if(iconesNumber > 1){
+					document.querySelector(".dockableDetail > button").textContent = "+" + iconesNumber
+				}else{
+					let iconeToGet = document.querySelector('[id^="dockableBtn_"]')
+					iconeToGetId = iconeToGet.id
+					iconeToGetOnClick = iconeToGet.getAttribute("onclick")
+					dockDetail.setAttribute("onclick", iconeToGetOnClick)
+					dockDetail.id = iconeToGetId.replace("dockableBtn","dockableIcone")
+					dockDetail.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Cliquer ici pour réafficher la fiche</div>
+											<button style="font-size: 1.1rem;">
+												<i class="fa-solid fa-file"></i>
+											</button>`
+				}
+				if(!document.querySelector(".container-icones").classList.contains("d-none")){
+					document.querySelector(".container-icones").classList.add("d-none")
+				}
+			}else{
+				dockDetail.remove()
+			}
+		}
+	}
+}
+
+function createDockableIcon(divParent, idRubrique, typeRubrique){
+	divParent.setAttribute("onclick",`reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')`)
+	divParent.setAttribute("style","margin-left:30px;")
+	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer"
+
+	if(typeRubrique != "none"){
+		divParent.id = "dockableIcone_" + typeRubrique + "_" + idRubrique
+	}else{
+		divParent.id = "dockableIcone_" + idRubrique
+	}
+
+	divParent.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Cliquer ici pour réafficher la fiche</div>
+							<button style="font-size: 1.1rem;">
+								<i class="fa-solid fa-file"></i>
+							</button>`
+
+	let dockableIconeElement = document.querySelector(".dockableDetail")
+
+	if(dockableIconeElement)
+		dockableIconeElement.remove()
+
+	document.querySelector("#openFlottant").appendChild(divParent)
+}
+
+function createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, nombreIcone, containerIcones){
+	divParent.setAttribute("onclick","afficherListeIcones()")
+	divParent.setAttribute("style","margin-left:30px;")
+	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer"
+	let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim()
+	let iconeId = ""
+	let canAdd = false
+	if(typeRubrique != "none"){
+
+		iconeId = "dockableBtn_" + typeRubrique + "_" + idRubrique
+		if(document.querySelector("#"+iconeId) === null){
+			containerIcones.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock ms-1" id=${iconeId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+								<i class="fa-solid fa-file"></i>
+							</button>`
+			canAdd = true
+		}
+	}else{
+		iconeId = "dockableBtn_" + idRubrique
+		if(document.querySelector("#"+iconeId) === null){
+			containerIcones.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock ms-1" id=${iconeId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+								<i class="fa-solid fa-file"></i>
+							</button>`
+			canAdd = true
+		}
+	}
+
+	if(nombreIcone >= nombre){
+		nombreIcone = nombre
+		document.querySelectorAll(".liste-icones-dock")[0].remove()
+	}else{
+		if(canAdd)
+			nombreIcone = nombreIcone + 1
+	}
+
+	divParent.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Afficher tous</div>
+								<button style="font-size: 1.1rem;">
+									+${nombreIcone}
+								</button>`
+
+	let dockableIconeElement = document.querySelector(".dockableDetail")
+
+	if(dockableIconeElement)
+		dockableIconeElement.remove()
+
+	document.querySelector("#openFlottant").appendChild(divParent)
+}
+
+function afficherListeIcones(){
+	let containerIcones = document.querySelector(".container-icones")
+	if(containerIcones.classList.contains("d-none")){
+		containerIcones.classList.remove("d-none")
+	}else{
+		containerIcones.classList.add("d-none")
 	}
 }

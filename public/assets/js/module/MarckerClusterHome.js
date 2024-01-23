@@ -546,6 +546,9 @@ class MarckerClusterHome extends MapModule {
 			}
 			if(document.querySelector("#dockableIcone_station_"+dataStation.id))
 				document.querySelector("#dockableIcone_station_"+dataStation.id).remove()
+			if(document.querySelector("#dockableBtn_station_"+dataStation.id))
+				document.querySelector("#dockableBtn_station_"+dataStation.id).remove()
+			removeOrEditSpecificElement()
 		});
 	}
 
@@ -597,6 +600,9 @@ class MarckerClusterHome extends MapModule {
 
 			if(document.querySelector("#dockableIcone_ferme_"+dataFerme.id))
 				document.querySelector("#dockableIcone_ferme_"+dataFerme.id).remove()
+			if(document.querySelector("#dockableBtn_ferme_"+dataFerme.id))
+				document.querySelector("#dockableBtn_ferme_"+dataFerme.id).remove()
+			removeOrEditSpecificElement()
 		});
 	}
 
@@ -665,6 +671,9 @@ class MarckerClusterHome extends MapModule {
 			}
 			if(document.querySelector("#dockableIcone_resto_"+dataResto.id))
 				document.querySelector("#dockableIcone_resto_"+dataResto.id).remove()
+			if(document.querySelector("#dockableBtn_resto_"+dataResto.id))
+				document.querySelector("#dockableBtn_resto_"+dataResto.id).remove()
+			removeOrEditSpecificElement()
 		});
 	}
 
@@ -733,6 +742,9 @@ class MarckerClusterHome extends MapModule {
 
 			if(document.querySelector("#dockableIcone_golf_"+item.id))
 				document.querySelector("#dockableIcone_golf_"+item.id).remove()
+			if(document.querySelector("#dockableBtn_golf_"+item.id))
+				document.querySelector("#dockableBtn_golf_"+item.id).remove()
+			removeOrEditSpecificElement()
 		});
 	}
 
@@ -785,6 +797,9 @@ class MarckerClusterHome extends MapModule {
 			}
 			if(document.querySelector("#dockableIcone_tabac_"+item.id))
 				document.querySelector("#dockableIcone_tabac_"+item.id).remove()
+			if(document.querySelector("#dockableBtn_tabac_"+item.id))
+				document.querySelector("#dockableBtn_tabac_"+item.id).remove()
+			removeOrEditSpecificElement()
 		});
 	}
 
