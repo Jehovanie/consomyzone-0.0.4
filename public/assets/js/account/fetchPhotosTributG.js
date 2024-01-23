@@ -251,6 +251,7 @@ function createAlbumTribuG() {
   const valueNameAlbum = document.querySelector(
     ".value-name-album-g-tomm-js"
   ).value;
+if (valueNameAlbum !== "") {
   const request = new Request(`/user/tribu-g/photos/album`, {
     method: "POST",
     headers: {
@@ -277,6 +278,14 @@ function createAlbumTribuG() {
     }
      
   });
+}else {
+		swal({
+			title: "Vide",
+			text: "Veuillez inscrire le nom de votre album.",
+			icon: "error",
+			button: "OK",
+		});
+	}
   $("#createAlbumTribuG").modal('hide')
   // document.querySelector(".btn-close-creer-album-tomm-js").click();
   document.querySelector("#gal-album-g").click();
@@ -289,8 +298,6 @@ let status = document.querySelector(".status-tomm-js").getAttribute("data-status
   }
   document.querySelector(".album-tomm-js").classList.toggle("d-none");
     let contentAmbum = document.querySelector(".content-album-tomm-js");
-// suprimer une photo album
-  // 
     contentAmbum.innerHTML += `
       <div class="row photo-imp-t-tomm-js photo-album-tomm-js" data-name-album="${nameAlbum}" data-id-album="${idAlbum}">
         <div class="row">
@@ -299,7 +306,7 @@ let status = document.querySelector(".status-tomm-js").getAttribute("data-status
           <button type="button" class="btn btn-light create-album-img col-4" data-bs-toggle="modal" data-bs-target="#selectAddAlbumG" onclick="fetchAllGalereGInAlbum(${idAlbum})">
             Ajouter des photos <i class="fa-solid fa-plus"></i>
           </button>
-          <!-- <p class="col-1 modif-album" data-bs-toggle="modal" data-bs-target="#selectModifAlbumG" onclick="photoInAlbumModif(${idAlbum}, '${nameAlbum.replace("'","")}')"><i class="fa-solid fa-gear"></i></p> --!>
+          <p class="col-1 modif-album d-none" data-bs-toggle="modal" data-bs-target="#selectModifAlbumG" onclick="photoInAlbumModif(${idAlbum}, '${nameAlbum.replace("'","")}')"><i class="fa-solid fa-gear"></i></p>
         </div>
         <div class="row insert-album-photo-g-tomm-js mt-3"> </div> 
       </div>
