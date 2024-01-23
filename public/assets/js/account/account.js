@@ -66,20 +66,19 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
       );
       // let map2 = new Map();
       //get cookie
-      
-      if (Cookies2.get("_egemonie_n_" + currentUser) != undefined) {
-            //console.log("ato express")
-            let tmp = Cookies2.get("_egemonie_n_" + currentUser);
 
-            Cookies2.set("_egemonie_0_" + currentUser, tmp, {
-             expires: 30,
-             secure: true,
-           });
-           
+      if (Cookies2.get("_egemonie_n_" + currentUser) != undefined) {
+        //console.log("ato express")
+        let tmp = Cookies2.get("_egemonie_n_" + currentUser);
+
+        Cookies2.set("_egemonie_0_" + currentUser, tmp, {
+          expires: 30,
+          secure: true,
+        });
       } else {
         //set cookie old
 
-        console.log("tsy misy lty a")
+        console.log("tsy misy lty a");
         for (let notif of Array.from(allNotifications)) {
           for (let msg of new_message) {
             if (notif.dataset.toggleOtherId == msg.message.user_post) {
@@ -88,8 +87,8 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
             }
           }
         }
-        let tmp = JSON.stringify(oldMessageNotifId)
-        
+        let tmp = JSON.stringify(oldMessageNotifId);
+
         Cookies2.set("_egemonie_0_" + currentUser, JSON.stringify(tmp), {
           expires: 30,
           secure: true,
@@ -138,20 +137,22 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
       //set cookie here
       let obj2 = [];
       let oldMessageNotifId2 = [];
-      
-      
+
       for (let notif of Array.from(div_message_already_show)) {
         for (let msg of new_message) {
-          if (notif.dataset.toggleOtherId == msg.message.user_post ) {
-              obj2 = { [notif.dataset.toggleOtherId]: msg.message.id };
-               oldMessageNotifId2.push(obj2);
+          if (notif.dataset.toggleOtherId == msg.message.user_post) {
+            obj2 = { [notif.dataset.toggleOtherId]: msg.message.id };
+            oldMessageNotifId2.push(obj2);
           }
         }
       }
       Cookies2.set(
         "_egemonie_n_" + currentUser,
         JSON.stringify(oldMessageNotifId2),
-        { expires: 30, secure: true }
+        {
+          expires: 30,
+          secure: true,
+        }
       );
       div_message_already_show.forEach((element) => {
         //set cookies here
@@ -626,7 +627,7 @@ function showToastMessage(
   // retrieve to cookies oldMessages,
   const currentUser = document.querySelector(".ref_tom_js").dataset.roof;
   const oldMessagesStr = Cookies2.get("_egemonie_0_" + currentUser);
-  const oldMessages=JSON.parse(oldMessagesStr);
+  const oldMessages = JSON.parse(oldMessagesStr);
   //console.log(oldMessages);
   if (oldMessages.length > 0 && allUserAlreadyInNotifications.length > 0) {
     for (const message of allMessageNotifications) {
@@ -643,16 +644,16 @@ function showToastMessage(
 
       if (!toastMessageElement) {
         if (allUserAlreadyInNotifications.indexOf(userId) != -1) {
-           let oldmesageId=0;
-            for(let oldMessage of oldMessages){
-                 for(let [key, value] of Object.entries(oldMessage) ){
-                      if(key== userId){
-                          oldmesageId = parseInt(value);	
-                          break;
-                      }
-                 }
+          let oldmesageId = 0;
+          for (let oldMessage of oldMessages) {
+            for (let [key, value] of Object.entries(oldMessage)) {
+              if (key == userId) {
+                oldmesageId = parseInt(value);
+                break;
+              }
             }
-          if (mesageId != oldmesageId && oldmesageId!=0) {
+          }
+          if (mesageId != oldmesageId && oldmesageId != 0) {
             if (messageTextContent.includes('<div class="qb-chat')) {
               if (window.location.pathname.includes("user/message/perso")) {
                 showNotifVisoCallWithSound(
@@ -1147,7 +1148,7 @@ function injectNewCardNotification(allNotifications) {
               dateTime: item.datetime,
               isShow: !!parseInt(item.isShow),
               isRead: !!parseInt(item.isRead),
-              url: item.notification_type
+              url: item.notification_type,
             },
             {
               photo: item.photoDeProfil,
@@ -1216,9 +1217,31 @@ function createAndAddCardMessage(
   /// set the id of the card_msg message
   card_msg.setAttribute("id", id);
 
+  // card_msg.innerHTML = `
+
+  //       <a class="lc mg ug" href='/user/message/perso?user_id=${other_id}'>
+  //           <div class="h sa wf uk th ni ej">
+  //               <img class="image_profil_navbar_msg"  src='${
+  //                 profil
+  //                   ? "/public" + profil
+  //                   : "/public/uploads/users/photos/default_pdp.png"
+  //               }' alt="User"/>
+  //           </div>
+
+  //           <div>
+  //               <h6 class="un zn gs">
+  //                   ${firstname} ${lastname}
+  //               </h6>
+  //               <p class="mn hc content_msg_text_jheo_js">
+  //                   ${message_text}
+  //               </p>
+  //           </div>
+  //       </a>
+  //   `;
+
   card_msg.innerHTML = `
   
-        <a class="lc mg ug" href='/user/message/perso?user_id=${other_id}'>
+        <div class="lc mg ug onglet-message-${other_id}-tomm-js" onclick="addOngletMessage(${other_id})">
             <div class="h sa wf uk th ni ej">
                 <img class="image_profil_navbar_msg"  src='${
                   profil
@@ -1235,7 +1258,7 @@ function createAndAddCardMessage(
                     ${message_text}
                 </p>
             </div>
-        </a>
+        </div>
     `;
   //// ADD IN CONTENT
   if (parseInt(isRead) !== 1) {
@@ -1254,7 +1277,7 @@ function createAndAddCardNotification(
     dateTime: null,
     isShow: false,
     isRead: false,
-    url: null
+    url: null,
   },
   user = { photo: null, fullname: null, userID: null, isConnected: null }
 ) {
@@ -1510,7 +1533,11 @@ function toggleClass(element) {
 
 // active nav left
 if (document.querySelector(".list-nav-left")) {
-  const activPage = window.location.pathname;
+  let activPage = window.location.pathname;
+  activPage =
+    activPage === "/user/my-tribu-t/spec"
+      ? "/user/tribu/my-tribu-t"
+      : activPage;
   const links = document.querySelectorAll(".list-nav-left");
   const superAdmin = document.querySelector(".dashbord-super-admin");
   const myAgenda = document.querySelector(".myAgendaLink");
@@ -1542,7 +1569,7 @@ if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
       } else {
         page.style.display = "none";
       }
-    })
+    });
   }
 
   navLinks.forEach((link) => {
@@ -1551,21 +1578,39 @@ if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
 
       event.preventDefault();
       const pageId = event.target.dataset.target;
-      if (dataLink === 'list-tribu-g') {
-        document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.add('text-primary')
-        document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.remove('text-primary')
-        document.querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider").classList.remove('text-primary')
-          // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
-      } else if (dataLink === 'list-tribu-t') {
-          // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.add('text-primary')
-        document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.remove('text-primary')
-        document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.remove('text-primary')
-        document.querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider").classList.remove('text-primary')
-      }else if (dataLink === 'list-fournisseur') {
-        document.querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire").classList.add('text-primary')
-        document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g").classList.remove('text-primary')
-        document.querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider").classList.remove('text-primary')
-          // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
+      if (dataLink === "list-tribu-g") {
+        document
+          .querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g")
+          .classList.add("text-primary");
+        document
+          .querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire")
+          .classList.remove("text-primary");
+        document
+          .querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider")
+          .classList.remove("text-primary");
+        // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
+      } else if (dataLink === "list-tribu-t") {
+        // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.add('text-primary')
+        document
+          .querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g")
+          .classList.remove("text-primary");
+        document
+          .querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire")
+          .classList.remove("text-primary");
+        document
+          .querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider")
+          .classList.remove("text-primary");
+      } else if (dataLink === "list-fournisseur") {
+        document
+          .querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire")
+          .classList.add("text-primary");
+        document
+          .querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-g")
+          .classList.remove("text-primary");
+        document
+          .querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider")
+          .classList.remove("text-primary");
+        // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
       }
       showPage(pageId);
     });
@@ -1778,4 +1823,54 @@ document.querySelectorAll(".elie_nav_link").forEach((i) => {
 
 if (arrangeSetingApparitionMobile()) {
   set_iris_partisan();
+}
+
+function closeOnglet(other_id) {
+  let windowNoIframe = window.parent.document.documentElement;
+  let elementIframe = windowNoIframe.querySelector(`#onglet${other_id}Msg`);
+  document.querySelector(".content-close-tomm-js").classList.add("d-none");
+  elementIframe.remove();
+}
+
+function addOngletMessage(other_id) {
+  if (document.querySelector(".add-onglet-msg-tomm-js")) {
+    document.querySelector(".message_jheo_js").click();
+    if (document.querySelector(`#onglet${other_id}Msg`)) {
+      document.querySelector(`#onglet${other_id}Msg`).remove();
+    }
+    let contentongletMsg = document.querySelector(".onglet-msg-all-tomm-js");
+    contentongletMsg.classList.remove("d-none");
+    // contentongletMsg.dataset.otherId = other_id
+    let url = `/user/message/onglet/perso?user_id=${other_id}`;
+    let iframeongletMsg = document.createElement("iframe");
+    iframeongletMsg.src = url;
+    iframeongletMsg.classList = "onglet-msg onglet-msg-tomm-js";
+    iframeongletMsg.id = `onglet${other_id}Msg`;
+    iframeongletMsg.dataset.otherId = other_id;
+    contentongletMsg.appendChild(iframeongletMsg);
+    if (document.querySelector(`#bulle${other_id}Msg`)) {
+      document.querySelector(`#bulle${other_id}Msg`).remove();
+    }
+  }
+}
+
+function reduirOnglet(other_id) {
+  let windowNoIframe = window.parent.document.documentElement;
+  let imgUrl = document
+    .querySelector(".pdp-msg-onglet-tomm-js")
+    .getAttribute("src");
+  let elementIframe = windowNoIframe.querySelector(`#onglet${other_id}Msg`);
+  let contentongletMsg = windowNoIframe.querySelector(".content-bulle-tomm-js");
+  elementIframe.remove();
+  contentongletMsg.innerHTML += `
+      <div class="content-bulle content-bulle-tomm-js" id="bulle${other_id}Msg" onclick="bulleMsg(${other_id})">
+        <img src="${imgUrl}" class="content-bulle">
+      </div>
+    `;
+}
+
+function bulleMsg(other_id) {
+  document.getElementById(`bulle${other_id}Msg`).remove();
+  addOngletMessage(other_id);
+  document.querySelector(".message_jheo_js").click();
 }

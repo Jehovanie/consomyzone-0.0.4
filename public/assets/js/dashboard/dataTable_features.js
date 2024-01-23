@@ -16,70 +16,71 @@ var __markerOld1 = null,
   __markerOld2 = null;
 var __map1, __map2;
 window.addEventListener("load", () => {
-if(document.querySelector("#list-tribu-g")){
-  document.querySelector(".content_global_super_admin_js_jheo").innerHTML = `
+  if (document.querySelector("#list-tribu-g")) {
+    document.querySelector(".content_global_super_admin_js_jheo").innerHTML = `
         <div class="content_chargement content_chargement_js_jheo">
             <div class="spinner-border spinner-border text-info" role="status">
                 <span class="visually-hidden">Loading...</span>
             </div>
         </div>`;
-  fetch("/user/dashboard/tribug_json")
-    .then((response) => response.json())
-    .then((result) => {
-      const { allTribuG } = result;
-      const dataSet = dataFormat(allTribuG);
+    fetch("/user/dashboard/tribug_json")
+      .then((response) => response.json())
+      .then((result) => {
+        console.log(result);
+        const { allTribuG } = result;
+        const dataSet = dataFormat(allTribuG);
 
-      deleteChargement();
-      bindContentTable();
+        deleteChargement();
+        bindContentTable();
 
-      $("#myTable").DataTable({
-        data: dataSet,
-        order: [[5, "desc"]],
+        $("#myTable").DataTable({
+          data: dataSet,
+          order: [[5, "desc"]],
 
-        initComplete: function () {
-          document.querySelectorAll(".span_th_js_jheo").forEach((item) => {
-            item.parentElement.innerHTML += `<input class="input_column input_column_js_jheo" type="text" placeholder="Search"/>`;
-          });
-
-          // Apply the search
-          this.api()
-            .columns()
-            .every(function () {
-              var that = this;
-              console.log(this);
-              $(".input_column_js_jheo", this.header()).on(
-                "keyup change clear",
-                function () {
-                  if (that.search() !== this.value) {
-                    that.search(this.value).draw();
-                  }
-                }
-              );
+          initComplete: function () {
+            document.querySelectorAll(".span_th_js_jheo").forEach((item) => {
+              item.parentElement.innerHTML += `<input class="input_column input_column_js_jheo" type="text" placeholder="Search"/>`;
             });
-        },
-        language: {
-          url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
-        },
+
+            // Apply the search
+            this.api()
+              .columns()
+              .every(function () {
+                var that = this;
+                console.log(this);
+                $(".input_column_js_jheo", this.header()).on(
+                  "keyup change clear",
+                  function () {
+                    if (that.search() !== this.value) {
+                      that.search(this.value).draw();
+                    }
+                  }
+                );
+              });
+          },
+          language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+          },
+        });
+
+        const label = document.querySelector("#myTable_filter label");
+        const input_search = document.querySelector(
+          "#myTable_filter label input"
+        );
+        if (input_search) {
+          input_search.setAttribute("placeholder", "Recherche de tribu G");
+
+          while (label.firstChild) {
+            label.removeChild(label.firstChild);
+          }
+
+          label.appendChild(input_search);
+        }
       });
 
-      const label = document.querySelector("#myTable_filter label");
-      const input_search = document.querySelector(
-        "#myTable_filter label input"
-      );
-      if (input_search) {
-        input_search.setAttribute("placeholder", "Recherche de tribu G");
-
-        while (label.firstChild) {
-          label.removeChild(label.firstChild);
-        }
-
-        label.appendChild(input_search);
-      }
-    });
-
-  document.querySelector(
-    ".content_global_super_admin_tribu_t_js_jheo"
-  ).innerHTML = `
+    document.querySelector(
+      ".content_global_super_admin_tribu_t_js_jheo"
+    ).innerHTML = `
         <div class="content_chargement content_chargement_tribu_t_js_jheo">
             <div class="spinner-border spinner-border text-info" role="status">
                 <span class="visually-hidden">Loading...</span>
@@ -87,102 +88,109 @@ if(document.querySelector("#list-tribu-g")){
         </div>
     `;
 
-  fetch("/user/dashboard/tribut_json")
-    .then((response) => response.json())
-    .then((result) => {
-      const { allTribuT } = result;
-      const dataSet = dataFormatTribuT(allTribuT);
+    fetch("/user/dashboard/tribut_json")
+      .then((response) => response.json())
+      .then((result) => {
+        const { allTribuT } = result;
+        const dataSet = dataFormatTribuT(allTribuT);
 
-      deleteChargementTrubuT();
-      bindContentTableTribuT();
+        deleteChargementTrubuT();
+        bindContentTableTribuT();
 
-      $("#myTableTribut").DataTable({
-        data: dataSet,
-        order: [[5, "desc"]],
+        $("#myTableTribut").DataTable({
+          data: dataSet,
+          order: [[5, "desc"]],
 
-        initComplete: function () {
-          document
-            .querySelectorAll(".span_th_js_tribu_t_jheo")
-            .forEach((item) => {
-              item.parentElement.innerHTML += `<input class="input_column input_column_tribu_t_js_jheo" type="text" placeholder="Search"/>`;
-            });
+          initComplete: function () {
+            document
+              .querySelectorAll(".span_th_js_tribu_t_jheo")
+              .forEach((item) => {
+                item.parentElement.innerHTML += `<input class="input_column input_column_tribu_t_js_jheo" type="text" placeholder="Search"/>`;
+              });
 
-          // Apply the search
-          this.api()
-            .columns()
-            .every(function () {
-              var that = this;
-              console.log(this);
-              $(".input_column_tribu_t_js_jheo", this.header()).on(
-                "keyup change clear",
-                function () {
-                  if (that.search() !== this.value) {
-                    that.search(this.value).draw();
+            // Apply the search
+            this.api()
+              .columns()
+              .every(function () {
+                var that = this;
+                console.log(this);
+                $(".input_column_tribu_t_js_jheo", this.header()).on(
+                  "keyup change clear",
+                  function () {
+                    if (that.search() !== this.value) {
+                      that.search(this.value).draw();
+                    }
                   }
-                }
-              );
-            });
-        },
-        language: {
-          url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
-        },
-      });
-      const label = document.querySelector("#myTable_filter_tribu_t label");
-      const input_search = document.querySelector(
-        "#myTable_filter_tribu_t label input"
-      );
-      if (input_search) {
-        input_search.setAttribute("placeholder", "Recherche de tribu T");
+                );
+              });
+          },
+          language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+          },
+        });
+        const label = document.querySelector("#myTable_filter_tribu_t label");
+        const input_search = document.querySelector(
+          "#myTable_filter_tribu_t label input"
+        );
+        if (input_search) {
+          input_search.setAttribute("placeholder", "Recherche de tribu T");
 
-        while (label.firstChild) {
-          label.removeChild(label.firstChild);
+          while (label.firstChild) {
+            label.removeChild(label.firstChild);
+          }
+
+          label.appendChild(input_search);
         }
-
-        label.appendChild(input_search);
-      }
-    });
-}else{
-    getListeInfoTovalidate()
+      });
+  } else {
+    getListeInfoTovalidate();
   }
-  
 });
 
 function dataFormat(dataToFormat) {
   const data = [];
   t.forEach((item, index) => {
-    const tribug =
-      "tribug_" +
-      item.d +
-      "_" +
-      item.i
-        .split(" ")
-        .map((t) => t.toLowerCase())
-        .join("_") +
-      "_" +
-      item.co
-        .split(" ")
-        .map((t) => t.toLowerCase())
-        .join("_");
-    const name_format =
-      "tribug_" +
-      item.d +
-      "_" +
-      item.i.replace(/( )/g, "_") +
-      "_" +
-      item.co.replace(" ", "_");
-    const table_exist = dataToFormat.find((item) =>
-      name_format.includes(item.table_name)
+        // $name_tributG = "tribug_" . $departement . "_" . implode("_", explode(" ", $user_profil->getQuartier()));
+    let quartier = item.i + " " + item.co;
+
+    const test_length =
+      "tribug_" + item.d + "_" + quartier.split(" ").join("_");
+
+    if (test_length.length > 40) {
+      const data = quartier.split(" ");
+
+      let resolve_name = [];
+      for (let i = 0; i < (data.length - 1) / 2; i++) {
+        resolve_name.push(data[i]);
+      }
+
+      quartier = resolve_name.join("_");
+    }
+
+    const departement = item.d.length === 1 ? "0" + item.d : item.d;
+
+    let name_tributG =
+      "tribug_" + departement + "_" + quartier.split(" ").join("_");
+    name_tributG =
+      name_tributG.length > 40 ? name_tributG.substr(0, 30) : name_tributG;
+
+const table_exist = dataToFormat.find(
+      (item) => name_tributG === item.table_name
     );
-    const table_tribug = tribug.length > 30 ? tribug.substr(0, 30) : tribug;
+
     data.push([
       index + 1,
       item.d,
       item.co,
       item.co + " " + item.i,
-      name_format,
+      // name_format,
+name_tributG,
       table_exist ? table_exist.count : 0,
+      // "<a class='btn btn-primary' href=/user/dashboard-membre?table=" +
+      //   table_tribug +
+      // ">Voir</a>",
       "<a class='btn btn-primary' href=/user/dashboard-membre?table=" +
-        table_tribug +
+        name_tributG +
         ">Voir</a>",
     ]);
     // data.push({
@@ -334,20 +342,20 @@ function getListeInfoTovalidate(e) {
     if (link.classList.contains("text-primary"))
       link.classList.remove("text-primary");
   });
-if(e){
-  e.target.classList.add("text-primary");
-}else{
-    document.querySelector(".addr_faniry_js").classList.add("text-primary")
+  if (e) {
+    e.target.classList.add("text-primary");
+  } else {
+    document.querySelector(".addr_faniry_js").classList.add("text-primary");
   }
-  
-  if(document.querySelector("#list-tribu-g"))
-  document.querySelector("#list-tribu-g").style.display = "none";
-  // document.querySelector("#list-tribu-t").style.display = "none"
-if(document.querySelector("#list-demande-partenaire"))
-  document.querySelector("#list-demande-partenaire").style.display = "none";
 
-  if(document.querySelector("#list-infoAvalider"))
-  document.querySelector("#list-infoAvalider").style.display = "block";
+  if (document.querySelector("#list-tribu-g"))
+    document.querySelector("#list-tribu-g").style.display = "none";
+  // document.querySelector("#list-tribu-t").style.display = "none"
+  if (document.querySelector("#list-demande-partenaire"))
+    document.querySelector("#list-demande-partenaire").style.display = "none";
+
+  if (document.querySelector("#list-infoAvalider"))
+    document.querySelector("#list-infoAvalider").style.display = "block";
   document.querySelector(
     ".content_list_infoAvalider_js"
   ).innerHTML = `<div class="spinner-border spinner-border text-info" role="status">
@@ -367,7 +375,7 @@ if(document.querySelector("#list-demande-partenaire"))
                     </thead>
                     <tbody>
                     `;
-// <th scope="col">Nouveau Téléphone</th>
+  // <th scope="col">Nouveau Téléphone</th>
   fetch("/user/liste/information/to/update")
     .then((response) => response.json())
     .then((r) => {
@@ -376,7 +384,7 @@ if(document.querySelector("#list-demande-partenaire"))
       if (r.length > 0) {
         for (const items of r) {
           let item = items.info;
-          const originaInfo=items.original_resto;
+          const originaInfo = items.original_resto;
           let _adresse =
             item.numvoie +
             " " +
@@ -422,7 +430,7 @@ if(document.querySelector("#list-demande-partenaire"))
                             <td><button class="btn btn-info" onclick="getRestoInfoToValidate(${item.restoId}, ${item.userId})">Voir</button></td>
                         </tr>`;
         }
-//<td>${tel}</td>
+        //<td>${tel}</td>
       } else {
         _tr = `<tr><td colspan="4">Aucune information à valider</td></tr>`;
       }
@@ -430,14 +438,13 @@ if(document.querySelector("#list-demande-partenaire"))
       document.querySelector(".content_list_infoAvalider_js").innerHTML =
         _table;
 
-      if (r.length > 0){
+      if (r.length > 0) {
         $("#listeRestoAvaliderTable").DataTable({
           language: {
             url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
           },
         });
       }
-
     });
 }
 
@@ -478,8 +485,10 @@ function getRestoInfoToValidate(restoId, userId) {
           " " +
           current_info.villenorm;
 
-        contentCurrentInfo.querySelector("#x").textContent = "poi x: "+ current_info.poiX;
-        contentCurrentInfo.querySelector("#y").textContent = "poi y: "+ current_info.poiY;
+        contentCurrentInfo.querySelector("#x").textContent =
+          "poi x: " + current_info.poiX;
+        contentCurrentInfo.querySelector("#y").textContent =
+          "poi y: " + current_info.poiY;
 
         contentCurrentInfo
           .querySelector("#google_current")
@@ -542,7 +551,10 @@ function getRestoInfoToValidate(restoId, userId) {
         newCurrentInfo.querySelector("span.rubrique").textContent =
           "RESTAURANT";
         newCurrentInfo.querySelector("#rubriqueName > p").textContent =
-          "nom: " + (new_info.denominationF!="" ? new_info.denominationF :"Non renseigné");
+          "nom: " +
+          (new_info.denominationF != ""
+            ? new_info.denominationF
+            : "Non renseigné");
         let current_adresse =
           new_info.numvoie +
           " " +
@@ -557,26 +569,26 @@ function getRestoInfoToValidate(restoId, userId) {
         newCurrentInfo.querySelector("#x_new").textContent =
           "poi x: " + new_info.poiX;
         newCurrentInfo.querySelector("#y_new").textContent =
-          "poi y: " + new_info.poiY;  
+          "poi y: " + new_info.poiY;
         current_adresse = current_adresse.replace(/\s+/g, " ").trim();
-         newCurrentInfo
-           .querySelector("#google_current_new")
-           .setAttribute(
-             "onclick",
-             `findInNet('google','${current_info.denominationF.replace(
-               /'/g,
-               "\\'"
-             )}', '${current_adresse.replace(/'/g, "\\'")}')`
-           );
-         newCurrentInfo
-           .querySelector("#map_current_new")
-           .setAttribute(
-             "onclick",
-             `findInNet('map','${current_info.denominationF.replace(
-               /'/g,
-               "\\'"
-             )}', '${current_adresse.replace(/'/g, "\\'")}')`
-           );
+        newCurrentInfo
+          .querySelector("#google_current_new")
+          .setAttribute(
+            "onclick",
+            `findInNet('google','${current_info.denominationF.replace(
+              /'/g,
+              "\\'"
+            )}', '${current_adresse.replace(/'/g, "\\'")}')`
+          );
+        newCurrentInfo
+          .querySelector("#map_current_new")
+          .setAttribute(
+            "onclick",
+            `findInNet('map','${current_info.denominationF.replace(
+              /'/g,
+              "\\'"
+            )}', '${current_adresse.replace(/'/g, "\\'")}')`
+          );
         newCurrentInfo.querySelector("#num_voie_new").value =
           new_info.numvoie != "" ? new_info.numvoie : "Non renseigné";
         newCurrentInfo.querySelector("#type_voie_new").value =
@@ -715,7 +727,7 @@ function initMapForEtab(
 
   __markerOld2 = L.marker([_latLng2.lat, _latLng2.lng], { icon: _mapIcon })
     .addTo(_map2)
-    .bindPopup(_nom2 !="" ? _nom2: _nom1)
+    .bindPopup(_nom2 != "" ? _nom2 : _nom1)
     .openPopup();
 
   _map2.setView([_latLng2.lat, _latLng2.lng], 17);
@@ -734,23 +746,23 @@ function getListePhotoTovalidate(e, rubrique) {
       link.classList.remove("text-primary");
   });
 
-  if(e){
-  e.target.classList.add("text-primary");
-}else{
-    if(rubrique==="golf"){
+  if (e) {
+    e.target.classList.add("text-primary");
+  } else {
+    if (rubrique === "golf") {
       document.querySelector(".phtG_faniry_js").classList.add("text-primary");
-    }else{
+    } else {
       document.querySelector(".phtR_faniry_js").classList.add("text-primary");
     }
   }
-  if(document.querySelector("#list-tribu-g"))
-  document.querySelector("#list-tribu-g").style.display = "none";
+  if (document.querySelector("#list-tribu-g"))
+    document.querySelector("#list-tribu-g").style.display = "none";
   // document.querySelector("#list-tribu-t").style.display = "none"
-if(document.querySelector("#list-demande-partenaire"))
-  document.querySelector("#list-demande-partenaire").style.display = "none";
+  if (document.querySelector("#list-demande-partenaire"))
+    document.querySelector("#list-demande-partenaire").style.display = "none";
 
-  if(document.querySelector("#list-infoAvalider"))
-  document.querySelector("#list-infoAvalider").style.display = "block";
+  if (document.querySelector("#list-infoAvalider"))
+    document.querySelector("#list-infoAvalider").style.display = "block";
 
   document.querySelector("#titre-info").textContent =
     "Liste des demandes d'approbation des photos";
@@ -803,7 +815,7 @@ if(document.querySelector("#list-demande-partenaire"))
       document.querySelector(".content_list_infoAvalider_js").innerHTML =
         _table;
 
-      if (r.length > 0){
+      if (r.length > 0) {
         $("#listeRestoAvaliderTable").DataTable({
           language: {
             url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
@@ -910,14 +922,16 @@ function cancelAdresseValidate(ev) {
   });
 }
 
-function showValidationStory(){
-  $("#validationStoryModal").modal("show")
-  let validationStoryContainer = document.querySelector(".validationStoryContainer_Nanta_js")
+function showValidationStory() {
+  $("#validationStoryModal").modal("show");
+  let validationStoryContainer = document.querySelector(
+    ".validationStoryContainer_Nanta_js"
+  );
   validationStoryContainer.innerHTML = `
       <div class="spinner-border spinner-border text-info mt-5" role="status">
         <span class="visually-hidden">Loading...</span>
     </div>
-  `
+  `;
   let table = `<table class="table" id="validationStoryTable">
                   <thead>
                     <tr>
@@ -929,51 +943,55 @@ function showValidationStory(){
                       <th scope="col">Date</th>
                     </tr>
                   </thead>
-                <tbody>`
+                <tbody>`;
 
   fetch("/user/get/validation/story")
     .then((response) => response.json())
     .then((data) => {
-        let results = data.results
-        let tr = ""
-        if(results.length > 0){
-            for (const item of results) {
-              let _statusValidation = ""
-              let _bgColor = "";
-              if (item.status == 1) {
-                _statusValidation = "Validé";
-                _bgColor = "green";
-              } else if (item.status == 0) {
-                _statusValidation = "Refusé";
-                _bgColor = "grey";
-              } else {
-                _statusValidation = "Annulé";
-                _bgColor = "blue";
-              }
-              tr += `<tr style="text-align:center;vertical-align:middle;">
+      let results = data.results;
+      let tr = "";
+      if (results.length > 0) {
+        for (const item of results) {
+          let _statusValidation = "";
+          let _bgColor = "";
+          if (item.status == 1) {
+            _statusValidation = "Validé";
+            _bgColor = "green";
+          } else if (item.status == 0) {
+            _statusValidation = "Refusé";
+            _bgColor = "grey";
+          } else {
+            _statusValidation = "Annulé";
+            _bgColor = "blue";
+          }
+          tr += `<tr style="text-align:center;vertical-align:middle;">
               <td>${item.resto.name}</td>
               <td>${item.resto.adresse}</td>
-              <td><a href="/user/profil/${item.user_modify.id}" style="color:blue;">${item.user_modify.name}</a></td>
-              <td><a href="/user/profil/${item.user_validator.id}" style="color:blue;">${item.user_validator.name}</a></td>
+              <td><a href="/user/profil/${
+                item.user_modify.id
+              }" style="color:blue;">${item.user_modify.name}</a></td>
+              <td><a href="/user/profil/${
+                item.user_validator.id
+              }" style="color:blue;">${item.user_validator.name}</a></td>
               <td><span style="background-color:${_bgColor}; border-radius:5px; color:white; padding:5px">${_statusValidation}</span></td>
               <td>${settingDateToStringMonthDayAndYear(item.date)}</td>
-            </tr>`
-          }
-          table += tr
-          table += `</tbody>
-          </table>`;
-          $("#validationStoryTable").DataTable({
-            language: {
-              url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
-            },
-          });
-        }else{
-          tr += `<tr style="text-align:center;vertical-align:middle;"><td colspan="6">Aucun historique</td></tr>`
-          table += tr
-          table += `</tbody>
-          </table>`;
+            </tr>`;
         }
+        table += tr;
+        table += `</tbody>
+          </table>`;
+        $("#validationStoryTable").DataTable({
+          language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+          },
+        });
+      } else {
+        tr += `<tr style="text-align:center;vertical-align:middle;"><td colspan="6">Aucun historique</td></tr>`;
+        table += tr;
+        table += `</tbody>
+          </table>`;
+      }
 
-        validationStoryContainer.innerHTML = table
-    })
+      validationStoryContainer.innerHTML = table;
+    });
 }

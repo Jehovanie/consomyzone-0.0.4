@@ -251,6 +251,7 @@ function createAlbumTribuG() {
   const valueNameAlbum = document.querySelector(
     ".value-name-album-g-tomm-js"
   ).value;
+if (valueNameAlbum !== "") {
   const request = new Request(`/user/tribu-g/photos/album`, {
     method: "POST",
     headers: {
@@ -277,6 +278,14 @@ function createAlbumTribuG() {
     }
      
   });
+}else {
+		swal({
+			title: "Vide",
+			text: "Veuillez inscrire le nom de votre album.",
+			icon: "error",
+			button: "OK",
+		});
+	}
   $("#createAlbumTribuG").modal('hide')
   // document.querySelector(".btn-close-creer-album-tomm-js").click();
   document.querySelector("#gal-album-g").click();
@@ -292,17 +301,14 @@ let status = document.querySelector(".status-tomm-js").getAttribute("data-status
     contentAmbum.innerHTML += `
       <div class="row photo-imp-t-tomm-js photo-album-tomm-js" data-name-album="${nameAlbum}" data-id-album="${idAlbum}">
         <div class="row">
-          <p class="col-2"><i class="fa-solid fa-arrow-left" onclick="closeAlbumG()"></i></p>
-          <h3 class="col-8 text-center"> ${nameAlbum}</h3>
-          <p class="col-2 modif-album" data-bs-toggle="modal" data-bs-target="#selectModifAlbumG" onclick="photoInAlbumModif(${idAlbum}, '${nameAlbum.replace("'","")}')"><i class="fa-solid fa-gear"></i></p>
+          <p class="col-1"><i class="fa-solid fa-arrow-left" onclick="closeAlbumG()"></i></p>
+          <h3 class="col-6">${nameAlbum}</h3>
+          <button type="button" class="btn btn-light create-album-img col-4" data-bs-toggle="modal" data-bs-target="#selectAddAlbumG" onclick="fetchAllGalereGInAlbum(${idAlbum})">
+            Ajouter des photos <i class="fa-solid fa-plus"></i>
+          </button>
+          <p class="col-1 modif-album d-none" data-bs-toggle="modal" data-bs-target="#selectModifAlbumG" onclick="photoInAlbumModif(${idAlbum}, '${nameAlbum.replace("'","")}')"><i class="fa-solid fa-gear"></i></p>
         </div>
-
-          <div class="row insert-album-photo-g-tomm-js mt-3">
-              <button type="button" class="btn btn-light create-album col-lg-4 col-md-12 mb-4 mb-lg-0 mb-3"  data-bs-toggle="modal" data-bs-target="#selectAddAlbumG" onclick="fetchAllGalereGInAlbum(${idAlbum})">
-                <i class="fa-solid fa-plus"></i>
-              </button>
-
-          </div> 
+        <div class="row insert-album-photo-g-tomm-js mt-3"> </div> 
       </div>
     `;
   getCopyePathAlbumGTribuT(idAlbum);
