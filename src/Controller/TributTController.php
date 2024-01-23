@@ -1670,7 +1670,7 @@ $type = "/user/invitation";
 
         if ($has_golf == true) {
             $golfs = $tribu_t->getGolfPastilles($table_golf, $tableComment);
-            // $golfs = mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
+            $golfs = mb_convert_encoding($golfs, 'UTF-8', 'UTF-8');
         }
         $r = $serialize->serialize($golfs, 'json');
 
