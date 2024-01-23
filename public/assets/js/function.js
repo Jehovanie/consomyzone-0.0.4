@@ -5045,7 +5045,7 @@ function showGolf(tableGolfPastilled) {
                             </span>
                             </td>
                             <td>
-                            <button class="btn btn-primary"  onclick="openPopupActionGolf('${item.id}','${denomination}', '${adresse}','${text1}', '${action}', 'golf')"><i class="fas fa-plus"></i> Plus</button>
+                            <button class="btn btn-primary"  onclick="openPopupAction('${item.id}','${denomination}', '${adresse}','${text1}', '${action}', 'golf')"><i class="fas fa-plus"></i> Plus</button>
                             </td>
                     </tr>`;
 							// <a  style="font-size:smaller" class="btn btn-sm bg_orange data-avis-${item.id}" onclick="openAvis(${nbrAvis}, ${item.id})">${nbrAvis} avis</a>
@@ -6291,9 +6291,13 @@ function listResto() {
  * @param {string} action : action à faire pour le bouton
  */
 function openOnNote(id_pastille, action) {
-	document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action);
+	// document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action);
 
-	document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")");
+	// document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")");
+
+	$("#modalAvis").modal("show");
+  	document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action);
+    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "addAvisInTribuG(" + id_pastille + ",'resto')");
 }
 
 /**
