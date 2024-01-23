@@ -841,8 +841,8 @@ class SecurityController extends AbstractController
 
             // Générer des tribus T ami et famille
             $userId = $request->query->get('id');
-            $suffixeTableTribuTAmie = "_A";
-            $suffixeTableTribuTFamille = "_F";
+            $suffixeTableTribuTAmie = "A";
+            $suffixeTableTribuTFamille = "F";
             $tableTribuTAmie = "tribu_t_" . $userId . "_" .$suffixeTableTribuTAmie;
             $tableTribuTFamille = "tribu_t_" . $userId . "_" .$suffixeTableTribuTFamille;
             $nomTribuTAmie = "Tribu A";

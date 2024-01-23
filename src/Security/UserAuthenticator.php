@@ -49,6 +49,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use App\Service\Tribu_T_Service;
 
 class UserAuthenticator extends AbstractLoginFormAuthenticator
 
@@ -187,6 +188,8 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
 
+        $tribu_T_Service = new Tribu_T_Service();
+
         $user = $token->getUser();
 
         $user->setIsConnected(1);
@@ -194,12 +197,67 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
         $this->entityManager->persist($user);
         $this->entityManager->flush();
 
+        // Générer des tribus T ami et famille
+        $userId =  $user->getId();
+        $canGenerateTribuTAmie = $tribu_T_Service->checkIfDefaultTribuTExist($userId, "A") > 0 ? false : true;
+        $canGenerateTribuTFamille = $tribu_T_Service->checkIfDefaultTribuTExist($userId, "F") > 0 ? false : true;
+
+        if($canGenerateTribuTAmie && $canGenerateTribuTFamille){
+            $suffixeTableTribuTAmie = "A";
+            $suffixeTableTribuTFamille = "F";
+            $tableTribuTAmie = "tribu_t_" . $userId . "_" .$suffixeTableTribuTAmie;
+            $tableTribuTFamille = "tribu_t_" . $userId . "_" .$suffixeTableTribuTFamille;
+            $nomTribuTAmie = "Tribu A";
+            $descriptionTribuTAmie = "Tribu T pour mes amis";
+            $nomTribuTFamille = "Tribu F";
+            $descriptionTribuTFamille = "Tribu T pour ma famille";
+            $tribu_T_Service->createTribuTable($suffixeTableTribuTAmie, $userId, $nomTribuTAmie, $descriptionTribuTAmie);
+            $tribu_T_Service->createTribuTable($suffixeTableTribuTFamille, $userId, $nomTribuTFamille, $descriptionTribuTFamille);
+    
+            $extension = [];
+    
+            $extension["restaurant"] = 1;
+    
+            $extension["golf"] = 1;
+    
+            $tribu_T_Service->setTribuT($tableTribuTAmie, $descriptionTribuTAmie, "", $extension, $userId, "tribu_t_owned", $nomTribuTAmie);
+            
+            $tribu_T_Service->setTribuT($tableTribuTFamille, $descriptionTribuTFamille, "", $extension, $userId, "tribu_t_owned", $nomTribuTFamille);
+    
+            if ($extension["restaurant"] == 1) {
+    
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "restaurant");
+    
+                $tribu_T_Service->createTableComment($tableTribuTAmie, "restaurant_commentaire");
+    
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "restaurant");
+    
+                $tribu_T_Service->createTableComment($tableTribuTFamille, "restaurant_commentaire");
+            }
+    
+            if ($extension["golf"] == 1) {
+    
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "golf");
+    
+                $tribu_T_Service->createTableComment($tableTribuTAmie, "golf_commentaire");
+    
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "golf");
+    
+                $tribu_T_Service->createTableComment($tableTribuTFamille, "golf_commentaire");
+            }
+    
+            $tribu_T_Service->creaTableTeamMessage($tableTribuTAmie);
+    
+            $tribu_T_Service->creaTableTeamMessage($tableTribuTFamille);
+        }
+
         // return new RedirectResponse($this->urlGenerator->generate('app_account'));
         $session = $request->getSession();
         if($session->get("demande-partenariat")){
             return new RedirectResponse($this->urlGenerator->generate('inscription_partenaire'));
         }else{
-            return new RedirectResponse($this->urlGenerator->generate('app_actualite'));
+            // return new RedirectResponse($this->urlGenerator->generate('app_actualite'));
+            return new RedirectResponse($this->urlGenerator->generate('app_account'));
         }
         
     }

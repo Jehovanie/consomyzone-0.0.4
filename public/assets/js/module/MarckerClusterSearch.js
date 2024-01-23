@@ -482,6 +482,9 @@ class MarckerClusterSearch extends MapModule {
 
 			if(document.querySelector("#dockableIcone_"+type+"_"+item.id))
 				document.querySelector("#dockableIcone_"+type+"_"+item.id).remove()
+			if(document.querySelector("#dockableBtn_"+type+"_"+item.id))
+				document.querySelector("#dockableBtn_"+type+"_"+item.id).remove()
+			removeOrEditSpecificElement()
 		});
 	}
 
@@ -507,6 +510,9 @@ class MarckerClusterSearch extends MapModule {
 			this.markers.refreshClusters();
 			if(document.querySelector("#dockableIcone_resto_"+item.id))
 				document.querySelector("#dockableIcone_resto_"+item.id).remove()
+			if(document.querySelector("#dockableBtn_resto_"+item.id))
+				document.querySelector("#dockableBtn_resto_"+item.id).remove()
+			removeOrEditSpecificElement()
 		});
 	}
 
@@ -533,6 +539,9 @@ class MarckerClusterSearch extends MapModule {
 			this.markers.refreshClusters();
 			if(document.querySelector("#dockableIcone_golf_"+item.id))
 				document.querySelector("#dockableIcone_golf_"+item.id).remove()
+			if(document.querySelector("#dockableBtn_golf_"+item.id))
+				document.querySelector("#dockableBtn_golf_"+item.id).remove()
+			removeOrEditSpecificElement()
 		});
 	}
 
@@ -555,6 +564,9 @@ class MarckerClusterSearch extends MapModule {
 			this.markers.refreshClusters();
 			if(document.querySelector("#dockableIcone_tabac_"+item.id))
 				document.querySelector("#dockableIcone_tabac_"+item.id).remove()
+			if(document.querySelector("#dockableBtn_tabac_"+item.id))
+				document.querySelector("#dockableBtn_tabac_"+item.id).remove()
+			removeOrEditSpecificElement()
 		});
 	}
 
