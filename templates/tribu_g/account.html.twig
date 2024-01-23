@@ -14,6 +14,7 @@
 {% block javascripts %}
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	<script src="{{ asset('assets/js/module/avis_rubrique.js') }}" defer></script>
 	{# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{ asset('assets/js/account/profil_tribuG.js') }}" defer></script>
     {# <script src="{{ asset('assets/js/agenda/agenda.js') }}" defer></script> #}
@@ -24,11 +25,7 @@
 	<script src="{{ asset('assets/js/account/fetchPhotosTributG.js') }}" defer></script>
 	<script src="{{ asset('assets/js/account/fetchRestoTributG.js') }}" defer></script>
 	<script src="{{ asset('assets/js/account/fetchGolfTributG.js') }}" defer></script>
-<<<<<<< HEAD
     <script src="{{ asset('assets/js/account/fetchNewLetterTribuG.js') }}" defer></script>
-=======
-	<script src="{{ asset('assets/js/account/fetchNewLetterTribuG.js') }}" defer></script>
->>>>>>> release_v2
 
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer=""></script>
@@ -276,8 +273,11 @@
 		{% include "tribu_g/modal_publication.html.twig" %}
 		{% include 'tribu_t/modal_add_picture.twig' %}
 		{% include 'shard/modal/media_modal_tribu.html.twig' %}
-        {% include 'shard/restaurant/modal_avis_resto.html.twig' %}
-        {% include 'shard/golf/modal_avis_golf.twig' %}
+        {# {% include 'shard/restaurant/modal_avis_resto.html.twig' %}
+        {% include 'shard/golf/modal_avis_golf.twig' %} #}
+		{% include 'shard/modal/modal_avis.html.twig' %}
+		{% include 'shard/modal/list_avis.html.twig' %}
+		
         {% include 'shard/modal/new_agenda_from_tribu_t.html.twig' %}
 		<!-- ===== Main Content End ===== -->
 		{% include 'shard/modal/modal_show_gallery.twig' %}

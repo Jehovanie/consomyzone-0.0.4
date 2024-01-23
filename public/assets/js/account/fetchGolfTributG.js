@@ -187,117 +187,121 @@ function openPopupActionGolfG(id_pastille, id_golf) {
  */
 function openAvisGolfG(nb_avis, id_golf) {
 
-    if (parseInt(nb_avis) > 0) {
+    $("#staticBackdrop").modal("show");
 
-        $("#avisGolfPastille").modal("show")
+	showListInTribuT(id_golf, 'golf');
 
-        const table_resto = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table") + "_restaurant"
+    // if (parseInt(nb_avis) > 0) {
 
-        ///avis/restaurant/{idRestaurant}
+    //     $("#avisGolfPastille").modal("show")
 
-        // document.querySelector("#bodyAvisGolfPastilleElie").innerHTML = ""
+    //     const table_resto = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table") + "_restaurant"
 
-        fetch('/avis/golf/global/' + id_golf)
-            // fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_golf)
-            .then(response => response.json())
-            .then(response => {
-                const avis= response.data;
-                for (let avi of avis) {
+    //     ///avis/restaurant/{idRestaurant}
 
-                    console.log(avi);
+    //     // document.querySelector("#bodyAvisGolfPastilleElie").innerHTML = ""
 
-                    let noteEtoile = ""
+    //     fetch('/avis/golf/global/' + id_golf)
+    //         // fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_golf)
+    //         .then(response => response.json())
+    //         .then(response => {
+    //             const avis= response.data;
+    //             for (let avi of avis) {
 
+    //                 console.log(avi);
 
-
-                    switch (parseInt(avi.note)) {
-                        case 1:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-                            break;
-                        case 2:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-                            break;
-                        case 3:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
-                            break;
-                        case 4:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
-                            break;
-                        default:
-                            noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-                    }
-
-                    let edit_avis_e = ''
-
-                    if (avi.user.id == document.querySelector('.information_user_conected_jheo_js').getAttribute('data-toggle-user-id')) {
-                        edit_avis_e = `<div class="content_action">
-                            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal"
-                                data-bs-toggle="modal" data-bs-target="#modalAvisGolf"
-                                onclick="setUpdateGolfNoteG(this, ${avi.id}, ${avi.note}, '${avi.avis}', ${id_golf})">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                        </div>
-                        `
-                    }
-
-                    document.querySelector("#bodyAvisGolfPastilleElie").innerHTML +=
-                        `<div class="card mb-2 card_avis_resto_jheo_js">
-                            <div class="card-body">
-
-                            <div class="avis_content">
-                                <div>
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div class="content_profil_image me-2">
-                                                <img class="profil_image" src="${avi.user.photo ? "/public" +  avi.user.photo : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
-                                            </div>
-                                            <div class="content_info">
-                                                <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.user.fullname}</small></h3>
-                                                <cite class="font-point-6"> ${avi.datetime}</cite>
-                                            </div>
-                                        </div>
-                                        <div class="content_start">
-                                            <p class="mb-2"> ${noteEtoile}</p>
-
-                                            ${edit_avis_e}
-
-                                        </div>
-                                    </div>
-
-                                    <div class="mt-2">
-                                        <p class="text-point-9">${avi.avis}</p>
-                                    </div>
-                                </div>
-                            </div>
-
-                            </div>
-                        </div>
-                        `
-                }
-
-            })
+    //                 let noteEtoile = ""
 
 
-    } else {
 
-        swal({
-            title: "Opps!",
-            text: "Aucun avis pour ce golf",
-            icon: "warning",
-            button: "Ok",
-        });
+    //                 switch (parseInt(avi.note)) {
+    //                     case 1:
+    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+    //                         break;
+    //                     case 2:
+    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+    //                         break;
+    //                     case 3:
+    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
+    //                         break;
+    //                     case 4:
+    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+    //                         break;
+    //                     default:
+    //                         noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+    //                 }
 
-    }
+    //                 let edit_avis_e = ''
 
-    const myModalEl = document.getElementById('avisGolfPastille')
-    if (myModalEl) {
-        myModalEl.addEventListener('hidden.bs.modal', event => {
-            // do something...
-            if (document.querySelector("#bodyAvisGolfPastilleElie")) {
-                document.querySelector("#bodyAvisGolfPastilleElie").innerHTML = ""
-            }
-        })
-    }
+    //                 if (avi.user.id == document.querySelector('.information_user_conected_jheo_js').getAttribute('data-toggle-user-id')) {
+    //                     edit_avis_e = `<div class="content_action">
+    //                         <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal"
+    //                             data-bs-toggle="modal" data-bs-target="#modalAvisGolf"
+    //                             onclick="setUpdateGolfNoteG(this, ${avi.id}, ${avi.note}, '${avi.avis}', ${id_golf})">
+    //                             <i class="fa-solid fa-pen-to-square"></i>
+    //                         </button>
+    //                     </div>
+    //                     `
+    //                 }
+
+    //                 document.querySelector("#bodyAvisGolfPastilleElie").innerHTML +=
+    //                     `<div class="card mb-2 card_avis_resto_jheo_js">
+    //                         <div class="card-body">
+
+    //                         <div class="avis_content">
+    //                             <div>
+    //                                 <div class="d-flex justify-content-between align-items-start">
+    //                                     <div class="d-flex justify-content-between align-items-start">
+    //                                         <div class="content_profil_image me-2">
+    //                                             <img class="profil_image" src="${avi.user.photo ? "/public" +  avi.user.photo : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
+    //                                         </div>
+    //                                         <div class="content_info">
+    //                                             <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.user.fullname}</small></h3>
+    //                                             <cite class="font-point-6"> ${avi.datetime}</cite>
+    //                                         </div>
+    //                                     </div>
+    //                                     <div class="content_start">
+    //                                         <p class="mb-2"> ${noteEtoile}</p>
+
+    //                                         ${edit_avis_e}
+
+    //                                     </div>
+    //                                 </div>
+
+    //                                 <div class="mt-2">
+    //                                     <p class="text-point-9">${avi.avis}</p>
+    //                                 </div>
+    //                             </div>
+    //                         </div>
+
+    //                         </div>
+    //                     </div>
+    //                     `
+    //             }
+
+    //         })
+
+
+    // } else {
+
+    //     swal({
+    //         title: "Opps!",
+    //         text: "Aucun avis pour ce golf",
+    //         icon: "warning",
+    //         button: "Ok",
+    //     });
+
+    // }
+
+    // const myModalEl = document.getElementById('avisGolfPastille')
+    // if (myModalEl) {
+    //     myModalEl.addEventListener('hidden.bs.modal', event => {
+    //         // do something...
+    //         if (document.querySelector("#bodyAvisGolfPastilleElie")) {
+    //             document.querySelector("#bodyAvisGolfPastilleElie").innerHTML = ""
+    //         }
+    //     })
+    // }
 
 
 }
@@ -435,9 +439,13 @@ function updateNoteGolfTribuG(id_golf, id_bdd_golf) {
 */
 function openOnNoteGolf(id_pastille, action) {
 
-    document.querySelector("#modalAvisGolf > div > div > div.modal-footer > button").setAttribute("data-action", action)
+    // document.querySelector("#modalAvisGolf > div > div > div.modal-footer > button").setAttribute("data-action", action)
 
-    document.querySelector("#modalAvisGolf > div > div > div.modal-footer > button").setAttribute("onclick", "setSendNoteGolf(this," + id_pastille + ")")
+    // document.querySelector("#modalAvisGolf > div > div > div.modal-footer > button").setAttribute("onclick", "setSendNoteGolf(this," + id_pastille + ")")
+
+    $("#modalAvis").modal("show");
+    document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action);
+    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "addAvisInTribuG(" + id_pastille + ",'golf')");
 
 }
 

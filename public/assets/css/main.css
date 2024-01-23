@@ -3335,6 +3335,7 @@ Responsive card publication
 	animation: sound 0ms -800ms linear infinite alternate;
 	transform: translateY(50%);
 }
+
   
 @keyframes sound {
 	0% {

@@ -208,115 +208,119 @@ function openPopupActionRestoG(id_pastille, denomination_f, adresse, latitude, l
  */
 function openAvisRestoG(nb_avis, id_resto) {
 
-    if (parseInt(nb_avis) > 0) {
+    $("#staticBackdrop").modal("show");
 
-        $("#avisRestoPastille").modal("show")
+	showListInTribuT(id_resto, 'resto');
 
-        const table_resto = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")+"_restaurant"
+    // if (parseInt(nb_avis) > 0) {
 
-        ///avis/restaurant/{idRestaurant}
-        fetch('/avis/restaurant/global/'+ id_resto)
-        // fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_resto)
-            .then(response => response.json())
-            .then(response => {
-                console.log(response)
-                const avis= response.data; 
-                for (let avi of avis) {
+    //     $("#avisRestoPastille").modal("show")
 
-                    console.log(avi);
+    //     const table_resto = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")+"_restaurant"
 
-                    let noteEtoile = ""
+    //     ///avis/restaurant/{idRestaurant}
+    //     fetch('/avis/restaurant/global/'+ id_resto)
+    //     // fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_resto)
+    //         .then(response => response.json())
+    //         .then(response => {
+    //             console.log(response)
+    //             const avis= response.data; 
+    //             for (let avi of avis) {
+
+    //                 console.log(avi);
+
+    //                 let noteEtoile = ""
 
                     
 
-                    switch (parseInt(avi.note)) {
-                        case 1:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-                            break;
-                        case 2:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-                            break;
-                        case 3:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
-                            break;
-                        case 4:
-                            noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
-                            break;
-                        default:
-                            noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-                    }
+    //                 switch (parseInt(avi.note)) {
+    //                     case 1:
+    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+    //                         break;
+    //                     case 2:
+    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+    //                         break;
+    //                     case 3:
+    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
+    //                         break;
+    //                     case 4:
+    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
+    //                         break;
+    //                     default:
+    //                         noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
+    //                 }
 
-                    let edit_avis_e = ''
+    //                 let edit_avis_e = ''
 
-                    if(avi.user.id == document.querySelector('.information_user_conected_jheo_js').getAttribute('data-toggle-user-id')){
-                        edit_avis_e = `<div class="content_action">
-                            <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal"
-                                data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"
-                                onclick="setUpdateNote(this, ${avi.id}, ${avi.note}, '${avi.avis}', ${id_resto})">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                        </div>
-                        `
-                    }
+    //                 if(avi.user.id == document.querySelector('.information_user_conected_jheo_js').getAttribute('data-toggle-user-id')){
+    //                     edit_avis_e = `<div class="content_action">
+    //                         <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal"
+    //                             data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"
+    //                             onclick="setUpdateNote(this, ${avi.id}, ${avi.note}, '${avi.avis}', ${id_resto})">
+    //                             <i class="fa-solid fa-pen-to-square"></i>
+    //                         </button>
+    //                     </div>
+    //                     `
+    //                 }
 
-                    document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
-                        `<div class="card mb-2 card_avis_resto_jheo_js">
-                            <div class="card-body">
+    //                 document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
+    //                     `<div class="card mb-2 card_avis_resto_jheo_js">
+    //                         <div class="card-body">
 
-                            <div class="avis_content">
-                                <div>
-                                    <div class="d-flex justify-content-between align-items-start">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <div class="content_profil_image me-2">
-                                                <img class="profil_image" src="${avi.user.photo ? "/public" +  avi.user.photo : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
-                                            </div>
-                                            <div class="content_info">
-                                                <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.user.fullname}</small></h3>
-                                                <cite class="font-point-6"> ${avi.datetime}</cite>
-                                            </div>
-                                        </div>
-                                        <div class="content_start">
-                                            <p class="mb-2"> ${noteEtoile}</p>
+    //                         <div class="avis_content">
+    //                             <div>
+    //                                 <div class="d-flex justify-content-between align-items-start">
+    //                                     <div class="d-flex justify-content-between align-items-start">
+    //                                         <div class="content_profil_image me-2">
+    //                                             <img class="profil_image" src="${avi.user.photo ? "/public" +  avi.user.photo : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
+    //                                         </div>
+    //                                         <div class="content_info">
+    //                                             <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.user.fullname}</small></h3>
+    //                                             <cite class="font-point-6"> ${avi.datetime}</cite>
+    //                                         </div>
+    //                                     </div>
+    //                                     <div class="content_start">
+    //                                         <p class="mb-2"> ${noteEtoile}</p>
 
-                                            ${edit_avis_e}
+    //                                         ${edit_avis_e}
 
-                                        </div>
-                                    </div>
+    //                                     </div>
+    //                                 </div>
 
-                                    <div class="mt-2">
-                                        <p class="text-point-9">${avi.avis}</p>
-                                    </div>
-                                </div>
-                            </div>
+    //                                 <div class="mt-2">
+    //                                     <p class="text-point-9">${avi.avis}</p>
+    //                                 </div>
+    //                             </div>
+    //                         </div>
 
-                            </div>
-                        </div>
-                        `
-                }
+    //                         </div>
+    //                     </div>
+    //                     `
+    //             }
 
-            })
+    //         })
 
 
-    } else {
+    // } else {
 
-        swal({
-            title: "Opps!",
-            text: "Aucun avis pour ce restaurant",
-            icon: "warning",
-            button: "Ok",
-        });
+    //     swal({
+    //         title: "Opps!",
+    //         text: "Aucun avis pour ce restaurant",
+    //         icon: "warning",
+    //         button: "Ok",
+    //     });
 
-    }
+    // }
 
-    const myModalEl = document.getElementById('avisRestoPastille')
-    if(myModalEl){
-        myModalEl.addEventListener('hidden.bs.modal', event => {
-            // do something...
-            if(document.querySelector("#bodyAvisRestoPastilleElie")){
-                document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
-            }
-        })
-    }
+    // const myModalEl = document.getElementById('avisRestoPastille')
+    // if(myModalEl){
+    //     myModalEl.addEventListener('hidden.bs.modal', event => {
+    //         // do something...
+    //         if(document.querySelector("#bodyAvisRestoPastilleElie")){
+    //             document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
+    //         }
+    //     })
+    // }
     
 
 }

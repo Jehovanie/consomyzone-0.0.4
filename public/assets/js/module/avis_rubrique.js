@@ -157,7 +157,6 @@ function addAvis(idItemRubrique = null) {
 		type_avis = "audio"
 		avis = audioBase64.src
 	}
-	
 	if (imageBase64) {
 		type_avis = "image"
 		avis = imageBase64.src
@@ -228,7 +227,8 @@ function addAvis(idItemRubrique = null) {
 				total_note += parseFloat(item.note);
 			});
 
-			if (!window.location.href.includes("/user/my-tribu-t") || !window.location.href.includes("/user/account")) {
+
+			if (window.location.href.includes("/user/tribu/my-tribu-t") === false || window.location.href.includes("/user/account") === false) {
 				showNoteGlobaleOnMarker(idItem, total_note / state.length, type);
 			}
 
@@ -382,7 +382,7 @@ function createShowAvisAreas(json, currentUserId, idItem = 0, rubrique_type = nu
 		avis_template = json.avis
 	}
 
-	console.log(json);
+	// console.log(json);
 
 	modalebtnModife = `
 		<div class="content_action">
@@ -514,7 +514,7 @@ function showNoteGlobale(idItem, globalNote = 0) {
  * Prepare update avis resto
  */
 function settingAvis(avisID, avisNote, avisText, idItem, rubriquType = null, type) {
-	
+
 	document.querySelector(".title_modal_jheo_js").innerHTML = "Modifier votre avis.";
 
 	document.querySelector(".note_number_jheo_js").value = parseFloat(avisNote);
@@ -523,8 +523,8 @@ function settingAvis(avisID, avisNote, avisText, idItem, rubriquType = null, typ
 	if (type == "audio") {
 		document.querySelectorAll(".start_audio_avis_elie_js").forEach(e => {
 			e.classList.remove("d-none")
-})
-		
+		})
+
 		document.querySelector(".vocal_display_elie_js").innerHTML = `
 			<div class="d-flex align-items-center clip">
 				<audio id="audio_0" controls="" class="ml-5 update" src="${avisText}"></audio>
@@ -712,7 +712,7 @@ function updateAvis(avisID, idItemRubrique) {
 	fetch(request)
 		.then((r) => r.json())
 		.then((response) => {
-			console.log(response);
+			// console.log(response);
 			// document.querySelector(".btn_modal_avis_resto_jheo_js").innerText = 'Modifier votre avis'
 			showModifArea(idItem, newUserId);
 
@@ -741,9 +741,10 @@ function updateAvis(avisID, idItemRubrique) {
 				total_note += parseFloat(item.note);
 			});
 
-			if (!window.location.href.includes("/user/my-tribu-t") || !window.location.href.includes("/user/account")) {
+			if (!window.location.href.includes("/user/tribu/my-tribu-t") || !window.location.href.includes("/user/account")) {
 				showNoteGlobaleOnMarker(idItem, total_note / state.length, type);
 			}
+
 		});
 }
 
@@ -752,7 +753,7 @@ function updateAvis(avisID, idItemRubrique) {
  * @param {*} globalNote
  */
 function createGlobalNote(globalNote, idItem = null) {
-	console.log(document.querySelector(`.start_${idItem}_jheo_js`));
+	// console.log(document.querySelector(`.start_${idItem}_jheo_js`));
 	let startHTML = "";
 	let rate = globalNote - Math.trunc(globalNote);
 	let rateYellow = rate * 100;
@@ -962,7 +963,7 @@ function addAvisInTribuT(idItem, rubrique_type) {
 }
 
 function updateAvisInTribuT(avisID, idItemRubrique, rubriqueType) {
-	
+
 	let audioBase64 = document.querySelector(".vocal_display_elie_js > div > audio.create");
 	let audioBase64_up = document.querySelector(".vocal_display_elie_js > div > audio.update");
 
@@ -987,7 +988,7 @@ function updateAvisInTribuT(avisID, idItemRubrique, rubriqueType) {
 			document.querySelector(".btn_open_modal_list_avis_jheo_js").click();
 		}
 	}
-	
+
 	// if (document.querySelector("#text-note").value === "" || document.querySelector("#message-text").value === "") {
 	// 	msgErrorAlertAvis({ message: "no content" });
 	// 	return 0;
@@ -1200,12 +1201,17 @@ if (open_modal_avis) {
 	})
 }
 
-let brn_open_modal_avis = document.querySelector("#data-note-elie-js")
-if (brn_open_modal_avis) {
-	brn_open_modal_avis.addEventListener("click", function () {
+let brn_open_modal_avis = document.querySelectorAll("#data-note-elie-js")
+brn_open_modal_avis.forEach(btn=>{
+	btn.addEventListener("click", function () {
 		initializeMediaTools()
 	})
-}
+})
+// if (brn_open_modal_avis) {
+// 	brn_open_modal_avis.addEventListener("click", function () {
+// 		initializeMediaTools()
+// 	})
+// }
 
 let close_mediarecorders = document.querySelectorAll(".close_mediarecorder")
 if (close_mediarecorders.length > 0) {
@@ -1260,14 +1266,14 @@ recordAudio.addEventListener('click', event => {
 			text: "Voulez-vous modifier le média déjà enregistré?",
 			icon: "warning",
 			buttons: ["Pas maintenant", "Ok, je vais modifier"],
-		  })
-		  .then((willDelete) => {
-			if (willDelete) {
-				
+		})
+			.then((willDelete) => {
+				if (willDelete) {
+
 					initializeMediaTools()
 
-			} 
-		});
+				}
+			});
 
 	} else {
 
@@ -1304,7 +1310,7 @@ stopAudio.addEventListener('click', event => {
  */
 msgTxt.addEventListener("keyup", event => {
 
-	console.log("manoratra");
+	// console.log("manoratra");
 	if (event.target.value == "") {
 		document.querySelector(".record").classList.remove("disabled")
 	} else {
@@ -1405,17 +1411,19 @@ function initializeMediaTools() {
 
 	document.querySelector(".stop_audio_avis_elie_js").classList.add("d-none")
 
-	document.querySelector("#spinCameraAvis").innerHTML =`<button type="button" class="btn btn-secondary btn-sm close_mediarecorder" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Annuler</button>`
+	document.querySelector("#spinCameraAvis").innerHTML = `<button type="button" class="btn btn-secondary btn-sm close_mediarecorder" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Annuler</button>`
+
+	document.querySelector(".all_avis_jheo_js").innerHTML = ""
 
 	if (mediaRecorder) {
 		mediaRecorder.stream.getTracks().forEach(track => track.stop());
 	}
 
-	if(timeOutAudio){
+	if (timeOutAudio) {
 		clearTimeout(timeOutAudio)
 	}
 
-	if(timeOutVideo){
+	if (timeOutVideo) {
 		clearTimeout(timeOutVideo)
 	}
 
@@ -1578,7 +1586,7 @@ const getMicroSelectionAudio = async () => {
 		// console.log(videoDevice.deviceId);
 		/* return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`; */
 		return `<div class="form-check form-switch" onclick="chooseMicro(this, false)"><input class="form-check-input" type="checkbox" role="switch" id="check-${i}" ${checked} deviceId="${videoDevice.deviceId}">
-		<label class="form-check-label" for="check-${i}">${videoDevice.label}</label></div>`;
+		<label class="form-check-label" style="display: inline;" for="check-${i}">${videoDevice.label}</label></div>`;
 		i++;
 	});
 	// microOptions.innerHTML = options.join('');
@@ -1601,7 +1609,7 @@ const getMicroSelectionCamera = async () => {
 		// console.log(videoDevice.deviceId);
 		/* return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`; */
 		return `<div class="form-check form-switch" onclick="chooseMicro(this, true)"><input class="form-check-input" type="checkbox" role="switch" id="check-${i}" ${checked} deviceId="${videoDevice.deviceId}">
-		<label class="form-check-label" for="check-${i}">${videoDevice.label}</label></div>`;
+		<label class="form-check-label" style="display: inline;" for="check-${i}">${videoDevice.label}</label></div>`;
 		i++;
 	});
 	microOptions.innerHTML = options.join('');
@@ -1694,7 +1702,7 @@ function setMediaStream(contraint, micro = true, camera = true) {
 
 		startChrono(chrono, maxTimeSeconds)
 
-		timeOutVideo = setTimeout (() =>{
+		timeOutVideo = setTimeout(() => {
 
 			videoButtonStop.click()
 
@@ -1706,9 +1714,9 @@ function setMediaStream(contraint, micro = true, camera = true) {
 		micButton.classList.add("disabled")
 		micButton.querySelector("i").classList.add("text-secondary")
 		vidButton.classList.add("disabled")
-		vidButton.querySelector("svg > g").setAttribute('fill',"#868e96")
+		vidButton.querySelector("svg > g").setAttribute('fill', "#868e96")
 		captureButton.classList.add("disabled")
-		captureButton.setAttribute("onclick","")
+		captureButton.setAttribute("onclick", "")
 		captureButton.querySelector("i").classList.add("text-secondary")
 
 	})
@@ -1720,7 +1728,7 @@ function setMediaStream(contraint, micro = true, camera = true) {
 
 		mediaRecorder.stream.getTracks().forEach(track => track.stop());
 
-		if(timeOutVideo){
+		if (timeOutVideo) {
 			clearTimeout(timeOutVideo)
 		}
 
@@ -1728,7 +1736,7 @@ function setMediaStream(contraint, micro = true, camera = true) {
 		videoButton.classList.remove("d-none");
 		document.querySelector(".note_avis_jheo_js").disabled = true
 
-		document.querySelector("#spinCameraAvis").innerHTML =`<button type="button" class="btn btn-secondary btn-sm close_mediarecorder" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Annuler</button>`
+		document.querySelector("#spinCameraAvis").innerHTML = `<button type="button" class="btn btn-secondary btn-sm close_mediarecorder" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Annuler</button>`
 
 		$("#modalCameraAvis").modal("hide");
 		$("#modalAvis").modal("show");
@@ -1749,6 +1757,8 @@ const startStream = async (constraints, video) => {
 	return handleStream(stream, video);
 };
 
+var recorder;
+
 /**
  * @author Elie
  * @param {*} stream 
@@ -1766,7 +1776,15 @@ const handleStream = (stream, video) => {
 
 	let chunks = [];
 
-	mediaRecorder = new MediaRecorder(video.captureStream());
+	let options = {
+		bitsPerSecond: 128000,
+	}
+
+	mediaRecorder = new MediaRecorder(video.captureStream(), options);
+
+	mediaRecorder.ondataavailable = (e) => {
+		chunks.push(e.data);
+	};
 
 	mediaRecorder.onstop = (e) => {
 
@@ -1805,17 +1823,23 @@ const handleStream = (stream, video) => {
 		audio.controls = true;
 		audio.autoplay = true;
 
-		const blobVideo = new Blob(chunks, { type: "video/webm;codecs=vp9" });
+
+		const blobVideo = new Blob(chunks, { type: "video/webm" });
+
+		let blob_url = URL.createObjectURL(blobVideo);
+
+		audio.src = blob_url
+
 		chunks = [];
 
 		let reader = new FileReader();
+
 		reader.readAsDataURL(blobVideo);
 		reader.onloadend = function () {
 			let base64String = reader.result;
-			audio.src = base64String
+			// audio.src = base64String
 			// console.log(base64String);
 		}
-
 
 		deleteSpan.onclick = (e) => {
 			const evtTgt = e.target;
@@ -1829,9 +1853,6 @@ const handleStream = (stream, video) => {
 
 	}
 
-	mediaRecorder.ondataavailable = (e) => {
-		chunks.push(e.data);
-	};
 
 	return mediaRecorder;
 
@@ -1994,9 +2015,9 @@ function startRecordingAudio(defaultValue) {
 	$("#modalMicroOption").modal("hide");
 	$("#modalAvis").modal("show");
 
-		if (navigator.mediaDevices) {
+	if (navigator.mediaDevices) {
 
-			
+
 		if (defaultValue == false) {
 			constraints = {
 				audio: {
@@ -2007,50 +2028,50 @@ function startRecordingAudio(defaultValue) {
 			}
 		} else {
 			constraints = { audio: true };
-}
+		}
 
 
-			let chunks = [];
+		let chunks = [];
 
-			navigator.mediaDevices
-				.getUserMedia(constraints)
-				.then((stream) => {
+		navigator.mediaDevices
+			.getUserMedia(constraints)
+			.then((stream) => {
 
-					mediaRecorder = new MediaRecorder(stream);
+				mediaRecorder = new MediaRecorder(stream);
 
-					mediaRecorder.start();
-					// console.log("recorder started");
-					recordAudio.classList.add("d-none")
-					
-					let timaMaxSec = 60;
+				mediaRecorder.start();
+				// console.log("recorder started");
+				recordAudio.classList.add("d-none")
 
-					timeOutAudio = setTimeout(function() {
+				let timaMaxSec = 60;
 
-						stopAudio.click();
+				timeOutAudio = setTimeout(function () {
 
-					}, timaMaxSec * 1000);
+					stopAudio.click();
 
-
-					document.querySelectorAll(".stop_audio_avis_elie_js").forEach(e => {
-						e.classList.remove("d-none")
-	// e.querySelector("i").classList.add("disabled")
-					})
-
-					document.querySelector(".camera-record").classList.add("disabled")
+				}, timaMaxSec * 1000);
 
 
-					document.querySelector("#message-text").disabled = true
+				document.querySelectorAll(".stop_audio_avis_elie_js").forEach(e => {
+					e.classList.remove("d-none")
+					// e.querySelector("i").classList.add("disabled")
+				})
+
+				document.querySelector(".camera-record").classList.add("disabled")
+
+
+				document.querySelector("#message-text").disabled = true
 
 
 				let recor_audio_animated = document.createElement("div")
 				recor_audio_animated.id = "bars"
 
-				for(let i = 0; i < 90; i++){
-  
+				for (let i = 0; i < 90; i++) {
+
 					const left = (i * 2) + 1;
 					const anim = Math.floor(Math.random() * 75 + 400);
 					const height = Math.floor(Math.random() * 25 + 3);
-					
+
 					recor_audio_animated.innerHTML += `<div class="bar" style="left:${left}px;animation-duration:${anim}ms;height:${height}px"></div>`;//`<div class="bar" style="left:${left}px">Hello</div>`;
 				}
 
@@ -2069,84 +2090,84 @@ function startRecordingAudio(defaultValue) {
 
 				document.querySelector(".vocal_display_elie_js").classList.remove("d-none")
 
-					mediaRecorder.onstop = (e) => {
+				mediaRecorder.onstop = (e) => {
 
-						// console.log("data available after MediaRecorder.stop() called.");
+					// console.log("data available after MediaRecorder.stop() called.");
 
-						const clipName = dateString + ".oga";
-						const clipContainer = document.createElement("div");
-						const iconContainer = document.createElement("div");
-						clipContainer.classList = "d-flex align-items-center";
-						const audio = document.createElement("audio");
-						audio.id = "audio_" + i;
-						audio.classList.add("create");
-						const deleteSpan = document.createElement("span");
-						const deleteButton = document.createElement("i");
-						const deleteLabel = document.createElement("label");
-						deleteLabel.textContent = " Supprimer."
-						deleteLabel.style.marginLeft = "3px"
-						deleteLabel.style.cursor = "pointer"
+					const clipName = dateString + ".oga";
+					const clipContainer = document.createElement("div");
+					const iconContainer = document.createElement("div");
+					clipContainer.classList = "d-flex align-items-center";
+					const audio = document.createElement("audio");
+					audio.id = "audio_" + i;
+					audio.classList.add("create");
+					const deleteSpan = document.createElement("span");
+					const deleteButton = document.createElement("i");
+					const deleteLabel = document.createElement("label");
+					deleteLabel.textContent = " Supprimer."
+					deleteLabel.style.marginLeft = "3px"
+					deleteLabel.style.cursor = "pointer"
 
-						clipContainer.classList.add("clip");
-						iconContainer.classList.add("iconeDelete");
-						audio.setAttribute("controls", "controls");
-						audio.classList.add("ml-5");
-						deleteButton.classList = "fa-solid fa-trash";
-						deleteSpan.style.color = "red"
-						deleteSpan.style.marginLeft = "5px"
-						deleteSpan.style.cursor = "pointer"
-						deleteSpan.style.fontSize = "16px"
-						deleteSpan.appendChild(deleteButton)
-						deleteSpan.appendChild(deleteLabel)
-						clipContainer.appendChild(audio);
-						clipContainer.appendChild(deleteSpan);
-						soundClips.appendChild(clipContainer);
+					clipContainer.classList.add("clip");
+					iconContainer.classList.add("iconeDelete");
+					audio.setAttribute("controls", "controls");
+					audio.classList.add("ml-5");
+					deleteButton.classList = "fa-solid fa-trash";
+					deleteSpan.style.color = "red"
+					deleteSpan.style.marginLeft = "5px"
+					deleteSpan.style.cursor = "pointer"
+					deleteSpan.style.fontSize = "16px"
+					deleteSpan.appendChild(deleteButton)
+					deleteSpan.appendChild(deleteLabel)
+					clipContainer.appendChild(audio);
+					clipContainer.appendChild(deleteSpan);
+					soundClips.appendChild(clipContainer);
 
-						document.querySelector(".vocal_display_elie_js").classList.remove("d-none")
+					document.querySelector(".vocal_display_elie_js").classList.remove("d-none")
 
-						document.querySelector(".vocal_display_elie_js > div#bars").remove();
-						document.querySelector(".spinner-recording") ? document.querySelector(".spinner-recording").remove() : "";
+					document.querySelector(".vocal_display_elie_js > div#bars").remove();
+					document.querySelector(".spinner-recording") ? document.querySelector(".spinner-recording").remove() : "";
 
-						audio.controls = true;
-						const blob = new Blob(chunks, { type: "audio/mp3; codecs=opus" });
-						chunks = [];
+					audio.controls = true;
+					const blob = new Blob(chunks, { type: "audio/mp3; codecs=opus" });
+					chunks = [];
 
-						let reader = new FileReader();
-						reader.readAsDataURL(blob);
-						reader.onloadend = function () {
-							let base64String = reader.result;
-							audio.src = base64String
-						}
+					let reader = new FileReader();
+					reader.readAsDataURL(blob);
+					reader.onloadend = function () {
+						let base64String = reader.result;
+						audio.src = base64String
+					}
 
-						deleteSpan.onclick = (e) => {
-							const evtTgt = e.target;
-							evtTgt.parentNode.parentNode.remove()
-							
-							initializeMediaTools()
+					deleteSpan.onclick = (e) => {
+						const evtTgt = e.target;
+						evtTgt.parentNode.parentNode.remove()
+
+						initializeMediaTools()
 
 					};
 
 					mediaRecorder.stream.getTracks().forEach(track => track.stop());
 
-					if(timeOutAudio){
+					if (timeOutAudio) {
 						clearTimeout(timeOutAudio)
 					}
 
-					};
+				};
 
-					mediaRecorder.ondataavailable = (e) => {
-						chunks.push(e.data);
-					};
+				mediaRecorder.ondataavailable = (e) => {
+					chunks.push(e.data);
+				};
 
-				})
-				.catch((err) => {
+			})
+			.catch((err) => {
 
-					console.log(err);
-					alert("Veuillez vérifier votre micro svp!");
-					// console.error(`The following error occurred: ${err}`);
-				});
-		}
+				console.log(err);
+				alert("Veuillez vérifier votre micro svp!");
+				// console.error(`The following error occurred: ${err}`);
+			});
 	}
+}
 
 /**
  * @author Elie
@@ -2214,6 +2235,9 @@ function chooseMicro(elem, isCamera) {
  */
 function chooseCamera(elem) {
 
+	let checkboxs = elem.parentElement.querySelectorAll("input[type=checkbox]");
+	checkboxs.forEach(e => e.checked = false);
+
 	let deviceId = elem.querySelector("input[type=checkbox]").getAttribute("deviceId")
 
 	let mics = document.querySelectorAll("#microOption > div > input[type=checkbox]")
@@ -2222,7 +2246,7 @@ function chooseCamera(elem) {
 
 
 	mics.forEach(e => {
-	if (e.checked) {
+		if (e.checked) {
 			elem.setAttribute("microId", e.getAttribute("deviceId"))
 		}
 	});
@@ -2256,20 +2280,20 @@ function chooseCamera(elem) {
  * @constructor Demarrage de chrono de la video
 */
 
-function startChrono(elem, max=60) {
+function startChrono(elem, max = 60) {
 
 	let count = 0;
-	myInterval = setInterval(function() {
+	myInterval = setInterval(function () {
 
 		let h = 0
 		let min = 0
 
-		if(count < max){
-			if(count >= 60){
-				h = Math.trunc(count/60)
+		if (count < max) {
+			if (count >= 60) {
+				h = Math.trunc(count / 60)
 				min = count - 60
 				elem.innerHTML = h.toString().padStart(2, '0') + ":" + min.toString().padStart(2, '0');
-			}else{
+			} else {
 
 				elem.innerHTML = "00:" + count.toString().padStart(2, '0');
 			}
@@ -2278,15 +2302,15 @@ function startChrono(elem, max=60) {
 
 	}, 1000)
 
-} 
+}
 
 /**
  * @author Elie
  * @constructor affichage des boutons actions en bas de modal
  */
-function writeFooterModal(){
+function writeFooterModal() {
 
-	let elem =`
+	let elem = `
 		<button class="btn btn-primary btn-sm" disabled=""><span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
 		<span role="status"> Enregistrement en cours...</span></button><button class="btn btn-danger btn-sm" onclick="document.querySelector(&quot;.btn_video_stop_avis&quot;).click()"><i class="fa-solid fa-stop"></i> Arrêter</button><button class="btn btn-secondary btn-sm close_mediarecorder" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis"> Annuler</button>
 	`
