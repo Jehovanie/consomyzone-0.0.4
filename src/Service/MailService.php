@@ -411,7 +411,51 @@ class MailService extends AbstractController {
         $customMailer->send($email);
     }
 
+    /**
+     * @author faniry
+     * 
+     * envoie les email de relance pour confirmé l'inscription et terminé adhésion dans un tribu t
+     */
+    public function sendEmailRelancePostulant($fullName_from, $emailAddressReceiver, $context):void
+    {
 
+        
+
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender, $fullName_from)) 
+                // ->from(new Address($email_from ,$fullName_from)) 
+                ->subject($context["object_mail"]);
+
+        $email = $email->to(new Address($emailAddressReceiver["email"], $emailAddressReceiver["fullName"]));
+
+        if(isset($context["piece_joint"])){
+            $all_pieces_joint= $context["piece_joint"];
+
+            if( count($all_pieces_joint) > 0 ){
+                foreach ($all_pieces_joint as $item) {
+                    $file= $item["path"];
+                    
+                    if(file_exists($file)){
+                        $email= $email->attach(fopen($file, 'r'), $item["name"] );
+                    }
+                }
+            }
+        }
+
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
+        $email =  $email->html($this->renderView($context["template_path"],[
+            'email' => new WrappedTemplatedEmail($this->twig, $email),
+            'content' => $context["content_mail"],
+        ]));
+
+        $customMailer->send($email);
+    }
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
@@ -469,6 +513,40 @@ class MailService extends AbstractController {
                         ]
                     )
                 );
+
+        $customMailer->send($email);
+    }
+
+    /**
+     * @author Elie
+     * Send email to user not connected or out of activity
+     * just send simple template to user
+     */
+    public function sendEmailForMessage($email_to, $fullName_to, $objet, $user_sender, $url):void
+
+    {
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
+                ->to(new Address($email_to, $fullName_to ))
+                ->subject($objet);
+                // ->text($message);
+        
+        $date = date('Y-m-d H:i:s'); // Date actuelle au format YYYY-MM-DD
+        // $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        $date_fr = date_format(date_create($date),"d-m-Y H:i:s");
+
+        //// Generate email with the contents html
+        $email =  $email->html($this->renderView('emails/mail_for_message.html.twig',[
+            'email' => new WrappedTemplatedEmail($this->twig, $email),
+            'sender_name' => $user_sender,
+            'today' => $date_fr,
+            'name_friend' => $fullName_to,
+            "url" => $url,
+        ]));
 
         $customMailer->send($email);
     }

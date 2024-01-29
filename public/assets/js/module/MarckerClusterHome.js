@@ -8,12 +8,12 @@ class MarckerClusterHome extends MapModule {
 
 		///override because for each rubric
 		this.objectRatioAndDataMax = [
-			{ zoomMin: 18, dataMax: 3, ratio: 3 },
-			{ zoomMin: 16, dataMax: 2, ratio: 3 },
-			{ zoomMin: 14, dataMax: 2, ratio: 3 },
-			{ zoomMin: 13, dataMax: 2, ratio: 2 },
-			{ zoomMin: 9, dataMax: 1, ratio: 2 },
-			{ zoomMin: 6, dataMax: 1, ratio: 1 },
+			{ zoomMin: 18, dataMax: 25, ratio: 4 },
+			{ zoomMin: 16, dataMax: 20, ratio: 4 },
+			{ zoomMin: 14, dataMax: 17, ratio: 3 },
+			{ zoomMin: 13, dataMax: 15, ratio: 2 },
+			{ zoomMin: 9, dataMax: 10, ratio: 2 },
+			{ zoomMin: 6, dataMax: 8, ratio: 1 },
 			{ zoomMin: 4, dataMax: 1, ratio: 0 },
 			{ zoomMin: 1, dataMax: 1, ratio: 0 },
 		];
@@ -24,7 +24,10 @@ class MarckerClusterHome extends MapModule {
 		try {
 			this.initMap(null, null, null, isAddControl);
 
+			////create new marker Cluster for POI etablisment
 			this.createMarkersCluster();
+			////create new marker Cluster special for count per dep.
+			this.createMarkersClusterForCountPerDep();
 
 			this.api_data = "/dataHome";
 			let param = "";
@@ -61,7 +64,11 @@ class MarckerClusterHome extends MapModule {
 	}
 
 	bindAction() {
+		/// marker for poi etabliesment.
 		this.addMarker(this.data);
+		/// marker for count per dep
+		this.addCulsterNumberAtablismentPerDep();
+
 		this.addEventOnMap(this.map);
 		this.generateFilterAndSelectDep();
 	}
@@ -168,8 +175,9 @@ class MarckerClusterHome extends MapModule {
 		const { station, ferme, resto, golf, tabac } = newData;
 
 		if (station || ferme || resto || golf || tabac) {
-			if (station.length > 0) {
-				this.addStation(station);
+			///all resto
+			if (resto.length > 0) {
+				this.addResto(resto);
 			}
 
 			///all fermes
@@ -177,9 +185,8 @@ class MarckerClusterHome extends MapModule {
 				this.addFerme(ferme);
 			}
 
-			///all resto
-			if (resto.length > 0) {
-				this.addResto(resto);
+			if (station.length > 0) {
+				this.addStation(station);
 			}
 
 			///all golf
@@ -191,7 +198,11 @@ class MarckerClusterHome extends MapModule {
 				this.addTabac(tabac);
 			}
 
-			this.map.addLayer(this.markers);
+			/// check if the zoom related to the marker poi
+			const zoom = this.map.getZoom();
+			if (zoom >= this.zoom_max_for_count_per_dep) {
+				this.map.addLayer(this.markers);
+			}
 
 			this.removePolylineAndSpyderfyMarker();
 
@@ -305,7 +316,9 @@ class MarckerClusterHome extends MapModule {
 				parseFloat(item.lat) < parseFloat(maxy) &&
 				parseFloat(item.long) > parseFloat(minx) &&
 				parseFloat(item.long) < parseFloat(maxx);
+
 			const item_with_ratio = parseFloat(parseFloat(item.lat).toFixed(ratio));
+
 			if (
 				dataFiltered.some((jtem) => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax) &&
 				isInside
@@ -544,11 +557,11 @@ class MarckerClusterHome extends MapModule {
 					true
 				);
 			}
-			if(document.querySelector("#dockableIcone_station_"+dataStation.id))
-				document.querySelector("#dockableIcone_station_"+dataStation.id).remove()
-			if(document.querySelector("#dockableBtn_station_"+dataStation.id))
-				document.querySelector("#dockableBtn_station_"+dataStation.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_station_" + dataStation.id))
+				document.querySelector("#dockableIcone_station_" + dataStation.id).remove();
+			if (document.querySelector("#dockableBtn_station_" + dataStation.id))
+				document.querySelector("#dockableBtn_station_" + dataStation.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 
@@ -598,11 +611,11 @@ class MarckerClusterHome extends MapModule {
 				getDetailFerme(dataFerme.departement, dataFerme.departementName, dataFerme.id, true);
 			}
 
-			if(document.querySelector("#dockableIcone_ferme_"+dataFerme.id))
-				document.querySelector("#dockableIcone_ferme_"+dataFerme.id).remove()
-			if(document.querySelector("#dockableBtn_ferme_"+dataFerme.id))
-				document.querySelector("#dockableBtn_ferme_"+dataFerme.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_ferme_" + dataFerme.id))
+				document.querySelector("#dockableIcone_ferme_" + dataFerme.id).remove();
+			if (document.querySelector("#dockableBtn_ferme_" + dataFerme.id))
+				document.querySelector("#dockableBtn_ferme_" + dataFerme.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 
@@ -669,11 +682,12 @@ class MarckerClusterHome extends MapModule {
 			} else {
 				getDetailResto(dataResto.dep, dataResto.depName, dataResto.id, true);
 			}
-			if(document.querySelector("#dockableIcone_resto_"+dataResto.id))
-				document.querySelector("#dockableIcone_resto_"+dataResto.id).remove()
-			if(document.querySelector("#dockableBtn_resto_"+dataResto.id))
-				document.querySelector("#dockableBtn_resto_"+dataResto.id).remove()
-			removeOrEditSpecificElement()
+
+			if (document.querySelector("#dockableIcone_resto_" + dataResto.id))
+				document.querySelector("#dockableIcone_resto_" + dataResto.id).remove();
+			if (document.querySelector("#dockableBtn_resto_" + dataResto.id))
+				document.querySelector("#dockableBtn_resto_" + dataResto.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 
@@ -740,11 +754,13 @@ class MarckerClusterHome extends MapModule {
 				getDetailGolf(item.dep, item.nom_dep, item.id, true);
 			}
 
-			if(document.querySelector("#dockableIcone_golf_"+item.id))
-				document.querySelector("#dockableIcone_golf_"+item.id).remove()
-			if(document.querySelector("#dockableBtn_golf_"+item.id))
-				document.querySelector("#dockableBtn_golf_"+item.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_golf_" + item.id))
+				document.querySelector("#dockableIcone_golf_" + item.id).remove();
+
+			if (document.querySelector("#dockableBtn_golf_" + item.id))
+				document.querySelector("#dockableBtn_golf_" + item.id).remove();
+
+			removeOrEditSpecificElement();
 		});
 	}
 
@@ -795,11 +811,13 @@ class MarckerClusterHome extends MapModule {
 			} else {
 				getDetailTabac(item.dep, item.nom_dep, item.id, true);
 			}
-			if(document.querySelector("#dockableIcone_tabac_"+item.id))
-				document.querySelector("#dockableIcone_tabac_"+item.id).remove()
-			if(document.querySelector("#dockableBtn_tabac_"+item.id))
-				document.querySelector("#dockableBtn_tabac_"+item.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_tabac_" + item.id))
+				document.querySelector("#dockableIcone_tabac_" + item.id).remove();
+
+			if (document.querySelector("#dockableBtn_tabac_" + item.id))
+				document.querySelector("#dockableBtn_tabac_" + item.id).remove();
+
+			removeOrEditSpecificElement();
 		});
 	}
 
@@ -1284,8 +1302,8 @@ class MarckerClusterHome extends MapModule {
 
 			const golfModified = this.default_data.golf.find(({ id: item_id }) => parseInt(item_id) === parseInt(id));
 
-			const zoom= this.map._zoom;
-			
+			const zoom = this.map._zoom;
+
 			this.markers.eachLayer((marker) => {
 				if (marker.options.type === "golf" && parseInt(marker.options.id) === parseInt(id)) {
 					const icon = this.getIcon(golfModified, true); /// path, size

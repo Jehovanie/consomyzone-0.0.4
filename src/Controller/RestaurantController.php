@@ -26,6 +26,9 @@ use App\Service\MailService;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Symfony\Component\BrowserKit\HttpBrowser;
+use Symfony\Component\HttpClient\HttpClient;
 
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\DateTime;
@@ -1914,5 +1917,27 @@ TributGService $tributGService,
     public function t(UserRepository $u){
         
         return $this->json($u->getAllValidator());
+    }
+
+    #[Route("/get/link/thefork/{resto_name}/{depart}", name: "thefork")]
+    public function thefork(
+        // HttpClientInterface $client,
+        $resto_name,
+        $depart
+        )
+    {
+        $browser = new HttpBrowser(HttpClient::create());
+        $response = $browser->request(
+            "GET",
+            "https://www.google.com/search?q=the+fork+". str_replace('_', '+', $resto_name)."+".$depart,
+            [
+                'headers' => [
+                    'Accept' => 'application/text',
+                ],
+            ]
+        );
+        // $content = $response->getContent();
+        $link = $response->getBaseHref();
+        return new Response($content); 
     }
 }

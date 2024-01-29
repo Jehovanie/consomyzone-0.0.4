@@ -957,7 +957,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
 
 
     
-    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy){
+    public function getDataBetweenAnd($minx,$miny,$maxx,$maxy, $limit= 200){
         return $this->createQueryBuilder("r")
                     ->select('r.id',
                         'r.adresse',
@@ -978,16 +978,16 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                         'r.latitude as lat',
                         'r.longitude as long'
                     )
-                    ->where("ABS(r.latitude) >=ABS(:minx) ")
-                    ->andWhere("ABS(r.latitude) <= ABS(:maxx)")
-                    ->andWhere("ABS(r.longitude) >=ABS(:miny)")
-                    ->andWhere("ABS(r.longitude) <=ABS(:maxy)")
-                    ->setParameter("minx", $minx)
-                    ->setParameter("maxx", $maxx)
-                    ->setParameter("miny", $miny)
-                    ->setParameter("maxy", $maxy)
+                    ->where("r.latitude >= :minx")
+                    ->andWhere("r.latitude <= :maxx")
+                    ->andWhere("r.longitude >=:miny")
+                    ->andWhere("r.longitude <= :maxy")
+                    ->setParameter("minx", floatval($miny))
+                    ->setParameter("maxx", floatval($maxy))
+                    ->setParameter("miny", floatval($minx))
+                    ->setParameter("maxy", floatval($maxx))
                     ->orderBy('RAND()')
-                    ->setMaxResults(200)
+                    ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();
     }
@@ -1019,6 +1019,45 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                     ->getQuery()
                     ->getOneOrNullResult();
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * @param null|integer $code_dep,
+     * 
+     * @return array [ [ "departement" => .., "account_per_dep" => ... ], ... ]
+     */
+    function getAccountAllPerDep($code_dep=null){
+        $qb = $this->createQueryBuilder('r')
+            ->select('r.departementCode as departement', 'COUNT(r.id) as account_per_dep')
+            ->groupBy('r.departementCode');
+        
+        if( $code_dep != null ){
+            if( intval($code_dep ) === 20 ){
+                $qb = $qb->where("r.departementCode = :q")
+                     ->orWhere("r.departementCode = :k")
+                     ->orWhere("r.departementCode = :g")
+                     ->setParameter('q',  "2A" )
+                     ->setParameter('k',  "2B")
+                     ->setParameter('g',  "20");
+            }else{
+                $qb = $qb->where('r.departementCode = :dep')
+                         ->setParameter('dep', $code_dep);
+            }
+        }
+
+        $results= $qb->getQuery()->getResult();
+
+        foreach($results as &$result){
+            if( trim($result["departement"]) === "2A" || trim($result["departement"]) === "2B" ){
+                $result["departement"]= "20";
+                break;
+            }
+        }
+
+        return $results;
+    }
+
+
 //    /**
 //     * @return StationServiceFrGeom[] Returns an array of StationServiceFrGeom objects
 //     */

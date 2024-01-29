@@ -74,6 +74,14 @@
 														</span>
 													</div>
 												</li>
+<li class="nav-item">
+													<label for="abonnement" class="lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 abonnement_partisan" data-target="abonnement_partisan">
+														<span title="Abonnement">
+															{# <i class="fa-solid fa-money-bill-wheat"></i> #}
+															<img src="{{asset('assets/image/icons8-subscription.png')}}" alt="" data-target="abonnement_partisan">
+														</span>
+													</label>
+												</li>
 											{% endif %}
 										</ul>
 									</div>
@@ -137,11 +145,13 @@
 															{{'Partisan'}}
 														{% endif %}
 													</p>
-													<p class="font-italic mb-1">
-														<i class="bi bi-geo-alt"></i>
-														Addresse:
-														{{ autre_profil[0].getNumRue ~ " " ~ autre_profil[0].getCodePostal ~ " " ~ autre_profil[0].getCommune ~ " " ~ autre_profil[0].getPays}}
-													</p>
+													{% if app.user.id is same as autre_profil[0].userId.id %}
+														<p class="font-italic mb-1">
+															<i class="bi bi-geo-alt"></i>
+															Addresse:
+															{{ autre_profil[0].getNumRue ~ " " ~ autre_profil[0].getCodePostal ~ " " ~ autre_profil[0].getCommune ~ " " ~ autre_profil[0].getPays}}
+														</p>
+													{% endif %}
 													<p class="font-italic mb-1">
 														<i class="bi bi-mailbox"></i>
 														Code Postal:
@@ -152,16 +162,18 @@
 														Commune:
 														{{autre_profil[0].getCommune }}
 													</p>
-													<p class="font-italic mb-1">
-														<i class="bi bi-telephone"></i>
-														Telephone Mobile:
-														{{ autre_profil[0].getTelephone }}
-													</p>
-													<p class="font-italic mb-1">
-														<i class="bi bi-telephone-inbound"></i>
-														Telephone Fixe:
-														{{ autre_profil[0].getTelFixe }}
-													</p>
+													{% if app.user.id is same as autre_profil[0].userId.id %}
+														<p class="font-italic mb-1">
+															<i class="bi bi-telephone"></i>
+															Telephone Mobile:
+															{{ autre_profil[0].getTelephone }}
+														</p>
+														<p class="font-italic mb-1">
+															<i class="bi bi-telephone-inbound"></i>
+															Telephone Fixe:
+															{{ autre_profil[0].getTelFixe }}
+														</p>
+													{% endif %}
 												</div>
 											</div>
 										</a>
@@ -190,7 +202,95 @@
 								</div>
 							</div>
 
+<div id="abonnement_partisan" class="abonnement_partisan" style="display:none;">
+								<div class="card-body p-4 text-black apropos_profil">
+									<div class="mb-5">
+										{# <p class="lead fw-bolder mb-1" lng-tag="apropos">Abonnement
 
+										</p> #}
+										<ul class="nav nav-tabs mt-3 mb-3">
+											<li class="nav-item">
+												<span class="nav-link nanta_nav_link active" aria-current="page" href="#" onclick="getSubscriptionStoryOrForm(event)">Abonnement</span>
+											</li>
+											<li class="nav-item">
+												<span class="nav-link nanta_nav_link" href="#" onclick="getSubscriptionStoryOrForm(event)">Historique</span>
+											</li>
+										</ul>
+										<div class="row fw-light">
+											<div class=" p-4" style="background-color: #f8f9fa;">
+												<div class="d-flex flex-column mb-3">
+													<div id="subscriptionForm">
+														{# <div class="d-flex justify-content-between mb-2">
+															<span class="text-primary">1- Cotisations</span>
+															<span><input placeholder="Saisir un montant" class="form-control" type="number" name="firstOption" id="firstOption" onchange="checkExactNumber(event)"></span>
+														</div>
+											
+														<div class="d-flex justify-content-between mb-2">
+															<span class="text-primary">2- Participation supplémentaire</span>
+															<span><input placeholder="Saisir un montant" class="form-control" type="number" name="secondOption" id="secondOption" onchange="checkExactNumber(event)"></span>
+														</div>
+
+														<div class="d-flex justify-content-between mb-2">
+															<span class="text-primary">3- Cotisation tribu</span>
+															<span><input placeholder="Saisir un montant" class="form-control" type="number" name="thirdOption" id="thirdOption" onchange="checkExactNumber(event)"></span>
+														</div>
+
+														<div class="d-flex justify-content-between mb-2">
+															<span class="text-primary">4- Participation verte</span>
+															<span><input placeholder="Saisir un montant" class="form-control" type="number" name="fourthOption" id="fourthOption" onchange="checkExactNumber(event)"></span>
+														</div>
+														<div class="d-flex justify-content-between mb-3">
+															<span class="text-primary">5- Participation bleue</span>
+															<span><input placeholder="Saisir un montant" class="form-control" type="number" name="fifthOption" id="fifthOption" onchange="checkExactNumber(event)"></span>
+														</div>
+
+														<div class="d-flex justify-content-between">
+															<span class="text-primary"></span>
+															<span><button class="btn btn-primary btn-lg" onclick="submitSubscription(event)">Soumettre</button></span>
+														</div> #}
+
+														<div class="input-group mb-3">
+															<button class="btn btn-secondary text-start w-50" type="button">1- Cotisations</button>
+															<input type="number" class="form-control w-25" placeholder="Sisir un montant" aria-label="Sisir un montant" name="firstOption" id="firstOption">
+															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;"><i class="bi bi-currency-euro"></i></button>
+															<button class="btn btn-primary" type="button" onclick="submitSubscription(event,1)">Soumettre</button>
+														</div>
+														<div class="input-group mb-3">
+															<button class="btn btn-secondary text-start w-50" type="button">2- Participation supplémentaire</button>
+															<input type="number" class="form-control w-25" placeholder="Sisir un montant" aria-label="Sisir un montant" name="secondOption" id="secondOption">
+															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;"><i class="bi bi-currency-euro"></i></button>
+															<button class="btn btn-primary" type="button" onclick="submitSubscription(event,2)">Soumettre</button>
+														</div>
+														<div class="input-group mb-3">
+															<button class="btn btn-secondary text-start w-50" type="button">3- Cotisation tribu</button>
+															<input type="number" class="form-control w-25" placeholder="Sisir un montant" aria-label="Sisir un montant" name="thirdOption" id="thirdOption">
+															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;"><i class="bi bi-currency-euro"></i></button>
+															<button class="btn btn-primary" type="button" onclick="submitSubscription(event,3)">Soumettre</button>
+														</div>
+														<div class="input-group mb-3">
+															<button class="btn btn-secondary text-start w-50" type="button">4- Participation verte</button>
+															<input type="number" class="form-control w-25" placeholder="Sisir un montant" aria-label="Sisir un montant" name="fourthOption" id="fourthOption">
+															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;"><i class="bi bi-currency-euro"></i></button>
+															<button class="btn btn-primary" type="button" onclick="submitSubscription(event,4)">Soumettre</button>
+														</div>
+														<div class="input-group mb-3">
+															<button class="btn btn-secondary text-start w-50" type="button">5- Participation bleue</button>
+															<input type="number" class="form-control w-25" placeholder="Sisir un montant" aria-label="Sisir un montant" name="fifthOption" id="fifthOption">
+															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;"><i class="bi bi-currency-euro"></i></button>
+															<button class="btn btn-primary" type="button" onclick="submitSubscription(event,5)">Soumettre</button>
+														</div>
+
+													</div>
+													<div id="subscriptionStory" style="display:none;">
+														
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+						
+							</div>
 						</div>
 
 					</div>

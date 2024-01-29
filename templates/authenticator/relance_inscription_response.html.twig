@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Relance
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+{% endblock %}
+
+{% block body %}
+
+    <div style="position: absolute; top: 50%; left: 50%;transform: translate(-50%, -50%);">
+
+        <h1 style="color: #dc3545; font-weight:bold; font-size: 24px; margin-bottom:5px;">{{message}}</h1>
+
+        <div>
+           <a href="{{path(lien)}}">Revenir vers CMZ</a>
+        </div>
+
+    </div>
+
+{% endblock %}

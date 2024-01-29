@@ -1588,7 +1588,14 @@ if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
         document
           .querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider")
           .classList.remove("text-primary");
-        // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.list-abonnement"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.list-abonnement").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.addr_faniry_js"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.addr_faniry_js").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.phtR_faniry_js"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.phtR_faniry_js").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.phtG_faniry_js"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.phtG_faniry_js").classList.remove('text-primary')
       } else if (dataLink === "list-tribu-t") {
         // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.add('text-primary')
         document
@@ -1600,6 +1607,14 @@ if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
         document
           .querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider")
           .classList.remove("text-primary");
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.list-abonnement"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.list-abonnement").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.addr_faniry_js"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.addr_faniry_js").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.phtR_faniry_js"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.phtR_faniry_js").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.phtG_faniry_js"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.phtG_faniry_js").classList.remove('text-primary')
       } else if (dataLink === "list-fournisseur") {
         document
           .querySelector("#navbarSuperAdmin > ul > li > a.list-partenaire")
@@ -1611,6 +1626,14 @@ if (document.querySelector("#navbarSuperAdmin > ul > li > a")) {
           .querySelector("#navbarSuperAdmin > ul > li > a.list-infoAvalider")
           .classList.remove("text-primary");
         // document.querySelector("#navbarSuperAdmin > ul > li > a.list-tribu-t").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.list-abonnement"))
+         document.querySelector("#navbarSuperAdmin > ul > li > a.list-abonnement").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.addr_faniry_js"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.addr_faniry_js").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.phtR_faniry_js"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.phtR_faniry_js").classList.remove('text-primary')
+        if(document.querySelector("#navbarSuperAdmin > ul > li > a.phtG_faniry_js"))
+          document.querySelector("#navbarSuperAdmin > ul > li > a.phtG_faniry_js").classList.remove('text-primary')
       }
       showPage(pageId);
     });
@@ -1662,9 +1685,15 @@ if (document.querySelector("#navbarProfil > ul > li > label")) {
         document
           .querySelector("#navbarProfil > ul > li > label.elie_gallery_profil")
           .classList.remove("bg-pdp-profil");
+if(document.querySelector("#navbarProfil > ul > li > label.abonnement_partisan"))
+          document
+            .querySelector("#navbarProfil > ul > li > label.abonnement_partisan")
+            .classList.remove("bg-pdp-profil");
         document
           .querySelector("#navbarProfil > ul > li > label.tribu_profil")
           .classList.remove("bg-pdp-profil");
+if(document.querySelector("#abonnement_partisan"))
+          document.querySelector("#abonnement_partisan").style.display = "none"
       }
       if (dataLink === "elie_gallery_profil") {
         // loading()
@@ -1674,9 +1703,15 @@ if (document.querySelector("#navbarProfil > ul > li > label")) {
         document
           .querySelector("#navbarProfil > ul > li > label.apropos_pdp")
           .classList.remove("bg-pdp-profil");
+if(document.querySelector("#navbarProfil > ul > li > label.abonnement_partisan"))
+          document
+            .querySelector("#navbarProfil > ul > li > label.abonnement_partisan")
+            .classList.remove("bg-pdp-profil");
         document
           .querySelector("#navbarProfil > ul > li > label.tribu_profil")
           .classList.remove("bg-pdp-profil");
+if(document.querySelector("#abonnement_partisan"))
+          document.querySelector("#abonnement_partisan").style.display = "none"
       }
       if (dataLink === "tribu_profil") {
         // loading()
@@ -1689,10 +1724,32 @@ if (document.querySelector("#navbarProfil > ul > li > label")) {
           .classList.remove("bg-pdp-profil");
         document
           .querySelector("#navbarProfil > ul > li > label.elie_gallery_profil")
+.classList.remove("bg-pdp-profil");
+        if(document.querySelector("#navbarProfil > ul > li > label.abonnement_partisan"))
+          document
+            .querySelector("#navbarProfil > ul > li > label.abonnement_partisan")
           .classList.remove("bg-pdp-profil");
         document.querySelector("#tribu_profil").style.display = "block";
 
         document.querySelectorAll(".elie_nav_link")[0].click();
+        if(document.querySelector("#abonnement_partisan"))
+          document.querySelector("#abonnement_partisan").style.display = "none"
+      }
+
+      if (dataLink === "abonnement_partisan"){
+        document
+          .querySelector("#navbarProfil > ul > li > label.abonnement_partisan")
+          .classList.add("bg-pdp-profil");
+        document
+          .querySelector("#navbarProfil > ul > li > label.tribu_profil")
+          .classList.remove("bg-pdp-profil");
+        document
+          .querySelector("#navbarProfil > ul > li > label.apropos_pdp")
+          .classList.remove("bg-pdp-profil");
+        document
+          .querySelector("#navbarProfil > ul > li > label.elie_gallery_profil")
+          .classList.remove("bg-pdp-profil");
+        document.querySelector("#abonnement_partisan").style.display = "block"
       }
 
       // console.log(pageId);
@@ -1873,4 +1930,802 @@ function bulleMsg(other_id) {
   document.getElementById(`bulle${other_id}Msg`).remove();
   addOngletMessage(other_id);
   document.querySelector(".message_jheo_js").click();
+}
+
+/** Call invitation interne actif */
+
+if(window.location.href.includes("/user/invitation")){
+
+  showInvitationUser("interne")
+}
+
+/**
+ * @author Elie
+ * @constructor affichage des invitations en fonction de type (interne ou externe)
+ * @param {*} type 
+ */
+function showInvitationUser(type) {
+  if (type == "externe") {
+    document.querySelector(".interne > a").classList.remove("active");
+    document.querySelector(".externe > a").classList.add("active");
+
+    document.querySelector("#panneau").classList.add("d-none")
+    document.querySelector("#invitation_externe").classList.remove("d-none")
+
+  }
+  // Interne
+  else {
+    document.querySelector(".interne > a").classList.add("active");
+    document.querySelector(".externe > a").classList.remove("active");
+
+    document.querySelector("#panneau").classList.remove("d-none")
+    document.querySelector("#invitation_externe").classList.add("d-none")
+
+    fetchInvitationExterne();
+
+  }
+
+}
+
+/**
+ * @author Elie
+ * @constructor Fetching information for the invitation story by user and showing into data table 
+ * @param {*} e 
+ */
+function getHistoInvitation(e) {
+  document.querySelector("#panneau > #contenus").classList.add("d-none");
+
+  document.querySelector("#listeHistorique").classList.remove("d-none");
+
+  e.classList.add("actif")
+
+  let htm = ``
+
+
+  fetch("/user/invitations-all/interne").then(response => response.json())
+    .then(data => {
+      // console.log(data);
+      if (data.length > 0) {
+
+        document.querySelector("#tableInvitation").innerHTML = `<td colspan="4"><div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div></td>`;
+
+        for (let invit of data) {
+
+          console.log(invit);
+
+          let is_accepted = "", is_cancelled = "", is_rejected = "", is_wait = "", btn_action = ""
+          let tribu_name = invit.requesting.content.split("de rejoindre la tribu ")[1];
+
+          let img_profil = ""
+
+          if (invit.requesting.types == "invitation") {
+
+            img_profil = invit.pdp_uPoster
+
+            if (invit.requesting.is_wait == 1) {
+              is_wait = `<span class="badge rounded-pill text-bg-warning"> <i class="fa-solid fa-hourglass-start"></i> En attente</span>`
+              btn_action = `
+                    <button onclick="acceptInvitation(this)" class="btn btn-primary bt${invit["requesting"]["id"]}rU btn_t_${invit["uPoster"]["\u0000App\\Entity\\User\u0000id"]} btn-sm" data-b="${invit["requesting"]["balise"]}" data-tbt="${invit["requesting"]["is_tribu"]}" id="confirm_invitation_js">Confirmer
+                      <i class="fa-solid fa-user-plus text-light"></i>
+                    </button> 
+                    <button onclick="declineInvitation(this)" class="btn btn-danger bt${invit["requesting"]["id"]}rU btn_r_${invit["uPoster"]["\u0000App\\Entity\\User\u0000id"]} btn-sm" data-b="${invit["requesting"]["balise"]}" data-tbt="${invit["requesting"]["is_tribu"]}" id="supre_invitation_js">Suprimer
+                      <i class="fa-solid fa-user-minus text-light"></i>
+                    </button>
+            `
+            } else {
+              if (invit.requesting.is_accepted == 1) {
+                is_accepted = `<span class="badge rounded-pill text-bg-success"><i class="fa-solid fa-check-double"></i> Déjà accepté</span>`
+              }
+              if (invit.requesting.is_cancelled == 1) {
+                is_cancelled = `<span class="badge rounded-pill text-bg-danger"><i class="fa-solid fa-circle-xmark"></i> Annulé</span>`
+              }
+              if (invit.requesting.is_rejected == 1) {
+                is_rejected = `<span class="badge rounded-pill text-bg-warning"><i class="fa-solid fa-triangle-exclamation"></i> Rejecté</span>`
+              }
+
+            }
+
+          } else {
+
+            img_profil = invit.pdp_userReceiving
+
+            if (invit.requesting.is_wait == 1) {
+              is_wait = `<span class="badge rounded-pill text-bg-warning"> <i class="fa-solid fa-hourglass-start"></i> En attente</span>`
+              btn_action = `
+                <button onclick="annuledDemand(this)" class="btn btn-danger bt${invit["requesting"]["id"]}rU btn_a_${invit["userReceiving"]["\u0000App\\Entity\\User\u0000id"]} btn-sm" data-b="${invit["requesting"]["balise"]}" data-tbt="${invit["requesting"]["is_tribu"]}" id="annule_invitation_js">Annuler
+                <i class="fa-solid fa-user-plus text-light"></i> 
+              </button>
+              <button onclick="relanceDemand(this, ${invit.requesting.user_received},'${invit.requesting.balise}','${tribu_name}')" class="btn btn-primary bt${invit["requesting"]["id"]}rU btn_a_${invit["userReceiving"]["\u0000App\\Entity\\User\u0000id"]} btn-sm" data-b="${invit["requesting"]["balise"]}" data-tbt="${invit["requesting"]["is_tribu"]}" id="relance_invitation_js">Relancer
+                <i class="fa-solid fa-paper-plane text-light"></i> 
+              </button>
+              `
+            } else {
+              if (invit.requesting.is_accepted == 1) {
+                is_accepted = `<span class="badge rounded-pill text-bg-success"><i class="fa-solid fa-check-double"></i> Déjà accepté</span>`
+              }
+              if (invit.requesting.is_cancelled == 1) {
+                is_cancelled = `<span class="badge rounded-pill text-bg-danger"><i class="fa-solid fa-circle-xmark"></i> Annulé</span>`
+              }
+              if (invit.requesting.is_rejected == 1) {
+                is_rejected = `<span class="badge rounded-pill text-bg-warning"><i class="fa-solid fa-triangle-exclamation"></i> Rejecté</span>`
+              }
+            }
+          }
+
+          // let user_img = invit.uPoster
+
+          // let user_node = document.querySelector(".avatar-account-connected");
+
+          // let user_full_name = user_node.querySelector("span.use-in-agd-nanta_js_css").textContent.trim();
+
+          // let user_img = user_node.querySelector("img").src
+
+          htm += `
+            <tr>
+              <td>
+                <div class="notification-list notification-list--unread">
+                  <div class="notification-list_content">
+                      <div class="notification-list_img">
+                          <img src="/public${img_profil}" alt="user">
+                      </div>
+                      <div class="notification-list_detail">
+                          <p class="text-muted">${invit.requesting.content}</p>
+                          <p class="text-muted"><small>${is_wait + is_accepted + is_cancelled + is_rejected}</small></p>
+                      </div>
+                  </div>
+                  <div class="notification-list_feature-img">
+                      ${btn_action}
+                  </div>
+              </div>
+              </td>
+            </tr>
+          `
+        }
+
+        document.querySelector("#tableInvitation").innerHTML = htm
+
+        if (!$.fn.dataTable.isDataTable("#tableHistoInvit")) {
+          $("#tableHistoInvit").DataTable({
+            language: {
+              url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+            },
+          });
+        }
+  
+        // $("#tableHistoInvit").DataTable().destroy();
+
+
+      } else {
+        document.querySelector("#tableInvitation").innerHTML = "Aucun historique d'invitation interne pour le moment."
+      }
+      
+
+    })
+
+}
+
+/**
+ * @author Elie
+ * @constructor Relance in invitation
+ * @param {*} elem 
+ */
+function relanceDemand(elem, user_id, table_tribu, name_tribu) {
+
+  let data = {
+    user_id: user_id,
+    table: table_tribu,
+    nom: name_tribu,
+  };
+
+  const http = new XMLHttpRequest();
+  http.open("POST", "/user/tribu/relance/one-invitation");
+  http.setRequestHeader("Content-type", "application/json");
+  http.setRequestHeader("X-Requested-With", "XMLHttpRequest");
+  http.send(JSON.stringify(data));
+  http.onload = function () {
+    elem.style.backgroundColor = "#E4E6EB";
+    elem.style.borderColor = "#E4E6EB";
+    elem.style.color = "black";
+    elem.setAttribute("disabled", true);
+    elem.innerHTML = http.responseText.replace(/"/g, "").replace(/ee/g, "ée");
+    elem.previousElementSibling.click()
+    document.querySelector(".invit-h").click()
+
+  };
+
+
+}
+
+/**
+ * @author Elie
+ * @constructor fetching and showing invitations per email address
+ */
+function fetchInvitationExterne() {
+  // document.querySelector("#invitation_externe").innerHTML = "Hello world!";
+
+  let tbody_hist = document.querySelector("#bBodyInvitationExterne");
+
+  let user_node = document.querySelector(".avatar-account-connected");
+
+  let user_full_name = user_node.querySelector("span.use-in-agd-nanta_js_css").textContent.trim();
+
+  fetch("/user/invitations-all/externe").then(resp => resp.json())
+    .then(data => {
+
+      tbody_hist.innerHTML = ""
+
+      let htm =""
+
+      if (data.length > 0) {
+
+        for (let tribu of data) {
+          for (let [key, value] of Object.entries(tribu)) {
+            let tribu_table = key;
+            let membres = value
+            if (membres.length > 0) {
+              for (const item of membres) {
+
+                if(item.is_forMe || item.role == "Fondateur"){
+                  // console.log(item);
+
+                  let user = item.user ? `<a href="/user/profil/${item.user.userId.id}" class="badge text-bg-primary">${item.user.firstname + " " + item.user.lastname
+                  }</a>` : `<span class="badge text-bg-warning">Compte non trouvé</span>`;
+
+                  let user_img = (item.user && item.user.photoProfil) ? "/public"+item.user.photoProfil : "/public/uploads/users/photos/default_pdp.png"
+                  let sender_img = (item.sender && item.sender.photoProfil) ? "/public"+item.sender.photoProfil : "/public/uploads/users/photos/default_pdp.png"
+
+                  let sender_profil = item.sender ? `<a class="text-primary" href="/user/profil/${item.sender.id}" >${item.sender.firstname +" " +item.sender.lastname}</a>` : "Un fondateur"
+
+                  let roles =""
+                  let btn_supp =""
+                  let cls_for_me =""
+
+                  if(item.role == "Fondateur" || item.is_forMe){
+                  btn_supp = `<button class="mt-2 btn btn-sm btn-danger ${roles}" onclick="supprInvitationExterne('${tribu_table.split("_invitation")[0]}', '${item.id}')"><i class="fa-solid fa-trash text-light"></i> Supprimer</button>`
+
+                  }
+
+                  if(item.role != "Fondateur" && !item.is_forMe){
+                  cls_for_me ="d-none"
+                  }
+
+                  htm += `<tr class="invit_ext_${item.id} ${cls_for_me}">
+                              <td>
+                                <div class="notification-list notification-list--unread">
+                                  <div class="notification-list_content">
+                                      <div class="notification-list_img">
+                                          <img src="${sender_img}" alt="user">
+                                      </div>
+                                      <div class="notification-list_detail">
+                                          <p>${item.is_forMe? "Vous avez " :sender_profil +" a "} invité <b>${user} [<span class="text-primary">${item.email}</span>]</b></p>
+                                          <p class="text-muted"> à rejoindre la tribu ${item.tribu} du <small>${item.date}</small></p>
+                                          <p class="text-muted"><small>${item.is_valid == 1 ? `<span class="badge text-bg-success"><i class="fa-solid fa-check-double"></i> Validé</span>` : `<span class="badge text-bg-warning"><i class="fa-solid fa-hourglass-start"></i> En attente</span>`}</small></p>
+                                      </div>
+                                  </div>
+                                  <div class="notification-list_feature-img">
+                                      ${(item.is_valid == 0 || !item.user) ? `<button class="mt-2 btn btn-sm btn-primary ${!item.is_forMe?"d-none":""}" onclick="relanceInvitationExterne('${tribu_table.split("_invitation")[0]}', '${item.tribu}', '${item.email}', '${user_full_name}')"><i class="fa-solid fa-user-plus text-light"></i> Relancer</button>` 
+                                      : ``}
+                                      ${btn_supp}
+                                  </div>
+                              </div>
+                              </td>
+                          </tr>
+                      `;
+
+                }
+                
+              }
+            }
+
+          }
+        }
+
+      }else{
+        htm = " "
+      }
+      tbody_hist.innerHTML = htm
+
+      if (!$.fn.dataTable.isDataTable("#tableHistoInvitExt")) {
+        $("#tableHistoInvitExt").DataTable({
+          language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+          },
+        });
+      }
+      
+    })
+
+
+}
+
+/**
+ * @author Elie
+ * @constructor Relance invitation externe
+ * @param {*} table 
+ * @param {*} tribu_name 
+ * @param {*} email 
+ * @param {*} user_full_name 
+ */
+function relanceInvitationExterne(table, tribu_name, email, user_full_name) {
+
+  let data = {
+    table: table,
+    principal: [email],
+    object: "Invitation rejoindre ma tribu Thématique sur Consomyzone",
+    description: `<br>Madame, Monsieur,<br>
+      J'ai le plaisir de vous relancer une invitation à rejoindre la tribu thématique ${tribu_name} nouvellement fondée sur l'application ConsoMyZone.
+      <br><br>
+      Nous serions ravis de vous compter parmi nos membres. Votre présence sera une aide précieuse.<br>
+      Dans cette attente, je vous adresse mes cordiales salutations.<br><br>
+      
+      `,
+      piece_joint: [],
+
+  };
+
+  fetch("/user/tribu/email/invitation", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  }).then(rp=>rp.json()).then(result=>{
+
+    saveInvitationStory(table, result.data);
+    
+    swal({
+      title: "Bravo !",
+      text: "Relance envoyée avec succès",
+      icon: "success",
+      button: "Fermer",
+    })
+  })
+}
+
+
+
+/**
+ * @author Elie
+ * @constructor Suppression d'une invitation dans un table invitation tribu
+ * @param {*} table 
+ * @param {*} email 
+ */
+function supprInvitationExterne(table, id){
+
+  fetch(`/tribu/invitation/delete_story/${table}/${id}`,{
+    method :"POST"
+  })
+  .then(rp=>rp.json())
+  .then(result=>{
+    swal({
+      title: "Supprimé!",
+      text: "Invitation supprimée avec succès",
+      icon: "success",
+      button: "Fermer",
+    }).then(result=>{
+      document.querySelector(".invit_ext_"+id).remove()
+    })
+  })
+}
+
+/**
+ * @author Nantenaina a ne pas contacté pendant les congés
+ * où: On utilise cette fonction dans l'onglet abonnement de la page profil partisan
+ * localisation du fichier: dans account.js,
+ * je veux: soumettre un formulaire d'abonnement
+ * Ancien Version
+ */
+function submitSubscriptionOld(e){
+  e.target.disabled = true
+  e.target.textContent = "Soumission..."
+  e.target.classList = "btn btn-secondary btn-lg"
+  let firstOption = document.querySelector("#firstOption").value
+  let secondOption = document.querySelector("#secondOption").value
+  let thirdOption = document.querySelector("#thirdOption").value
+  let fourthOption = document.querySelector("#fourthOption").value
+  let fifthOption = document.querySelector("#fifthOption").value
+  if(firstOption == "" && secondOption == "" && thirdOption == "" && fourthOption == "" && fifthOption == ""){
+    swal({
+      title: "Attention !",
+      text: "Veuillez saisir au moins un montant",
+      icon: "warning",
+      button: "Ok",
+    });
+    e.target.disabled = false
+    e.target.textContent = "Soumettre"
+    e.target.classList = "btn btn-primary btn-lg"
+  }else{
+    firstOption = firstOption != "" ? firstOption : 0
+    secondOption = secondOption != "" ? secondOption : 0
+    thirdOption = thirdOption != "" ? thirdOption : 0
+    fourthOption = fourthOption != "" ? fourthOption : 0
+    fifthOption = fifthOption != "" ? fifthOption : 0
+    let data = {
+      firstOption : firstOption,
+      secondOption : secondOption,
+      thirdOption : thirdOption,
+      fourthOption : fourthOption,
+      fifthOption : fifthOption
+    }
+
+    let request = new Request("/user/save/abonnement/", {
+      body: JSON.stringify(data),
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+    });
+
+    fetch(request).then((response) => {
+      if (response.status === 201) {
+        swal({
+          title: "Merci !",
+          text: "Votre abonnement est prise en compte.",
+          icon: "success",
+          button: "Ok",
+        });
+        e.target.disabled = false
+        e.target.textContent = "Soumettre"
+        e.target.classList = "btn btn-primary btn-lg"
+      } else if (response.status === 205) {
+        swal({
+          title: "Non connecté !",
+          text: "Veuillez vous reconnecter.",
+          icon: "warning",
+          button: "Ok",
+        });
+      }
+    });
+
+  }
+}
+
+/**
+ * @author Nantenaina a ne pas contacté pendant les congés
+ * où: On utilise cette fonction dans l'onglet abonnement de la page profil partisan
+ * localisation du fichier: dans account.js,
+ * je veux: tester si l'entrée saisi par le partisan est exactement un chiffre
+ */
+function checkExactNumber(e){
+  e.target.value = e.target.value.replace(",",".")
+  if(isNaN(e.target.value)){
+    swal({
+      title: "Attention !",
+      text: "Veuillez saisir un nombre",
+      icon: "warning",
+      button: "Ok",
+    });
+  }else{
+    if(e.target.value < 0){
+      swal({
+        title: "Attention !",
+        text: "Veuillez saisir un nombre positif",
+        icon: "warning",
+        button: "Ok",
+      });
+      e.target.value = e.target.value.replace("-","")
+    }
+  }
+}
+
+/**
+ * @author Nantenaina a ne pas contacté pendant les congés
+ * où: On utilise cette fonction dans l'onglet abonnement de la page profil partisan
+ * localisation du fichier: dans account.js,
+ * je veux: afficher le formulaire d'abonnement ou l'historique
+ */
+function getSubscriptionStoryOrForm(e){
+  if(e.target.parentElement.nextElementSibling){
+      document.querySelector("#subscriptionForm").style.display = "block"
+      document.querySelector("#subscriptionStory").style.display = "none"
+      if(!e.target.classList.contains("active")){
+        e.target.classList.add("active")
+        document.querySelector("#abonnement_partisan > div > div > ul > li:nth-child(2) > span").classList.remove("active")
+      }
+  }else if(e.target.parentElement.previousElementSibling){
+      document.querySelector("#subscriptionStory").style.display = "block"
+      document.querySelector("#subscriptionForm").style.display = "none"
+      if(!e.target.classList.contains("active")){
+        e.target.classList.add("active")
+        document.querySelector("#abonnement_partisan > div > div > ul > li:nth-child(1) > span").classList.remove("active")
+        getPartisanAbonnement()
+      }
+  }
+}
+
+/**
+ * @author Nantenaina a ne pas contacté pendant les congés
+ * où: On utilise cette fonction dans l'onglet abonnement de la page profil partisan
+ * localisation du fichier: dans account.js,
+ * je veux: soumettre un formulaire d'abonnement
+ */
+function submitSubscription(e,typeAbonnement){
+  
+  let inputNumber = e.target.parentElement.querySelector("input")
+  let inputValue = inputNumber.value
+
+  if(inputValue == ""){
+    swal({
+      title: "Attention !",
+      text: "Veuillez saisir un montant",
+      icon: "warning",
+      button: "Ok",
+    });
+  }else{
+      inputValue = inputValue.replace(",",".")
+      if(isNaN(inputValue)){
+        swal({
+          title: "Attention !",
+          text: "Veuillez saisir un nombre",
+          icon: "warning",
+          button: "Ok",
+        });
+      }else{
+          if(inputValue <= 0){
+            swal({
+              title: "Attention !",
+              text: "Veuillez saisir un montant positif",
+              icon: "warning",
+              button: "Ok",
+            });
+            inputNumber.value = inputValue.replace("-","")
+          }else{
+              e.target.disabled = true
+              e.target.textContent = "Soumission..."
+              e.target.classList = "btn btn-secondary"
+              let data = {
+                typeAbonnement : parseInt(typeAbonnement),
+                montant : inputValue
+              }
+
+              let request = new Request("/save/one/abonnement/", {
+                body: JSON.stringify(data),
+                method: "POST",
+                headers: {
+                  Accept: "application/json",
+                  "Content-Type": "application/json",
+                },
+              });
+          
+              fetch(request).then((response) => {
+                if (response.status === 201) {
+                  swal({
+                    title: "Merci !",
+                    text: "Votre abonnement est prise en compte.",
+                    icon: "success",
+                    button: "Ok",
+                  });
+                  e.target.disabled = false
+                  e.target.textContent = "Soumettre"
+                  e.target.classList = "btn btn-primary"
+                } else if (response.status === 205) {
+                  swal({
+                    title: "Hors Ligne !",
+                    text: "Veuillez vous reconnecter.",
+                    icon: "warning",
+                    button: "Ok",
+                  }).then((result)=>{
+                      location.href = "/connexion"
+                  });
+                  e.target.disabled = false
+                  e.target.textContent = "Soumettre"
+                  e.target.classList = "btn btn-primary"
+                }
+              });
+          }
+      }
+  }
+}
+
+/**
+ * @author Nantenaina a ne pas contacté pendant les congés
+ * où: On utilise cette fonction dans l'onglet abonnement de la page profil partisan
+ * localisation du fichier: dans account.js,
+ * je veux: afficher la liste des abonnements d'un partisan
+ */
+function getPartisanAbonnement(){
+  document.querySelector("#subscriptionStory").innerHTML = `
+            <div class="spinner-border spinner-border text-info mt-3 text-center" role="status" style="margin-left:45%;">
+              <span class="visually-hidden">Chargement...</span>
+          </div>
+          `;
+  // <th>Nom du partisan</th>
+  let table = `<table class="table table-striped" id="abonnementStoryTable">
+          <thead>
+            <tr valign="middle" class="text-center text-sm">
+              <th>Type d'abonnement</th>
+              <th>Montant</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+        `
+  
+  fetch("/get/partisan/abonnement/")
+    .then(response=> response.json())
+    .then(result=>{
+      if (result.status === 201) {
+        let tr = ""
+        let abonnements = result.abonnements
+        if(abonnements.length > 0){
+            let fullName = result.fullName
+            for (const abonnement of abonnements) {
+
+              let typeAbonnement = getTypeAbonnement(abonnement.typeAbonnement)
+              // <td>${fullName}</td>
+              tr += `<tr valign="middle">
+                      <td>${typeAbonnement}</td>
+                      <td>${abonnement.montant}</td>
+                      <td>${abonnement.dateSoumission}</td>
+                    </tr>`
+            }
+            table += tr
+            table += `</tbody>
+                    </table>
+                  `
+            document.querySelector("#subscriptionStory").innerHTML = table
+            $('#abonnementStoryTable').DataTable({
+              language: {
+                  url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json'
+              },})
+        }else{
+          tr += `<tr valign="middle" class="text-center">
+                      <td colspan="3">Aucun abonnement</td>
+                    </tr>`
+          table += tr
+          table += `</tbody>
+                    </table>
+                  `
+          document.querySelector("#subscriptionStory").innerHTML = table
+        }
+      } else if (result.status === 205) {
+        swal({
+          title: "Hors Ligne !",
+          text: "Veuillez vous reconnecter.",
+          icon: "warning",
+          button: "Ok",
+        }).then((ok)=>{
+            location.href = "/connexion"
+        });
+      }
+    })
+}
+
+/**
+ * @author Nantenaina a ne pas contacté pendant les congés
+ * où: On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur et celle de Super Admin
+ * localisation du fichier: dans account.js,
+ * je veux: afficher le type d'abonnement
+ */
+function getTypeAbonnement(typeAbonnement){
+  let texte = ""
+  switch (parseInt(typeAbonnement)) {
+    case 1:
+      texte = "Cotisations";
+      break;
+      
+    case 2:
+      texte = "Participation supplémentaire";
+      break;
+
+    case 3:
+      texte = "Cotisation tribu";
+      break;
+
+    case 4:
+      texte = "Participation verte";
+      break;
+
+    case 5:
+      texte = "Participation bleue";
+      break;
+                
+    default:
+      texte = "Cotisations";
+  }
+  return texte;
+}
+
+/**
+ * @author Nantenaina a ne pas contacté pendant les congés
+ * où: On utilise cette fonction dans l'onglet abonnement de la page Super Admin
+ * localisation du fichier: dans account.js,
+ * je veux: afficher la liste de tous les abonnements
+ */
+function getListeAbonnementSuperAdmin(e){
+  let linkActives = document.querySelectorAll(
+    "#navbarSuperAdmin > ul > li > a"
+  );
+  linkActives.forEach((link) => {
+    if (link.classList.contains("text-primary"))
+      link.classList.remove("text-primary");
+  });
+  if (e) {
+    e.target.classList.add("text-primary");
+  } else {
+    document.querySelector(".addr_faniry_js").classList.add("text-primary");
+  }
+
+  if (document.querySelector("#list-tribu-g"))
+    document.querySelector("#list-tribu-g").style.display = "none";
+  if (document.querySelector("#list-demande-partenaire"))
+    document.querySelector("#list-demande-partenaire").style.display = "none";
+
+  if (document.querySelector("#list-infoAvalider"))
+    document.querySelector("#list-infoAvalider").style.display = "none";
+
+  if (document.querySelector("#list-abonnement-cmz"))
+    document.querySelector("#list-abonnement-cmz").style.display = "block";
+
+  document.querySelector(
+    ".content_chargement_liste_abonnement_nanta_js"
+  ).innerHTML = `<div class="spinner-border spinner-border text-info" role="status">
+                  <span class="visually-hidden">Loading...</span>
+              </div>`;
+
+  let table = `<table class="table table-striped" id="abonnementStoryTableSuperAdmin">
+          <thead>
+            <tr valign="middle" class="text-center text-sm">
+              <th style="min-width:218px !important;">Nom du partisan</th>
+              <th>Type d'abonnement</th>
+              <th>Montant</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+        `
+  
+  fetch("/get/all/abonnement/")
+    .then(response=> response.json())
+    .then(result=>{
+      if (result.status === 201) {
+        let tr = ""
+        let abonnements = result.abonnements
+        if(abonnements.length > 0){
+            for (const abonnement of abonnements) {
+              let typeAbonnement = getTypeAbonnement(abonnement.typeAbonnement)
+
+              tr += `<tr valign="middle">
+                      <td style="min-width:218px !important;"><a href="/user/profil/${abonnement.userId}" class="text-primary">${abonnement.fullName}</a></td>
+                      <td>${typeAbonnement}</td>
+                      <td>${abonnement.montant}</td>
+                      <td>${abonnement.dateSoumission}</td>
+                    </tr>`
+            }
+            table += tr
+            table += `</tbody>
+                    </table>
+                  `
+            document.querySelector(".content_chargement_liste_abonnement_nanta_js").innerHTML = table
+            $('#abonnementStoryTableSuperAdmin').DataTable({
+              language: {
+                  url: 'https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json'
+              },})
+        }else{
+          tr += `<tr valign="middle" class="text-center">
+                      <td colspan="4">Aucun abonnement</td>
+                    </tr>`
+          table += tr
+          table += `</tbody>
+                    </table>
+                  `
+          document.querySelector(".content_chargement_liste_abonnement_nanta_js").innerHTML = table
+        }
+      } else if (result.status === 205) {
+        swal({
+          title: "Hors Ligne !",
+          text: "Veuillez vous reconnecter.",
+          icon: "warning",
+          button: "Ok",
+        }).then((ok)=>{
+            location.href = "/connexion"
+        });
+      }
+    })
 }

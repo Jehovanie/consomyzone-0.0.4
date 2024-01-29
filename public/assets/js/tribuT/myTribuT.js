@@ -1,6 +1,7 @@
 /**updatePdpTribu_T
  * global variable
  */
+var fileStore = [];
 var tribu_t_name_0 = "";
 var id_c_u; //id du user courant
 let image_listss = [];
@@ -609,7 +610,9 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
             <a style="cursor:pointer;" id="fetch_new_letter_fans_tribuT_jheo_js" class="dropdown-item">Lettre d'information</a>
           </li>`
       : "";
-
+      const postulantListe = ` <li class="listNavBarTribu postulantListe">
+      <a style="cursor:pointer;" id="cta_postulant_js" class="dropdown-item" onclick=(renderPosulant("${tribu_t[0].name}"))>Postulants</a>
+    </li>`;
     let navMenuTribuT = "";
     if (screen.width < 1000) {
       navMenuTribuT = `<nav class=" mx-auto ">
@@ -633,6 +636,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                             <li class="listNavBarTribu partisantT">
                               <a style="cursor:pointer;" class="dropdown-item">Fans</a>
                           </li>
+                          ${postulantListe}
                           <li class="listNavBarTribu">
                               <a style="cursor:pointer;" id="see-gallery" class="dropdown-item">Photos</a>
                           </li>
@@ -660,6 +664,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                         <li class="listNavBarTribu partisantT">
                             <a style="cursor:pointer;">Fans</a>
                         </li>
+                        ${postulantListe}
                         <li class="listNavBarTribu">
                             <a style="cursor:pointer;" id="see-gallery">Photos</a>
                         </li>
@@ -4276,4 +4281,785 @@ function getCopyePathAlbumTribuT(idAlbum) {
 function closeAlbum() {
   document.querySelector(".album-tomm-js").classList.toggle("d-none");
   document.querySelector(".photo-album-tomm-js").remove();
+}
+/**
+ * @author faniry <faniryandriamihaingo@gmail.com> doesn't disturb me when I'm off
+ * récupère la liste des postulants dans une tribu T données
+ */
+function renderPosulant(tribuName) {
+  const navBarTribu = document.querySelector("li.listNavBarTribu > a.active");
+  const navBarPostulant = document.getElementById("cta_postulant_js");
+  if (navBarTribu && navBarTribu.classList.contains("active")) {
+    navBarTribu.classList.toggle("active");
+  }
+  if (!navBarPostulant?.classList.contains("active")) {
+    navBarPostulant?.classList.toggle("active");
+  }
+
+  const url =
+    "/user/postulant?" +
+    new URLSearchParams({
+      name: tribuName,
+    });
+  const resquest = new Request(url, {
+    method: "GET",
+  });
+  fetch(resquest).then((res) => {
+    if (res.status === 200 && res.ok) {
+      res.json().then((postulants) => {
+        const container = document.querySelector("#tribu_t_conteuneur");
+        createPostulantUI(postulants, container,tribuName);
+      });
+    }
+  });
+}
+
+/**
+ * @author faniry <faniryandriamihaingo@gmail.com> doesn't disturb me when I'm off
+ * fait le rendu de la table des liste des postulants
+ * @param array postulants
+ * @param HTMLElement container
+ */
+function createPostulantUI(postulants, container,tribuName) {
+  console.log(postulants)
+  container.innerHTML = "";
+  if(!document.querySelector("#postulant_modal"))
+      createModalForPostulant(container);
+  initCKEditor(
+    "exampleFormControlTextareaPostulant",
+    emailRelanceContent
+  );
+ 
+  const headTitles = ["Selectionnez tout", "Pseudo", "Email", "Relance"];
+  const postulantTable = document.createElement("table");
+  //cell-border hover
+  postulantTable.setAttribute("class", "cell-border hover ");
+  postulantTable.id = "table_postulants";
+
+  const postulantTableHead = document.createElement("thead");
+  const postulantTableBody = document.createElement("tbody");
+  const postulantTableHaedRow = document.createElement("tr");
+  let postulantTableBodyRow = null;
+  let th = null;
+  let tdSelected = null;
+  let tdPseudo = null;
+
+  let tdEmail = null;
+  let tdRelance = null;
+  let btnRelance = null;
+  headTitles.forEach((headTitle) => {
+    th = document.createElement("th");
+    if (headTitle === "Selectionnez tout") {
+      th.innerHTML = `
+		<label for="all_postulant">${headTitle}</label>
+	  <input class="slct_all_pstl_faniry_js" id="all_postulant" type="checkbox" name="all_postulant"/>`;
+    } else {
+      th.innerText = headTitle;
+    }
+
+    postulantTableHaedRow.appendChild(th);
+  });
+  postulantTableHead.appendChild(postulantTableHaedRow);
+
+  postulants.forEach((postulant) => {
+    postulantTableBodyRow = document.createElement("tr");
+
+    tdSelected = document.createElement("td");
+    tdPseudo = document.createElement("td");
+    tdPseudo.setAttribute("class","pso_faniry")
+    tdEmail = document.createElement("td");
+    tdEmail.setAttribute("class","ml_faniry");
+    tdRelance = document.createElement("td");
+    tdSelected.innerHTML = `<input class="slct_pstl_fan_js" type="checkbox" name="SelectedMe" data-loop="${cryptageJs(postulant.userId)}"/>`;
+    tdPseudo.innerText = postulant.pseudo;
+    tdEmail.innerText = postulant.useremail;
+    btnRelance = creaTeBtnRelance(postulant);
+    tdRelance.appendChild(btnRelance);
+    postulantTableBodyRow.appendChild(tdSelected);
+    postulantTableBodyRow.appendChild(tdPseudo);
+    postulantTableBodyRow.appendChild(tdEmail);
+    postulantTableBodyRow.appendChild(tdRelance);
+
+    postulantTableBody.appendChild(postulantTableBodyRow);
+
+    relanceOneIvitation(btnRelance, postulant,tribuName);
+  });
+
+  postulantTable.appendChild(postulantTableHead);
+  postulantTable.appendChild(postulantTableBody);
+
+  container.appendChild(postulantTable);
+  container.appendChild(createBtnRelanceAll());
+
+  $("#table_postulants").DataTable({
+    autoWidth: false,
+    language: {
+      url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+    },
+  });
+
+  listenCheckBoxPostulantForSelectedAll(
+    document.getElementById("all_postulant"),
+    Array.from(document.getElementsByClassName("slct_pstl_fan_js"))
+  );
+  listenCheckBoxPostulant(
+    document.getElementById("all_postulant"),
+    Array.from(document.getElementsByClassName("slct_pstl_fan_js"))
+  );
+
+  triggerEventRelanceYourSelection(tribuName);
+
+}
+
+/**
+ * @author faniry <faniryandriamihaingo@gmail.com> doesn't disturb me when I'm off
+ * fait la relance
+ */
+function relanceOneIvitation(element, data,tribuName) {
+	
+  element.onclick = (e) => {
+    const btnRelanceAll = document.querySelector(".btn_relance_all_faniry_js");
+    if (btnRelanceAll.classList.contains("btn-primary")) {
+      //TODO on utilise les check box qui relance
+        relanceManyInvitation(tribuName) 
+    } else {
+      //TODO on relance la personne relative au boutton relance
+        console.log(data)
+        const idCrypted=cryptageJs(data.userId);
+        const cryiptedEmail=cryptageJs(data.useremail)
+        const tribuTNameCrypted=cryptageJs(tribuName)
+        document.getElementById("dest_area_pst").value=data.useremail
+      	const link1 = window.origin + `/verification_email?id=${idCrypted}&verif=t&tribuT=${tribuTNameCrypted}`;
+        const tmpElement=document.createElement("div");
+        tmpElement.innerHTML =editor.getData();
+        tmpElement.querySelector("#link_faniry_js").href=link1;
+        const emailContaint=tmpElement.innerHTML;
+        editor.setData(emailContaint); 
+        //todo send email
+       
+        
+        document.querySelector(".pst_sb_faniry_js").onclick=(ev)=>{
+          ev.target.disabled = true;
+          ev.target.textContent = "Envoie en cours ...";
+          const objet= cryptageJs((document.getElementById("objet_area_pst").value))
+          const email=cryptageJs(editor.getData());
+          sendEmailForPostulant(objet,email,fileStore,idCrypted,ev.target)
+
+        }
+        //
+    }
+  };
+}
+
+/**
+ * @author faniry
+ * envoie les email de relance pour les postulants selectionner
+ */
+function relanceManyInvitation(tribuName) {
+
+  const allCheckBox=Array.from(document.getElementsByClassName("slct_pstl_fan_js")).filter(e => e.checked === true)
+
+  if(allCheckBox.length > 0 ){
+      let tmp=""
+      let userDatas=[]
+      allCheckBox.forEach(checkBox=>{
+          const idCrypted= checkBox.dataset.loop
+          const email= checkBox.parentElement.parentElement.querySelector(".ml_faniry")
+          const cryiptedEmail=cryptageJs(email.textContent);
+          const tribuTNameCrypted=cryptageJs(tribuName);
+          const link1 = window.origin + `/verification_email?id=${idCrypted}&verif=t&tribuT=${tribuTNameCrypted}`;
+          const tmpElement=document.createElement("div");
+          tmpElement.innerHTML =editor.getData();
+          tmpElement.querySelector("#link_faniry_js").href=link1;
+          const emailContaint=tmpElement.innerHTML;
+          editor.setData(emailContaint); 
+          const objectTmp={ 
+            i: idCrypted,
+            m: cryptageJs(editor.getData())
+          }
+          userDatas.push(objectTmp);
+          tmp+= email.textContent+" "
+          document.getElementById("dest_area_pst").value=tmp.trim()
+      });
+      document.querySelector(".pst_sb_faniry_js").onclick=(ev)=>{
+        ev.target.disabled = true;
+        ev.target.textContent = "Envoie en cours ...";
+        const objet= cryptageJs((document.getElementById("objet_area_pst").value))
+        sendEmailForManyPostulant(objet,userDatas,fileStore,ev.target)
+      }
+      
+  }
+
+  
+ 
+}
+
+/**
+ * @author faniry
+ * écoute l'événement du bouton relancez vos selection
+ */
+function triggerEventRelanceYourSelection(tribuName){
+  const btnRelanceAll = document.querySelector(".btn_relance_all_faniry_js");
+  btnRelanceAll.onclick = (e) => {
+      relanceManyInvitation(tribuName)
+
+  };
+}
+/***
+ * @author faniry <faniryandriamihaingo@gmail.com> doesn't disturb me when I'm off
+ * créé le boutton de relance
+ * @returns HtMLElement
+ */
+function creaTeBtnRelance(data) {
+  const btn = document.createElement("button");
+  btn.setAttribute("class", "btn btn-primary btn_relance_faniry_js");
+  btn.id = `relance_${data.userId}_faniry_js`;
+  btn.dataset.rank = cryptageJs(data.userId);
+  btn.dataset.bsToggle = "modal";
+  btn.dataset.bsTarget = "#postulant_modal";
+  btn.setAttribute("type", "button");
+  btn.innerHTML = "Relancez";
+
+  return btn;
+}
+
+/**
+ * @author faniry
+ * créé le bouton relancez vos selection
+ * @returns HtMLElement
+ */
+function createBtnRelanceAll() {
+  const btnRelanceAll = document.createElement("button");
+  //btnRelanceAll.disabled=true
+  btnRelanceAll.setAttribute(
+    "class",
+    "btn btn-secondary btn_relance_all_faniry_js"
+  );
+  btnRelanceAll.setAttribute("type", "button");
+  btnRelanceAll.disabled=true;
+  btnRelanceAll.dataset.bsToggle = "modal";
+  btnRelanceAll.dataset.bsTarget = "#postulant_modal";
+  btnRelanceAll.innerHTML = "Relancez vos sélections.";
+  return btnRelanceAll;
+}
+
+/**
+ * @author faniry
+ * ecoute les événements de toutes les checkbox
+ * @param {*} element1 
+ * @param {*} elements 
+ */
+function listenCheckBoxPostulant(element1, elements) {
+  elements.forEach((element) => {
+    element.onchange = (e) => {
+      const btnRelanceAll = document.querySelector(
+        ".btn_relance_all_faniry_js"
+      );
+      const whoIsCheked = elements.filter(
+        (element2) => element2.checked === true
+      );
+      console.log(whoIsCheked);
+      if (e.target.checked) {
+        if (elements.length === whoIsCheked.length) {
+          element1.checked = true;
+          btnRelanceAll.classList.remove("btn-secondary");
+          btnRelanceAll.classList.add("btn-primary");
+          disableRelanceAll(btnRelanceAll);
+        } else {
+          btnRelanceAll.classList.remove("btn-secondary");
+          btnRelanceAll.classList.add("btn-primary");
+          disableRelanceAll(btnRelanceAll);
+        }
+      } else {
+        if (elements.length - 1 === whoIsCheked.length) {
+          element1.checked = false;
+        }
+        if (whoIsCheked.length === 0) {
+          btnRelanceAll.classList.remove("btn-primary");
+          btnRelanceAll.classList.add("btn-secondary");
+          disableRelanceAll(btnRelanceAll);
+        }
+      }
+    };
+  });
+}
+
+/**
+ * @author faniry
+ * ecoute les événements du checkbox selectionnez tout
+ * @param {*} element 
+ * @param {*} elements 
+ */
+function listenCheckBoxPostulantForSelectedAll(element, elements) {
+  element.onchange = (e) => {
+    const btnRelanceAll = document.querySelector(".btn_relance_all_faniry_js");
+    if (e.target.checked) {
+      elements.forEach((element) => {
+        element.checked = true;
+      });
+      // relnaceManyInvitation();
+      btnRelanceAll.classList.remove("btn-secondary");
+      btnRelanceAll.classList.add("btn-primary");
+      disableRelanceAll(btnRelanceAll);
+    } else {
+      elements.forEach((element) => {
+        element.checked = false;
+      });
+      btnRelanceAll.classList.remove("btn-primary");
+      btnRelanceAll.classList.add("btn-secondary");
+      disableRelanceAll(btnRelanceAll);
+    }
+  };
+}
+
+/**
+ * @author faniry 
+ * met l'etat disabled au bouton relancez vos selection
+ * @param {*} btnRelanceAll 
+ */
+function disableRelanceAll(btnRelanceAll) {
+  if (btnRelanceAll.classList.contains("btn-secondary")) {
+    btnRelanceAll.disabled = true;
+  } else {
+    btnRelanceAll.disabled = false;
+  }
+}
+
+/**
+ * @faniry
+ * fait le rendu de l'éditeur de l'email pour la relance postulant
+ * @param {*} container 
+ */
+function createModalForPostulant(container) {
+  const divModal = document.createElement("div");
+  divModal.setAttribute("class", "modal fade");
+  divModal.setAttribute("aria-labelledby", "postulantModalLabel");
+  divModal.setAttribute("aria-hidden", "true");
+  divModal.id = "postulant_modal";
+  divModal.innerHTML = `
+		<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+			<h5 class="modal-title" id="postulantModalLabel">Relancez et incitez vos amis à devenir Partisan.</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="basic-addon1">Destinataires</span>
+					<input type="text" id="dest_area_pst" class="form-control destinaire_postulant" placeholder="" aria-label="Destinataire" aria-describedby="basic-addon1" disabled>
+				</div>
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="basic-addon1">Objet</span>
+					<input type="text" id="objet_area_pst" class="form-control objet_destinataire" placeholder="" aria-label="Objet" aria-describedby="basic-addon1">
+				</div>
+				<div id="exampleFormControlTextareaPostulant">
+					<div class="wrapper pt-3 pb-3">
+						<textarea cols="100 invitation_description_js_jheo" id="postulat_email">
+							
+						</textarea>
+
+						<pre id="output"></pre>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<ul class="list-group content_list_piece_joint content_list_piece_joint_jheo_js d-none"></ul>
+
+				<div class="d-flex justify-content-start align-items-center">
+					<div class="p-2 bd-highlight">
+						<button type="button" class="btn btn-primary pst_sb_faniry_js my-3">Envoyer.</button>
+					</div>
+					<div class="p-2 bd-highlight content_input_piece_joint content_input_piece_joint_jheo_js">
+						<div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajout des pièce jointe.</div>
+						<label class="label_piece_joint_jheo_js" for="piece_joint"><i class="label_piece_joint_jheo_js fa-solid fa-paperclip"></i></label>
+						<input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint" name="piece_joint" onchange="addPieceJointPostulant(this)" />
+					</div>
+					<div class="p-2 bd-highlight content_input_piece_joint content_add_image_js">
+						<div class="pointer_cursor message_tooltip_piece_joint d-none add_image_jheo_js">Ajout des images.</div>
+						<label class="pointer_cursor label_add_image_jheo_js" for="piece_joint_image"><i class="fa-solid fa-image"></i></label>
+						<input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_image" name="piece_joint_image" accept="image/png, image/jpeg, image/jpg" onchange="addPieceJointImagePostulant(this)"/>
+					</div>
+				</div>
+			 	
+			</div>
+		</div>
+		</div>
+	`;
+  container.appendChild(divModal);
+  document.getElementById("objet_area_pst").value =
+    "Relance pour valider votre profil sur consomyzone.";
+ 
+}
+
+/**
+ * @author faniry
+ * edit le contenu de l'email de relance  à envoyer
+ * @returns  String html
+ */
+function emailRelanceContent() {
+  const nameTribuT = document.querySelector(
+    "#tribu_t_name_main_head"
+  )?.textContent;
+  let userSender = "";
+  if (document.querySelector(".information_user_conected_jheo_js"))
+    userSender = document.querySelector(".information_user_conected_jheo_js")
+      .dataset.userfullname;
+
+  return `
+		<span>Madame, Monsieur,</span></br>
+
+			<span>Validez votre profil sur consomyzone pour profiter de ses multiples fonctionnalités.</span> 
+			<p>Nous serions ravis de vous compter parmi nos membres.  Votre présence sera une aide précieuse.</br>
+			
+			Dans cette attente, je vous adresse mes cordiales salutations.</p></br>
+			<a href="#" id="link_faniry_js" style="text-decoration:underline;color:blue; cursor:pointer"><span>Validez le profil.</span></a>
+		<span><br/>${userSender}</span>`;
+}
+
+
+/**
+ * @author ajoute une piece jointe fichier à l'email pour la relance postulant
+ * @param {*} input 
+ */
+function addPieceJointPostulant(input) {
+  if (input.files && input.files[0]) {
+    /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants :
+    /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+    const listNotAccepted = [
+      "zip",
+      "css",
+      "html",
+      "sql",
+      "xml",
+      "gz",
+      "bz2",
+      "tgz",
+      "ade",
+      "adp",
+      "apk",
+      "appx",
+      "appxbundle",
+      "bat",
+      "cab",
+      "chm",
+      "cmd",
+      "com",
+      "cpl",
+      "diagcab",
+      "diagcfg",
+      "diagpack",
+      "dll",
+      "dmg",
+      "ex",
+      "ex_",
+      "exe",
+      "hta",
+      "img",
+      "ins",
+      "iso",
+      "isp",
+      "jar",
+      "jnlp",
+      "js",
+      "jse",
+      "lib",
+      "lnk",
+      "mde",
+      "msc",
+      "msi",
+      "msix",
+      "msixbundle",
+      "msp",
+      "mst",
+      "nsh",
+      "pif",
+      "ps1",
+      "scr",
+      "sct",
+      "shb",
+      "sys",
+      "vb",
+      "vbe",
+      "vbs",
+      "vhd",
+      "vxd",
+      "wsc",
+      "wsf",
+      "wsh",
+      "xll",
+    ];
+
+    /// input value to get the original name of the file ( with the fake path )
+    const value = input.value;
+
+    //// to get the extension file
+    const temp = value.split(".");
+    const extensions = temp[temp.length - 1]; /// extension
+
+    ///if the current extension is in the list not accepted.
+    if (
+      !listNotAccepted.some(
+        (item) => item.toLowerCase() === extensions.toLowerCase()
+      ) &&
+      extensions !== value
+    ) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        /// get name the originila name of the file
+        const input_value = value.split("\\");
+        const name = input_value[input_value.length - 1]; /// original name
+
+        ///unique  to identify the file item
+        /// this not save in the database.
+        const id_unique = new Date().getTime();
+
+        ////create item piece joint.
+        createListItemPiece(name, id_unique);
+
+        //// save the item in variable global list piece jointe.
+        fileStore.push({
+          id: id_unique,
+          name,
+          base64File: e.target.result,
+        });
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      /// if the extension is not supported.
+      swal({
+        title: "Le format de fichier n'est pas pris en charge!",
+        icon: "error",
+        button: "OK",
+      });
+    }
+  }
+}
+
+/**
+ * ajoute une piece jointe image à l'email pour la relance postulant
+ * @param {*} input 
+ */
+function addPieceJointImagePostulant(input) {
+  if (input.files && input.files[0]) {
+    /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants :
+    /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+    const listNotAccepted = [
+      "zip",
+      "css",
+      "html",
+      "sql",
+      "xml",
+      "gz",
+      "bz2",
+      "tgz",
+      "ade",
+      "adp",
+      "apk",
+      "appx",
+      "appxbundle",
+      "bat",
+      "cab",
+      "chm",
+      "cmd",
+      "com",
+      "cpl",
+      "diagcab",
+      "diagcfg",
+      "diagpack",
+      "dll",
+      "dmg",
+      "ex",
+      "ex_",
+      "exe",
+      "hta",
+      "img",
+      "ins",
+      "iso",
+      "isp",
+      "jar",
+      "jnlp",
+      "js",
+      "jse",
+      "lib",
+      "lnk",
+      "mde",
+      "msc",
+      "msi",
+      "msix",
+      "msixbundle",
+      "msp",
+      "mst",
+      "nsh",
+      "pif",
+      "ps1",
+      "scr",
+      "sct",
+      "shb",
+      "sys",
+      "vb",
+      "vbe",
+      "vbs",
+      "vhd",
+      "vxd",
+      "wsc",
+      "wsf",
+      "wsh",
+      "xll",
+    ];
+    const listAccepted = ["png", "gif", "jpeg", "jpg"];
+
+    /// input value to get the original name of the file ( with the fake path )
+    const value = input.value;
+
+    //// to get the extension file
+    const temp = value.split(".");
+    const extensions = temp[temp.length - 1]; /// extension
+
+    ///if the current extension is in the list not accepted.
+    if (
+      listAccepted.some((item) => item === extensions) &&
+      !listNotAccepted.some(
+        (item) => item.toLowerCase() === extensions.toLowerCase()
+      ) &&
+      extensions !== value
+    ) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        /// get name the originila name of the file
+        const input_value = value.split("\\");
+        const name = input_value[input_value.length - 1]; /// original name
+
+        ///unique  to identify the file item
+        /// this not save in the database.
+        const id_unique = new Date().getTime();
+
+        ////create item piece joint.
+        createListItemPiece(name, id_unique);
+
+        //// save the item in variable global list piece jointe.
+        fileStore.push({
+          id: id_unique,
+          name,
+          base64File: e.target.result,
+        });
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      /// if the extension is not supported.
+      swal({
+        title: "Le format de fichier n'est pas pris en charge!",
+        icon: "error",
+        button: "OK",
+      });
+    }
+  }
+}
+
+
+function removeListeItemPostulant(e, id) {
+  ///remove html element
+  e.parentElement.remove();
+  ///remove one element in the piece global
+  fileStore = fileStore.filter((item) => parseInt(item.id) != parseInt(id));
+}
+
+/**
+ * @author faniry
+ * envoie l'email pour une seul relance
+ * @param {*} ObjetMail 
+ * @param {*} mailContent 
+ * @param {*} pieceJointe 
+ * @param {*} idUserToSendEmail 
+ */
+
+function sendEmailForPostulant(ObjetMail, 
+  mailContent, 
+  pieceJointe,
+  idUserToSendEmail,
+  element){
+  const data={
+    objetMail:ObjetMail,
+    mailContent:mailContent,
+    pieceJointe:pieceJointe,
+    idUserToSendEmail:idUserToSendEmail
+  }
+  const request=new Request("/user/mail/postulant",{
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data)
+
+  })
+  fetch(request).then((response) =>{
+    if( response.status === 200 && response.ok ){
+        //TODO faire des actions après que le send mail soit fait
+        element.disabled = false;
+        element.textContent="Envoyer."
+        new  swal({
+          title: "Fait",
+          text: "Relance réussi.",
+          icon: "success",
+          button: "OK",
+        });
+    }else{
+        swal({
+          title: "Erreur",
+          text: "Erreur 500",
+          icon: "error",
+          button: "OK",
+        });
+    }
+    
+  })
+}
+
+
+/**
+ * @author faniry
+ * envoie le email pour l'option relancez vos selections.
+ * @param {*} objetMail 
+ * @param {*} mailContent 
+ * @param {*} pieceJointe 
+ */
+function sendEmailForManyPostulant(objetMail,
+  mailContent,
+  pieceJointe,
+  ){
+    const data={
+      objectMail: objetMail,
+      contents: mailContent,
+      pieceJointe: pieceJointe,
+      
+    }
+    const request=new Request("/user/mail/selected/postulant",{
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data)
+  
+    })
+    fetch(request).then((response) =>{
+      if( response.status === 200 && response.ok ){
+        //TODO faire des actions après que le send mail soit fait
+        new  swal({
+          title: "Fait",
+          text: "Relance réussi.",
+          icon: "success",
+          button: "OK",
+        });
+      }else{
+        swal({
+          title: "Erreur",
+          text: "Erreur 500",
+          icon: "error",
+          button: "OK",
+        });
+      }
+    })
 }

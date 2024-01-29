@@ -610,4 +610,136 @@ class SortResultService extends StringTraitementService
     static function getIdFromData($data){
         return $data["id"];
     }
+
+    static function findData($data, $keySearch){
+        $results= null;
+        foreach($data as $temp){
+            if( intval($temp["departement"]) === intval($keySearch)){
+                $results=$temp;
+            }
+        }
+        return $results;
+    }
+
+
+    static function mergeByCalculateData($table){
+
+        extract($table); /// $resto, $ferme, $station, $golf, $tabac
+        $results= [];
+        if( count($resto) < 2 || count($ferme) < 2 || count($station) < 2 || count($golf) < 2 || count($tabac) < 2){
+            $key =  count($resto) > 0 ? $resto[0]["departement"] : ( 
+                        count($ferme) > 0 ? $ferme[0]["departement"] : ( 
+                            count($station) > 0 ? $station[0]["departement"] : ( 
+                                count($station) > 0 ? $station[0]["departement"] : (
+                                    count($golf) > 0 ? $golf[0]["departement"] : (
+                                        $tabac[0]["departement"]
+                                    )
+                                )
+                            )
+                        ) 
+            );
+
+            $result_resto= 0;
+            $result_ferme= 0;
+            $result_station= 0;
+            $result_golf= 0;
+            $result_tabac= 0;
+            $result_total= 0;
+
+            if( SortResultService::findData($resto, $key) ){
+                $data= SortResultService::findData($resto, $key);
+                $result_resto += intval($data["account_per_dep"]);
+            }
+
+            if( SortResultService::findData($ferme, $key) ){
+                $data= SortResultService::findData($ferme, $key);
+                $result_ferme += intval($data["account_per_dep"]);
+            }
+
+            if( SortResultService::findData($station, $key) ){
+                $data= SortResultService::findData($station, $key);
+                $result_station += intval($data["account_per_dep"]);
+            }
+
+            if( SortResultService::findData($golf, $key) ){
+                $data= SortResultService::findData($golf, $key);
+                $result_golf += intval($data["account_per_dep"]);
+            }
+
+            if( SortResultService::findData($tabac, $key) ){
+                $data= SortResultService::findData($tabac, $key);
+                $result_tabac += intval($data["account_per_dep"]);
+            }
+
+            $result_total= $result_resto + $result_ferme + $result_station + $result_golf +  $result_tabac;
+                           
+
+            $result= [
+                "departement" => strlen($key) === 1 ?  "0" . intval($key) : strval($key),
+                "account_per_dep" => $result_total,
+                "details" => [
+                    "resto" => $result_resto,
+                    "ferme" => $result_ferme,
+                    "station" => $result_station,
+                    "golf" => $result_golf,
+                    "tabac" => $result_tabac
+                ]
+            ];
+
+            array_push($results, $result);
+        }else{
+            for($i= 1; $i < 95 ; $i++){
+                
+                $result_resto= 0;
+                $result_ferme= 0;
+                $result_station= 0;
+                $result_golf= 0;
+                $result_tabac= 0;
+                $result_total= 0;
+
+                if( SortResultService::findData($resto, $i) ){
+                    $data= SortResultService::findData($resto, $i);
+                    $result_resto += intval($data["account_per_dep"]);
+                }
+
+                if( SortResultService::findData($ferme, $i) ){
+                    $data= SortResultService::findData($ferme, $i);
+                    $result_ferme += intval($data["account_per_dep"]);
+                }
+
+                if( SortResultService::findData($station, $i) ){
+                    $data= SortResultService::findData($station, $i);
+                    $result_station += intval($data["account_per_dep"]);
+                }
+
+                if( SortResultService::findData($golf, $i) ){
+                    $data= SortResultService::findData($golf, $i);
+                    $result_golf += intval($data["account_per_dep"]);
+                }
+
+                if( SortResultService::findData($tabac, $i) ){
+                    $data= SortResultService::findData($tabac, $i);
+                    $result_tabac += intval($data["account_per_dep"]);
+                }
+
+                $result_total= $result_resto + $result_ferme + $result_station + $result_golf +  $result_tabac;
+
+                $result= [
+                    "departement" => strlen($i) === 1 ?  "0" . intval($i) : strval($i),
+                    "account_per_dep" => $result_total,
+                    "details" => [
+                        "resto" => $result_resto,
+                        "ferme" => $result_ferme,
+                        "station" => $result_station,
+                        "golf" => $result_golf,
+                        "tabac" => $result_tabac
+                    ]
+                ];
+
+                array_push($results, $result);
+            }
+        }
+        
+        return $results;
+    }
 }

@@ -8,9 +8,12 @@ class MarckerClusterResto extends MapModule {
 		this.ALREADY_INIT = false;
 		try {
 			const zoom = this.codinsee ? 13 : null;
-			this.initMap(null, null, zoom, isAddControl);
+			await this.initMap(null, null, zoom, isAddControl);
 
+			////create new marker Cluster for POI etablisment
 			this.createMarkersCluster();
+			////create new marker Cluster special for count per dep.
+			this.createMarkersClusterForCountPerDep();
 
 			/// Three possiblities : all departement, arrondissement, in departement
 			const linkArrond = this.codinsee
@@ -79,7 +82,6 @@ class MarckerClusterResto extends MapModule {
 	}
 
 	createMarkersCluster() {
-		const that = this;
 		this.markers = L.markerClusterGroup({
 			chunkedLoading: true,
 			chunkInterval: 500,
@@ -89,56 +91,56 @@ class MarckerClusterResto extends MapModule {
 			spiderfyOnMaxZoom: true,
 			disableClusteringAtZoom: true,
 		});
+
 		// const that = this;
 		// this.markers = L.markerClusterGroup({
-		//   chunkedLoading: true,
-		//   iconCreateFunction: function (cluster) {
-		//     if (that.marker_last_selected) {
-		//       let sepcMarmerIsExist = false;
-		//       for (let g of cluster.getAllChildMarkers()) {
-		//         if (
-		//           parseInt(that.marker_last_selected.options.id) ===
-		//           parseInt(g.options.id)
-		//         ) {
-		//           sepcMarmerIsExist = true;
-		//           break;
-		//         }
-		//       }
-		//       if (sepcMarmerIsExist) {
-		//         return L.divIcon({
-		//           html:
-		//             '<div class="markers-spec" id="c">' +
-		//             cluster.getChildCount() +
-		//             "</div>",
-		//           className: "spec_cluster",
-		//           iconSize: L.point(35, 35),
-		//         });
-		//       } else {
-		//         return L.divIcon({
-		//           html:
-		//             '<div class="markers_tommy_js">' +
-		//             cluster.getChildCount() +
-		//             "</div>",
-		//           className: "mycluster",
-		//           iconSize: L.point(35, 35),
-		//         });
-		//       }
-		//     } else {
-		//       return L.divIcon({
-		//         html:
-		//           '<div class="markers_tommy_js">' +
-		//           cluster.getChildCount() +
-		//           "</div>",
-		//         className: "mycluster",
-		//         iconSize: L.point(35, 35),
-		//       });
-		//     }
-		//   },
+		// 	chunkedLoading: true,
+		// 	disableClusteringAtZoom: 7,
+		// 	iconCreateFunction: function (cluster) {
+		// 		console.log(cluster);
+		// 		if (that.marker_last_selected) {
+		// 			let sepcMarmerIsExist = false;
+		// 			for (let g of cluster.getAllChildMarkers()) {
+		// 				if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) {
+		// 					sepcMarmerIsExist = true;
+		// 					break;
+		// 				}
+		// 			}
+		// 			if (sepcMarmerIsExist) {
+		// 				return L.divIcon({
+		// 					html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + "</div>",
+		// 					className: "spec_cluster",
+		// 					iconSize: L.point(35, 35),
+		// 				});
+		// 			} else {
+		// 				return L.divIcon({
+		// 					html: '<div class="markers_tommy_js">' + cluster.getChildCount() + "</div>",
+		// 					className: "mycluster",
+		// 					iconSize: L.point(35, 35),
+		// 				});
+		// 			}
+		// 		} else {
+		// 			return L.divIcon({
+		// 				html: '<div class="markers_tommy_js">' + cluster.getChildCount() + "</div>",
+		// 				className: "mycluster",
+		// 				iconSize: L.point(35, 35),
+		// 			});
+		// 		}
+		// 	},
 		// });
 	}
 
+	/**
+	 *  @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+	 *
+	 *  initialize markersClusterGroup with other action bind Event on Map.
+	 */
 	bindAction() {
+		/// marker for poi etabliesment.
 		this.addMarker(this.data);
+		/// marker for count per dep
+		this.addCulsterNumberAtablismentPerDep();
+
 		this.setNumberOfMarker();
 		this.addEventOnMap(this.map);
 	}
@@ -189,7 +191,12 @@ class MarckerClusterResto extends MapModule {
 			}
 		});
 		// console.log(dataFiltered);
-		this.map.addLayer(this.markers);
+
+		/// check if the zoom related to the marker poi
+		if (zoom >= this.zoom_max_for_count_per_dep) {
+			this.map.addLayer(this.markers);
+		}
+
 		this.removePolylineAndSpyderfyMarker();
 	}
 
@@ -216,6 +223,7 @@ class MarckerClusterResto extends MapModule {
 				: resultRestoPastille.length === 1
 				? "assets/icon/NewIcons/icon-resto-new-Rr-org-single.png"
 				: "assets/icon/NewIcons/icon-resto-new-Rr.png";
+
 		let isPastille = resultRestoPastille.length > 0 ? 1 : 0;
 
 		const icon_path = isSelected ? poi_icon_Selected : poi_icon;
@@ -264,9 +272,9 @@ class MarckerClusterResto extends MapModule {
 
 		this.markers.addLayer(marker);
 
+		/// perhaps the map object is not initalized the markers for etablisment
 		if (isSelected) {
 			this.marker_last_selected = marker;
-
 			this.markers.refreshClusters();
 			this.map.addLayer(this.markers);
 		}
@@ -298,11 +306,11 @@ class MarckerClusterResto extends MapModule {
 
 			this.renderFicheDetails(item);
 
-			if(document.querySelector("#dockableIcone_"+item.id))
-				document.querySelector("#dockableIcone_"+item.id).remove()
-			if(document.querySelector("#dockableBtn_"+item.id))
-				document.querySelector("#dockableBtn_"+item.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_" + item.id))
+				document.querySelector("#dockableIcone_" + item.id).remove();
+			if (document.querySelector("#dockableBtn_" + item.id))
+				document.querySelector("#dockableBtn_" + item.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 
@@ -343,6 +351,7 @@ class MarckerClusterResto extends MapModule {
 
 			this.updateMarkersDisplay(new_size);
 			this.addPeripheriqueMarker(new_size);
+
 		});
 	}
 

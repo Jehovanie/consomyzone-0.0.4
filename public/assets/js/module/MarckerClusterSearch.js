@@ -31,8 +31,10 @@ class MarckerClusterSearch extends MapModule {
 		const url = new Request(this.url_test.href.replace("search", "api/search"));
 		this.isAddControl = isAddControl;
 		try {
-			// this.getGeos()
+			////create new marker Cluster for POI etablisment
 			this.createMarkersCluster();
+			////create new marker Cluster special for count per dep.
+			this.createMarkersClusterForCountPerDep();
 
 			const response = await fetch(url);
 			this.default_data = await response.json();
@@ -40,15 +42,8 @@ class MarckerClusterSearch extends MapModule {
 
 			this.listRestoPastille = this.data.allIdRestoPastille;
 
-			// const responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${this.data.origin_cles1}&format=json&limit=1`)
-			// const responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${this.data.origin_cles1}&country=France`)
-			// const address = await responsePos.json();
-
-			//// In cas API openStreetMap failed or return empty
-			// const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
-			// const latLong= (address.length> 0) ? { lat: address[0].lat, long: address[0].lon } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng };
-
 			const latLong = await this.getCenterFromOpenStreetMap();
+
 			this.initMap(latLong.lat, latLong.long, latLong.zoom, this.isAddControl);
 
 			this.bindAction();
@@ -59,83 +54,101 @@ class MarckerClusterSearch extends MapModule {
 		}
 	}
 
-    async getCenterFromOpenStreetMap(){
-        const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
-        let latLong = memoryCenter ? { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng, zoom : memoryCenter.zoom } : { lat: null, long: null, zoom: null };
+	async getCenterFromOpenStreetMap() {
+		const memoryCenter = getDataInSessionStorage("memoryCenter")
+			? JSON.parse(getDataInSessionStorage("memoryCenter"))
+			: null;
+		let latLong = memoryCenter
+			? { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng, zoom: memoryCenter.zoom }
+			: { lat: null, long: null, zoom: null };
 
-        try{
-            let data_origin_cle1=this.data.origin_cles1.trim();
+		try {
+			let data_origin_cle1 = this.data.origin_cles1.trim();
 
-            if((data_origin_cle1.length < 3 && ( parseInt(data_origin_cle1) > 0 &&  parseInt(data_origin_cle1) < 95 ) || data_origin_cle1.toLowerCase() === "nord")){
-                const depCode= data_origin_cle1.toLowerCase() === "nord" ? 59 : parseInt(data_origin_cle1) ;
-                latLong=  { lat: centers[depCode].lat, long: centers[depCode].lng, zoom : centers[depCode].zoom };
-            }else{
-                const dataLink= [
-                    {
-                        regex : /(([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ'.]*\s)\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)*,)*\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+\s([\d]{5})\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']+/gm,
-                        clesType:"completAdresss",
-                        zoom: 17,
-                        link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`
-                    },
-                    {
-                        regex: /[\d]{5}/g,
-                        clesType:"codepostal",
-                        zoom: 13,
-                        link : `https://nominatim.openstreetmap.org/search?format=json&postalcode=${data_origin_cle1}&country=France&limit=1`
-                    },
-                    {
-                        regex: /([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+/g,
-                        clesType : "city",
-                        zoom: 13,
-                        link : `https://nominatim.openstreetmap.org/search?format=json&city=${data_origin_cle1}&country=France&limit=1`
-                    },
-                    
-                ]
-                
-                let useLink = dataLink.find(item =>item.regex.test(data_origin_cle1))
-                
-                const apiOpenStreetMap = useLink ? useLink.link : `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`;
-                let responsePos = await fetch(apiOpenStreetMap)
-                let address = await responsePos.json();
+			if (
+				(data_origin_cle1.length < 3 && parseInt(data_origin_cle1) > 0 && parseInt(data_origin_cle1) < 95) ||
+				data_origin_cle1.toLowerCase() === "nord"
+			) {
+				const depCode = data_origin_cle1.toLowerCase() === "nord" ? 59 : parseInt(data_origin_cle1);
+				latLong = { lat: centers[depCode].lat, long: centers[depCode].lng, zoom: centers[depCode].zoom };
+			} else {
+				const dataLink = [
+					{
+						regex: /(([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ'.]*\s)\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)*,)*\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+\s([\d]{5})\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']+/gm,
+						clesType: "completAdresss",
+						zoom: 17,
+						link: `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`,
+					},
+					{
+						regex: /[\d]{5}/g,
+						clesType: "codepostal",
+						zoom: 13,
+						link: `https://nominatim.openstreetmap.org/search?format=json&postalcode=${data_origin_cle1}&country=France&limit=1`,
+					},
+					{
+						regex: /([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+/g,
+						clesType: "city",
+						zoom: 13,
+						link: `https://nominatim.openstreetmap.org/search?format=json&city=${data_origin_cle1}&country=France&limit=1`,
+					},
+				];
 
-                if( address.length === 0) {
-                    responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`)
-                    address = await responsePos.json();
+				let useLink = dataLink.find((item) => item.regex.test(data_origin_cle1));
 
-                    if( address.length === 0 ){
-                        const cleWord= data_origin_cle1.replaceAll("-", " ").replaceAll("_", " ").split(" ");
-                        const regexCodepostal=/[\d]{5}/g;
+				const apiOpenStreetMap = useLink
+					? useLink.link
+					: `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`;
+				let responsePos = await fetch(apiOpenStreetMap);
+				let address = await responsePos.json();
 
-                        for(let i=0; i < cleWord.length; i++){
-                            const cle= cleWord[i];
+				if (address.length === 0) {
+					responsePos = await fetch(
+						`https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`
+					);
+					address = await responsePos.json();
 
-                            if(regexCodepostal.test(cle)){
-                                responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&postalcode=${cle}&country=France&limit=1`)
-                                address = await responsePos.json();
+					if (address.length === 0) {
+						const cleWord = data_origin_cle1.replaceAll("-", " ").replaceAll("_", " ").split(" ");
+						const regexCodepostal = /[\d]{5}/g;
 
-                            }else{
-                                // responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${cleWord[i]}&format=json&limit=1`)
-                                responsePos = await fetch(`https://nominatim.openstreetmap.org/search?format=json&city=${cle}&country=France&limit=1`)
-                                address = await responsePos.json();
-                            }
+						for (let i = 0; i < cleWord.length; i++) {
+							const cle = cleWord[i];
 
-                            if(address.length !== 0 ){
-                                break;
-                            }
-                        }
-                    }
-                }
-    
-                //// In cas API openStreetMap failed or return empty
-                const memoryCenter= getDataInSessionStorage("memoryCenter") ? JSON.parse(getDataInSessionStorage("memoryCenter")) : null;
-                latLong= (address.length> 0) ? { lat: address[0].lat, long: address[0].lon, zoom: useLink.zoom } : { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng, zoom: memoryCenter.zoom };
-            }
-        }catch (e){
-            console.log(e)
-        }finally{
-            return latLong;
-        }
-    }
+							if (regexCodepostal.test(cle)) {
+								responsePos = await fetch(
+									`https://nominatim.openstreetmap.org/search?format=json&postalcode=${cle}&country=France&limit=1`
+								);
+								address = await responsePos.json();
+							} else {
+								// responsePos = await fetch(`https://nominatim.openstreetmap.org/?addressdetails=1&q=${cleWord[i]}&format=json&limit=1`)
+								responsePos = await fetch(
+									`https://nominatim.openstreetmap.org/search?format=json&city=${cle}&country=France&limit=1`
+								);
+								address = await responsePos.json();
+							}
+
+							if (address.length !== 0) {
+								break;
+							}
+						}
+					}
+				}
+
+				//// In cas API openStreetMap failed or return empty
+				const memoryCenter = getDataInSessionStorage("memoryCenter")
+					? JSON.parse(getDataInSessionStorage("memoryCenter"))
+					: null;
+				latLong =
+					address.length > 0
+						? { lat: address[0].lat, long: address[0].lon, zoom: useLink.zoom }
+						: { lat: memoryCenter.coord.lat, long: memoryCenter.coord.lng, zoom: memoryCenter.zoom };
+			}
+		} catch (e) {
+			console.log(e);
+		} finally {
+			return latLong;
+		}
+	}
 
 	saveBoundsMap() {
 		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
@@ -171,7 +184,10 @@ class MarckerClusterSearch extends MapModule {
 
 	bindAction() {
 		const { results } = this.data;
+		/// marker for poi etabliesment.
 		this.addMarker(results[0]);
+		/// marker for count per dep
+		this.addCulsterNumberAtablismentPerDep();
 
 		this.addEventOnMap(this.map);
 	}
@@ -248,6 +264,8 @@ class MarckerClusterSearch extends MapModule {
 
 			const dataFiltered = this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
 
+			const numberOfRubrique = 5;
+
 			newData.forEach((item) => {
 				const isInside =
 					parseFloat(item.lat) > parseFloat(miny) &&
@@ -258,9 +276,9 @@ class MarckerClusterSearch extends MapModule {
 
 				if (
 					dataFiltered.some(
-						(jtem) => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax
-					) &&
-					isInside
+						(jtem) =>
+							parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax * numberOfRubrique
+					) && isInside
 				) {
 					this.settingSingleMarker(item, false);
 
@@ -272,12 +290,14 @@ class MarckerClusterSearch extends MapModule {
 				}
 				// this.settingSingleMarker(item, false);
 			});
-			////affiche les resultats.
-			this.map.addLayer(this.markers);
+			
+			/// check if the zoom related to the marker poi
+			if (zoom >= this.zoom_max_for_count_per_dep) {
+				this.map.addLayer(this.markers);
+			}
+
 			this.removePolylineAndSpyderfyMarker();
-			// ////count marker in map
-			// this.countMarkerInCart()
-		}
+					}
 	}
 
 	addStation(dataStation) {
@@ -480,11 +500,11 @@ class MarckerClusterSearch extends MapModule {
 
 			this.markers.refreshClusters();
 
-			if(document.querySelector("#dockableIcone_"+type+"_"+item.id))
-				document.querySelector("#dockableIcone_"+type+"_"+item.id).remove()
-			if(document.querySelector("#dockableBtn_"+type+"_"+item.id))
-				document.querySelector("#dockableBtn_"+type+"_"+item.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_" + type + "_" + item.id))
+				document.querySelector("#dockableIcone_" + type + "_" + item.id).remove();
+			if (document.querySelector("#dockableBtn_" + type + "_" + item.id))
+				document.querySelector("#dockableBtn_" + type + "_" + item.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 
@@ -508,11 +528,11 @@ class MarckerClusterSearch extends MapModule {
 			this.renderFicheDetails(item, "resto");
 
 			this.markers.refreshClusters();
-			if(document.querySelector("#dockableIcone_resto_"+item.id))
-				document.querySelector("#dockableIcone_resto_"+item.id).remove()
-			if(document.querySelector("#dockableBtn_resto_"+item.id))
-				document.querySelector("#dockableBtn_resto_"+item.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_resto_" + item.id))
+				document.querySelector("#dockableIcone_resto_" + item.id).remove();
+			if (document.querySelector("#dockableBtn_resto_" + item.id))
+				document.querySelector("#dockableBtn_resto_" + item.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 
@@ -537,11 +557,11 @@ class MarckerClusterSearch extends MapModule {
 			this.renderFicheDetails(item, "golf");
 
 			this.markers.refreshClusters();
-			if(document.querySelector("#dockableIcone_golf_"+item.id))
-				document.querySelector("#dockableIcone_golf_"+item.id).remove()
-			if(document.querySelector("#dockableBtn_golf_"+item.id))
-				document.querySelector("#dockableBtn_golf_"+item.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_golf_" + item.id))
+				document.querySelector("#dockableIcone_golf_" + item.id).remove();
+			if (document.querySelector("#dockableBtn_golf_" + item.id))
+				document.querySelector("#dockableBtn_golf_" + item.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 
@@ -562,11 +582,11 @@ class MarckerClusterSearch extends MapModule {
 			this.renderFicheDetails(item, "tabac");
 
 			this.markers.refreshClusters();
-			if(document.querySelector("#dockableIcone_tabac_"+item.id))
-				document.querySelector("#dockableIcone_tabac_"+item.id).remove()
-			if(document.querySelector("#dockableBtn_tabac_"+item.id))
-				document.querySelector("#dockableBtn_tabac_"+item.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_tabac_" + item.id))
+				document.querySelector("#dockableIcone_tabac_" + item.id).remove();
+			if (document.querySelector("#dockableBtn_tabac_" + item.id))
+				document.querySelector("#dockableBtn_tabac_" + item.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 

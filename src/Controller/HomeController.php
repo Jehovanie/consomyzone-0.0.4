@@ -735,4 +735,56 @@ class HomeController extends AbstractController
        //  $last_photo = $tabPhoto[count($tabPhoto)-1];
    }
 
+#[Route("/number_etablisement/{type}/{dep}", name:"app_get_number_etablisements",methods:["POST","GET"])]
+    public function getNumberPerDepRubrique(
+        $type,
+        $dep,
+        BddRestoRepository $bddRestoRepository,
+        FermeGeomRepository $fermeGeomRepository,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository,
+        GolfFranceRepository $golfFranceRepository,
+        TabacRepository $tabacRepository,
+    ){
+        $dep_specifique= intval($dep) === 0 ? null : ( strlen($dep) === 1 ?  "0" . intval($dep) : $dep);
+        if( $type === "resto" || $type === "restaurant"){
+            $nbr_etablisement_per_dep = $bddRestoRepository->getAccountAllPerDep($dep_specifique);
+        }else if( $type === "ferme"){
+            $nbr_etablisement_per_dep = $fermeGeomRepository->getAccountAllPerDep($dep_specifique);
+        }else if( $type === "station"){
+            $nbr_etablisement_per_dep = $stationServiceFrGeomRepository->getAccountAllPerDep($dep_specifique);
+        }else if( $type === "golf"){
+            $nbr_etablisement_per_dep = $golfFranceRepository->getAccountAllPerDep($dep_specifique);
+        }else if( $type === "tabac"){
+            $nbr_etablisement_per_dep = $tabacRepository->getAccountAllPerDep($dep_specifique);
+        }else if ($type === "tous"){
+            
+            $resto = $bddRestoRepository->getAccountAllPerDep($dep_specifique);
+            $ferme = $fermeGeomRepository->getAccountAllPerDep($dep_specifique);
+            $station = $stationServiceFrGeomRepository->getAccountAllPerDep($dep_specifique);
+            $golf = $golfFranceRepository->getAccountAllPerDep($dep_specifique);
+            $tabac = $tabacRepository->getAccountAllPerDep($dep_specifique);
+
+            $nbr_etablisement_per_dep= SortResultService::mergeByCalculateData([
+                "resto" => $resto, 
+                "ferme" => $ferme, 
+                "station" => $station, 
+                "golf" => $golf, 
+                "tabac" => $tabac
+            ]);
+
+        }
+
+        $total= 0;
+        foreach ($nbr_etablisement_per_dep as $sum_per_dep){
+            $total += $sum_per_dep['account_per_dep'];
+        }
+
+        return $this->json([
+            "type" => $type,
+            "departement" => $dep,
+            "total" => $total,
+            "nbr_etablisement_per_dep" => $nbr_etablisement_per_dep
+        ], 200);
+    }
+
 }

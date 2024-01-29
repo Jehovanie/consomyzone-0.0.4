@@ -5,7 +5,7 @@ const eventSource = new EventSource("/user/invitation/update");
 eventSource.addEventListener("refreshInvitation", e => {
 	const invitationsDatas = JSON.parse(e.data)
      
-	console.log(invitationsDatas)
+	//console.log(invitationsDatas)
 	const ulContents = document.querySelector("#contenus")
 	// for(const childNode of ulContents.childNodes) 
 	// 	ulContents.removeChild(childNode)
@@ -55,7 +55,7 @@ eventSource.addEventListener("refreshInvitation", e => {
 				for (let cardInvitation of cardInvitations) {
 					array.push(cardInvitation.dataset.rank)
 				}
-				console.log(array)
+				//console.log(array)
 				if (!array.includes(invitationsData["requesting"]["id"].toString())) {
 					ulContents.innerHTML += liContenus
 				    initInviationOnglet()
@@ -66,7 +66,7 @@ eventSource.addEventListener("refreshInvitation", e => {
 				for (let cardInvitation of cardInvitations) {
 					array.push(cardInvitation.dataset.rank)
 				}
-				console.log(array)
+				//console.log(array)
 				if (array.includes(invitationsData["requesting"]["id"].toString())) {
 					const li = document.querySelector(`li[data-rank="${invitationsData["requesting"]["id"]}"]`)
 					//li.parentNode.removeChild(li)
@@ -109,7 +109,7 @@ eventSource.addEventListener("refreshInvitation", e => {
 				for (let cardInvitation of cardInvitations) {
 					array.push(cardInvitation.dataset.rank)
 				}
-				console.log(array)
+				//console.log(array)
 				if (!array.includes(invitationsData["requesting"]["id"].toString())) {
 					ulContents.innerHTML += liContenus
 					initInviationOnglet()
@@ -120,7 +120,7 @@ eventSource.addEventListener("refreshInvitation", e => {
 				for (let cardDemande of cardDemandes) {
 					array.push(cardDemande.dataset.rank)
 				}
-				console.log(array)
+				//console.log(array)
 				if (array.includes(invitationsData["requesting"]["id"].toString())) {
 					const li = document.querySelector(`li[data-rank="${invitationsData["requesting"]["id"]}"]`)
 					//li.parentNode.removeChild(li)
@@ -173,6 +173,9 @@ function initInviationOnglet() {
 }
 
 function addHookClick(liOnglet,liContenuInvitations,liContenuDemandes){
+
+	//document.querySelector(".invit-h").classList.remove("actif");
+
 	for (var i = 0; i < liOnglet.length; i++) {
 
 
@@ -182,7 +185,7 @@ function addHookClick(liOnglet,liContenuInvitations,liContenuDemandes){
 			/*for (var j = 0; j < liOnglet.length; j++){
 				liOnglet[j].classList.toggle("activ");
 			}*/
-            console.log(e.target)
+            //console.log(e.target)
 			if (e.target.classList.contains("invit-r")) {
 				//document.querySelector(".invit-d").classList.remove("actif")
 				e.target.classList.add("actif");
@@ -192,22 +195,37 @@ function addHookClick(liOnglet,liContenuInvitations,liContenuDemandes){
 				}
 				//console.log(liOnglet[1])
 				liOnglet[1].classList.remove("actif");
+				liOnglet[2].classList.remove("actif");
 				for (let liContenuDemande of liContenuDemandes) {
-					console.log(liContenuDemande)
+					//console.log(liContenuDemande)
 					liContenuDemande.classList.remove("actif");
 				}
 
-			} else {
-				//document.querySelector(".invit-r").classList.remove("actif")
+				document.querySelector("#contenus").classList.remove("d-none")
+				document.querySelector("#listeHistorique").classList.add("d-none");
+
+			// Edit by Elie 22/01/2024
+			} else if(e.target.classList.contains("invit-h")){
+				e.target.classList.add("actif");
+				liOnglet[1].classList.remove("actif");
+				liOnglet[0].classList.remove("actif");
+
+			} 
+			//End of Elie 22/01/2024
+			else{
 				e.target.classList.add("actif");
 				for (let liContenuDemande of liContenuDemandes) {
 					liContenuDemande.classList.add("actif");
 
 				}
 				liOnglet[0].classList.remove("actif");
+				liOnglet[2].classList.remove("actif");
 				for (let liContenuInvitation of liContenuInvitations) {
 					liContenuInvitation.classList.remove("actif");
 				}
+
+				document.querySelector("#contenus").classList.remove("d-none")
+				document.querySelector("#listeHistorique").classList.add("d-none");
 			}
 
 		});
@@ -221,11 +239,11 @@ function acceptInvitation(e){
     const idReceiverNotif = e.classList[3].replace(/[^0-9]/g, "")
     const balise = e.dataset.b
     const tbt = e.dataset.tbt
-    console.log("balise" + balise)
+    //console.log("balise" + balise)
     const url = `/user/invitations/confirm/${id}/${idReceiverNotif}/${balise}/${tbt}`
     fetch(url)
         .then(res => {
-            console.log(res.json())
+           // console.log(res.json())
             if (res.ok && res.status == 200) {
                 //document.querySelector(".remove_invitation").parentElement.removeChild(document.querySelector(".remove_invitation"));
 				e.parentElement.parentElement.parentElement.remove();
@@ -287,5 +305,6 @@ function annuledDemand(e){
     })
 
 }
+
 
 </script>

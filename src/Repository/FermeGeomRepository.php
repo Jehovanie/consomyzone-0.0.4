@@ -977,6 +977,28 @@ class FermeGeomRepository extends ServiceEntityRepository
                     ->getOneOrNullResult();
     }
 
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * @param null|integer $code_dep,
+     * 
+     * @return array [ [ "departement" => .., "account_per_dep" => ... ], ... ]
+     */
+    function getAccountAllPerDep($code_dep=null){
+        $qb = $this->createQueryBuilder('r')
+            ->select('r.departement as departement', 'COUNT(DISTINCT r.nomFerme) as account_per_dep')
+            ->groupBy('r.departement');
+        
+        if( $code_dep != null ){
+            $qb = $qb->where('r.departement = :dep')
+                     ->setParameter('dep', $code_dep);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+
+
     //    /**
     //     * @return FermeGeom[] Returns an array of FermeGeom objects
     //     */

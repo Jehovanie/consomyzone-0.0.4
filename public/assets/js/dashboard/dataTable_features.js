@@ -12,6 +12,7 @@
 //         { title: 'Salary' },
 //     ],
 // }
+var fileStoreAdmin=[]
 var __markerOld1 = null,
   __markerOld2 = null;
 var __map1, __map2;
@@ -995,3 +996,598 @@ function showValidationStory() {
       validationStoryContainer.innerHTML = table;
     });
 }
+//---------------faniry blocks -----------------
+/**
+ * @author faniry
+ */
+
+function getListPostulant(e){
+
+  let linkActives = document.querySelectorAll(
+    "#navbarSuperAdmin > ul > li > a"
+  );
+  linkActives.forEach((link) => {
+    if (link.classList.contains("text-primary"))
+      link.classList.remove("text-primary");
+  });
+  if (e) {
+    e.target.classList.add("text-primary");
+  } else {
+    document.querySelector(".addr_faniry_js").classList.add("text-primary");
+  }
+
+  if (document.querySelector("#list-tribu-g"))
+    document.querySelector("#list-tribu-g").style.display = "none";
+  if (document.querySelector("#list-demande-partenaire"))
+    document.querySelector("#list-demande-partenaire").style.display = "none";
+
+  if (document.querySelector("#list-infoAvalider"))
+    document.querySelector("#list-infoAvalider").style.display = "none";
+
+  if (document.querySelector("#list-abonnement-cmz"))
+    document.querySelector("#list-abonnement-cmz").style.display = "none";
+
+  if(document.getElementById("list-postulant"))
+      document.getElementById("list-postulant").style.display = "block";
+  document.querySelector(".content_list_postulan_faniry_js"
+  ).innerHTML = `<div class="spinner-border spin_faniry text-info" role="status">
+                  <span class="visually-hidden">Loading...</span>
+              </div>`;
+  const request =new Request("/user/postulant/v2",{
+        method: "GET",
+  });
+  fetch(request).then((res)=>{
+      if (res.status === 200 && res.ok) {
+        document.querySelector(".spin_faniry").remove(); 
+        res.json().then(json=>{
+            renderPostulantList(json);
+        });
+         
+      }
+  })
+}
+
+function renderPostulantList(postulants){
+  let container=document.querySelector(".content_list_postulan_faniry_js"
+  );
+  if(!document.querySelector("#postulant_modal"))
+      createModalForPostulantAdmin(container)
+  initCKEditor(
+    "exampleFormControlTextareaPostulant",
+    emailRelanceContent
+  );
+  const headTitles = ["Pseudo", "Email", "Relance"];
+  const postulantTable = document.createElement("table");
+
+  postulantTable.setAttribute("class", "cell-border hover ");
+  postulantTable.id = "table_postulants";
+
+  const postulantTableHead = document.createElement("thead");
+  const postulantTableBody = document.createElement("tbody");
+  const postulantTableHaedRow = document.createElement("tr");
+
+  let postulantTableBodyRow = null;
+  let th = null;
+ 
+  let tdPseudo = null;
+
+  let tdEmail = null;
+  let tdRelance = null;
+  let btnRelance = null;
+  headTitles.forEach((headTitle) => {
+    th = document.createElement("th");
+    th.innerText = headTitle;
+    postulantTableHaedRow.appendChild(th);
+  });
+  postulantTableHead.appendChild(postulantTableHaedRow);
+
+  postulants.forEach((postulant) => {
+    postulantTableBodyRow = document.createElement("tr");
+
+   
+    tdPseudo = document.createElement("td");
+    tdPseudo.setAttribute("class","pso_faniry")
+    tdEmail = document.createElement("td");
+    tdEmail.setAttribute("class","ml_faniry");
+    tdRelance = document.createElement("td");
+    tdPseudo.innerText = postulant.pseudo;
+    tdEmail.innerText = postulant.email;
+    btnRelance = creaTeBtnRelanceAdmin(postulant);
+    tdRelance.appendChild(btnRelance);
+    postulantTableBodyRow.appendChild(tdPseudo);
+    postulantTableBodyRow.appendChild(tdEmail);
+    postulantTableBodyRow.appendChild(tdRelance);
+
+    postulantTableBody.appendChild(postulantTableBodyRow);
+
+    relanceOneIvitationAdmin(btnRelance, postulant);
+  });
+
+  postulantTable.appendChild(postulantTableHead);
+  postulantTable.appendChild(postulantTableBody);
+
+  container.appendChild(postulantTable);
+  // container.appendChild(createBtnRelanceAll());
+
+  $("#table_postulants").DataTable({
+    autoWidth: false,
+    language: {
+      url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+    },
+  });
+
+}
+
+/**
+ * @author faniry
+ * créé le bouton relancez vos selection
+ * @returns HtMLElement
+ */
+function createBtnRelanceAll() {
+  const btnRelanceAll = document.createElement("button");
+  //btnRelanceAll.disabled=true
+  btnRelanceAll.setAttribute(
+    "class",
+    "btn btn-secondary btn_relance_all_faniry_js"
+  );
+  btnRelanceAll.setAttribute("type", "button");
+  btnRelanceAll.disabled=true;
+  btnRelanceAll.dataset.bsToggle = "modal";
+  btnRelanceAll.dataset.bsTarget = "#postulant_modal";
+  btnRelanceAll.innerHTML = "Relancez vos sélections.";
+  return btnRelanceAll;
+}
+
+/***
+ * @author faniry <faniryandriamihaingo@gmail.com> doesn't disturb me when I'm off
+ * créé le boutton de relance
+ * @returns HtMLElement
+ */
+function creaTeBtnRelanceAdmin(data) {
+  const btn = document.createElement("button");
+  btn.setAttribute("class", "btn btn-primary btn_relance_faniry_js");
+  btn.id = `relance_${data.userId}_faniry_js`;
+  btn.dataset.rank = cryptageJs(data.userId);
+  btn.dataset.bsToggle = "modal";
+  btn.dataset.bsTarget = "#postulant_modal";
+  btn.setAttribute("type", "button");
+  btn.innerHTML = "Relancez";
+
+  return btn;
+}
+
+/**
+ * @author faniry <faniryandriamihaingo@gmail.com> doesn't disturb me when I'm off
+ * fait la relance
+ */
+function relanceOneIvitationAdmin(element, data) {
+	
+  element.onclick = (e) => {
+      
+    // const btnRelanceAll = document.querySelector(".btn_relance_all_faniry_js");
+    // if (btnRelanceAll.classList.contains("btn-primary")) {
+    //   //TODO on utilise les check box qui relance
+    //     relanceManyInvitation(tribuName) 
+    // } else {
+      //TODO on relance la personne relative au boutton relance
+        console.log(data)
+        const idCrypted=cryptageJs(data.id);
+        const cryiptedEmail=cryptageJs(data.email)
+        document.getElementById("dest_area_pst").value=data.email
+      	const link1 = window.origin + `/verification_email?id=${idCrypted}&verif=a`;
+        const tmpElement=document.createElement("div");
+        tmpElement.innerHTML =editor.getData();
+        tmpElement.querySelector("#link_faniry_js").href=link1;
+        const emailContaint=tmpElement.innerHTML;
+        editor.setData(emailContaint); 
+        //todo send email
+       
+        
+        document.querySelector(".pst_sb_faniry_js").onclick=(ev)=>{
+          ev.target.disabled = true;
+          ev.target.textContent = "Envoie en cours ...";
+          const objet= cryptageJs((document.getElementById("objet_area_pst").value))
+          const email=cryptageJs(editor.getData());
+          sendEmailForPostulant(objet,email,fileStoreAdmin,idCrypted, ev.target)
+
+        }
+        //
+    //}
+  };
+}
+
+/**
+ * @faniry
+ * fait le rendu de l'éditeur de l'email pour la relance postulant
+ * @param {*} container 
+ */
+function createModalForPostulantAdmin() {
+  container = document.querySelector(".container-fluid")
+  const divModal = document.createElement("div");
+  divModal.setAttribute("class", "modal fade");
+  divModal.setAttribute("aria-labelledby", "postulantModalLabel");
+  divModal.setAttribute("aria-hidden", "true");
+  divModal.id = "postulant_modal";
+  divModal.style.zIndex="1000";
+  divModal.innerHTML = `
+		<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+			<h5 class="modal-title" id="postulantModalLabel">Relancez et incitez vos amis à devenir Partisan.</h5>
+			<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="basic-addon1">Destinataires</span>
+					<input type="text" id="dest_area_pst" class="form-control destinaire_postulant" placeholder="" aria-label="Destinataire" aria-describedby="basic-addon1" disabled>
+				</div>
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="basic-addon1">Objet</span>
+					<input type="text" id="objet_area_pst" class="form-control objet_destinataire" placeholder="" aria-label="Objet" aria-describedby="basic-addon1">
+				</div>
+				<div id="exampleFormControlTextareaPostulant">
+					<div class="wrapper pt-3 pb-3">
+						<textarea cols="100 invitation_description_js_jheo" id="postulat_email">
+							
+						</textarea>
+
+						<pre id="output"></pre>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<ul class="list-group content_list_piece_joint content_list_piece_joint_jheo_js d-none"></ul>
+
+				<div class="d-flex justify-content-start align-items-center">
+					<div class="p-2 bd-highlight">
+						<button type="button" class="btn btn-primary pst_sb_faniry_js my-3">Envoyer.</button>
+					</div>
+					<div class="p-2 bd-highlight content_input_piece_joint content_input_piece_joint_jheo_js">
+						<div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajout des pièce jointe.</div>
+						<label class="label_piece_joint_jheo_js" for="piece_joint"><i class="label_piece_joint_jheo_js fa-solid fa-paperclip"></i></label>
+						<input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint" name="piece_joint" onchange="addPieceJointPostulant(this)" />
+					</div>
+					<div class="p-2 bd-highlight content_input_piece_joint content_add_image_js">
+						<div class="pointer_cursor message_tooltip_piece_joint d-none add_image_jheo_js">Ajout des images.</div>
+						<label class="pointer_cursor label_add_image_jheo_js" for="piece_joint_image"><i class="fa-solid fa-image"></i></label>
+						<input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_image" name="piece_joint_image" accept="image/png, image/jpeg, image/jpg" onchange="addPieceJointImagePostulant(this)"/>
+					</div>
+				</div>
+			 	
+			</div>
+		</div>
+		</div>
+	`;
+  container.appendChild(divModal);
+  document.getElementById("objet_area_pst").value =
+    "Relance pour valider votre profil sur consomyzone.";
+  // document.querySelector(".btn-close").onclick=()=>{
+  //    document.querySelector("#postulant_modal").remove();
+  // }
+ 
+}
+
+/**
+ * @author faniry
+ * edit le contenu de l'email de relance  à envoyer
+ * @returns  String html
+ */
+function emailRelanceContent() {
+ 
+  let userSender = "";
+  if (document.querySelector(".information_user_conected_jheo_js"))
+    userSender = document.querySelector(".information_user_conected_jheo_js")
+      .dataset.userfullname;
+
+  return `
+		<span>Madame, Monsieur,</span></br>
+
+			<span>Validez votre profil sur consomyzone pour profiter de ses multiples fonctionnalités.</span> 
+			<p>Nous serions ravis de vous compter parmi nos membres.  Votre présence sera une aide précieuse.</br>
+			
+			Dans cette attente, je vous adresse mes cordiales salutations.</p></br>
+			<a href="#" id="link_faniry_js" style="text-decoration:underline;color:blue; cursor:pointer"><span>Validez le profil.</span></a>
+		<span><br/>${userSender}</span>`;
+}
+
+
+/**
+ * @author ajoute une piece jointe fichier à l'email pour la relance postulant
+ * @param {*} input 
+ */
+function addPieceJointPostulant(input) {
+  if (input.files && input.files[0]) {
+    /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants :
+    /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+    const listNotAccepted = [
+      "zip",
+      "css",
+      "html",
+      "sql",
+      "xml",
+      "gz",
+      "bz2",
+      "tgz",
+      "ade",
+      "adp",
+      "apk",
+      "appx",
+      "appxbundle",
+      "bat",
+      "cab",
+      "chm",
+      "cmd",
+      "com",
+      "cpl",
+      "diagcab",
+      "diagcfg",
+      "diagpack",
+      "dll",
+      "dmg",
+      "ex",
+      "ex_",
+      "exe",
+      "hta",
+      "img",
+      "ins",
+      "iso",
+      "isp",
+      "jar",
+      "jnlp",
+      "js",
+      "jse",
+      "lib",
+      "lnk",
+      "mde",
+      "msc",
+      "msi",
+      "msix",
+      "msixbundle",
+      "msp",
+      "mst",
+      "nsh",
+      "pif",
+      "ps1",
+      "scr",
+      "sct",
+      "shb",
+      "sys",
+      "vb",
+      "vbe",
+      "vbs",
+      "vhd",
+      "vxd",
+      "wsc",
+      "wsf",
+      "wsh",
+      "xll",
+    ];
+
+    /// input value to get the original name of the file ( with the fake path )
+    const value = input.value;
+
+    //// to get the extension file
+    const temp = value.split(".");
+    const extensions = temp[temp.length - 1]; /// extension
+
+    ///if the current extension is in the list not accepted.
+    if (
+      !listNotAccepted.some(
+        (item) => item.toLowerCase() === extensions.toLowerCase()
+      ) &&
+      extensions !== value
+    ) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        /// get name the originila name of the file
+        const input_value = value.split("\\");
+        const name = input_value[input_value.length - 1]; /// original name
+
+        ///unique  to identify the file item
+        /// this not save in the database.
+        const id_unique = new Date().getTime();
+
+        ////create item piece joint.
+        createListItemPiece(name, id_unique);
+
+        //// save the item in variable global list piece jointe.
+        fileStoreAdmin.push({
+          id: id_unique,
+          name,
+          base64File: e.target.result,
+        });
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      /// if the extension is not supported.
+      swal({
+        title: "Le format de fichier n'est pas pris en charge!",
+        icon: "error",
+        button: "OK",
+      });
+    }
+  }
+}
+
+/**
+ * ajoute une piece jointe image à l'email pour la relance postulant
+ * @param {*} input 
+ */
+function addPieceJointImagePostulant(input) {
+  if (input.files && input.files[0]) {
+    /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants :
+    /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+    const listNotAccepted = [
+      "zip",
+      "css",
+      "html",
+      "sql",
+      "xml",
+      "gz",
+      "bz2",
+      "tgz",
+      "ade",
+      "adp",
+      "apk",
+      "appx",
+      "appxbundle",
+      "bat",
+      "cab",
+      "chm",
+      "cmd",
+      "com",
+      "cpl",
+      "diagcab",
+      "diagcfg",
+      "diagpack",
+      "dll",
+      "dmg",
+      "ex",
+      "ex_",
+      "exe",
+      "hta",
+      "img",
+      "ins",
+      "iso",
+      "isp",
+      "jar",
+      "jnlp",
+      "js",
+      "jse",
+      "lib",
+      "lnk",
+      "mde",
+      "msc",
+      "msi",
+      "msix",
+      "msixbundle",
+      "msp",
+      "mst",
+      "nsh",
+      "pif",
+      "ps1",
+      "scr",
+      "sct",
+      "shb",
+      "sys",
+      "vb",
+      "vbe",
+      "vbs",
+      "vhd",
+      "vxd",
+      "wsc",
+      "wsf",
+      "wsh",
+      "xll",
+    ];
+    const listAccepted = ["png", "gif", "jpeg", "jpg"];
+
+    /// input value to get the original name of the file ( with the fake path )
+    const value = input.value;
+
+    //// to get the extension file
+    const temp = value.split(".");
+    const extensions = temp[temp.length - 1]; /// extension
+
+    ///if the current extension is in the list not accepted.
+    if (
+      listAccepted.some((item) => item === extensions) &&
+      !listNotAccepted.some(
+        (item) => item.toLowerCase() === extensions.toLowerCase()
+      ) &&
+      extensions !== value
+    ) {
+      var reader = new FileReader();
+      reader.onload = function (e) {
+        /// get name the originila name of the file
+        const input_value = value.split("\\");
+        const name = input_value[input_value.length - 1]; /// original name
+
+        ///unique  to identify the file item
+        /// this not save in the database.
+        const id_unique = new Date().getTime();
+
+        ////create item piece joint.
+        createListItemPiece(name, id_unique);
+
+        //// save the item in variable global list piece jointe.
+        fileStoreAdmin.push({
+          id: id_unique,
+          name,
+          base64File: e.target.result,
+        });
+      };
+
+      reader.readAsDataURL(input.files[0]);
+    } else {
+      /// if the extension is not supported.
+      swal({
+        title: "Le format de fichier n'est pas pris en charge!",
+        icon: "error",
+        button: "OK",
+      });
+    }
+  }
+}
+
+
+function removeListeItemPostulant(e, id) {
+  ///remove html element
+  e.parentElement.remove();
+  ///remove one element in the piece global
+  fileStoreAdmin = fileStoreAdmin.filter((item) => parseInt(item.id) != parseInt(id));
+}
+
+/**
+ * @author faniry
+ * envoie l'email pour une seul relance
+ * @param {*} ObjetMail 
+ * @param {*} mailContent 
+ * @param {*} pieceJointe 
+ * @param {*} idUserToSendEmail 
+ */
+
+function sendEmailForPostulant(ObjetMail, 
+  mailContent, 
+  pieceJointe,
+  idUserToSendEmail,
+  element){
+  const data={
+    objetMail:ObjetMail,
+    mailContent:mailContent,
+    pieceJointe:pieceJointe,
+    idUserToSendEmail:idUserToSendEmail
+  }
+  const request=new Request("/user/mail/postulant",{
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data)
+
+  })
+  fetch(request).then((response) =>{
+    if( response.status === 200 && response.ok ){
+        //TODO faire des actions après que le send mail soit fait
+        element.disabled = false;
+        element.textContent="Envoyer."
+        new  swal({
+          title: "Fait",
+          text: "Relance réussi.",
+          icon: "success",
+          button: "OK",
+        });
+    }else{
+        swal({
+          title: "Erreur",
+          text: "Erreur 500",
+          icon: "error",
+          button: "OK",
+        });
+    }
+    
+  })
+}
+//--------------end block faniry-----

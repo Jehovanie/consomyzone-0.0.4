@@ -359,7 +359,7 @@ class ToutsController extends AbstractController
             $moyenne_golfs= $avisGolfRepository->getAllNoteById($ids_golf);
             
             return $this->json([
-                "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, "", "", 100),
+                "station" => $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy,100),
                 "ferme" => $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, 100),
                 "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
                 "golf" => $golfFranceService->mergeDatasAndAvis($golfs, $moyenne_golfs),

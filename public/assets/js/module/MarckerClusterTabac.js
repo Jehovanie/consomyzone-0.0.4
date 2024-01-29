@@ -6,7 +6,11 @@ class MarckerClusterTabac extends MapModule {
 	async onInit(isAddControl) {
 		this.ALREADY_INIT = false;
 		try {
+			////create new marker Cluster for POI etablisment
 			this.createMarkersCluster();
+			////create new marker Cluster special for count per dep.
+			this.createMarkersClusterForCountPerDep();
+
 			this.initMap(null, null, null, isAddControl);
 
 			const link =
@@ -24,7 +28,10 @@ class MarckerClusterTabac extends MapModule {
 	}
 
 	bindAction() {
+		/// marker for poi etabliesment.
 		this.addMarker(this.data);
+		/// marker for count per dep
+		this.addCulsterNumberAtablismentPerDep();
 		// this.setNumberOfMarker();
 		this.addEventOnMap(this.map);
 	}
@@ -134,7 +141,11 @@ class MarckerClusterTabac extends MapModule {
 				});
 			}
 		});
-		this.map.addLayer(this.markers);
+
+		/// check if the zoom related to the marker poi
+		if (zoom >= this.zoom_max_for_count_per_dep) {
+			this.map.addLayer(this.markers);
+		}
 		this.removePolylineAndSpyderfyMarker();
 	}
 
@@ -196,11 +207,11 @@ class MarckerClusterTabac extends MapModule {
 			this.markers.refreshClusters();
 
 			this.renderFicheDetails(item);
-			if(document.querySelector("#dockableIcone_"+item.id))
-				document.querySelector("#dockableIcone_"+item.id).remove()
-			if(document.querySelector("#dockableBtn_"+item.id))
-				document.querySelector("#dockableBtn_"+item.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_" + item.id))
+				document.querySelector("#dockableIcone_" + item.id).remove();
+			if (document.querySelector("#dockableBtn_" + item.id))
+				document.querySelector("#dockableBtn_" + item.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 
@@ -260,7 +271,7 @@ class MarckerClusterTabac extends MapModule {
 	 * Fetch all related data from the boundaries...
 	 * @param {*} new_size  { minx, miny, maxx, maxy }
 	 */
-	async addPeripheriqueMarker(new_size) {
+	async addPeripheriqueMarker(new_size) { 
 		try {
 			const { minx, miny, maxx, maxy } = new_size;
 			const param =

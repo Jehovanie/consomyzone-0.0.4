@@ -811,17 +811,20 @@ thead > tr{
     float: left;
     width: 170px;
     height: 30px;
-    line-height: 30px;
+    /* line-height: 30px; */
     background: rgba(255, 255, 255, 0.4);
     text-align: center;
     margin-right: 5px;
     color: rgba(0, 0, 0, 0.6);
     list-style: none;
+    cursor: pointer;
 }
 
 #panneau #onglets li.actif {
-    background: white;
+    background: linear-gradient(45deg, black, transparent);
     color: black;
+    border-bottom: 2px solid #03c1e2;
+    color: #fff;
 
 }
 
@@ -2296,3 +2299,54 @@ img.zoom {
 	margin-top: 10px;
 }
 
+/** FOR INVITATION */
+
+
+.notification-ui_dd-content {
+    margin-bottom: 30px;
+}
+
+.notification-list {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-pack: justify;
+    -ms-flex-pack: justify;
+    justify-content: space-between;
+    padding: 15px;
+    margin-bottom: 2px;
+    background: #fff;
+    -webkit-box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+}
+
+.notification-list--unread {
+    border-left: 2px solid #29B6F6;
+}
+
+.notification-list .notification-list_content {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+}
+
+.notification-list .notification-list_content .notification-list_img img {
+    height: 48px;
+    width: 48px;
+    border-radius: 50px;
+    margin-right: 20px;
+}
+
+.notification-list .notification-list_content .notification-list_detail p {
+    margin-bottom: 5px;
+    line-height: 1.2;
+}
+
+.notification-list .notification-list_feature-img img {
+    height: 48px;
+    width: 48px;
+    border-radius: 5px;
+    margin-left: 20px;
+}
+
+/* END INVITATION*/

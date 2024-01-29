@@ -32,7 +32,7 @@
 		<!-- ===== Main Content Start ===== -->
 		<main class="gv hm hv dashbord-super-admin">
 			<div class="sk bu 2xl:ud-p-11">
-				<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 w-75">
+				<nav class="navbar navbar-expand-lg navbar-light bg-light mb-4 w-100">
 					<div class="container-fluid">
 						<div class="collapse navbar-collapse" id="navbarSuperAdmin">
 							<ul class="navbar-nav me-auto mb-2 mb-lg-0">
@@ -45,6 +45,12 @@
 									</li> #}
 									<li class="nav-item">
 										<a class="nav-link list-partenaire" data-target="list-demande-partenaire" onclick="getListeDemandePartenariat(event)">Liste des demande de partenariats</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link list-abonnement" data-target="list-abonnement-cmz" onclick="getListeAbonnementSuperAdmin(event)">Abonnements partisans</a>
+									</li>
+									<li class="nav-item">
+										<a class="nav-link list-partenaire" data-target="list-postulant" onclick="getListPostulant(event)">Liste des postulants</a>
 									</li>
 								{% endif %}
 								
@@ -66,7 +72,7 @@
 					</div>
 				</nav>
 
-{% if app.user.roles[0] is same as("ROLE_GODMODE") %}
+			{% if app.user.roles[0] is same as("ROLE_GODMODE") %}
 				<div class="row content_right_actualite content-super-admin mb-4" id="list-tribu-g">
 					<div class="content_list">
 						<div class="entete mb-2 ms-3">
@@ -114,6 +120,46 @@
 						</div>
 						<div class="container content_global_super_admin content_global_super_admin_tribu_t_js_jheo">
 							<div class="content_chargement_liste_partenaire_nanta_js" style="width:100%;">
+								<div class="spinner-border spinner-border text-info" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					
+				</div>
+
+				<div class="row content_right_actualite content-super-admin mb-4" style="display:none;" id="list-abonnement-cmz">
+					<div class="content_list">
+						<div class="entete mb-2 ms-3">
+							<h5>
+								<i class="fa-solid  fa-list"></i>
+								Liste des abonnements
+							</h5>
+						</div>
+						<div class="container content_global_super_admin content_global_super_admin_tribu_t_js_jheo">
+							<div class="content_chargement_liste_partenaire_nanta_js content_chargement_liste_abonnement_nanta_js" style="width:100%;">
+								<div class="spinner-border spinner-border text-info" role="status">
+									<span class="visually-hidden">Loading...</span>
+								</div>
+
+							</div>
+						</div>
+					</div>
+					
+				</div>
+				<div class="row content_right_actualite content-super-admin mb-4" style="display:none;" id="list-postulant">
+					{# {% include 'user/dashboard_super_admin/admin_fournisseur.html.twig' %} #}
+					<div class="content_list">
+						<div class="entete mb-2 ms-3">
+							<h5>
+								<i class="fa-solid  fa-list"></i>
+								 Postulants
+							</h5>
+						</div>
+						<div class="container content_global_super_admin content_global_super_admin_tribu_t_js_jheo">
+							<div class="content_list_postulan_faniry_js" style="width:100%;">
 								<div class="spinner-border spinner-border text-info" role="status">
 									<span class="visually-hidden">Loading...</span>
 								</div>

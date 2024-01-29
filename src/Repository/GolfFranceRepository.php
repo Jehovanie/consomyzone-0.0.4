@@ -754,5 +754,24 @@ class GolfFranceRepository extends ServiceEntityRepository
         )
         ->getQuery()->getResult();
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * @param null|integer $code_dep,
+     * 
+     * @return array [ [ "departement" => .., "account_per_dep" => ... ], ... ]
+     */
+    function getAccountAllPerDep($code_dep=null){
+        $qb = $this->createQueryBuilder('r')
+            ->select('r.dep as departement', 'COUNT(DISTINCT r.nom_golf) as account_per_dep')
+            ->groupBy('r.dep');
+        
+        if( $code_dep != null ){
+            $qb = $qb->where('r.dep = :dep')
+                     ->setParameter('dep', $code_dep);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }
  

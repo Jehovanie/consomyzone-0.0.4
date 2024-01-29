@@ -139,4 +139,36 @@ class RequestingService extends PDOConnexionService
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
+
+    /**
+     * @author Elie
+     * @constructor get All requests from tablerequesting by user
+     */
+    public function getAllRequestUser($tableName)
+    {
+        $sql = "SELECT * FROM $tableName ORDER BY id DESC ";
+        $statement = $this->getPDO()->prepare($sql);
+        $statement->execute();
+        $ts = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $result = [];
+        // dd($ts);
+
+        foreach ($ts as $t) {
+            $uPoster = $this->u->find($t["user_post"]);
+            $uReceiver = $this->u->find($t["user_received"]);
+
+            if($uPoster && $uReceiver ){
+                $tmp["requesting"] = $t;
+                $tmp["userReceiving"] = (array)$uReceiver;
+                $tmp["fN_userReceiving"] = $this->tribuT->getFullName($t["user_received"]);
+                $tmp["pdp_userReceiving"] = $this->tribuT->getPdp($t["user_received"]);
+                $tmp["uPoster"] = (array)$uPoster;
+                $tmp["fN_uPoster"] = $this->tribuT->getFullName($t["user_post"]);
+                $tmp["pdp_uPoster"] = $this->tribuT->getPdp($t["user_post"]);
+                
+                array_push($result, $tmp);
+            }
+        }
+        return $result;
+    }
 }

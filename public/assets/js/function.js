@@ -7669,7 +7669,7 @@ function showListTribusIframe() {
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${json.id}_jheo_js" data-toggle-user-id="${json.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
                                         <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
-                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                        <!--<span class="g l m jc wc ce th pi ij xj"></span>-->
                                     </div>
                                     <a href="${link}" class="yd">
                                         <div class="row">
@@ -7702,7 +7702,7 @@ function showListTribusIframe() {
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${tribut.id}_jheo_js" data-toggle-user-id="${tribut.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
                                         <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
-                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                        <!--<span class="g l m jc wc ce th pi ij xj"></span>-->
                                     </div>
                                     <a href="${link}" class="yd">
                                         <div class="row">
@@ -7734,7 +7734,8 @@ function showListTribusIframe() {
  *localisation message.js
  */
 function fanIframe() {
-	fetch("/user/get/fan/online").then((r) => {
+	fetch("/user/get/allfans").then((r) => {
+	// fetch("/user/get/fan/online").then((r) => {
 		if (r.status === 200 && r.ok) {
 			r.json().then((datas) => {
 				if (document.querySelector(".only")) document.querySelector(".only").textContent = "";
@@ -7760,11 +7761,12 @@ function fanIframe() {
 									: "/public/uploads/users/photos/default_pdp.png";
 							const link = "/api/message/perso_iframe?user_id=" + value.id;
 							const fullName = value.firstname + " " + value.lastname;
+							const is_online = value.is_online == 0 ? "background-color:gray":""
 							li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
                                         <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
-                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                        <span class="g l m jc wc ce th pi ij xj" style="${is_online}"></span>
                                     </div>
     
                                    
@@ -7801,11 +7803,12 @@ function fanIframe() {
 									: "/public/uploads/users/photos/default_pdp.png";
 							const link = "/api/message/perso_iframe?user_id=" + value.id;
 							const fullName = value.firstname + " " + value.lastname;
+							const is_online = value.is_online == 0 ? "background-color:gray":""
 							li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
                                         <img src="${photoProfil}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
-                                        <span class="g l m jc wc ce th pi ij xj"></span>
+                                        <span class="g l m jc wc ce th pi ij xj" style="${is_online}"></span>
                                     </div>
     
                                    

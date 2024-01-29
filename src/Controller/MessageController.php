@@ -3,29 +3,31 @@
 namespace App\Controller;
 
 
+use App\Entity\User;
 use App\Service\Status;
 use App\Entity\Consumer;
 use App\Entity\Supplier;
-use App\Entity\User;
 use App\Service\JWTService;
 use App\Service\JWTService1;
+use App\Service\MailService;
+use App\Service\UserService;
 use App\Service\AgendaService;
 use App\Service\MessageService;
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
 use App\Repository\UserRepository;
+use App\Service\NotificationService;
 use App\Repository\ConsumerRepository;
 use App\Repository\SupplierRepository;
-use App\Service\NotificationService;
-use App\Service\UserService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Serializer\SerializerInterface;
+use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MessageController extends AbstractController
 {
@@ -140,7 +142,9 @@ class MessageController extends AbstractController
         Filesystem $filesyst, 
         UserRepository $userRepository,
         UserService $userService,
-        NotificationService $notificationService
+        NotificationService $notificationService,
+        UrlGeneratorInterface $urlGenerator,
+        MailService $mailService
     ){
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_home');
@@ -196,6 +200,52 @@ class MessageController extends AbstractController
         $file_list , $image_list, $userId, 
         0, 1, 0,$receiver,$userRepository,$userService,$notificationService);
 
+        /** Email for data infos boucle for user not connected 
+         * Edited by Elie
+        */
+
+        $my_full_name =  $userService->getFullName($this->getUser()->getId());
+
+        $tableTribuTName = $receiver;
+
+        $partisans = $tributTService->getPartisanOfTribuT($tableTribuTName);
+
+        // dump($content);
+
+        if(count($partisans) > 0 ){
+
+            foreach($partisans as $usr){
+
+                $to_id = $usr["user_id"];
+
+                if($to_id != $this->getUser()->getId()){
+
+                    $status_friend = intval(($userService->getLastActivity($to_id))["@status"]);
+
+                    $profil_friend = $userRepository->findOneBy(['id'=>$to_id]);
+            
+                    $name_friend = $userService->getFullName($to_id);
+            
+                    $email_friend = $profil_friend->getEmail();
+            
+                    $url_redirect = $urlGenerator->generate('app_tribu_g_message', ["name"=>$tableTribuTName, "type"=>"t"], UrlGeneratorInterface::ABSOLUTE_URL);
+            
+                    //send email for parisan not connected
+                    if($status_friend == 0 || $profil_friend->getIsConnected() == 0 || $profil_friend->getIsConnected() == false){
+            
+                        $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
+                    
+                        $mailService->sendEmailForMessage($email_friend, $name_friend, $obj_mail, $my_full_name, $url_redirect);
+            
+                    }
+
+                }
+
+            }
+        }
+
+        /** End Elie */
+
         // return $this->json(array("ok"=>"ok"));
 
         
@@ -210,7 +260,9 @@ class MessageController extends AbstractController
         Filesystem $filesyst,
         UserRepository $userRepository,
         UserService $userService,
-        NotificationService $notificationService
+        NotificationService $notificationService,
+        UrlGeneratorInterface $urlGenerator,
+        MailService $mailService
     ){
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_home');
@@ -264,6 +316,51 @@ class MessageController extends AbstractController
 
         $result= $tributGService->sendMessageGroupe($message,  $file_list , $image_list, 
                 $userId, 0, 1, 0,$receiver,$userRepository,$userService,$notificationService);
+
+        /** Email for data infos boucle for user not connected 
+         * Edited by Elie
+        */
+
+        $my_full_name =  $userService->getFullName($this->getUser()->getId());
+
+        $tableTribuTName = $receiver;
+
+        $partisans = $tributGService->getAllTributG($tableTribuTName);
+
+        // dump($partisans);
+
+        if(count($partisans) > 0 ){
+
+            foreach($partisans as $usr){
+
+                $to_id = $usr["user_id"];
+
+                if($to_id != $this->getUser()->getId()){
+
+                    $status_friend = intval(($userService->getLastActivity($to_id))["@status"]);
+
+                    $profil_friend = $userRepository->findOneBy(['id'=>$to_id]);
+            
+                    $name_friend = $userService->getFullName($to_id);
+            
+                    $email_friend = $profil_friend->getEmail();
+            
+                    $url_redirect = $urlGenerator->generate('app_tribu_g_message', ["name"=>$tableTribuTName, "type"=>"g"], UrlGeneratorInterface::ABSOLUTE_URL);
+            
+                    //send email for parisan not connected
+                    if($status_friend == 0 || $profil_friend->getIsConnected() == 0 || $profil_friend->getIsConnected() == false){
+            
+                        $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
+                    
+                        $mailService->sendEmailForMessage($email_friend, $name_friend, $obj_mail, $my_full_name, $url_redirect);
+            
+                    }
+                }
+                
+            }
+        }
+
+        /** End Elie */
 
         // return $this->json(array("ok"=>"ok"));
 
@@ -351,6 +448,7 @@ class MessageController extends AbstractController
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
                 // if( $user_amis && boolval($isActive)){
+                if($tributGService->getProfil($user_amis, $entityManager)){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -366,7 +464,7 @@ class MessageController extends AbstractController
                     ];
                     ///get it
                     array_push($amis_in_tributG, $amis);
-                // }
+                }
             }
         }
         ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
@@ -382,6 +480,7 @@ class MessageController extends AbstractController
                     $isActive = intval(($userService->getLastActivity($result["user_id"]))["@status"]);
                     //dd($result["user_id"]);
                     // if( $user_amis && boolval($isActive)){
+                    if($tributGService->getProfil($user_amis, $entityManager)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                         $amis = [
                             "my_id" => $userId,
@@ -396,7 +495,7 @@ class MessageController extends AbstractController
                         ];
                         ///get it
                         array_push($tribuT['amis'], $amis);
-                    // }
+                    }
                 }
             }
             array_push($all_tribuT_user, $tribuT);
@@ -523,20 +622,22 @@ class MessageController extends AbstractController
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
                 if( $user_amis && boolval($isActive)){
-                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                    ///single profil
-                    $amis = [
-                        "id" => $id_amis["user_id"],
-                        "photo" => $profil_amis->getPhotoProfil(),
-                        "email" => $user_amis->getEmail(),
-                        "firstname" => $profil_amis->getFirstname(),
-                        "lastname" => $profil_amis->getLastname(),
-                        "image_profil" => $profil_amis->getPhotoProfil(),
-                        "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
-                        //"is_online" => $isActive
-                    ];
-                    ///get it
-                    array_push($amis_in_tributG, $amis);
+                    if($tributGService->getProfil($user_amis, $entityManager)){
+                        $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        ///single profil
+                        $amis = [
+                            "id" => $id_amis["user_id"],
+                            "photo" => $profil_amis->getPhotoProfil(),
+                            "email" => $user_amis->getEmail(),
+                            "firstname" => $profil_amis->getFirstname(),
+                            "lastname" => $profil_amis->getLastname(),
+                            "image_profil" => $profil_amis->getPhotoProfil(),
+                            "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
+                            //"is_online" => $isActive
+                        ];
+                        ///get it
+                        array_push($amis_in_tributG, $amis);
+                    }
                 }
             }
         }
@@ -553,19 +654,21 @@ class MessageController extends AbstractController
                     $isActive = intval(($userService->getLastActivity($result["user_id"]))["@status"]);
                     //dd($result["user_id"]);
                     if( $user_amis && boolval($isActive)){
-                        $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
-                        $amis = [
-                            "id" => $result["user_id"],
-                            "photo" => $profil_amis->getPhotoProfil(),
-                            "email" => $user_amis->getEmail(),
-                            "firstname" => $profil_amis->getFirstname(),
-                            "lastname" => $profil_amis->getLastname(),
-                            "image_profil" => $profil_amis->getPhotoProfil(),
-                            "last_message" => $messageService->getLastMessage($user->getTablemessage(), $result["user_id"]),
-                            //"is_online" => $isActive,
-                        ];
-                        ///get it
-                        array_push($tribuT['amis'], $amis);
+                        if($tributGService->getProfil($user_amis, $entityManager)){
+                            $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                            $amis = [
+                                "id" => $result["user_id"],
+                                "photo" => $profil_amis->getPhotoProfil(),
+                                "email" => $user_amis->getEmail(),
+                                "firstname" => $profil_amis->getFirstname(),
+                                "lastname" => $profil_amis->getLastname(),
+                                "image_profil" => $profil_amis->getPhotoProfil(),
+                                "last_message" => $messageService->getLastMessage($user->getTablemessage(), $result["user_id"]),
+                                //"is_online" => $isActive,
+                            ];
+                            ///get it
+                            array_push($tribuT['amis'], $amis);
+                        }
                     }
                 }
             }
@@ -693,6 +796,7 @@ class MessageController extends AbstractController
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 $isActive=intval(($userService->getLastActivity( $id_amis["user_id"]))["@status"]);
                 //if( $user_amis && $user_amis->getIsConnected()){
+                if($tributGService->getProfil($user_amis, $entityManager)){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -707,7 +811,7 @@ class MessageController extends AbstractController
                     ];
                     ///get it
                     array_push($amis_in_tributG, $amis);
-                //}
+                }
             }
 
         }
@@ -718,11 +822,13 @@ class MessageController extends AbstractController
         foreach($all_tribuT as $tribuT){
             $tribuT['amis'] = [];
             $results=$tributTService->getAllPartisanProfil($tribuT['table_name']);
+
             foreach($results as $result){
                 if( intval($result["user_id"]) !== intval($userId) ){
                     $user_amis = $userRepository->find(intval($result["user_id"]));
                     $isActive=intval(($userService->getLastActivity( $result["user_id"]))["@status"]);
                     //if( $user_amis && $user_amis->getIsConnected()){
+                    if($tributGService->getProfil($user_amis, $entityManager)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                         $amis = [
                             "id" => $result["user_id"],
@@ -736,7 +842,7 @@ class MessageController extends AbstractController
                         ];
                         ///get it
                         array_push($tribuT['amis'] , $amis);
-                    //}
+                    }
                 }
             }
             array_push($all_tribuT_user, $tribuT);
@@ -977,6 +1083,7 @@ class MessageController extends AbstractController
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
                 // if ($user_amis && $user_amis->getIsConnected()) {
+                if($tributGService->getProfil($user_amis, $entityManager)){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -991,7 +1098,7 @@ class MessageController extends AbstractController
                     ];
                     ///get it
                     array_push($amis_in_tributG, $amis);
-                // }
+                }
             }
         }
         ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
@@ -1006,6 +1113,7 @@ class MessageController extends AbstractController
                     $user_amis = $userRepository->find(intval($result["user_id"]));
                     $isActive = intval(($userService->getLastActivity($result["user_id"]))["@status"]);
                     // if ($user_amis && $user_amis->getIsConnected()) {
+                    if($tributGService->getProfil($user_amis, $entityManager)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                         $amis = [
                             "id" => $result["user_id"],
@@ -1019,7 +1127,7 @@ class MessageController extends AbstractController
                         ];
                         ///get it
                         array_push($tribuT['amis'], $amis);
-                    // }
+                    }
                 }
             }
             array_push($all_tribuT_user, $tribuT);
@@ -1113,7 +1221,10 @@ class MessageController extends AbstractController
         UserRepository $userRepository,
         MessageService $messageService,
         Filesystem $filesyst,
-        AgendaService $agendaService
+        AgendaService $agendaService,
+        UserService $userService,
+        MailService $mailService,
+        UrlGeneratorInterface $urlGenerator
     ): Response
     {
         /// get data from front on json format
@@ -1167,6 +1278,8 @@ class MessageController extends AbstractController
             $type= "text";
         }
 
+        $my_full_name =  $userService->getFullName($this->getUser()->getId());
+
         if(isset($dataInfos)){
             foreach ($dataInfos as $key) {
                 $agendaID = $key["agendaId"];
@@ -1189,10 +1302,58 @@ class MessageController extends AbstractController
                     $table_agenda_partage_name="partage_agenda_".$userId;
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                     $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Déjà confirmé", $agendaID);
+                    
+                    /** Email for data infos boucle for user not connected 
+                     * Edited by Elie
+                    */
+
+                    $status_friend = intval(($userService->getLastActivity($to_id))["@status"]);
+
+                    $name_friend = $userService->getFullName($to_id);
+
+                    $url_redirect = $urlGenerator->generate('app_message_perso', ["user_id"=>$this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+
+                    //send email for parisan not connected
+
+                    if($status_friend == 0 || $userTo->getIsConnected() == 0 || $userTo->getIsConnected() == false){
+
+                        $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
+                    
+                        $mailService->sendEmailForMessage($email_to, $name_friend, $obj_mail, $my_full_name, $url_redirect);
+
+                    }
+
+                    /** End Elie */
                 }
             }
         }else{
+
             $result = $messageService->sendMessageForOne($from, $to, json_encode([ "text" => $message, "images" => $image_list, "files" => $file_list ]),$type); /// [ ["last_id_message" => .. ] ]
+
+            /**
+            * Email for user not connected
+            * Edited by Elie
+            */
+            $status_friend = intval(($userService->getLastActivity($to))["@status"]);
+
+            $profil_friend = $userRepository->findOneBy(['id'=>$to]);
+
+            $name_friend = $userService->getFullName($to);
+
+            $email_friend = $profil_friend->getEmail();
+
+            $url_redirect = $urlGenerator->generate('app_message_perso', ["user_id"=>$to], UrlGeneratorInterface::ABSOLUTE_URL);
+
+            //send email for parisan not connected
+            if($status_friend == 0){
+
+                $obj_mail = $name_friend. " vous a envoyé un message sur ConsoMyZone";
+            
+                $mailService->sendEmailForMessage($email_friend, $name_friend, $obj_mail, $my_full_name, $url_redirect);
+
+            }
+
+            /** End Elie */
         }
         return $this->json([
            "id" => $result[0]["last_id_message"]
@@ -1702,6 +1863,7 @@ class MessageController extends AbstractController
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 $isActive=intval(($userService->getLastActivity( $id_amis["user_id"]))["@status"]);
                 //if( $user_amis && $user_amis->getIsConnected()){
+                if($tributGService->getProfil($user_amis, $entityManager)){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -1716,7 +1878,7 @@ class MessageController extends AbstractController
                     ];
                     ///get it
                     array_push($amis_in_tributG, $amis);
-                //}
+                }
             }
 
         }
@@ -1732,6 +1894,7 @@ class MessageController extends AbstractController
                     $user_amis = $userRepository->find(intval($result["user_id"]));
                     $isActive=intval(($userService->getLastActivity( $result["user_id"]))["@status"]);
                     //if( $user_amis && $user_amis->getIsConnected()){
+                    if($tributGService->getProfil($user_amis, $entityManager)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                         $amis = [
                             "id" => $result["user_id"],
@@ -1745,7 +1908,7 @@ class MessageController extends AbstractController
                         ];
                         ///get it
                         array_push($tribuT['amis'] , $amis);
-                    //}
+                    }
                 }
             }
             array_push($all_tribuT_user, $tribuT);
@@ -1968,6 +2131,7 @@ class MessageController extends AbstractController
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
                 // if ($user_amis && $user_amis->getIsConnected()) {
+                if($tributGService->getProfil($user_amis, $entityManager)){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
@@ -1982,7 +2146,7 @@ class MessageController extends AbstractController
                     ];
                     ///get it
                     array_push($amis_in_tributG, $amis);
-                // }
+                }
             }
         }
         ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
@@ -1997,6 +2161,7 @@ class MessageController extends AbstractController
                     $user_amis = $userRepository->find(intval($result["user_id"]));
                     $isActive = intval(($userService->getLastActivity($result["user_id"]))["@status"]);
                     // if ($user_amis && $user_amis->getIsConnected()) {
+                    if($tributGService->getProfil($user_amis, $entityManager)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                         $amis = [
                             "id" => $result["user_id"],
@@ -2010,7 +2175,7 @@ class MessageController extends AbstractController
                         ];
                         ///get it
                         array_push($tribuT['amis'], $amis);
-                    // }
+                    }
                 }
             }
             array_push($all_tribuT_user, $tribuT);
@@ -2143,6 +2308,7 @@ class MessageController extends AbstractController
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
                 // if ($user_amis && $user_amis->getIsConnected()) {
+                if($tributGService->getProfil($user_amis, $entityManager)){
                 $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                 ///single profil
                 $amis = [
@@ -2157,7 +2323,7 @@ class MessageController extends AbstractController
                 ];
                 ///get it
                 array_push($amis_in_tributG, $amis);
-                // }
+                }
             }
         }
         ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
@@ -2172,6 +2338,7 @@ class MessageController extends AbstractController
                     $user_amis = $userRepository->find(intval($result["user_id"]));
                     $isActive = intval(($userService->getLastActivity($result["user_id"]))["@status"]);
                     // if ($user_amis && $user_amis->getIsConnected()) {
+                    if($tributGService->getProfil($user_amis, $entityManager)){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     $amis = [
                         "id" => $result["user_id"],
@@ -2185,7 +2352,7 @@ class MessageController extends AbstractController
                     ];
                     ///get it
                     array_push($tribuT['amis'], $amis);
-                    // }
+                    }
                 }
             }
             array_push($all_tribuT_user, $tribuT);

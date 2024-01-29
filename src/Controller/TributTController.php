@@ -2801,8 +2801,8 @@ $type = "/user/invitation";
     UserRepository $userRepository)
     {
 
-        // $user = $this->getUser();
-        // $user_id = $user->getId();
+        $user = $this->getUser();
+        $my_id = $user->getId();
 
         $table_invitation = $table . "_invitation";
 
@@ -2815,7 +2815,7 @@ $type = "/user/invitation";
                     $mailInscritNonMembre=$emails[0];
                     foreach($mailInscritNonMembre as $email){
                         $user_id=$userRepository->findOneBy(["email" => $email])->getId();
-                        $result = $tribuTService->saveInvitationStory($table_invitation, $user_id, $email);
+                        $result = $tribuTService->saveInvitationStory($table_invitation, $user_id, $email, 0, $my_id);
                     }
                     break;
                 }
@@ -2823,7 +2823,7 @@ $type = "/user/invitation";
                     $mailNonInscrit=$emails[1];
                     foreach($mailNonInscrit as $email){
                         //$user_id=$userRepository->findOneBy(["email" => $email])->getId();
-                        $result = $tribuTService->saveInvitationStory($table_invitation, null, $email);
+                        $result = $tribuTService->saveInvitationStory($table_invitation, null, $email, 0, $my_id);
                     }
                     break;
                 }
@@ -2832,7 +2832,7 @@ $type = "/user/invitation";
                     $mailInscriteDejaMembre=$emails[2];
                     foreach($mailInscriteDejaMembre as $email){
                         $user_id=$userRepository->findOneBy(["email" => $email])->getId();
-                        $result = $tribuTService->saveInvitationStory($table_invitation, $user_id, $email,1);
+                        $result = $tribuTService->saveInvitationStory($table_invitation, $user_id, $email,1 , $my_id);
                        
                     }
                     break;
@@ -2869,8 +2869,8 @@ $type = "/user/invitation";
             foreach ($result as $user) {
                 $pp = null;
 
-                if ($user['id']) {
-                    $pp = $user_serv->getUserProfileFromId($user['id']);
+                if ($user['user_id']) {
+                    $pp = $user_serv->getUserProfileFromId($user['user_id']);
                 }
 
                 array_push($hist, [
@@ -2899,6 +2899,22 @@ $type = "/user/invitation";
         $tribuTService->updateInvitationStory($table_invitation, $is_valid, $email);
 
         return $this->json(["message" => "Mise à jour sauvegardé!"]);
+    }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * Controlleur de MAJ l'historique de l'invitation dans la tribu T
+     * ajouter le 24-10-2023
+     */
+    #[Route("/tribu/invitation/delete_story/{table}/{id}", name: "app_delete_story_invitation", methods: ["POST"])]
+    public function deletStoryInvitation($table, $id, Tribu_T_Service $tribuTService)
+    {
+
+        $table_invitation = $table . "_invitation";
+
+        $tribuTService->deleteInvitationStory($table_invitation, $id);
+
+        return $this->json(["message" => "Invitation supprimée avec succès!"]);
     }
 
     /**
@@ -3128,5 +3144,251 @@ $type = "/user/invitation";
         return $this->json([
             "success" => true
         ]);
+    }
+
+    /**
+     * @author Faniry
+     * donne la liste des postulant
+     */
+    #[Route("/user/postulant", name:"app_postulant", methods:["GET"])]
+    public function getPostulant(
+        Request $request, 
+        Tribu_T_Service  $service, 
+        ){
+        $nomTribuT=$request->query->get('name');
+        $postulants=$service->getPostulant($nomTribuT);
+        return  $this->json($postulants);
+    }
+
+    #[Route("/user/postulant/v2", name:"app_postulant_v2", methods:["GET"])]
+    public function getPostulantV2(
+        Tribu_T_Service  $service, 
+        ){
+        $postulants=$service->getPostulantNotInvited();
+        return  $this->json($postulants);
+    }
+
+    #[Route("/user/mail/postulant", name:"app_postulant_send_mail", methods:["POST"])]
+    public function sendMailForPostulant(
+        Request $request,
+        MailService $mailService,
+        UserRepository $userRepository,
+        Filesystem $filesystem){
+
+        $contents=json_decode($request->getContent(), true);
+        $key = hex2bin("000102030405060708090a0b0c0d0e0f");
+        $iv = hex2bin("101112131415161718191a1b1c1d1e1f");
+        
+        $pieceJointe=$contents["pieceJointe"];
+        $idUserDecryptedBase64=base64_decode($contents["idUserToSendEmail"],true);
+        $objetMAilBase64=base64_decode($contents["objetMail"],true);
+        $mailContnentBase64=base64_decode($contents["mailContent"],true);
+
+        if(!$idUserDecryptedBase64 || !$objetMAilBase64 || !$mailContnentBase64){
+                return $this->json(["msg"=>"erreur1"],500);
+        }else{
+            $id=openssl_decrypt($idUserDecryptedBase64, "AES-128-CBC", 
+            $key, 0, $iv);
+
+            $objetMail=openssl_decrypt($objetMAilBase64, "AES-128-CBC", 
+            $key, 0, $iv);
+
+            $mailContent=openssl_decrypt($mailContnentBase64, "AES-128-CBC", 
+            $key, 0, $iv);
+            // if(!$objetMail || !$mailContent){
+            //     return $this->json(["msg"=>"erreur2"],500);
+            // }else{
+                $userPostulan=$userRepository->findOneBy(["id"=>$id]);
+                $email=$userPostulan->getEmail();
+                $pseudo=$userPostulan->getPseudo();
+                $user_connected= $this->getUser();
+                $user_connnected_id= $user_connected->getId();
+
+                $piece_with_path=[];
+                $contexts=[];
+
+                //upload piece jointe
+                if(count($pieceJointe)){
+                    $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/piece_joint/user_' . $user_connnected_id . "/";
+            
+                    $dir_exist = $filesystem->exists($path);
+                    if ($dir_exist === false) {
+                        $filesystem->mkdir($path, 0777);
+                    }
+        
+                    foreach ($pieceJointe as $item) {
+                        $name = $item["name"];
+        
+                        $char_spec = ["-", " "];
+                        $name = str_replace($char_spec, "_", $name);
+                        $path_name = $path . $name;
+                        ///name file, file base64
+                        file_put_contents($path_name, file_get_contents($item["base64File"]));
+        
+        
+                        $item["path"] = $path . $name;
+        
+                        array_push($piece_with_path, $item);
+                    }
+                }
+
+                $contexts["object_mail"] = $objetMail;
+                $contexts["template_path"] = "emails/mail_news_letter.html.twig";
+                $contexts["content_mail"] = $mailContent;
+                $contexts["piece_joint"] = $piece_with_path;
+
+                //send mail
+                try{
+                    $emailIds=["email"=>$email,"fullName"=>$pseudo];
+                    $mailService->sendEmailRelancePostulant("consomyzone",$emailIds,$contexts);
+                }catch(\Exception $e){
+                    return $this->json(["msg"=>"erreur3"],500);
+                }
+                
+
+
+            //}
+
+        }
+
+        return $this->json(["msg"=>"done"],200);
+
+    }
+
+    #[Route("/user/mail/selected/postulant", name:"app_selected_postulant_send_mail_", methods:["POST"])]
+    public function sendMailForSelectedPostulant(
+        Request $request,
+        MailService $mailService,
+        UserRepository $userRepository,
+        Filesystem $filesystem){
+
+        $contents=json_decode($request->getContent(), true);
+        $key = hex2bin("000102030405060708090a0b0c0d0e0f");
+        $iv = hex2bin("101112131415161718191a1b1c1d1e1f");
+       
+        $pieceJointe=$contents["pieceJointe"];
+        
+        $objetMAilBase64=base64_decode($contents["objectMail"],true);
+
+        if(!$objetMAilBase64 ){
+                return $this->json(["msg"=>"erreur1"],500);
+        }else{
+
+            $user_connected= $this->getUser();
+            $user_connnected_id= $user_connected->getId();
+            $piece_with_path=[];
+            //upload piece jointe
+            if(count($pieceJointe)){
+                $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/piece_joint/user_' . $user_connnected_id . "/";
+        
+                $dir_exist = $filesystem->exists($path);
+                if ($dir_exist === false) {
+                    $filesystem->mkdir($path, 0777);
+                }
+    
+                foreach ($pieceJointe as $item) {
+                    $name = $item["name"];
+    
+                    $char_spec = ["-", " "];
+                    $name = str_replace($char_spec, "_", $name);
+                    $path_name = $path . $name;
+                    ///name file, file base64
+                    file_put_contents($path_name, file_get_contents($item["base64File"]));
+    
+    
+                    $item["path"] = $path . $name;
+    
+                    array_push($piece_with_path, $item);
+                }
+            }
+            $d=$contents["contents"];
+            for($c=0; $c < count($d); $c++){
+                $idUserDecryptedBase64=base64_decode($d[$c]["i"],true);
+                $mailContnentBase64=base64_decode($d[$c]["m"],true);
+                if(!$idUserDecryptedBase64 || !$mailContnentBase64){
+                    return $this->json(["msg"=>"erreur1"],500);
+                }else{
+                    $id=openssl_decrypt($idUserDecryptedBase64, "AES-128-CBC", 
+                    $key, 0, $iv);
+    
+                    $objetMail=openssl_decrypt($objetMAilBase64, "AES-128-CBC", 
+                    $key, 0, $iv);
+    
+                    $mailContent=openssl_decrypt($mailContnentBase64, "AES-128-CBC", 
+                    $key, 0, $iv);
+                
+                    $userPostulan=$userRepository->findOneBy(["id"=>$id]);
+                    $email=$userPostulan->getEmail();
+                    $pseudo=$userPostulan->getPseudo();
+                    
+                    $contexts=[];
+    
+                    $contexts["object_mail"] = $objetMail;
+                    $contexts["template_path"] = "emails/mail_news_letter.html.twig";
+                    $contexts["content_mail"] = $mailContent;
+                    $contexts["piece_joint"] = $piece_with_path;
+    
+                    //send mail
+                    try{
+                        $emailIds=["email"=>$email,"fullName"=>$pseudo];
+                        $mailService->sendEmailRelancePostulant("consomyzone",$emailIds,$contexts);
+                    }catch(\Exception $e){
+                        return $this->json(["msg"=>"erreur3"],500);
+                    }
+                }
+               
+            }
+        }
+
+        return $this->json(["msg"=>"done"],200);
+
+    }
+
+    /**
+     * @author Elie
+     * Add new column sender_id after user_id for table invitation
+     */
+    #[Route("/tributT/invitation/addColumn", name: "app_tribuT_add_column_table_invitation", methods: ["POST", "GET"])]
+    public function addColumnInTableInvitation(
+        Request $request,
+        Tribu_T_Service $tribuTService,
+        UserService $userService,
+        UserRepository $userRepository
+    ){
+        $user = $this->getUser();
+
+        $fondateur_id = $user->getId();
+
+        $all_tribuT =[];
+
+        $all_user = $userRepository->findAll();
+
+        foreach($all_user as $us){
+
+            $json_tribuT_owned= $us->getTribuT();
+
+            if( $json_tribuT_owned ){
+                $decode_tribuT_owned = json_decode($json_tribuT_owned , true);
+                if( !array_key_exists("name", $decode_tribuT_owned['tribu_t']) ){
+                    foreach($decode_tribuT_owned["tribu_t"] as $tribuT){
+
+                        extract($tribuT);  /// $name
+                        array_push($all_tribuT,["table_name" => $name, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path] );
+                    }
+                }else{
+                    array_push($all_tribuT, ["table_name" => $decode_tribuT_owned['tribu_t']['name'], "name_tribu_t_muable" => $decode_tribuT_owned['tribu_t']['name_tribu_t_muable'], "logo_path" => $decode_tribuT_owned['tribu_t']['logo_path']] );
+                }
+            }
+        }
+
+        foreach($all_tribuT as $tribu){
+            $tableName = $tribu["table_name"]."_invitation";
+            $tribuTService->addColumnInTableInvitation($tableName, "sender_id");
+        }
+
+        return $this->json([
+            "message" => "column created"
+        ]); 
+        
     }
 }

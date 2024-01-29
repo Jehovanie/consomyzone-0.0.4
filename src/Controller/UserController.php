@@ -826,6 +826,8 @@ class UserController extends AbstractController
 
             $type = "Partenaire";
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id);
+        }else{
+            return $this->redirect("/user/profil/".$userId);
         }
 
         $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
@@ -836,8 +838,6 @@ class UserController extends AbstractController
             # code...
             array_push($images_trie, $images[$i]);
         }
-
-        
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
         $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user_id));
@@ -859,8 +859,8 @@ class UserController extends AbstractController
                 $single_user = [
                     "id" => intval($friend->getId()),
                     "email" => $friend->getEmail(),
-                    "firstname" => $userService->getUserFirstName($friend->getId()),
-                    "lastname" => $userService->getUserLastName($friend->getId()),
+                    "firstname" => $userService->getUserFirstName(intval($friend->getId())),
+                    "lastname" => $userService->getUserLastName(intval($friend->getId())),
                     "status" => $tributGService->getCurrentStatus($tributG_name, $friend->getId()),
                 ];
     
@@ -3424,5 +3424,245 @@ class UserController extends AbstractController
         }
 
         return $this->json(["results"=>$results]);
+    }
+
+    #[Route("/user/invitations-all/interne", name: "app_invitation_interne")]
+
+    public function getInterneInvitation(Status $status, RequestingService $requesting, 
+    UserService $userService, Tribu_T_Service $tributService): Response
+    {
+        $userConnected= $status->userProfilService($this->getUser());
+
+        $statusProfile = $status->statusFondateur($this->getUser());
+
+        $tableRequestingName = $this->getUser()->getTablerequesting();
+
+        $invitations = $requesting->getAllRequest($tableRequestingName);
+
+        $all_invitation_interne = $requesting->getAllRequestUser($tableRequestingName);
+
+        return $this->json($all_invitation_interne);
+    }
+
+    #[Route("/user/invitations-all/externe", name: "app_invitation_externe")]
+
+    public function getExterneInvitation(Status $status, RequestingService $requesting, 
+    UserService $userService, Tribu_T_Service $tributService): Response
+    {
+        $userConnected= $status->userProfilService($this->getUser());
+
+        $statusProfile = $status->statusFondateur($this->getUser());
+
+        $tableRequestingName = $this->getUser()->getTablerequesting();
+
+        $invitations = $requesting->getAllRequest($tableRequestingName);
+
+        $all_tribu = $userService->getTribuByIdUser($this->getUser());
+
+        // dd($all_tribu);
+
+        $all_invitation_externe = [];
+
+        foreach ($all_tribu as $t) {
+
+            // if($t["role"] =="Fondateur"){
+                
+                $table_invitation = $t["table_name"] ."_invitation";
+                $tribu_name = $t["name_tribu_t_muable"];
+
+                $invitation = $tributService->getAllInvitationStory($table_invitation);
+    
+                if(count($invitation)> 0){
+    
+                    $hist = [];
+    
+                    foreach ($invitation as $user) {
+                        $pp = null;
+                        $sender = null;
+                        $is_forMe = false;
+    
+                        if ($user['user_id']) {
+                            $pp = $userService->getUserProfileFromId($user['user_id']);
+                        }
+
+                        if ($user['sender_id']) {
+                            $sender = $userService->getUserProfileFromId($user['sender_id']);
+                        }
+
+                        if($user['sender_id']==$this->getUser()->getId()){
+                            $is_forMe = true;
+                        }
+    
+                        array_push($hist, [
+                            'id' =>$user['id'],
+                            'user' => $pp,
+                            'is_valid' => $user['is_valid'],
+                            'sender' => $sender,
+                            'date' => $user['datetime'],
+                            'email' => $user['email'],
+                            "tribu"=> $tribu_name,
+                            "role"=>$t["role"],
+                            "is_forMe"=>$is_forMe
+                        ]);
+                    }
+    
+                    array_push($all_invitation_externe, [$table_invitation => $hist]);
+                }
+            // }
+
+        }
+        return $this->json($all_invitation_externe);
+    }
+
+    /**
+     * @author Elie
+     * @Route("user/tribu/relance/one-invitation" , name="relance_invitation_partisan")
+     */
+    public function relanceOneInvitation(Request $request, NotificationService $notification
+    , RequestingService $requesting): Response
+    {
+        $requestContent = json_decode($request->getContent(), true);
+
+        $table = $requestContent["table"];
+
+        $nomTribu = $requestContent["nom"];
+
+        $id_receiver = $requestContent["user_id"];
+
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+
+        $tribu_t = new Tribu_T_Service();
+
+        $userFullname = $tribu_t->getFullName($userId);
+
+        $contentForDestinator = "Vous avez reçu une relance d'invitation de rejoindre la tribu " . $nomTribu;
+
+        $type = "/user/invitation";
+
+        $invitLink = "<a href=\"/user/invitation\" style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
+
+        $isMembre = $tribu_t->testSiMembre($table, $id_receiver);
+
+        if ($isMembre == "not_invited") {
+            $tribu_t->addMember($table, $id_receiver);
+        }
+
+        $contentForSender = "Vous avez relancé une invitation à " . $tribu_t->getFullName($id_receiver) . " de rejoindre la tribu " . $nomTribu;
+        $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+        $requesting->setRequestingTribut("tablerequesting_" . $id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+        $requesting->setRequestingTribut("tablerequesting_" . $userId, $userId, $id_receiver, "demande", $contentForSender, $table);
+
+        return $this->json("Invitation envoye");
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
+     * Localisation du fichier : UserController.php
+     * Je veux : soumettre un formulaire d'abonnement
+     * 
+     */
+    #[Route("/user/save/abonnement/", name:"app_send_abonnement", methods:["POST"])]
+    public function saveAbonnement(
+        Request $request,
+        UserService $userService
+    ){
+        $user = $this->getUser();
+        if($user){
+            $userId = $user->getId();
+            $data = json_decode($request->getContent(), true);
+            extract($data);
+            $userService->createAbonnementTable();
+            $userService->saveAbonnement($userId, $firstOption, $secondOption, $thirdOption, $fourthOption, $fifthOption);
+            $response = new Response();
+            $response->setStatusCode(201);
+            return $response;
+        }else{
+            $response = new Response();
+            $response->setStatusCode(205);
+            return $response;
+        }
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
+     * Localisation du fichier : UserController.php
+     * Je veux : afficher l'historique d'abonnement par utilisateur
+     * 
+     */
+    #[Route("/get/partisan/abonnement/", name:"app_get_partisan_abonnement", methods:["GET"])]
+    public function getAbonnementByUser(
+        UserService $userService,
+        TributGService $tributGService
+    ){
+        $user = $this->getUser();
+        if($user){
+            $userId = $user->getId();
+            $userService->createAbonnementTable();
+            $abonnements = $userService->getAbonnementByUser($userId);
+            return $this->json(["abonnements"=>$abonnements, "status"=>201, "fullName"=>$tributGService->getFullName($userId)]);
+        }else{
+            return $this->json(["abonnements"=>[], "status"=>205]);
+        }
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
+     * Localisation du fichier : UserController.php
+     * Je veux : soumettre un formulaire d'abonnement
+     * 
+     */
+    #[Route("/save/one/abonnement/", name:"app_save_one_abonnement", methods:["POST"])]
+    public function saveOneAbonnement(
+        Request $request,
+        UserService $userService
+    ){
+        $user = $this->getUser();
+        if($user){
+            $userId = $user->getId();
+            $data = json_decode($request->getContent(), true);
+            extract($data);
+            $userService->createAbonnementTable();
+            $userService->saveOneAbonnement($userId, $typeAbonnement, $montant);
+            $response = new Response();
+            $response->setStatusCode(201);
+            return $response;
+        }else{
+            $response = new Response();
+            $response->setStatusCode(205);
+            return $response;
+        }
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page Super Admin
+     * Localisation du fichier : UserController.php
+     * Je veux : afficher l'historique de tous les abonnements
+     * 
+     */
+    #[Route("/get/all/abonnement/", name:"app_get_all_abonnement", methods:["GET"])]
+    public function getAllAbonnement(
+        UserService $userService,
+        TributGService $tributGService
+    ){
+        $user = $this->getUser();
+        if($user){
+            $userId = $user->getId();
+            $userService->createAbonnementTable();
+            $results = $userService->getAllAbonnement();
+            $abonnements = [];
+            foreach ($results as $key) {
+                $key["fullName"] = $tributGService->getFullName($key["userId"]);
+                array_push($abonnements, $key);
+            }
+            return $this->json(["abonnements"=>$abonnements, "status"=>201]);
+        }else{
+            return $this->json(["abonnements"=>[], "status"=>205]);
+        }
     }
 }

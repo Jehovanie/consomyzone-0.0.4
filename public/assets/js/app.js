@@ -1142,14 +1142,55 @@ function findInNet(server, denomination_f, adresse) {
 		case "map":
 			window.open("https://www.google.com/maps?q=" + denomination_f + " " + adresse);
 			break;
-		case "thefork":
-			window.open("https://www.thefork.fr/restaurant/" + denomination_f.replaceAll(" ", "-") + "-r");
-			break;
-		case "tripadvisor":
+				case "tripadvisor":
 			window.open("https://www.tripadvisor.com/Search?q=" + denomination_f);
 			break;
 		case "michelin":
 			window.open("https://guide.michelin.com/fr/fr/restaurants?q=" + denomination_f);
+			break;
+		case "bing":
+			window.open("https://www.bing.com/search?q=" + denomination_f + " " + adresse);
+			break;
+		case "thefork":
+			// const linkTheFork1 = `https://www.google.com/search?q=the+fork+${denomination_f.replaceAll(" ", "+")}+${adresse}`
+			// console.log(linkTheFork1)
+			const request = new Request(`/get/link/thefork/${denomination_f.replaceAll(" ", "_")}/${adresse}`, {
+				method: 'GET',
+			});
+			fetch(request)
+			.then((response) => response.text())
+			.then((result) => {
+				const htmlParse = new DOMParser().parseFromString(result, "text/html")
+				let acceptCookies = htmlParse.querySelector(".basebutton.button.searchButton")
+				console.log(acceptCookies)
+				let linkTheForkGoogle = htmlParse.querySelector("#main > div > div > div.egMi0 > a")
+				let linkTheForkGoogleHref = linkTheForkGoogle.getAttribute("href")
+				let linkTheFork = linkTheForkGoogleHref.split("/")[3]
+
+				if (linkTheFork === 'www.thefork.fr') {
+					let nameRestoTheForkSplit = linkTheForkGoogleHref.split("/")[5]
+					let adressRestoTheFork = nameRestoTheForkSplit.split("-")[0]
+					if (adressRestoTheFork == adresse.toLowerCase()) {
+						swal({
+							title: "The fork",
+							text: "On ne trouve pas le lien exacte pour aller au restaurant sur the fork",
+							icon: "error",
+							button: "OK",
+						});
+					} else {
+						let nameRestoTheFork = nameRestoTheForkSplit.split("&")[0]
+						window.open("https://www.thefork.fr/restaurant/" + nameRestoTheFork);
+					}
+					
+				} else {
+					swal({
+						title: "The fork",
+						text: "On ne trouve pas le lien exacte pour aller au restaurant sur the fork",
+						icon: "error",
+						button: "OK",
+					});
+				}
+			})
 			break;
 	}
 }
@@ -1165,6 +1206,7 @@ function openVoirPlusChearch(denomination_f, adresse, type) {
            
             <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/tripadvisor_icon.png" onclick="findInNet('tripadvisor','${denomination_f}','${adresse}')"/>Tripadvisor</div>
             <div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/michelin_icon.png" onclick="findInNet('michelin','${denomination_f}','${adresse}')"/>Guide Michelin</div>
+			<div class="d-flex flex-column align-items-center m-2"><img class="fa-search-elie" src="/public/assets/icon/bing_icon.jpg" onclick="findInNet('bing','${denomination_f}','${adresse}')"/>Bing</div>
             <div class="d-flex flex-column align-items-center m-2"></div>`;
 			break;
 		}

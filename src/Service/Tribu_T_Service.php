@@ -118,6 +118,7 @@ class Tribu_T_Service extends PDOConnexionService
                     $query_table_invitation = "CREATE TABLE " . $output . "_invitation(
                         id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
                         user_id int(11) DEFAULT NULL,
+                        sender_id int(11) DEFAULT NULL,
                         email varchar(255) NOT NULL,
                         is_valid tinyint(1) NOT NULL DEFAULT 0,
                         datetime DATETIME NOT NULL DEFAULT current_timestamp()
@@ -543,9 +544,14 @@ class Tribu_T_Service extends PDOConnexionService
      * @param string $tribu_t_owned_or_join it's can't be change. The tribu T owned and joined
      * @param string $nomTribuT it's can be change. The name of the tribu T
      */
-    function setTribuT($tribu_T_name_table, $description, $path, $extension, $userId, $tribu_t_owned_or_join, $nomTribuT)
-    // function setTribuT($tribu_T_name_table, $description,$path,$extenstion,$userId,$tribu_t_owned_or_join,$nomTribuT)
-
+    function setTribuT(
+        $tribu_T_name_table, 
+        $description, 
+        $path, 
+        $extension, 
+        $userId, 
+        $tribu_t_owned_or_join, 
+        $nomTribuT)
     {
 
         $fetch = $this->getPDO()->prepare("SELECT $tribu_t_owned_or_join FROM user WHERE id  = $userId");
@@ -2340,7 +2346,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @author Elie <eliefenohasina@gmail.com>
      * @Fonction de sauvegarde de l'historique de l'invitation dans la tribu T
      */
-    function saveInvitationStory($table_invitation, $user_id, $email,$isverified=0)
+    function saveInvitationStory($table_invitation, $user_id, $email,$isverified=0, $sender_id)
     {
 
         $sql = "SELECT count(*) as is_invited FROM $table_invitation WHERE email = :email ";
@@ -2355,7 +2361,7 @@ class Tribu_T_Service extends PDOConnexionService
 
         if ($is_invited <= 0) {
 
-            $statement = $this->getPDO()->prepare("INSERT INTO $table_invitation (user_id, email,is_valid) values (:user_id, :email, :is_valid)");
+            $statement = $this->getPDO()->prepare("INSERT INTO $table_invitation (user_id, email,is_valid,sender_id) values (:user_id, :email, :is_valid, :sender_id)");
 
             //$userfullname = $user_id ?  $this->getFullName($user_id) : '';
 
@@ -2364,6 +2370,8 @@ class Tribu_T_Service extends PDOConnexionService
             $statement->bindParam(':email', $email);
 
             $statement->bindParam(':is_valid', $isverified);
+
+            $statement->bindParam(':sender_id', $sender_id);
 
             $statement->execute();
 
@@ -2381,7 +2389,7 @@ class Tribu_T_Service extends PDOConnexionService
     function getAllInvitationStory($table_invitation)
     {
 
-        $sql = "SELECT user.id as id, is_valid, $table_invitation " . ".email, datetime FROM $table_invitation LEFT JOIN user ON $table_invitation" . ".email = user.email";
+        $sql = "SELECT $table_invitation.id as id, $table_invitation.sender_id as sender_id, user.id as user_id, is_valid, $table_invitation " . ".email, datetime FROM $table_invitation LEFT JOIN user ON $table_invitation" . ".email = user.email ORDER BY id DESC";
 
         $stmt = $this->getPDO()->prepare($sql);
 
@@ -2396,19 +2404,38 @@ class Tribu_T_Service extends PDOConnexionService
      * @author Elie <eliefenohasina@gmail.com>
      * @Fonction mise à jour de l'historique de l'invitation dans la tribu T
      */
-    function updateInvitationStory($table_invitation, $is_valid, $email)
+    function updateInvitationStory($table_invitation, $is_valid, $email,$id)
     {
 
-        $sql = "UPDATE $table_invitation SET is_valid = :is_valid WHERE email = :email";
+        $sql = "UPDATE $table_invitation 
+        SET is_valid = :is_valid, user_id = :user_id
+         WHERE email = :email";
 
         $stmt = $this->getPDO()->prepare($sql);
 
         $stmt->bindParam(":is_valid", $is_valid);
-
+        $stmt->bindParam(":user_id", $id);
         $stmt->bindParam(":email", $email);
 
         $stmt->execute();
     }
+
+    /**
+     * @author Elie <eliefenohasina@gmail.com>
+     * @Fonction suppression de l'historique de l'invitation dans la tribu T
+     */
+    function deleteInvitationStory($table_invitation, $id)
+    {
+
+        $sql = "DELETE FROM $table_invitation WHERE id = :id";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(":id", $id);
+
+        $stmt->execute();
+    }
+    
     /**
      * @author Faniry
      * @use cette fonction créee la table message pour le message groupé des fan dans les tribu T
@@ -2722,5 +2749,54 @@ class Tribu_T_Service extends PDOConnexionService
 
         return $rowsNumber;
 
+    }
+     /** 
+    *@author faniry 
+    *Recupère la liste des postulants dans une tribu thèmatique donnée
+    *@param String $name nom de la tribu Thèmatique 
+    *@return array
+    */ 
+    public function getPostulant(String $name){
+        //SELECT * FROM tribu_t_28_lenfer as t1 LEFT JOIN `user` ON (user.email = t1.email COLLATE utf8mb4_unicode_ci) WHERE t1.user_id is NULL;
+        $query="SELECT t1.email as t1email, t1.status as t1status, user.id as userId, user.type, user.email useremail,". 
+        " user.pseudo FROM ".$name. " as t1 LEFT JOIN  `user` ON".
+        " (user.email = t1.email COLLATE utf8mb4_unicode_ci) WHERE user.type=\"type\"";
+        $statement = $this->getPDO()->prepare($query);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+    /** 
+    *@author faniry 
+    *Recupère la liste des postulants dans une tribu thèmatique donnée
+    *@param String $name nom de la tribu Thèmatique 
+    *@return array
+    */ 
+    public function getPostulantNotInvited(){
+        //SELECT * FROM tribu_t_28_lenfer as t1 LEFT JOIN `user` ON (user.email = t1.email COLLATE utf8mb4_unicode_ci) WHERE t1.user_id is NULL;
+        $query="SELECT * FROM `user` WHERE type=\"type\"";
+        $statement = $this->getPDO()->prepare($query);
+        $statement->execute();
+        return $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    /**
+     * @author Elie
+     * Ajout colonne dans la table tribu T invitaion
+     */
+    public function addColumnInTableInvitation($tableName, $column_name)
+    {
+
+        $query = "SHOW COLUMNS FROM $tableName LIKE '$column_name' ";
+
+        $stmt = $this->getPDO()->query($query);
+        
+        if($stmt->rowCount() <= 0) { 
+
+            $alter = "ALTER TABLE $tableName ADD $column_name INT(11) NULL AFTER user_id ";
+
+            $this->getPDO()->query($alter); 
+
+            // echo "Added $column_name";
+        }
     }
 }

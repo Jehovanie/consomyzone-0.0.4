@@ -102,11 +102,11 @@ class MapModule {
 		//// dataMax is the number maximun of the data to show after grouping the all data by lat with ratio.
 		///// this must objectRatioAndDataMax is must be order by zoomMin DESC
 		this.objectRatioAndDataMax = [
-			{ zoomMin: 18, dataMax: 20, ratio: 3 },
-			{ zoomMin: 16, dataMax: 15, ratio: 3 },
-			{ zoomMin: 14, dataMax: 8, ratio: 3 },
-			{ zoomMin: 13, dataMax: 5, ratio: 2 },
-			{ zoomMin: 9, dataMax: 3, ratio: 2 },
+			{ zoomMin: 18, dataMax: 25, ratio: 3 },
+			{ zoomMin: 16, dataMax: 20, ratio: 3 },
+			{ zoomMin: 14, dataMax: 15, ratio: 3 },
+			{ zoomMin: 13, dataMax: 8, ratio: 2 },
+			{ zoomMin: 9, dataMax: 5, ratio: 2 },
 			{ zoomMin: 6, dataMax: 2, ratio: 1 },
 			{ zoomMin: 4, dataMax: 1, ratio: 0 },
 			{ zoomMin: 1, dataMax: 1, ratio: 0 },
@@ -120,6 +120,8 @@ class MapModule {
 		this.closeToEachOther = [];
 		this.tab_polylines = [];
 		this.tab_closeToEachOther = [];
+
+		this.zoom_max_for_count_per_dep = 8;
 	}
 
 	initTales() {
@@ -239,24 +241,128 @@ class MapModule {
 		this.bindEventMouseOverOnMap();
 	}
 
-	settingGeos() {
+	getNumberPerDepDataSearch() {
+		const data = this.default_data.results[0];
+		let results = [];
+		for (let i = 0; i < 95; i++) {
+			results.push({
+				departement: i + 1 < 10 ? `0${i + 1}` : `${i + 1}`,
+				account_per_dep: data.reduce((accumulator, item) => {
+					if (parseInt(item.dep) === i + 1) {
+						accumulator = accumulator + 1;
+					}
+					return accumulator;
+				}, 0),
+			});
+		}
+		return results;
+	}
+
+	async settingGeos() {
+		let number_etablisement = null;
+		const current_url = new URL(window.location.href);
+		if (current_url.href.includes("search")) {
+			const data = this.data.results[0];
+			number_etablisement = {
+				type: "search",
+				departement: "0",
+				total: data.length,
+				nbr_etablisement_per_dep: this.getNumberPerDepDataSearch(),
+			};
+		} else {
+			number_etablisement = await this.fetchMarkerPerDep();
+		}
+		const nbr_etablisement_per_dep = number_etablisement["nbr_etablisement_per_dep"];
+
 		let geos = [];
 
 		if (this.id_dep || this.nom_dep) {
 			if (this.id_dep === 20) {
-				for (let corse of ["2A", "2B"]) {
-					this.geos.push(franceGeo.features.find((element) => element.properties.code === corse));
-				}
+				const geos_for_2A = franceGeo.features.find((element) => element.properties.code === "2A");
+				const geos_for_2B = franceGeo.features.find((element) => element.properties.code === "2B");
+
+				const corse = turf.union(geos_for_2A, geos_for_2B);
+
+				const geos_for_corse = {
+					...corse,
+					properties: {
+						...corse.properties,
+						code: "20",
+						nom: "corse",
+						account_per_dep: nbr_etablisement_per_dep[0]["account_per_dep"],
+					},
+				};
+				geos.push(geos_for_corse);
 			} else {
-				geos.push(franceGeo.features.find((element) => parseInt(element.properties.code) === this.id_dep));
+				const temp = franceGeo.features.find((element) => parseInt(element.properties.code) === this.id_dep);
+				geos.push({
+					...temp,
+					properties: {
+						...temp.properties,
+						account_per_dep: nbr_etablisement_per_dep[0]["account_per_dep"],
+					},
+				});
 			}
 		} else {
 			for (let f of franceGeo.features) {
-				geos.push(f);
+				let temp = null;
+				if (f.properties.code === "2A" || f.properties.code === "2B") {
+					temp = nbr_etablisement_per_dep.find((element) => parseInt(element.departement) === 20);
+				} else {
+					temp = nbr_etablisement_per_dep.find(
+						(element) => parseInt(element.departement) === parseInt(f.properties.code)
+					);
+				}
+
+				const details = temp && temp.hasOwnProperty("details") ? temp.details : null;
+
+				if (f.properties.code === "2B") continue;
+
+				if (f.properties.code === "2A") {
+					const geos_for_2B = franceGeo.features.find((item) => item.properties.code === "2B");
+
+					const corse = turf.union(f, geos_for_2B);
+
+					const geos_for_corse = {
+						...corse,
+						properties: {
+							...corse.properties,
+							code: "20",
+							nom: "corse",
+							account_per_dep: temp ? temp["account_per_dep"] : 0,
+							details,
+						},
+					};
+
+					geos.push(geos_for_corse);
+				} else {
+					geos.push({
+						...f,
+						properties: {
+							...f.properties,
+							account_per_dep: temp ? temp["account_per_dep"] : 0,
+							details,
+						},
+					});
+				}
 			}
 		}
-
 		return geos;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * fetch number etablisement per departement.
+	 *
+	 * I use in this.settingGeos inside this.
+	 *
+	 * @returns list object { departement: , nbr_etablisement_per_dep: [ { departement: ...,  account_per_dep: ... }, ... ], type: ... }
+	 */
+	async fetchMarkerPerDep() {
+		const response = await fetch(`/number_etablisement/${this.mapForType}/${this.id_dep ? this.id_dep : "0"}`);
+		const responseJson = await response.json();
+		return responseJson;
 	}
 
 	settingLatLong() {
@@ -267,26 +373,45 @@ class MapModule {
 		}
 	}
 
-	addGeoJsonToMap() {
+	async addGeoJsonToMap() {
 		if (!this.map) {
 			console.log("Map not initialized");
 			return false;
 		}
 
-		let geos = this.settingGeos();
-		this.geoJSONLayer = L.geoJson().addTo(this.map);
-		// this.geoJSONLayer = L.geoJson(geos, {
-		//     style: {
-		//         weight: 2,
-		//         opacity: 1,
-		//         color: (this.id_dep) ? "red" : "#63A3F6",
-		//         dashArray: '3',
-		//         fillOpacity: 0
-		//     },
-		//     onEachFeature: function (feature, layer) {
-		//         layer.bindTooltip(feature.properties.nom);
-		//     }
-		// }).addTo(this.map);
+		this.geos = await this.settingGeos();
+
+		// this.geoJSONLayer = L.geoJson().addTo(this.map);
+		this.geoJSONLayer = L.geoJson(this.geos, {
+			style: {
+				weight: 2,
+				opacity: 1,
+				color: "red",
+				dashArray: "3",
+				fillOpacity: 0,
+			},
+			onEachFeature: (feature, layer) => {
+			const details_html =
+					feature.properties.hasOwnProperty("details") && feature.properties.details != null
+						? `
+						<span class="badge rounded-pill bg-secondary">R:${feature.properties.details.resto}</span>
+						<span class="badge rounded-pill bg-success">F:${feature.properties.details.ferme}</span>
+						<span class="badge rounded-pill bg-danger">S:${feature.properties.details.station}</span>
+						<span class="badge rounded-pill bg-light text-black">G:${feature.properties.details.golf}</span>
+						<span class="badge rounded-pill bg-dark">T:${feature.properties.details.tabac}</span>
+					`
+						: "";
+
+				const popupContent = `
+					<button type="button" class="btn btn-primary btn-sm">
+						Département <span class="badge bg-info text-dark">${feature.properties.code} ${feature.properties.nom}</span></br>
+						Résultat trouvé <span class="badge bg-warning text-dark">${feature.properties.account_per_dep}</span> </br>
+						${details_html} 
+					</button>
+				`;
+				layer.bindPopup(popupContent);
+			},
+		}).addTo(this.map);
 	}
 
 	eventSetPositionOnMap() {
@@ -394,6 +519,14 @@ class MapModule {
 
 			///remove polyline
 			this.removePolylineWithoutMousePosition();
+
+			///REMOVE THE OUTSIDE THE BOX
+			/// if not bind data.
+			const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+			const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+			const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
+			this.removeMarkerOutSideTheBox(new_size);
 		});
 	}
 
@@ -909,7 +1042,7 @@ class MapModule {
 	}
 
 	/// fonction create map: ( init map, init geojson, add event on memoire zooming)
-	initMap(lat = null, long = null, zoom = null, isAddControl = false) {
+	async initMap(lat = null, long = null, zoom = null, isAddControl = false) {
 		const content_map = document.querySelector(".cart_map_js");
 
 		if (document.querySelector("#toggle_chargement")) {
@@ -929,7 +1062,7 @@ class MapModule {
 		// this.eventSetPositionOnMap();
 
 		////init geojson
-		this.addGeoJsonToMap();
+		await this.addGeoJsonToMap();
 
 		///inject event to save memoir zoom
 		this.settingMemoryCenter();
@@ -1953,7 +2086,7 @@ class MapModule {
 	 *
 	 * @param {} newSize  { minx, maxx, miny, maxy }
 	 *
-	 * - remove markers outside the box
+	 * - remove markers outside the box an normalize the size of the markers.
 	 */
 	removeMarkerOutSideTheBox(newSize) {
 		const zoom = this.map._zoom;
@@ -1963,17 +2096,26 @@ class MapModule {
 		const { dataMax } = current_object_dataMax;
 
 		let countMarkers = 0;
+		let countMarkersRemoved = 0;
 		//// REMOVE the outside the box
 		this.markers.eachLayer((marker) => {
 			const { lat, lng } = marker.getLatLng();
+
 			const isInDisplay =
 				lat > parseFloat(miny) && lat < parseFloat(maxy) && lng > parseFloat(minx) && lng < parseFloat(maxx);
-			if (!isInDisplay || countMarkers > dataMax) {
+
+			const numberOfRubrique = 5;
+
+			if (!isInDisplay || countMarkers > dataMax * numberOfRubrique) {
+				// if (!isInDisplay) {
 				this.markers.removeLayer(marker);
+				countMarkersRemoved++;
 			} else {
 				countMarkers++;
 			}
 		});
+
+		console.log("Marker Removed: " + countMarkersRemoved);
 	}
 
 	/**
@@ -2050,8 +2192,8 @@ class MapModule {
 	 * -
 	 */
 	updateMarkersDisplay(newSize) {
-		///REMOVE THE OUTSIDE THE BOX
-		this.removeMarkerOutSideTheBox(newSize);
+		// ///REMOVE THE OUTSIDE THE BOX
+		// this.removeMarkerOutSideTheBox(newSize);
 
 		const zoom = this.map._zoom;
 		const { minx, maxx, miny, maxy } = newSize;
@@ -2063,7 +2205,7 @@ class MapModule {
 		let default_data = this.transformDataStructure();
 
 		/// add same data must be show
-		if (zoom > 6) {
+		if (zoom > this.zoom_max_for_count_per_dep) {
 			/** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
 			/** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
 			/** objectif: [ { lat: 47.2 (si ratio === 1 ), data: [ {item }, ... ] } ] */
@@ -2071,9 +2213,9 @@ class MapModule {
 			let dataFilteredDerive = []; //// pour stocker les données filtres [ { lat: ... , data: [ { ... },  ... ] } ]
 
 			//// first data filter from this.markers ( lat min to lat max ( with current ration ))
-			this.markers.eachLayer((marker) => {
-				dataFilteredDerive = this.getSpecificRelatedOnRatio(marker, ratio, dataMax, dataFilteredDerive);
-			});
+			// this.markers.eachLayer((marker) => {
+			// 	dataFilteredDerive = this.getSpecificRelatedOnRatio(marker, ratio, dataMax, dataFilteredDerive);
+			// });
 
 			//// COMPLETE DATA FILTER FOR ALL DATA ( lat min to lat max ( with current ration ))
 			dataFilteredDerive = this.completeSpecificRelatedOnRatio(dataFilteredDerive, miny, maxy, ratio);
@@ -2086,9 +2228,11 @@ class MapModule {
 					parseFloat(item.lat) < parseFloat(maxy) &&
 					parseFloat(item.long) > parseFloat(minx) &&
 					parseFloat(item.long) < parseFloat(maxx);
+
 				const isRelatedWithRatio = dataFilteredDerive.some(
 					(jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio)) === parseFloat(jtem.lat)
 				);
+
 				if (isCanDisplay && isRelatedWithRatio) {
 					let isAlreadyDisplay = false; ///check if this already displayed on the map (already in the markers)
 					this.markers.eachLayer((marker) => {
@@ -2112,6 +2256,7 @@ class MapModule {
 							) {
 								const isSelected =
 									this.marker_last_selected && this.marker_last_selected.options.id === item.id;
+
 								this.settingSingleMarker(item, isSelected);
 
 								dataFilteredDerive.forEach((ktem) => {
@@ -2124,104 +2269,105 @@ class MapModule {
 					}
 				}
 			});
-		} else {
-			/** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
-			/** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
-			/** objectif: [ { lat: 47.2 (si ratio === 1 ), data: [ {item }, ... ] } ] */
-			const dataFiltered = [];
-
-			default_data.forEach((item) => {
-				////check if there is filter by carractère appear
-				if (
-					this.filterLetter === "" ||
-					(this.filterLetter !== "" &&
-						item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
-				) {
-					if (!dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio)) === jtem.lat)) {
-						dataFiltered.push({ lat: parseFloat(parseFloat(item.lat).toFixed(ratio)), data: [item] });
-					} else {
-						dataFiltered.forEach((ktem) => {
-							if (
-								parseFloat(parseFloat(item.lat).toFixed(ratio)) === ktem.lat &&
-								ktem.data.length < dataMax
-							) {
-								ktem.data.push(item);
-							}
-						});
 					}
-				}
-			});
+		// else {
+		// 	/** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
+		// 	/** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
+		// 	/** objectif: [ { lat: 47.2 (si ratio === 1 ), data: [ {item }, ... ] } ] */
+		// 	const dataFiltered = [];
 
-			const dateFilteredPrime = [];
+		// 	default_data.forEach((item) => {
+		// 		////check if there is filter by carractère appear
+		// 		if (
+		// 			this.filterLetter === "" ||
+		// 			(this.filterLetter !== "" &&
+		// 				item.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
+		// 		) {
+		// 			if (!dataFiltered.find((jtem) => parseFloat(parseFloat(item.lat).toFixed(ratio)) === jtem.lat)) {
+		// 				dataFiltered.push({ lat: parseFloat(parseFloat(item.lat).toFixed(ratio)), data: [item] });
+		// 			} else {
+		// 				dataFiltered.forEach((ktem) => {
+		// 					if (
+		// 						parseFloat(parseFloat(item.lat).toFixed(ratio)) === ktem.lat &&
+		// 						ktem.data.length < dataMax
+		// 					) {
+		// 						ktem.data.push(item);
+		// 					}
+		// 				});
+		// 			}
+		// 		}
+		// 	});
 
-			this.markers.eachLayer((marker) => {
-				const temp = marker.getLatLng();
+		// 	const dateFilteredPrime = [];
 
-				if (!dateFilteredPrime.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio)) === jtem.lat)) {
-					const data_temp = default_data.find((item) => parseInt(item.id) === parseInt(marker.options.id));
+		// 	this.markers.eachLayer((marker) => {
+		// 		const temp = marker.getLatLng();
 
-					////check if there is filter by carractère appear
-					if (
-						this.filterLetter === "" ||
-						(this.filterLetter !== "" &&
-							data_temp.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
-					) {
-						dateFilteredPrime.push({
-							lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),
-							data: [data_temp],
-						});
-					}
-				} else {
-					dateFilteredPrime.forEach((ktem) => {
-						if (parseFloat(parseFloat(temp.lat).toFixed(ratio)) === ktem.lat) {
-							if (ktem.data.length < dataMax) {
-								const data_temp = default_data.find(
-									(item) => parseInt(item.id) === parseInt(marker.options.id)
-								);
+		// 		if (!dateFilteredPrime.some((jtem) => parseFloat(parseFloat(temp.lat).toFixed(ratio)) === jtem.lat)) {
+		// 			const data_temp = default_data.find((item) => parseInt(item.id) === parseInt(marker.options.id));
 
-								////check if there is filter by carractère appear
-								if (
-									this.filterLetter === "" ||
-									(this.filterLetter !== "" &&
-										data_temp.nameFilter.toLowerCase().charAt(0) ===
-											this.filterLetter.toLowerCase())
-								) {
-									ktem.data.push(
-										default_data.find((item) => parseInt(item.id) === parseInt(marker.options.id))
-									);
-								}
-							} else {
-								this.markers.removeLayer(marker);
-							}
-						} else {
-							this.markers.removeLayer(marker);
-						}
-					});
-				}
-			});
+		// 			////check if there is filter by carractère appear
+		// 			if (
+		// 				this.filterLetter === "" ||
+		// 				(this.filterLetter !== "" &&
+		// 					data_temp.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
+		// 			) {
+		// 				dateFilteredPrime.push({
+		// 					lat: parseFloat(parseFloat(temp.lat).toFixed(ratio)),
+		// 					data: [data_temp],
+		// 				});
+		// 			}
+		// 		} else {
+		// 			dateFilteredPrime.forEach((ktem) => {
+		// 				if (parseFloat(parseFloat(temp.lat).toFixed(ratio)) === ktem.lat) {
+		// 					if (ktem.data.length < dataMax) {
+		// 						const data_temp = default_data.find(
+		// 							(item) => parseInt(item.id) === parseInt(marker.options.id)
+		// 						);
 
-			dataFiltered.forEach((item) => {
-				if (dateFilteredPrime.some((jtem) => item.lat === jtem.lat && item.data.length > jtem.data.length)) {
-					const dataPrime = dateFilteredPrime.find((jtem) => item.lat === jtem.lat);
-					item.data.forEach((ktem) => {
-						if (!dataPrime.data.some((ptem) => parseInt(ptem.id) === parseInt(ktem.id))) {
-							this.settingSingleMarker(ktem, false);
-						}
-					});
-				} else {
-					item.data.forEach((ktem) => {
-						////check if there is filter by carractère appear
-						if (
-							this.filterLetter === "" ||
-							(this.filterLetter !== "" &&
-								ktem.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
-						) {
-							this.settingSingleMarker(ktem, false);
-						}
-					});
-				}
-			});
-		}
+		// 						////check if there is filter by carractère appear
+		// 						if (
+		// 							this.filterLetter === "" ||
+		// 							(this.filterLetter !== "" &&
+		// 								data_temp.nameFilter.toLowerCase().charAt(0) ===
+		// 									this.filterLetter.toLowerCase())
+		// 						) {
+		// 							ktem.data.push(
+		// 								default_data.find((item) => parseInt(item.id) === parseInt(marker.options.id))
+		// 							);
+		// 						}
+		// 					} else {
+		// 						this.markers.removeLayer(marker);
+		// 					}
+		// 				} else {
+		// 					this.markers.removeLayer(marker);
+		// 				}
+		// 			});
+		// 		}
+		// 	});
+
+		// 	dataFiltered.forEach((item) => {
+		// 		if (dateFilteredPrime.some((jtem) => item.lat === jtem.lat && item.data.length > jtem.data.length)) {
+		// 			const dataPrime = dateFilteredPrime.find((jtem) => item.lat === jtem.lat);
+		// 			item.data.forEach((ktem) => {
+		// 				if (!dataPrime.data.some((ptem) => parseInt(ptem.id) === parseInt(ktem.id))) {
+		// 					this.settingSingleMarker(ktem, false);
+		// 				}
+		// 			});
+		// 		} else {
+		// 			item.data.forEach((ktem) => {
+		// 				////check if there is filter by carractère appear
+		// 				if (
+		// 					this.filterLetter === "" ||
+		// 					(this.filterLetter !== "" &&
+		// 						ktem.nameFilter.toLowerCase().charAt(0) === this.filterLetter.toLowerCase())
+		// 				) {
+		// 					this.settingSingleMarker(ktem, false);
+		// 				}
+		// 			});
+		// 		}
+		// 	});
+		// }
 
 		//// Update icon size while zoom in or zoom out
 		// const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
@@ -2239,6 +2385,7 @@ class MapModule {
 	 */
 	transformDataStructure() {
 		let default_data = [];
+
 		if (Array.isArray(this.default_data)) {
 			default_data = this.default_data;
 		} else if (this.default_data.hasOwnProperty("ferme") && this.default_data.hasOwnProperty("resto")) {
@@ -2371,12 +2518,15 @@ class MapModule {
 			countMarkers++;
 		});
 
-		if (countMarkers < 50 && new_data.length > 0) {
+		const max_data_per_bound = 100;
+		// if (countMarkers < max_data_per_bound && new_data.length > 0) {
+		if (new_data.length > 0) {
 			let data = [];
-			data = new_data.length > 50 ? shuffle(new_data) : new_data;
-			data = data.filter((item, index) => index < 50);
+			data = new_data.length > max_data_per_bound ? shuffle(new_data) : new_data;
+			data = data.filter((item, index) => index < max_data_per_bound);
 
-			data.forEach((item) => {
+			// data.forEach((item) => {
+			new_data.forEach((item) => {
 				const isCanDisplay =
 					parseFloat(item.lat) > parseFloat(miny) &&
 					parseFloat(item.lat) < parseFloat(maxy) &&
@@ -2394,6 +2544,7 @@ class MapModule {
 					if (!isAlreadyDisplay) {
 						const isSelected =
 							this.marker_last_selected && this.marker_last_selected.options.id === item.id;
+
 						this.settingSingleMarker(item, isSelected);
 						// console.log("new add : "+ item.id)
 					}
@@ -2404,6 +2555,11 @@ class MapModule {
 		this.removePolylineAndSpyderfyMarker();
 	}
 
+	/**
+	 * @author Jehovanie RAMANDIRJOEL <jehovanieramd@gmail.com>
+	 *
+	 * Goal: Calculate and show the number of the marker in the map.
+	 */
 	countMarkerInCart() {
 		let countMarkerst = 0;
 		this.markers.eachLayer((marker) => {
@@ -2758,5 +2914,167 @@ class MapModule {
 			user_status = { ...user_status, mon_golf: true };
 		}
 		return user_status;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * Goal: Create special markerClusterGroup for the count etablisement per dep.
+	 *
+	 * I call this on onInit function inside child
+	 */
+	createMarkersClusterForCountPerDep() {
+		this.markerClusterForCounterPerDep = L.markerClusterGroup({
+			chunkedLoading: true,
+			chunkInterval: 500,
+			chunkDelay: 100,
+			maxClusterRadius: 80, //A cluster will cover at most this many pixels from its center
+			clusterPane: L.Marker.prototype.options.pane,
+			spiderfyOnMaxZoom: true,
+			disableClusteringAtZoom: true,
+		});
+
+		console.log("markerClusterForCounterPerDep initié...");
+	}
+
+	/**
+	 *  @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *  Goal: add marker with text count etablisement per dep, inside the map.
+	 */
+	async addCulsterNumberAtablismentPerDep() {
+		this.geos = this.geos.length === 0 ? await this.settingGeos() : this.geos;
+		this.geos.forEach((item) => {
+			if (parseInt(item.properties.account_per_dep) > 0) {
+				///get center lat long
+				const centroidCoordinates = this.getCentroidCoordinatesFromGeos(item);
+
+				/// item is not type polygone or multipolygon
+				if (centroidCoordinates !== null) {
+					///leaflet latlng
+					const latlng = L.latLng(parseFloat(centroidCoordinates[1]), parseFloat(centroidCoordinates[0]));
+					////create marker
+					let markerCountPerDep = this.singleMarkerNumberEtablisementPerDep({ ...item, latlng: latlng });
+
+					this.bindEventClickMarkerCountPerDep(markerCountPerDep);
+
+					this.markerClusterForCounterPerDep.addLayer(markerCountPerDep);
+				}
+			}
+		});
+
+		if (this.map.getZoom() < this.zoom_max_for_count_per_dep) {
+			this.map.addLayer(this.markerClusterForCounterPerDep);
+		}
+		this.addEventMapOnZoomend();
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * Goal: from object geosjson type get the center lat lng using turl bibliothec
+	 * Use in: MapModule function addCulsterNumberAtablismentPerDep
+	 *
+	 * @param geosjson object
+	 *
+	 * @return array [ lat, lng];
+	 */
+	getCentroidCoordinatesFromGeos(geosjson) {
+		let centroid = null;
+		let centroidCoordinates = null;
+
+		if (geosjson.geometry.type === "Polygon") {
+			// Calculate the centroid using turf
+			centroid = turf.centroid(turf.polygon([geosjson.geometry.coordinates[0]]));
+			// Extract the coordinates of the centroid
+			centroidCoordinates = centroid.geometry.coordinates;
+		} else if (geosjson.geometry.type === "MultiPolygon") {
+			// Calculate the centroid using turf
+			centroid = turf.centroid(turf.multiPolygon(geosjson.geometry.coordinates));
+			// Extract the coordinates of the centroid
+			centroidCoordinates = centroid.geometry.coordinates;
+		}
+
+		return centroidCoordinates;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <Jehovanieram@gmail.com>
+	 *
+	 * Goal: Create a new marker POI for count per dep.
+	 * Use in: MapModule function addCulsterNumberAtablismentPerDep,
+	 *
+	 * @paramt {item}
+	 *
+	 * @return marker leaflet.
+	 */
+	singleMarkerNumberEtablisementPerDep(item) {
+		let marker = new L.Marker(item.latlng, {
+			icon: new L.DivIcon({
+				className: "mycluster",
+				html: `
+					<div class="content_text_number_per_dep">
+						<p class="text_number_per_dep">
+							${item.properties.account_per_dep}
+						</p>
+					</div>
+				`,
+				iconSize: [50, 40],
+				iconAnchor: [11, 30],
+				popupAnchor: [0, -20],
+				shadowSize: [68, 95],
+				shadowAnchor: [22, 94],
+			}),
+			type: "count_per_dep",
+		});
+
+		return marker;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * Goal: Move the map to the departement clicked
+	 * Use in: MapModule function  addCulsterNumberAtablismentPerDep
+	 *
+	 * @param {MarkerLeaflet} markerCountPerDep
+	 *
+	 * @retun void
+	 */
+	bindEventClickMarkerCountPerDep(markerCountPerDep) {
+		markerCountPerDep.on("click", (e) => {
+			const latlng = markerCountPerDep.getLatLng();
+			this.updateCenter(parseFloat(latlng.lat), parseFloat(latlng.lng), 11);
+			// this.map.flyTo(L.latLng(parseFloat(latlng.lat), parseFloat(latlng.lng)), 11, {
+			// 	animation: true,
+			// 	duration: 1.5,
+			// });
+		});
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 * This remove the special markersCulsterGroup when state zoom is get in.
+	 */
+	addEventMapOnZoomend() {
+		// Listen for the zoomend event and remove markers when zooming
+		this.map.on("zoomend", () => {
+			var currentZoom = this.map.getZoom(); /// current zoom level
+			if (currentZoom >= this.zoom_max_for_count_per_dep) {
+				if (!this.map.hasLayer(this.markers)) {
+					this.map.addLayer(this.markers);
+				}
+				if (this.map.hasLayer(this.markerClusterForCounterPerDep)) {
+					this.map.removeLayer(this.markerClusterForCounterPerDep);
+				}
+			} else {
+				if (this.map.hasLayer(this.markers)) {
+					this.map.removeLayer(this.markers);
+				}
+
+				if (!this.map.hasLayer(this.markerClusterForCounterPerDep)) {
+					this.map.addLayer(this.markerClusterForCounterPerDep);
+				}
+			}
+		});
 	}
 }

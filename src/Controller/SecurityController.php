@@ -633,17 +633,141 @@ class SecurityController extends AbstractController
         Filesystem $filesyst,
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
-        Tribu_T_Service $tribu_T_Service
+        Tribu_T_Service $serviceTribuT,
+        RequestingService $requesting
     ) {
-        ///to get info
-        ///id de l'utilisateur.
-        $userToVerifie = $userRepository->find($request->query->get('id'));
-
+        
         if ($this->getUser()) {
             $userConnected= $status->userProfilService($this->getUser());
             if( $userConnected["userType"] !== "Type"){
                 return $this->redirectToRoute('app_home');
             }
+        }
+
+///to get info
+        ///id de l'utilisateur.
+        $userToVerifie = $userRepository->find($request->query->get('id'));
+
+        //on utilise cette variable quand la requêst provient d'une relance
+        $tribuT="";
+        //verifie si relance , t =relance
+        if($request->query->get('verif')!=null && strcmp($request->query->get('verif'),'t')==0){
+            $key = hex2bin("000102030405060708090a0b0c0d0e0f");
+            $iv = hex2bin("101112131415161718191a1b1c1d1e1f");
+            $idUserToVerifieBase64Decoded=base64_decode($request->query->get('id'),true);
+            $decryptedIdUserToVerifie = openssl_decrypt($idUserToVerifieBase64Decoded, "AES-128-CBC", 
+            $key, 0, $iv);
+            $userToVerifie = $userRepository->find($decryptedIdUserToVerifie);
+            $tribuTBase64Decrypted=base64_decode($request->query->get('tribuT'),true);
+            $tribuT=openssl_decrypt($tribuTBase64Decrypted, "AES-128-CBC", 
+            $key, 0, $iv);
+            
+        }
+
+        if($request->query->get('verif')!=null && strcmp($request->query->get('verif'),'a')==0){
+            $key = hex2bin("000102030405060708090a0b0c0d0e0f");
+            $iv = hex2bin("101112131415161718191a1b1c1d1e1f");
+            $idUserToVerifieBase64Decoded=base64_decode($request->query->get('id'),true);
+            $decryptedIdUserToVerifie = openssl_decrypt($idUserToVerifieBase64Decoded, "AES-128-CBC", 
+            $key, 0, $iv);
+            $userToVerifie = $userRepository->find($decryptedIdUserToVerifie);
+            
+            
+        }
+
+        //verfiez si l'utilisateur à verifier est déjà membre dans cmz cad il de type= "consumer"
+        if(strcmp($userToVerifie->getType(),"Type")!=0){ 
+        //verfier si c'est une relance d'adhésion à une tribu T ou non
+                if($request->query->get('verif')!=null && strcmp($request->query->get('verif'),'t')==0){
+                    $emailToVerifie= $userToVerifie->getEmail();
+                    $userId=$userToVerifie->getId();
+                    
+                    $userToVerifyTribuT=json_decode($userToVerifie->getTribuTJoined(),true);
+                    $userToVerifyTribuT= $userToVerifyTribuT !=null ?  $userToVerifyTribuT["tribu_t"] : [];
+            
+                    //verifier si il est dèja dans la tribu t pour éviter d'ecrire la tribu en double  
+                    if(count($userToVerifyTribuT) > 0 &&  isset($userToVerifyTribuT[0]) ){
+                        foreach($userToVerifyTribuT as $tribu){
+                            if( strcmp($tribu["name"],$tribuT)==0 ){ //// check the tribu T to join
+                                return $this->render("authenticator/relance_inscription_response.html.twig",[
+                                    "message" => "Vous êtes déjà membre de la tribu T ".$tribu["name_tribu_t_muable"],
+                                    "lien" => "app_login"
+                                ]);
+                            }
+                        }
+                    }else{
+                        
+                        if( count($userToVerifyTribuT) > 0 ){
+                            if(strcmp($userToVerifyTribuT["name"],$tribuT)==0) //// check the tribu T to join
+                            return $this->render("authenticator/relance_inscription_response.html.twig",[
+                                "message" => "Vous êtes déjà membre de la tribu T ".$userToVerifyTribuT["name_tribu_t_muable"],
+                                "lien" => "app_login"
+                            ]);
+                        }
+                    }
+                
+                    //ajoutez les tribu T dans la table 
+                    //ce code est là on guisse d'assurance au cas où ça ne vas pas dans le code inscriptions tribu
+                    // $userFondateurTribuT= $serviceTribuT->getTribuTInfo($tribuT);
+                    // $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
+
+                    // $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+                    
+                    // $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+                    
+                    // $apropos_tribuTtoJoined=[];
+                    // if(count($arrayTribuT) > 0 &&  isset($arrayTribuT[0]) ){
+                        
+                    //         foreach($arrayTribuT as $tribu){
+                        
+                    //                 if( strcmp($tribu["name"],$tribuT)==0 ){ //// check the tribu T to join
+                    //                         $apropos_tribuTtoJoined= $tribu;
+                    //                         break;
+                    //         }
+                    //     }
+                    // }else{
+                        
+                    //     if( strcmp($arrayTribuT["name"],$tribuT)==0 ){ //// check the tribu T to join
+                    //                 $apropos_tribuTtoJoined= $arrayTribuT;
+                        
+                    //         }
+                    // }    
+                    
+                
+                    // $serviceTribuT->setTribuT(
+                    //         $apropos_tribuTtoJoined["name"], 
+                    //         $apropos_tribuTtoJoined["description"], 
+                    //         $apropos_tribuTtoJoined["logo_path"],
+                    //         $apropos_tribuTtoJoined["extension"], 
+                    //         $userId,
+                    //          "tribu_t_joined", 
+                    //         $apropos_tribuTtoJoined["name_tribu_t_muable"]
+                    // );
+
+                    
+                    
+        
+                    // //// /envoie une notification au autre partisans
+                    // $content = $emailToVerifie . " a accepté l'invitation de rejoindre la tribu " . $apropos_tribuTtoJoined["name_tribu_t_muable"];
+                    
+                    // $notificationService->sendNotificationForOne(
+                    //         $userId, 
+                    //         intval($userPostID), 
+                    //         "user/tribu/my-tribu-t", 
+                    //         $content);
+                    // //met à jour la table historique des invitations
+                    // $serviceTribuT->updateInvitationStory($tribuT."_invitation",1,$emailToVerifie,$userId);
+
+                    // //confirme l'inscriptions comme membre de la tribuT
+                    // $serviceTribuT->confirmMemberTemp($tribuT,$userId,$emailToVerifie);
+                    return $this->render("authenticator/relance_inscription_response.html.twig",[
+                        "message" => "Vous êtes maintenant membre de la tribu T ".$tribu["name_tribu_t_muable"],
+                        "lien" => "app_login"
+                    ]);
+            }else{
+                return $this->redirectToRoute('app_home');
+            }
+            
         }
 
 
@@ -839,52 +963,66 @@ class SecurityController extends AbstractController
                 );
             }
 
-            // Générer des tribus T ami et famille
-            $userId = $request->query->get('id');
-            $suffixeTableTribuTAmie = "A";
-            $suffixeTableTribuTFamille = "F";
-            $tableTribuTAmie = "tribu_t_" . $userId . "_" .$suffixeTableTribuTAmie;
-            $tableTribuTFamille = "tribu_t_" . $userId . "_" .$suffixeTableTribuTFamille;
-            $nomTribuTAmie = "Tribu A";
-            $descriptionTribuTAmie = "Tribu T pour mes amis";
-            $nomTribuTFamille = "Tribu F";
-            $descriptionTribuTFamille = "Tribu T pour ma famille";
-            $tribu_T_Service->createTribuTable($suffixeTableTribuTAmie, $userId, $nomTribuTAmie, $descriptionTribuTAmie);
-            $tribu_T_Service->createTribuTable($suffixeTableTribuTFamille, $userId, $nomTribuTFamille, $descriptionTribuTFamille);
-
-            $extension = [];
-            $extension["restaurant"] = 1;
-            $extension["golf"] = 1;
-
-            $tribu_T_Service->setTribuT($tableTribuTAmie, $descriptionTribuTAmie, "", $extension, $userId, "tribu_t_owned", $nomTribuTAmie);
-            $tribu_T_Service->setTribuT($tableTribuTFamille, $descriptionTribuTFamille, "", $extension, $userId, "tribu_t_owned", $nomTribuTFamille);
-
-            if ($extension["restaurant"] == 1) {
-
-                $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "restaurant");
-
-                $tribu_T_Service->createTableComment($tableTribuTAmie, "restaurant_commentaire");
-
-                $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "restaurant");
-
-                $tribu_T_Service->createTableComment($tableTribuTFamille, "restaurant_commentaire");
-            }
-
-            if ($extension["golf"] == 1) {
-
-                $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "golf");
-
-                $tribu_T_Service->createTableComment($tableTribuTAmie, "golf_commentaire");
-
-                $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "golf");
-
-                $tribu_T_Service->createTableComment($tableTribuTFamille, "golf_commentaire");
-            }
-
-            $tribu_T_Service->creaTableTeamMessage($tableTribuTAmie);
-            $tribu_T_Service->creaTableTeamMessage($tableTribuTFamille);
-
+            //TODO: verif param t and complete inscription t
             ///// END NOTIFICATION ////
+            // if($request->query->get('verif')!=null && strcmp($request->query->get('verif'),'t')==0){
+                    //         //TODO: mettre à jour les champs dans la table tribuT
+                    //         $emailToVerifie= $userToVerifie->getEmail();
+                    //         $userId=$userToVerifie->getId();
+
+                    //         //ajoutez les tribu T dans la table
+                    //         $userFondateurTribuT= $serviceTribuT->getTribuTInfo($tribuT);
+                    //         $userPostID= $userFondateurTribuT["user_id"]; /// id of the user fondateur of this tribu T
+
+                    //         $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
+                    
+                    //         $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
+                    //         dump($arrayTribuT);
+                    //         $apropos_tribuTtoJoined=[];
+                    //         if(count($arrayTribuT) > 0 &&  isset($arrayTribuT[0]) ){
+                        //             foreach($arrayTribuT as $tribu){
+                           
+                            //                 if( strcmp($tribu["name"],$tribuT)==0 ){ //// check the tribu T to join
+                                //                     $apropos_tribuTtoJoined= $tribu;
+                                //                     break;
+            //                 }
+            //             }
+            //         }else{
+            //             if( strcmp($arrayTribuT["name"],$tribuT)==0 ){ //// check the tribu T to join
+                            //                 $apropos_tribuTtoJoined= $arrayTribuT;
+                        //             }
+            //         }    
+                    
+                    
+                    //         $serviceTribuT->setTribuT(
+                        //             $apropos_tribuTtoJoined["name"], 
+                        //             $apropos_tribuTtoJoined["description"], 
+                        //             $apropos_tribuTtoJoined["logo_path"],
+                        //             $apropos_tribuTtoJoined["extension"], 
+                        //             $userId,
+                         //              "tribu_t_joined", 
+                        //             $apropos_tribuTtoJoined["name_tribu_t_muable"]
+                    //         );
+
+                    
+                    
+        
+                    //         //// /envoie une notification au autre partisans
+                    //         $content = $emailToVerifie . " a accepté l'invitation de rejoindre la tribu " . $apropos_tribuTtoJoined["name_tribu_t_muable"];
+                    
+                    //         $notificationService->sendNotificationForOne(
+                        //             $userId, 
+                        //             intval($userPostID), 
+                        //             "user/tribu/my-tribu-t", 
+                        //             $content);
+                    //         //met à jour la table historique des invitations
+                    //         $serviceTribuT->updateInvitationStory($tribuT."_invitation",1,$emailToVerifie,$userId);
+
+                    //         //confirme l'inscriptions comme membre de la tribuT
+                    //         $serviceTribuT->confirmMemberTemp($tribuT,$userId,$emailToVerifie);
+
+                    
+            // }
 
             return $authenticator->authenticateUser(
                 $userToVerifie,
@@ -918,14 +1056,36 @@ class SecurityController extends AbstractController
         VerifyEmailHelperInterface $verifyEmailHelper,
         CodeapeRepository $codeApeRep,
         AgendaService $agendaService,
-        RequestingService $requesting
+        RequestingService $requesting,
+        Status $status
     ) {
 
-        if ($this->getUser() || !$request->query->get("email") || !$request->query->get("tribu")) {
+        
+
+        if ($this->getUser() ) {
             return $this->redirectToRoute("app_home");
         }
 
+        if(!$request->query->get("email") || !$request->query->get("tribu")){
+            return new Response("<strong>La syntaxe de la requête est erronée. Veuillez contacter celui l'administrateur du site. <strong>",400);
+        }
+
         if($userRepository->findOneBy(["email" =>$request->query->get("email") ])){
+
+            /**
+             * update invitation story in tribu T
+             * @author Elie <eliefenohasina@gmail.com>
+             */ 
+
+            $tribuTService->updateInvitationStory($request->query->get("tribu").'_invitation', 1, $request->query->get("email"),$user->getId());
+
+            $usr_to_confirm = $userRepository->findOneBy(["email" =>$request->query->get("email") ]);
+             ///update status of the user in table tribu T
+            $tribuTService->confirmMemberTemp($request->query->get("tribu"), $usr_to_confirm->getId(), $usr_to_confirm->getEmail());
+
+            /**
+             * end Elie
+             */
 
             return $this->redirectToRoute("app_accpeted_invitations");
         }
@@ -1063,23 +1223,41 @@ class SecurityController extends AbstractController
 
             $data= json_decode($userFondateurTribuT["tribu_t_owned"], true); 
             $arrayTribuT= $data['tribu_t']; /// all tribu T for this user fondateur
-            foreach($arrayTribuT as $tribuT){
-                if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
-                    $apropos_tribuTtoJoined= $tribuT;
-                    break;
+            //dd($arrayTribuT);
+            $apropos_tribuTtoJoined=[];
+            if(count($arrayTribuT) > 0 &&  isset($arrayTribuT[0])){
+                foreach($arrayTribuT as $tribuT){
+                    if( $tribuT["name"] === $tribuTtoJoined ){ //// check the tribu T to join
+                        $apropos_tribuTtoJoined= $tribuT;
+                        break;
+                    }
                 }
+            }else{
+                //// check the tribu T to join
+                $apropos_tribuTtoJoined= $arrayTribuT;
+                    
+                
             }
+            
 
             //// set tribu T for this new user.
-            $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $numero_table,"tribu_t_joined", $tribuTtoJoined);
+            $tribuTService->setTribuT(
+                $apropos_tribuTtoJoined["name"], 
+                $apropos_tribuTtoJoined["description"], 
+                $apropos_tribuTtoJoined["logo_path"], 
+                $apropos_tribuTtoJoined["extension"], 
+                $numero_table,
+                "tribu_t_joined", 
+                $apropos_tribuTtoJoined["name_tribu_t_muable"]
+            );
             
-            // update requesting table 
-            $tableRequestingNameOtherUser = $userRepository->find($userPostID)->getTablerequesting();
-            $requesting->setIsAccepted($tableRequestingNameOtherUser, $tribuTtoJoined, intval($userPostID), $numero_table);
+            // // update requesting table ,j'ai (faniry) commenté cette line parcequ'on a pas besoin de mettre à jour la table requesting
+            // $tableRequestingNameOtherUser = $userRepository->find($userPostID)->getTablerequesting();
+            // $requesting->setIsAccepted($tableRequestingNameOtherUser, $tribuTtoJoined, intval($userPostID), $numero_table);
 
             //// send notification for user send invitation.
             $content = $user->getEmail() . " a accepté l'invitation de rejoindre la tribu " . $tribuTtoJoined;
-            $type = "Invitation pour rejoindre la tribu " . $tribuTtoJoined;
+            // $type = "Invitation pour rejoindre la tribu " . $tribuTtoJoined;
             $notificationService->sendNotificationForOne($numero_table, intval($userPostID), "user/tribu/my-tribu-t", $content);
 
 
@@ -1118,7 +1296,11 @@ class SecurityController extends AbstractController
              * @author Elie <eliefenohasina@gmail.com>
              */ 
 
-             $tribuTService->updateInvitationStory($request->query->get("tribu").'_invitation', 1, $request->query->get("email"));
+             $tribuTService->updateInvitationStory(
+                $request->query->get("tribu").'_invitation', 
+                1, 
+                $request->query->get("email"),
+                $user->getId());
 
             /**
              * end Elie

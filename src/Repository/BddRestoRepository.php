@@ -66,21 +66,103 @@ class BddRestoRepository extends ServiceEntityRepository
         }
     }
 
-    function getAccountRestauranting($idDep=null)
-    {
-        $query= $this->createQueryBuilder("r")
-                ->select("count(r.id)");
-            //->groupBy('r.denominationF, r.poiX, r.poiY')
-            //->having('COUNT(r.denominationF)>1 and COUNT(r.poiX)>1 and COUNT(r.poiY)>1')
-                         
+    /**
+     *  @author update by Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     *  Goal: Get the number of elements per department is idDep is null, and count all if else.
+     *  Use in: RestaurantController.php , ... 
+     *  
+     *  @param {integer|null } $idDep: code de departement
+     * 
+     *  @return {integer} number of elements in departement or all
+     *  
+     */
+    function getAccountRestauranting($idDep=null){
+        $qb= $this->createQueryBuilder("r");
+        $qb->select(
+            $qb->expr()->countDistinct(
+                $qb->expr()->concat(
+                    'r.id', "' '",
+                    'r.dep',"' '",
+                    'r.depName',"' '",
+                    'r.denominationF',"' '",
+                    'r.numvoie',"' '",
+                    'r.typevoie',"' '",
+                    'r.nomvoie',"' '",
+                    'r.compvoie',"' '",
+                    'r.villenorm',"' '",
+                    'r.poiX',"' '",
+                    'r.poiY'
+                )
+            )
+        );
+
         if( $idDep ){
-            $query = $query->where("r.dep =:dep")
-                           ->setParameter("dep", $idDep);
+            $qb = $qb->where("r.dep =:dep")
+                     ->setParameter("dep", $idDep);
         }
 
-        return $query->getQuery()
-                     ->getSingleScalarResult();
+        $scalar_result= $qb->getQuery()->getSingleScalarResult();
+        return $scalar_result;
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * 
+     * @param null|integer $code_dep,
+     * 
+     * Similar of the getAccountRestauranting but not returns a scalar
+     * but object like array ( deparement , number total ) if there is no departement specified
+     * 
+     * Use in: HomeController.php
+     * 
+     * @return array [ [ "departement" => .., "account_per_dep" => ... ], ... ]
+     */
+    function getAccountAllPerDep($code_dep=null){
+        $qb = $this->createQueryBuilder('r');
+        $qb->select(
+            $qb->expr()->countDistinct(
+                $qb->expr()->concat(
+                    'r.id', "' '",
+                    'r.dep',"' '",
+                    'r.depName',"' '",
+                    'r.denominationF',"' '",
+                    'r.numvoie',"' '",
+                    'r.typevoie',"' '",
+                    'r.nomvoie',"' '",
+                    'r.compvoie',"' '",
+                    'r.villenorm',"' '",
+                    'r.poiX',"' '",
+                    'r.poiY'
+                )
+            ) . ' as account_per_dep',
+            'r.dep as departement'
+        )->groupBy('r.dep');
+        
+        if( $code_dep != null ){
+            if( intval($code_dep) === 20 ){
+                $qb = $qb->where('r.dep = :depA')
+                         ->andWhere('r.dep = :depB')                   
+                         ->setParameter('depA', '2A')
+                         ->setParameter('depB', '2B');
+            }else{
+                $qb = $qb->where('r.dep = :dep')
+                         ->setParameter('dep', $code_dep);
+            }
+          
+        }
+
+        $result= $qb->getQuery()->getResult();
+
+        return count($result) > 0 ? $result : [ 
+            [ 
+                "departement" => $code_dep,
+                "account_per_dep" => 0 
+            ]
+        ];
+    }
+
+
     function getAccountSpecificRestauranting($dep)
     {
         return $this->createQueryBuilder("r")
@@ -972,6 +1054,7 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
     public function getAllOpenedRestos(){
         
         return $this->createQueryBuilder("r")
@@ -1097,8 +1180,10 @@ class BddRestoRepository extends ServiceEntityRepository
      * @return array Resto
      */
     public function getSomeDataShuffle($limits= 1000){
-        return $this->createQueryBuilder("r")
-                    ->select("r.id,
+        $query=  $this->createQueryBuilder("r");
+
+        $query= $query->select(
+                        "r.id,
                         r.denominationF,
                         r.denominationF as nameFilter,
                         r.numvoie,
@@ -1132,8 +1217,23 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.tel,
                         r.poiY as lat,
                         r.poiX as long"
+                    )->distinct(
+                    $query->expr()->concat(
+                        'r.id', "' '",
+                        'r.dep',"' '",
+                        'r.depName',"' '",
+                        'r.denominationF',"' '",
+                        'r.numvoie',"' '",
+                        'r.typevoie',"' '",
+                        'r.nomvoie',"' '",
+                        'r.compvoie',"' '",
+                        'r.villenorm',"' '",
+                        'r.poiX',"' '",
+                        'r.poiY'
                     )
-                    ->orderBy('RAND()')
+                );
+
+        return $query->orderBy('RAND()')
                     ->setMaxResults($limits)
                     ->getQuery()
                     ->getResult();
@@ -1228,11 +1328,25 @@ class BddRestoRepository extends ServiceEntityRepository
         return $datas;
     }
 
-
-    public function getDataBetweenAnd($minx, $miny, $maxx, $maxy, $idDep= null, $codinsee= null, $taille= 200){
+/**
+     *  @author updated by Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     *  
+     *  Goal: Get data restaurant between bound latitude and longitude 
+     *  Use in: RestaurantController.php, ... 
+     * 
+     *  @param {decimal} $minx,$miny, $maxx, $maxy: lat long min and max delimite the bound
+     *         {integer|null} $idDep code of departement if this sepecified
+     *         {integer|null} $codinsee: code Insee of arrondissement in departement.
+     *         {integer} number data to return by default 200
+     * 
+     *  @return {array} list of the restaurant.
+     */
+    public function getDataBetweenAnd($minx, $miny, $maxx, $maxy, $idDep= null, $codinsee= null, $taille= 250){
         $idDep= strlen($idDep) === 1  ? "0" . $idDep : $idDep;
-        $query =  $this->createQueryBuilder("r")
-                    ->select("r.id,
+        
+        $query = $this->createQueryBuilder("r");
+        $query = $query->select(
+                "r.id,
                         r.denominationF,
                         r.denominationF as nameFilter,
                         r.numvoie,
@@ -1269,7 +1383,21 @@ class BddRestoRepository extends ServiceEntityRepository
                         r.poiX as long,
                         r.poiY as lat"
                     )
-                    ->distinct('r.denominationF, r.poiX, r.poiY')
+                    // ->distinct('r.denominationF, r.poiX, r.poiY')
+                    ->distinct(
+                        $query->expr()->concat(
+                            'r.id', "' '",
+                            'r.dep',"' '",
+                            'r.depName',"' '",
+                            'r.denominationF',"' '",
+                            'r.numvoie',"' '",
+                            'r.typevoie',"' '",
+                            'r.nomvoie',"' '",
+                            'r.compvoie',"' '",
+                            'r.villenorm',"' '",
+                            'r.poiX',"' '",
+                            'r.poiY'
+                        ))
                     ->where("r.poiX >= :minx")
                     ->andWhere("r.poiX <= :maxx")
                     ->andWhere("r.poiY >= :miny")
@@ -1278,11 +1406,7 @@ class BddRestoRepository extends ServiceEntityRepository
                     ->setParameter("maxx", $maxx)
                     ->setParameter("miny", $miny)
                     ->setParameter("maxy", $maxy);
-                    // ->groupBy("r.denominationF, r.poiX, r.poiY")
-                    // ->having('count(r.denominationF)=1')
-                    // ->andHaving('count(r.poiX)=1')
-                    // ->andHaving('count(r.poiY) =1');
-                    
+                                        
         if( $idDep ){
             $query = $query->andWhere("r.dep =:dep")
                            ->setParameter("dep", $idDep);
@@ -1463,4 +1587,6 @@ class BddRestoRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+
 }

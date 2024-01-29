@@ -7,7 +7,11 @@ class MarckerClusterGolf extends MapModule {
 		this.ALREADY_INIT = false;
 		try {
 			this.initMap(null, null, null, isAddControl);
+
+			////create new marker Cluster for POI etablisment
 			this.createMarkersCluster();
+			////create new marker Cluster special for count per dep.
+			this.createMarkersClusterForCountPerDep();
 
 			const link =
 				this.nom_dep && this.id_dep ? `/api/golf/departement/${this.nom_dep}/${this.id_dep}` : `/api/golf`;
@@ -40,7 +44,10 @@ class MarckerClusterGolf extends MapModule {
 	}
 
 	bindAction() {
+		/// marker for poi etabliesment.
 		this.addMarker(this.data);
+		/// marker for count per dep
+		this.addCulsterNumberAtablismentPerDep();
 		// this.setNumberOfMarker();
 		this.addEventOnMap(this.map);
 	}
@@ -149,7 +156,12 @@ class MarckerClusterGolf extends MapModule {
 			}
 		});
 		// console.log(dataFiltered);
-		this.map.addLayer(this.markers);
+
+		/// check if the zoom related to the marker poi
+		if (zoom >= this.zoom_max_for_count_per_dep) {
+			this.map.addLayer(this.markers);
+		}
+
 		this.removePolylineAndSpyderfyMarker();
 	}
 
@@ -267,11 +279,11 @@ class MarckerClusterGolf extends MapModule {
 
 			this.renderFicheDetails(item);
 
-			if(document.querySelector("#dockableIcone_"+item.id))
-				document.querySelector("#dockableIcone_"+item.id).remove()
-			if(document.querySelector("#dockableBtn_"+item.id))
-				document.querySelector("#dockableBtn_"+item.id).remove()
-			removeOrEditSpecificElement()
+			if (document.querySelector("#dockableIcone_" + item.id))
+				document.querySelector("#dockableIcone_" + item.id).remove();
+			if (document.querySelector("#dockableBtn_" + item.id))
+				document.querySelector("#dockableBtn_" + item.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 

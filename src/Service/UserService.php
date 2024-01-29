@@ -29,7 +29,11 @@ class UserService  extends PDOConnexionService{
         $statement = $this->getPDO()->prepare("select * from (select firstname,user_id  from consumer union select firstname,user_id from supplier) as tab where tab.user_id = $userId");
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-        return $result["firstname"];
+        if($result){
+            return $result["firstname"];
+        }else{
+            return "Postulant";
+        }
     }
 
     public function getUserLastName($userId){
@@ -37,7 +41,11 @@ class UserService  extends PDOConnexionService{
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-        return $result["lastname"];
+        if($result){
+            return $result["lastname"];
+        }else{
+            return "non inscrit";
+        }
     }
 
     public function getFullName($userId){
@@ -327,5 +335,150 @@ class UserService  extends PDOConnexionService{
         return $result;
     }
 
+/**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
+     * Localisation du fichier : UserService.php
+     * Je veux : tester si la table abonnement existe
+     * 
+     */
+    public function checkIfAbonnementTable(){
+
+        $db = $_ENV["DATABASENAME"];
+
+        $query = "SHOW TABLES FROM $db like 'abonnement'";
+
+        $sql = $this->getPDO()->query($query);
+
+        $rowsNumber = $sql->rowCount();
+
+        return $rowsNumber;
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
+     * Localisation du fichier : UserService.php
+     * Je veux : créer la table abonnement s'il n'existe pas
+     * 
+     */
+    public function createAbonnementOldTable(){
+
+        $sql = "CREATE TABLE  IF NOT EXISTS `abonnement` (
+            `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            `userId` int(11) NOT NULL,
+            `firstOption` decimal(10,3) NOT NULL,
+            `secondOption` decimal(10,3) NOT NULL,
+            `thirdOption` decimal(10,3) NOT NULL,
+            `fourthOption` decimal(10,3) NOT NULL,
+            `fifthOption` decimal(10,3) NOT NULL,
+            `dateSoumission` datetime NOT NULL DEFAULT current_timestamp()
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+        $this->getPDO()->exec($sql);
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
+     * Localisation du fichier : UserService.php
+     * Je veux : créer la table abonnement s'il n'existe pas
+     * 
+     */
+    public function createAbonnementTable(){
+
+        $sql = "CREATE TABLE  IF NOT EXISTS `abonnement` (
+            `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            `userId` int(11) NOT NULL,
+            `typeAbonnement` tinyint(1) NOT NULL DEFAULT 0,
+            `montant` decimal(10,3) NOT NULL,
+            `dateSoumission` datetime NOT NULL DEFAULT current_timestamp()
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+        $this->getPDO()->exec($sql);
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
+     * Localisation du fichier : UserService.php
+     * Je veux : enregistrer un abonnement
+     * @param int $userId : identifiant de l'utilisateur connecté
+     * @param float $firstOption : Cotisations
+     * @param float $secondOption : Participation supplémentaire 
+     * @param float $thirdOption : Cotisation tribu 
+     * @param float $fourthOption : Participation verte 
+     * @param float $fifthOption : Participation bleue
+     */
+    public function saveAbonnement($userId, $firstOption, $secondOption, $thirdOption, $fourthOption, $fifthOption){
+
+        $statement = $this->getPDO()->prepare("INSERT INTO abonnement (userId, firstOption, secondOption, thirdOption, fourthOption, fifthOption) values (:userId, :firstOption, :secondOption, :thirdOption, :fourthOption, :fifthOption)");
+
+        $statement->bindParam(':userId', $userId);
+
+        $statement->bindParam(':firstOption', $firstOption);
+
+        $statement->bindParam(':secondOption', $secondOption);
+
+        $statement->bindParam(':thirdOption', $thirdOption);
+
+        $statement->bindParam(':fourthOption', $fourthOption);
+
+        $statement->bindParam(':fifthOption', $fifthOption);
+
+        $statement->execute();
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
+     * Localisation du fichier : UserService.php
+     * Je veux : enregistrer un abonnement
+     * @param int $userId : identifiant de l'utilisateur connecté
+     * @param int $typeAbonnement : Cotisations => 1, Participation supplémentaire => 2, Cotisation tribu => 3, Participation verte => 4, Participation bleue => 5
+     * @param float $montant : le montant saisi
+    */
+    public function saveOneAbonnement($userId, $typeAbonnement, $montant){
+
+        $statement = $this->getPDO()->prepare("INSERT INTO abonnement (userId, typeAbonnement, montant) values (:userId, :typeAbonnement, :montant)");
+
+        $statement->bindParam(':userId', $userId);
+
+        $statement->bindParam(':typeAbonnement', $typeAbonnement);
+
+        $statement->bindParam(':montant', $montant);
+
+        $statement->execute();
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
+     * Localisation du fichier : UserService.php
+     * Je veux : afficher l'historique d'abonnement par utilisateur
+     * @param int $userId : identifiant de l'utilisateur connecté
+     * @return array $result : Tableau associatif
+    */
+    public function getAbonnementByUser($userId){
+        $statement = $this->getPDO()->prepare("SELECT * FROM abonnement WHERE userId = :userId ORDER BY id DESC");
+        $statement->bindParam(':userId', $userId);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction dans l'onglet abonnement de la page Super Admin
+     * Localisation du fichier : UserService.php
+     * Je veux : afficher l'historique de tous les abonnements
+     * @return array $result : Tableau associatif
+    */
+    public function getAllAbonnement(){
+        $statement = $this->getPDO()->prepare("SELECT * FROM abonnement ORDER BY id DESC");
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
 
 }
