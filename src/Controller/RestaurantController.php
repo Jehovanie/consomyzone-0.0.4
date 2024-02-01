@@ -1921,13 +1921,14 @@ TributGService $tributGService,
 
     #[Route("/get/link/thefork/{resto_name}/{depart}", name: "thefork")]
     public function thefork(
-        // HttpClientInterface $client,
+        
         $resto_name,
         $depart
         )
     {
-        $browser = new HttpBrowser(HttpClient::create());
-        $response = $browser->request(
+        $client = new HttpBrowser(HttpClient::create());
+       
+        $response = $client->request(
             "GET",
             "https://www.google.com/search?q=the+fork+". str_replace('_', '+', $resto_name)."+".$depart,
             [
@@ -1936,8 +1937,18 @@ TributGService $tributGService,
                 ],
             ]
         );
-        // $content = $response->getContent();
-        $link = $response->getBaseHref();
+        // Select the form containing the button you want to click
+        $form = $response->selectButton('Accept all')->form();
+
+        // Submit the form
+        $client->submit($form);
+      // Get the response after submitting the form
+        $response = $client->getResponse();
+
+        // Process the response as needed
+        // For example, check the response status code, content, or perform assertions
+        $content =$response->getContent();
+       
         return new Response($content); 
     }
 }

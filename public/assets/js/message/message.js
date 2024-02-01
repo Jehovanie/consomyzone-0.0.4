@@ -824,15 +824,108 @@ function hideEmojyPicker() {
 }
 
 /**
+ * @author faniry
+ * affiche la liste d'amis
+ */
+function fan() {
+  fetch("/user/get/allfans").then((r) => {
+    const ulContainer = document.querySelector(".fan_actif_tom_js");
+    ulContainer.innerHTML = "";
+    ulContainer.innerHTML = `<div class="spinner-border text-primary mx-auto" role="status">
+                          <span class="visually-hidden">Loading...</span>
+                        </div>`;
+
+    if (r.status === 200 && r.ok) {
+      r.json().then((jsons) => {
+        const length = jsons.length;
+        ulContainer.innerHTML = "";
+
+        for (let i = 0; i < length; i++) {
+          //pour les tribu T
+          if (i === 0) {
+            const tribusT = jsons[i];
+            const tribusTLength = tribusT.length;
+
+            for (let j = 0; j < tribusTLength; j++) {
+              console;
+              const amis = tribusT[j].amis;
+              const bigContainer = document.createElement("div");
+              bigContainer.style.background="#efe8e8cc";
+              bigContainer.style.borderTop="2px solid #227BC9";
+              const photoTribuT = tribusT[j]["logo_path"];
+              const title = `Liste des partisans dans votre tribu T ${tribusT[j]["name_tribu_t_muable"]}`;
+              const li = createListTribu(photoTribuT, title);
+              bigContainer.setAttribute(
+                "class",
+                "list-group list-group-flush big_container_js d-none"
+              );
+              if(amis.length > 0)
+                for (let c = 0; c < amis.length; c++) {
+                  const div = createCardPartisan(amis[c]);
+                  bigContainer.appendChild(div);
+                }
+              else{
+                const span=document.createElement("span");
+                span.innerText="Aucun partisan"
+                bigContainer.appendChild(span);
+              }
+
+              li.appendChild(bigContainer);
+              ulContainer.appendChild(li);
+              hideContainer(li, bigContainer);
+            }
+          } else {
+            //pour tribu G
+            const tribuG = jsons[i];
+            const tribuGLength = tribuG.length;
+            let li = null;
+            const bigContainer = document.createElement("div");
+            bigContainer.style.background="#efe8e8cc";
+            bigContainer.style.borderTop="2px solid #227BC9";
+            bigContainer.setAttribute(
+              "class",
+              "list-group list-group-flush big_container_js d-none"
+            );
+if(tribuGLength > 0)
+            for (let c = 0; c < tribuGLength; c++) {
+              if (c === 0) {
+                const photoTribuG = tribuG[c]["avatarTribuG"];
+                const title = `Liste des partisans dans votre tribu G ${tribuG[c]["nom_tribuG"]}`;
+                li = createListTribu(photoTribuG, title);
+              }
+              const div = createCardPartisan(tribuG[c]);
+              bigContainer.appendChild(div);
+            }
+else{
+                const span=document.createElement("span");
+                 span.innerText="Aucun partisan"
+                 bigContainer.appendChild(span);
+            }
+
+            li.appendChild(bigContainer);
+            ulContainer.appendChild(li);
+            hideContainer(li, bigContainer);
+          }
+        }
+        updateListFan();
+
+        myMessageWorker.onmessage = (e) => {
+          reRenderPartisanStatus(e.data);
+        };
+      });
+    }
+  });
+}
+
+/**
  *@author tommy
+@deprecated since version
  *cette fonction affiche la liste des users actifs
  *localisation message.js
  */
-function fan() {
-  
-  // fetch("/user/get/fan/online").then((r) => {
-    fetch("/user/get/allfans").then((r) => {
-    if (r.status === 200 && r.ok) {
+function fanOld() {
+  fetch("/user/get/fan/online").then((r) => {
+        if (r.status === 200 && r.ok) {
       r.json().then((datas) => {
         if (document.querySelector(".only"))
           document.querySelector(".only").textContent = "";
@@ -844,9 +937,10 @@ function fan() {
           tribug: 1,
         };
         for (let j = 0; j < datas.length; j++) {
-          if (j === 0 && datas[j][0]) {
-            console.log(datas[j][0].amis);
-            let data = datas[j][0].amis;
+          if (j === 0) {
+            for (let m = 0; m < datas[j].length; m++) {
+            console.log(datas[j][m].amis);
+            let data = datas[j][m].amis;
             length.tribuT = data === undefined ? 0 : data.length;
             for (let value of data) {
               let li = document.createElement("li");
@@ -886,7 +980,8 @@ function fan() {
                             `;
               ul.appendChild(li);
             }
-          } else if (j != 0 && datas[j]){
+          }
+          } else if (j != 0 && datas[j]) {
             let data = datas[j];
             length.tribug = data.length;
             for (let value of data) {
@@ -900,7 +995,8 @@ function fan() {
               const link = "/user/message/perso?user_id=" + value.id;
               const fullName = value.firstname + " " + value.lastname;
 
-              const is_online = value.is_online == 0 ? "background-color:gray":""
+              const is_online =
+                value.is_online == 0 ? "background-color:gray" : "";
 
               li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
@@ -1122,11 +1218,12 @@ function showListTribus() {
             const li = document.createElement("li");
             li.setAttribute("class", "fan_activ_faniry_js");
             li.dataset.toggleTribuGId = json.tableTribuG;
+//<span class="g l m jc wc ce th pi ij xj"></span>
             li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${json.id}_jheo_js" data-toggle-user-id="${json.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
                                         <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
-                                        <!--<span class="g l m jc wc ce th pi ij xj"></span>-->
+                                        
                                     </div>
                                     <a href="${link}" class="yd">
                                         <div class="row">
@@ -1137,7 +1234,7 @@ function showListTribus() {
     
                                             </div>
                                             <div class="col-4">
-                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                                
                                             </div>
                                         </div>
                                     </a>
@@ -1145,6 +1242,7 @@ function showListTribus() {
                             `;
             ul.appendChild(li);
           } else {
+//<span class="g l m jc wc ce th pi ij xj"></span>
             let tribuTs = jsons[i];
             for (let tribut of tribuTs) {
               const tribuTimmuable = tribut.table_name;
@@ -1161,7 +1259,7 @@ function showListTribus() {
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${tribut.id}_jheo_js" data-toggle-user-id="${tribut.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
                                         <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
-                                        <!--<span class="g l m jc wc ce th pi ij xj"></span>-->
+                                        
                                     </div>
                                     <a href="${link}" class="yd">
                                         <div class="row">
@@ -1172,7 +1270,7 @@ function showListTribus() {
     
                                             </div>
                                             <div class="col-4">
-                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                                
                                             </div>
                                         </div>
                                     </a>
@@ -1186,3 +1284,39 @@ function showListTribus() {
     }
   });
 }
+
+/**
+ * @author Elie
+ * Triage message dans l'ordre decrossant
+ */
+function orderOldMessage() {
+  // Trier messages templates
+  let parent = document.querySelector(
+    "div.all_mpcmz_faniry_js.content_list_message_tomm_js"
+  );
+
+  if (parent) {
+    let ms = document.querySelectorAll(
+      "div.all_mpcmz_faniry_js.content_list_message_tomm_js > div.content-message-nanta-css"
+    );
+    let datas = [];
+    ms.forEach((m) => {
+      let dt = m.getAttribute("data-date");
+      datas.push([m, new Date(dt)]);
+    });
+
+    datas.sort((a, b) => {
+      return b[1] - a[1];
+    });
+    parent.innerHTML = "";
+    datas.forEach((el) => {
+      parent.appendChild(el[0]);
+    });
+  }
+}
+
+/** Appel de triage de message */
+
+orderOldMessage();
+
+/** End appel triage */

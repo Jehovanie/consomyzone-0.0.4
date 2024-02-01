@@ -27,10 +27,44 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\StationServiceFrGeomRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class HomeController extends AbstractController
 {
+
+    #[Route("/liste/guide/cmz", name:"app_guide_cmz")]
+    public function getListGuideCMZ(){
+
+        return $this->render("ficheUtilisation.html.twig");
+    }
+    #[Route("/pdf/{nom}", name:"app_guide")]
+    public function pdfGuide($nom){
+        $path="";
+        $name="";
+        if($nom=="1"){
+            $path =$this->getParameter('kernel.project_dir'). "/public/uploads/ConsoMYzone_Slidedoc_2024_01_08_INTRO_pour_site_web.pdf"; 
+            $name="ConsoMYzone_Slidedoc_2024_01_08_INTRO_pour_site_web.pdf";
+        }
+            
+        if($nom == "2"){
+            $path =$this->getParameter('kernel.project_dir'). "/public/uploads/ConsoMYzone_Slidedoc_2024_01_15_Prise_en_main.pdf";
+            $name="ConsoMYzone_Slidedoc_2024_01_15_Prise_en_main.pdf";
+        }
+
+        if($nom == "3"){
+            $path =$this->getParameter('kernel.project_dir'). "/public/uploads/ConsoMYzone_Slidedoc_2024_01_15_Prise_en_main_rapide.pdf";
+            $name="ConsoMYzone_Slidedoc_2024_01_15_Prise_en_main_rapide.pdf";
+        }
+             
+        $file = $path; // Path to the file on the server
+        $response = new BinaryFileResponse($file);
+ 
+        // Give the file a name:
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,$name);
+
+        return $response;
+    }
     #[Route('/getLatitudeLongitudeForAll', name: 'for_explore_cat_tous')]
     public function getLatitudeLongitudeForAll(
         Request $request,

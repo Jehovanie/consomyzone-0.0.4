@@ -231,7 +231,7 @@ class MessageController extends AbstractController
                     $url_redirect = $urlGenerator->generate('app_tribu_g_message', ["name"=>$tableTribuTName, "type"=>"t"], UrlGeneratorInterface::ABSOLUTE_URL);
             
                     //send email for parisan not connected
-                    if($status_friend == 0 || $profil_friend->getIsConnected() == 0 || $profil_friend->getIsConnected() == false){
+                    if(intval($profil_friend->getIsConnected()) == 0 ){
             
                         $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
                     
@@ -348,7 +348,7 @@ class MessageController extends AbstractController
                     $url_redirect = $urlGenerator->generate('app_tribu_g_message', ["name"=>$tableTribuTName, "type"=>"g"], UrlGeneratorInterface::ABSOLUTE_URL);
             
                     //send email for parisan not connected
-                    if($status_friend == 0 || $profil_friend->getIsConnected() == 0 || $profil_friend->getIsConnected() == false){
+                    if(intval($profil_friend->getIsConnected() == 0)){
             
                         $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
                     
@@ -403,6 +403,28 @@ class MessageController extends AbstractController
          return $this->json($response);
  
     }
+#[Route("/user/isOline", name:"user_isOline", methods:["POST"])]
+    public function userIsOnline(
+        Request $request,
+        UserService $userService
+    ){
+
+        $response=[];
+        $key = hex2bin("000102030405060708090a0b0c0d0e0f");
+        $iv = hex2bin("101112131415161718191a1b1c1d1e1f");
+        $content=json_decode($request->getContent(),true);
+        //id des utilisateur, dont le status online doit être mis à jour
+        $ids=$content["ids"];
+        foreach($ids as $id){
+            $idUserDecryptedBase64=base64_decode($id,true);
+            $idDecrypted=openssl_decrypt($idUserDecryptedBase64, "AES-128-CBC", 
+            $key, 0, $iv);
+            $isActive = intval(($userService->getLastActivity($idDecrypted))["@status"]);
+            $response[$id]=$isActive;
+        }
+        return $this->json($response,200);
+    }
+    
     #[Route('/user/get/allfans', name:"app_user_get_all_friend_fan")]
     public function getAllFriendFan(
         Request $request,
@@ -424,7 +446,7 @@ class MessageController extends AbstractController
 
         ////status user connected --- status on navBar -------------
         $userConnected = $status->userProfilService($this->getUser());
-        // dd($userConnected);
+        
 
         ///current user connected
         $user = $this->getUser();
@@ -438,18 +460,16 @@ class MessageController extends AbstractController
 
         ///get all id the user in the same tribut G for me
         $id_amis_tributG = $tributGService->getAllTributG($userConnected['tableTribuG']);  /// [ ["user_id" => ...], ... ]
-
+            $profilTribuG=$tributGService->getProfilTributG($userConnected['tableTribuG'], $userId );
 
         ///to contains profil user information
         $amis_in_tributG = [];
-        foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+        
+        foreach ($id_amis_tributG  as $id_amis) {
             if (intval($id_amis["user_id"]) !== intval($userId)) {
-                ///check their type consumer of supplier
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
-                // if( $user_amis && boolval($isActive)){
-                if($tributGService->getProfil($user_amis, $entityManager)){
-                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
                     $amis = [
                         "my_id" => $userId,
@@ -460,19 +480,25 @@ class MessageController extends AbstractController
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
                         "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
-                        "is_online" => $isActive
+                        "is_online" => $isActive,
+                        "origine"=>"tribu_G",
+                        "nom_tribuG" => $profilTribuG["description"],
+                        "avatarTribuG" =>   $profilTribuG["avatar"],
+                   
                     ];
-                    ///get it
+                    
                     array_push($amis_in_tributG, $amis);
+
                 }
             }
-        }
+        
         ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
 
         $all_tribuT_user = [];
         $all_tribuT = $userRepository->getListTableTribuT();
         foreach ($all_tribuT as $tribuT) {
             $tribuT['amis'] = [];
+            $tribuT["origine"] ="tribu_t";
             $results = $tributTService->getAllPartisanProfil($tribuT['table_name']);
             foreach ($results as $result) {
                 if (intval($result["user_id"]) !== intval($userId)) {
@@ -1280,6 +1306,8 @@ class MessageController extends AbstractController
 
         $my_full_name =  $userService->getFullName($this->getUser()->getId());
 
+//comment the fucking code Nantenaina.
+        //invitation send from agenda 
         if(isset($dataInfos)){
             foreach ($dataInfos as $key) {
                 $agendaID = $key["agendaId"];
@@ -1298,6 +1326,8 @@ class MessageController extends AbstractController
                         $type);
 
                     $userTo = $userRepository->findOneBy(["id" => intval($to_id)]);
+
+
                     $email_to = $userTo->getEmail();
                     $table_agenda_partage_name="partage_agenda_".$userId;
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
@@ -1315,7 +1345,7 @@ class MessageController extends AbstractController
 
                     //send email for parisan not connected
 
-                    if($status_friend == 0 || $userTo->getIsConnected() == 0 || $userTo->getIsConnected() == false){
+                    if(intval($profil_friend->getIsConnected()) == 0){
 
                         $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
                     
@@ -1342,16 +1372,20 @@ class MessageController extends AbstractController
 
             $email_friend = $profil_friend->getEmail();
 
-            $url_redirect = $urlGenerator->generate('app_message_perso', ["user_id"=>$to], UrlGeneratorInterface::ABSOLUTE_URL);
+            $url_redirect = $urlGenerator->generate('app_message_perso', ["user_id"=>$this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
 
             //send email for parisan not connected
-            if($status_friend == 0){
+            if( intval($profil_friend->getIsConnected()) == 0 ){
 
-                $obj_mail = $name_friend. " vous a envoyé un message sur ConsoMyZone";
+                $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
             
                 $mailService->sendEmailForMessage($email_friend, $name_friend, $obj_mail, $my_full_name, $url_redirect);
-
             }
+// }elseif($status_friend == 0 ){
+            //     $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
+            
+            //     $mailService->sendEmailForMessage($email_friend, $name_friend, $obj_mail, $my_full_name, $url_redirect);
+            // }
 
             /** End Elie */
         }

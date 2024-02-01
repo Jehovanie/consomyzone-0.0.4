@@ -1377,7 +1377,7 @@ $type = "/user/invitation";
 
         // $contentForDestinator = $userFullname . " vous a envoyé une invitation de rejoindre la tribu " . str_replace("$", "'", $tribu_name["name"]) . "<a style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\">Voir l'invitation</a>";
         // $contentForDestinator = " vous a envoyé une invitation de rejoindre la tribu " . $nomTribu;
-        $contentForDestinator = "Vous avez reçu une invitation de rejoindre la tribu " . $nomTribu;
+        $contentForDestinator = "Vous avez reçu une invitation de rejoindre la tribu \"" . $nomTribu .'"';
 
 
         $type = "/user/invitation";
@@ -1387,7 +1387,7 @@ $type = "/user/invitation";
         $isMembre = $tribu_t->testSiMembre($table, $id_receiver);
 
         if ($isMembre == "not_invited") {
-            $contentForSender = "Vous avez envoyé une invitation à " . $tribu_t->getFullName($id_receiver) . " de rejoindre la tribu " . $nomTribu;
+            $contentForSender = "Vous avez envoyé une invitation à " . $tribu_t->getFullName($id_receiver) . " de rejoindre la tribu \"" . $nomTribu .'"';
             $tribu_t->addMember($table, $id_receiver);
             $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
             $this->requesting->setRequestingTribut("tablerequesting_" . $id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);

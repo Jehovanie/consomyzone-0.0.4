@@ -1151,9 +1151,7 @@ function findInNet(server, denomination_f, adresse) {
 		case "bing":
 			window.open("https://www.bing.com/search?q=" + denomination_f + " " + adresse);
 			break;
-		case "thefork":
-			// const linkTheFork1 = `https://www.google.com/search?q=the+fork+${denomination_f.replaceAll(" ", "+")}+${adresse}`
-			// console.log(linkTheFork1)
+		case "thefork":{
 			const request = new Request(`/get/link/thefork/${denomination_f.replaceAll(" ", "_")}/${adresse}`, {
 				method: 'GET',
 			});
@@ -1161,14 +1159,14 @@ function findInNet(server, denomination_f, adresse) {
 			.then((response) => response.text())
 			.then((result) => {
 				const htmlParse = new DOMParser().parseFromString(result, "text/html")
-				let acceptCookies = htmlParse.querySelector(".basebutton.button.searchButton")
-				console.log(acceptCookies)
-				let linkTheForkGoogle = htmlParse.querySelector("#main > div > div > div.egMi0 > a")
+								let linkTheForkGoogle = htmlParse.querySelector("#main > div > div > div.egMi0 > a")
 				let linkTheForkGoogleHref = linkTheForkGoogle.getAttribute("href")
 				let linkTheFork = linkTheForkGoogleHref.split("/")[3]
-
-				if (linkTheFork === 'www.thefork.fr') {
+				let theFork = linkTheFork.split(".")[1]
+				
+				if (theFork === 'thefork') {
 					let nameRestoTheForkSplit = linkTheForkGoogleHref.split("/")[5]
+
 					let adressRestoTheFork = nameRestoTheForkSplit.split("-")[0]
 					if (adressRestoTheFork == adresse.toLowerCase()) {
 						swal({
@@ -1192,6 +1190,10 @@ function findInNet(server, denomination_f, adresse) {
 				}
 			})
 			break;
+		}
+			// const linkTheFork1 = `https://www.google.com/search?q=the+fork+${denomination_f.replaceAll(" ", "+")}+${adresse}`
+			// console.log(linkTheFork1)
+			
 	}
 }
 

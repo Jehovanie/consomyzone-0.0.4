@@ -32,7 +32,17 @@
                 {% endif %}
             </div>
             <div class="col-4">
-                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                {% set difference = date("now").diff(date(last_message.datetime)) %}
+                {% set leftDays = difference.days %}
+                {% set leftDaysStr = ""%}
+                {% if leftDays == 1 %}
+                    {% set leftDaysStr = "1 jour" %}
+                {% elseif leftDays < 1 %}
+                    {% set leftDaysStr = last_message.datetime|split(' ')[1] %}
+                {% else %}
+                    {% set leftDaysStr = leftDays ~ " jours" %}
+                {% endif %}
+                <p class="heure_message">{{leftDaysStr}}<i class="fa-regular fa-clock"></i></p>
             </div>
         </div>
         

@@ -1740,7 +1740,9 @@ class Tribu_T_Service extends PDOConnexionService
             $statement_photos = $this->getPDO()->prepare("SELECT photo_profil,firstname,lastname FROM (SELECT photo_profil, user_id,firstname,lastname FROM consumer union SELECT photo_profil, user_id,firstname,lastname FROM supplier) as tab WHERE tab.user_id = $userSentPub");
             $statement_photos->execute();
             $user_profil = $statement_photos->fetch(PDO::FETCH_ASSOC);
-            $result["publication"]=$this->convertUnicodeToUtf8($result["publication"]);
+            $result["publication"]=json_decode($result["publication"],true);
+            $result["publication"] = $this->convertUnicodeToUtf8($result["publication"]);
+            $result["publication"]=mb_convert_encoding($result["publication"], 'UTF-8', 'UTF-8');
             $result["user_profil"]=$user_profil;
             array_push($resultF,$result);
         }
@@ -2090,7 +2092,9 @@ class Tribu_T_Service extends PDOConnexionService
                 $statement->execute();
                 $reactions = $statement->fetchAll(PDO::FETCH_ASSOC);
 
-
+                $description=json_decode($d_pub["publication"],true);
+                $description=$this->convertUnicodeToUtf8($description);
+                $description=mb_convert_encoding($description, 'UTF-8', 'UTF-8');
                 $data = [
                     "userOwnPub" => [
                         "id" => $d_pub["user_id"],
@@ -2101,7 +2105,7 @@ class Tribu_T_Service extends PDOConnexionService
                     "publication" => [
                         "id" => $d_pub["id"],
                         "confidentiality" => $d_pub['confidentiality'],
-                        "description" => json_decode($this->convertUnicodeToUtf8($d_pub['publication']), true),
+                        "description" => $description,
                         "image" => $d_pub['photo'],
                         "createdAt" => $d_pub["datetime"],
                         "comments" => $comments,

@@ -1995,7 +1995,7 @@ function getHistoInvitation(e) {
 
         for (let invit of data) {
 
-          console.log(invit);
+          // console.log(invit);
 
           let is_accepted = "", is_cancelled = "", is_rejected = "", is_wait = "", btn_action = ""
           let tribu_name = invit.requesting.content.split("de rejoindre la tribu ")[1];
@@ -2004,7 +2004,7 @@ function getHistoInvitation(e) {
 
           if (invit.requesting.types == "invitation") {
 
-            img_profil = invit.pdp_uPoster
+            img_profil = invit.pdp_uPoster?invit.pdp_uPoster : "/uploads/users/photos/default_pdp.png"
 
             if (invit.requesting.is_wait == 1) {
               is_wait = `<span class="badge rounded-pill text-bg-warning"> <i class="fa-solid fa-hourglass-start"></i> En attente</span>`
@@ -2013,7 +2013,7 @@ function getHistoInvitation(e) {
                       <i class="fa-solid fa-user-plus text-light"></i>
                     </button> 
                     <button onclick="declineInvitation(this)" class="btn btn-danger bt${invit["requesting"]["id"]}rU btn_r_${invit["uPoster"]["\u0000App\\Entity\\User\u0000id"]} btn-sm" data-b="${invit["requesting"]["balise"]}" data-tbt="${invit["requesting"]["is_tribu"]}" id="supre_invitation_js">Suprimer
-                      <i class="fa-solid fa-user-minus text-light"></i>
+                      <i class="fa-solid fa-trash text-light"></i>
                     </button>
             `
             } else {
@@ -2031,13 +2031,13 @@ function getHistoInvitation(e) {
 
           } else {
 
-            img_profil = invit.pdp_userReceiving
+            img_profil = invit.pdp_userReceiving? invit.pdp_userReceiving:"/uploads/users/photos/default_pdp.png"
 
             if (invit.requesting.is_wait == 1) {
               is_wait = `<span class="badge rounded-pill text-bg-warning"> <i class="fa-solid fa-hourglass-start"></i> En attente</span>`
               btn_action = `
-                <button onclick="annuledDemand(this)" class="btn btn-danger bt${invit["requesting"]["id"]}rU btn_a_${invit["userReceiving"]["\u0000App\\Entity\\User\u0000id"]} btn-sm" data-b="${invit["requesting"]["balise"]}" data-tbt="${invit["requesting"]["is_tribu"]}" id="annule_invitation_js">Annuler
-                <i class="fa-solid fa-user-plus text-light"></i> 
+                <button onclick="annuledDemand(this)" class="btn btn-secondary bt${invit["requesting"]["id"]}rU btn_a_${invit["userReceiving"]["\u0000App\\Entity\\User\u0000id"]} btn-sm" data-b="${invit["requesting"]["balise"]}" data-tbt="${invit["requesting"]["is_tribu"]}" id="annule_invitation_js">Annuler
+                <i class="fa-solid fa-user-minus text-light"></i> 
               </button>
               <button onclick="relanceDemand(this, ${invit.requesting.user_received},'${invit.requesting.balise}','${tribu_name}')" class="btn btn-primary bt${invit["requesting"]["id"]}rU btn_a_${invit["userReceiving"]["\u0000App\\Entity\\User\u0000id"]} btn-sm" data-b="${invit["requesting"]["balise"]}" data-tbt="${invit["requesting"]["is_tribu"]}" id="relance_invitation_js">Relancer
                 <i class="fa-solid fa-paper-plane text-light"></i> 
@@ -2065,7 +2065,7 @@ function getHistoInvitation(e) {
           // let user_img = user_node.querySelector("img").src
 
           htm += `
-            <tr>
+            <tr class="invit_int_${invit.requesting.id}">
               <td>
                 <div class="notification-list notification-list--unread">
                   <div class="notification-list_content">
@@ -2169,7 +2169,9 @@ function fetchInvitationExterne() {
             if (membres.length > 0) {
               for (const item of membres) {
 
-                if(item.is_forMe || item.role == "Fondateur"){
+                // console.log(item);
+                 /*|| item.role == "Fondateur"*/
+                if(item.is_forMe && item.is_valid != 1 ){
                   // console.log(item);
 
                   let user = item.user ? `<a href="/user/profil/${item.user.userId.id}" class="badge text-bg-primary">${item.user.firstname + " " + item.user.lastname
@@ -2178,13 +2180,13 @@ function fetchInvitationExterne() {
                   let user_img = (item.user && item.user.photoProfil) ? "/public"+item.user.photoProfil : "/public/uploads/users/photos/default_pdp.png"
                   let sender_img = (item.sender && item.sender.photoProfil) ? "/public"+item.sender.photoProfil : "/public/uploads/users/photos/default_pdp.png"
 
-                  let sender_profil = item.sender ? `<a class="text-primary" href="/user/profil/${item.sender.id}" >${item.sender.firstname +" " +item.sender.lastname}</a>` : "Un fondateur"
+                  let sender_profil = item.sender ? `<a class="text-primary" href="/user/profil/${item.sender.id}" >${item.sender.firstname +" " +item.sender.lastname}</a>` : "Le fondateur"
 
                   let roles =""
                   let btn_supp =""
                   let cls_for_me =""
-
-                  if(item.role == "Fondateur" || item.is_forMe){
+/*item.role == "Fondateur" || */
+                  if(item.is_forMe){
                   btn_supp = `<button class="mt-2 btn btn-sm btn-danger ${roles}" onclick="supprInvitationExterne('${tribu_table.split("_invitation")[0]}', '${item.id}')"><i class="fa-solid fa-trash text-light"></i> Supprimer</button>`
 
                   }
@@ -2202,7 +2204,7 @@ function fetchInvitationExterne() {
                                       </div>
                                       <div class="notification-list_detail">
                                           <p>${item.is_forMe? "Vous avez " :sender_profil +" a "} invité <b>${user} [<span class="text-primary">${item.email}</span>]</b></p>
-                                          <p class="text-muted"> à rejoindre la tribu ${item.tribu} du <small>${item.date}</small></p>
+                                          <p class="text-muted"> à rejoindre la tribu T "${item.tribu}" le <small>${item.date}</small></p>
                                           <p class="text-muted"><small>${item.is_valid == 1 ? `<span class="badge text-bg-success"><i class="fa-solid fa-check-double"></i> Validé</span>` : `<span class="badge text-bg-warning"><i class="fa-solid fa-hourglass-start"></i> En attente</span>`}</small></p>
                                       </div>
                                   </div>
@@ -2274,17 +2276,42 @@ function relanceInvitationExterne(table, tribu_name, email, user_full_name) {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(data),
-  }).then(rp=>rp.json()).then(result=>{
-
-    saveInvitationStory(table, result.data);
-    
+  }).then(response=>{
+    if(response.status=200 && response.ok){
+      response.json().then(result=>{
+let isSaved=false
+        try{
+    saveInvitationStory(table, result.data,false);
+    isSaved=true
+        }catch(err){
+          isSaved=false;
+          console.log(error)
+        }
+        
+        if(isSaved){
     swal({
       title: "Bravo !",
       text: "Relance envoyée avec succès",
       icon: "success",
       button: "Fermer",
     })
-  })
+  }else{
+          swal({
+            title: "Oooops !",
+            text: "Erreur 500",
+            icon: "error",
+            button: "Fermer",
+          })
+        }
+        
+      })
+}
+
+})
+  
+  
+  
+ 
 }
 
 

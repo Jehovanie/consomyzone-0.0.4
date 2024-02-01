@@ -3522,3 +3522,101 @@ stop_audio_avis_elie_js {
 		width: 100% !important;
 	}
 }
+/*list téléchargement*/
+/**download list*/
+.list-dw{
+    list-style-type: none !important;
+    margin-bottom: 70px;
+  }
+  
+  li.list-dw> a {
+    position: relative;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    text-decoration: none;
+    padding: 35px 20px 13px 60px;
+    margin-right: 40px;
+    color: #444;
+    background: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/download.png")
+      2px 0 no-repeat;
+  }
+  li.list-dw >a:hover {
+    border-color: #444;
+    box-shadow: 0 0 10px #444;
+  }
+  li.list-dw >a:active {
+    border-color: #ccc;
+    box-shadow: none;
+  }
+  
+
+  li.list-dw >a.pdf:before
+ {
+    position: absolute;
+    width: 62px;
+    height: 72px;
+    top: 2px;
+    left: 2px;
+    transition: all 0.4s;
+  }
+  
+  li.list-dw >a[href$=".ppt"]:before {
+    content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/ppt.png");
+  }
+  li.list-dw >a.pdf:before {
+    content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/pdf.png");
+  }
+  li.list-dw >a[href$=".doc"]:before {
+    content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/doc.png");
+  }
+  li.list-dw >a[href$=".xls"]:before {
+    content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/xls.png");
+  }
+  li.list-dw >a[href$=".zip"]:before {
+    content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/zip.png");
+  }
+  
+  li.list-dw >a[href$=".ppt"]:hover:before,
+  li.list-dw >a.pdf:hover:before,
+  li.list-dw >a[href$=".doc"]:hover:before,
+  li.list-dw >a[href$=".xls"]:hover:before,
+  li.list-dw >a[href$=".zip"]:hover:before {
+    opacity: 0;
+  }
+  
+  li.list-dw >a[href$=".ppt"]:after,
+  li.list-dw >a.pdf:after,
+  li.list-dw >a[href$=".doc"]:after,
+  li.list-dw >a[href$=".xls"]:after,
+  li.list-dw >a[href$=".zip"]:after {
+    content: "Télécharger.";
+    position: absolute;
+    top: 10px;
+    left: 60px;
+    color: #aaa;
+  }
+
+/*liste partisan dans rubrique message*/
+.name_tribu_faniry_js:after {    
+	background: none repeat scroll 0 0 transparent;
+	/* bottom: 0; */
+	content: "";
+	display: block;
+	height: 2px;
+	left: 50%;
+	/* position: absolute; */
+	background:#227BC9;
+	transition: width 0.3s ease 0s, left 0.3s ease 0s;
+	width: 0;
+  }
+  .name_tribu_faniry_js:hover:after { 
+	width: 100%; 
+	left: 0; 
+  }
+
+  .name_tribu_faniry_js.active:after{
+	width: 100%; 
+	left: 0;
+  }
+/*end*/
+  

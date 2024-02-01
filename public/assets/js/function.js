@@ -9,6 +9,7 @@ let idleTimer2 = setTimeout(function () {
 	console.log("debut");
 }, 30000);
 let heartBeatTimer = setTimeout(() => {}, 100);
+const myMessageWorker = new Worker("/public/assets/js/message/worker.js");
 /*
 
 */
@@ -4678,7 +4679,7 @@ function setGallerieImageV2() {
  * @param {string} email
  * @param {int} invite_to
  */
-function saveInvitationStory(table_trib, email) {
+function saveInvitationStory(table_trib, email,withMessage=true) {
 	fetch("/tribu/invitation/save_story/" + table_trib, {
 		method: "POST",
 		headers: {
@@ -4692,15 +4693,19 @@ function saveInvitationStory(table_trib, email) {
 		.then((r) => r.json())
 		.then((res) => {
 			if (res.status == "ok") {
-				swal({
-					text: "Votre nouvelle invitation par e-mail pour joindre la tribu T est envoyée au destinataire.",
-					icon: "info",
-				});
+				if(withMessage)
+					swal({
+						text: "Votre nouvelle invitation par e-mail pour joindre la tribu T est envoyée au destinataire.",
+						icon: "info",
+					});
+
 			} else if (res.status == "!ok") {
-				swal({
-					text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
-					icon: "warning",
-				});
+				if(withMessage)
+					swal({
+						text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
+						icon: "warning",
+					});
+
 			}
 			// console.log(res);
 		});
@@ -7669,7 +7674,7 @@ function showListTribusIframe() {
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${json.id}_jheo_js" data-toggle-user-id="${json.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
                                         <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
-                                        <!--<span class="g l m jc wc ce th pi ij xj"></span>-->
+                                        
                                     </div>
                                     <a href="${link}" class="yd">
                                         <div class="row">
@@ -7680,7 +7685,7 @@ function showListTribusIframe() {
     
                                             </div>
                                             <div class="col-4">
-                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                                
                                             </div>
                                         </div>
                                     </a>
@@ -7702,7 +7707,7 @@ function showListTribusIframe() {
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${tribut.id}_jheo_js" data-toggle-user-id="${tribut.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
                                         <img src="/public${logoPath}" class="vc yd qk rk elie-pdp-modif" style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#modal_show_photo_mess" onclick="setPhotoMessage(this)"/>
-                                        <!--<span class="g l m jc wc ce th pi ij xj"></span>-->
+                                       
                                     </div>
                                     <a href="${link}" class="yd">
                                         <div class="row">
@@ -7713,7 +7718,7 @@ function showListTribusIframe() {
     
                                             </div>
                                             <div class="col-4">
-                                                <p class="heure_message">14:15 <i class="fa-regular fa-clock"></i></p>
+                                                
                                             </div>
                                         </div>
                                     </a>
@@ -7733,9 +7738,8 @@ function showListTribusIframe() {
  *cette fonction affiche la liste des users actifs
  *localisation message.js
  */
-function fanIframe() {
-	fetch("/user/get/allfans").then((r) => {
-	// fetch("/user/get/fan/online").then((r) => {
+function fanIframeOld() {
+	fetch("/user/get/fan/online").then((r) => {
 		if (r.status === 200 && r.ok) {
 			r.json().then((datas) => {
 				if (document.querySelector(".only")) document.querySelector(".only").textContent = "";
@@ -7947,3 +7951,257 @@ function lookupFanIframe(event, useDefaulAction = true, myaction1 = null, myacti
 		}
 	}
 }
+
+// message block code by faniry
+/**
+ * @author faniry
+ * créé la carte pour le partisan
+ */
+function createCardPartisan(json, isIframe = false) {
+  const photoProfil =
+    json.image_profil != null
+      ? "/public" + json.image_profil
+      : "/public/uploads/users/photos/default_pdp.png";
+  let link = !isIframe
+    ? "/user/message/perso?user_id=" + json.id
+    : "/api/message/perso_iframe?user_id=" + json.id;
+
+  const fullName = json.firstname + " " + json.lastname;
+
+  // last_msg_user_${json.id}_jheo_js
+  //content-message-nanta-css
+  const divContainer = document.createElement("div");
+  divContainer.setAttribute("class", `cg lc mg sh ol rl tq is  mss_fan_js`);
+  divContainer.dataset.rank = cryptageJs(json.id);
+
+  const divHeader = document.createElement("div");
+  divHeader.setAttribute("class", `h mb sc yd of th`);
+  const img = document.createElement("img");
+  img.setAttribute("class", `vc yd qk rk elie-pdp-modif`);
+  img.src = photoProfil;
+  img.style = "cursor:pointer;";
+  img.dataset.bsToggle = "modal";
+  img.dataset.bsTarget = "#modal_show_photo_mess";
+
+  const span = document.createElement("span");
+  //span.setAttribute("class","onlinestat_fan_js")
+  let isActive = !!json.is_online;
+  if (isActive) {
+    span.setAttribute("class", "g l m jc wc ce th pi ij xj onlinestat_fan_js");
+  } else {
+    span.setAttribute("class", "g l m jc wc ce th pi ij onlinestat_fan_js");
+    span.style.backgroundColor = "gray";
+  }
+
+  img.onclick = function () {
+    setPhotoMessage(this);
+  };
+
+  divHeader.appendChild(img);
+  divHeader.appendChild(span);
+
+  const a = document.createElement("a");
+  a.href = link;
+  a.setAttribute("class", "yd");
+  a.innerHTML = `<div class="row">
+					  <div class="col-8">
+						  <h5 class="mn un zn gs">
+							  ${fullName}
+						  </h5>
+					  </div>
+				  </div>`;
+
+  divContainer.appendChild(divHeader);
+  divContainer.appendChild(a);
+  return divContainer;
+}
+
+/**
+ * @author faniry
+ * créé le listing des tribu
+ */
+function createListTribu(photoTribu, title) {
+  const li = document.createElement("li");
+  const img = document.createElement("img");
+  const i = document.createElement("i");
+  const span = document.createElement("span");
+
+  li.style = "cursor:pointer";
+  li.setAttribute("class", "listing_fa_js");
+  li.style.padding = "0.75em";
+  li.style.width = "30%";
+
+  img.src = photoTribu;
+  i.setAttribute("class", "fa-solid fa-chevron-right superior");
+  i.style.float = "right";
+  span.setAttribute("class", "name_tribu_faniry_js");
+  span.textContent = title;
+
+  //li.appendChild(img);
+  span.appendChild(i);
+  li.appendChild(span);
+  // li.appendChild(i);
+
+  i.onclick = (e) => {};
+  return li;
+}
+
+/**
+ * @author faniry
+ * provoque l'effet de dropsown sur la list amis
+ * @param {*} targetElement
+ * @param {*} container
+ */
+function hideContainer(targetElement, container) {
+  const icon = targetElement.querySelector(".superior");
+  targetElement.onclick = (e) => {
+    let targ = e.target;
+    if (
+      targ.classList.contains("listing_fa_js") ||
+      targ.classList.contains("name_tribu_faniry_js") ||
+      targ.classList.contains("superior")
+    ) {
+      targetElement.classList.toggle("active_amis_list_fa_js");
+      if (!targetElement.classList.contains("active_amis_list_fa_js")) {
+        container.classList.toggle("d-none");
+        icon.style.transform = "rotate(0deg)";
+      } else {
+        container.classList.toggle("d-none");
+        icon.style.transform = "rotate(90deg)";
+      }
+    }
+  };
+}
+
+/**
+ * @author faniry
+ * met à jour la list le status online des user
+ */
+function updateListFan() {
+  setInterval(
+    () => {
+      const el = Array.from(document.getElementsByClassName("mss_fan_js")).map(
+        (el) => el.dataset.rank
+      );
+      myMessageWorker.postMessage(el);
+    },
+    10000,
+    myMessageWorker
+  );
+}
+
+/**
+ * @author faniry
+ * rend sur l'ecran le status en line
+ * @param {*} data
+ */
+function reRenderPartisanStatus(data) {
+  const objectKey = Object.keys(data);
+  console.log(objectKey);
+  for (const [key, value] of Object.entries(data)) {
+    const divs = document.querySelectorAll(
+      `div.mss_fan_js[data-rank="${key}"]`
+    );
+    let isOnline = !!value;
+    for (let div of divs) {
+      const span = div.querySelector(".onlinestat_fan_js");
+      if (isOnline) {
+        span.style.backgroundColor = "";
+        span.classList.add("xj");
+      } else {
+        span.classList.remove("xj");
+        span.style.backgroundColor = "gray";
+      }
+    }
+  }
+}
+/**
+ * @author faniry
+ * affiche la liste d'amis
+ */
+function fanIframe() {
+  fetch("/user/get/allfans").then((r) => {
+    const ulContainer = document.querySelector(".fan_actif_tom_js");
+    ulContainer.innerHTML = "";
+    ulContainer.innerHTML = `<div class="spinner-border text-primary mx-auto" role="status">
+								<span class="visually-hidden">Loading...</span>
+							</div>`;
+    if (r.status === 200 && r.ok) {
+      r.json().then((jsons) => {
+        const length = jsons.length;
+
+        ulContainer.innerHTML = "";
+        for (let i = 0; i < length; i++) {
+          //pour les tribu T
+          if (i === 0) {
+            const tribusT = jsons[i];
+            const tribusTLength = tribusT.length;
+            for (let j = 0; j < tribusTLength; j++) {
+              console;
+              const amis = tribusT[j].amis;
+              const bigContainer = document.createElement("div");
+              bigContainer.style.background = "#efe8e8cc";
+              bigContainer.style.borderTop = "2px solid #227BC9";
+              const photoTribuT = tribusT[j]["logo_path"];
+              const title = `Liste des partisans dans votre tribu T ${tribusT[j]["name_tribu_t_muable"]}`;
+              const li = createListTribu(photoTribuT, title);
+              bigContainer.setAttribute(
+                "class",
+                "list-group list-group-flush big_container_js d-none"
+              );
+              if (amis.length > 0)
+                for (let c = 0; c < amis.length; c++) {
+                  const div = createCardPartisan(amis[c],true);
+                  bigContainer.appendChild(div);
+                }
+              else {
+                const span = document.createElement("span");
+                span.innerText = "Aucun partisan";
+                bigContainer.appendChild(span);
+              }
+              li.appendChild(bigContainer);
+              ulContainer.appendChild(li);
+              hideContainer(li, bigContainer);
+            }
+          } else {
+            //pour tribu G
+            const tribuG = jsons[i];
+            const tribuGLength = tribuG.length;
+            let li = null;
+            const bigContainer = document.createElement("div");
+            bigContainer.style.background = "#efe8e8cc";
+            bigContainer.style.borderTop = "2px solid #227BC9";
+            bigContainer.setAttribute(
+              "class",
+              "list-group list-group-flush big_container_js d-none"
+            );
+            if (tribuGLength > 0)
+              for (let c = 0; c < tribuGLength; c++) {
+                if (c === 0) {
+                  const photoTribuG = tribuG[c]["avatarTribuG"];
+                  const title = `Liste des partisans dans votre tribu G ${tribuG[c]["nom_tribuG"]}`;
+                  li = createListTribu(photoTribuG, title);
+                }
+                const div = createCardPartisan(tribuG[c], true);
+                bigContainer.appendChild(div);
+              }
+            else {
+              const span = document.createElement("span");
+              span.innerText = "Aucun partisan";
+              bigContainer.appendChild(span);
+            }
+            li.appendChild(bigContainer);
+            ulContainer.appendChild(li);
+            hideContainer(li, bigContainer);
+          }
+        }
+        updateListFan();
+
+        myMessageWorker.onmessage = (e) => {
+          reRenderPartisanStatus(e.data);
+        };
+      });
+    }
+  });
+}
+//endblock
