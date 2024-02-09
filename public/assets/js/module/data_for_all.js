@@ -442,35 +442,51 @@ function itemRestoPastielle(numeroIndices, depName, dep, name, id, icon) {
  */
 function itemRestoPastielleV2(name, tribu) {
 	let item;
-	let tribu_htm = ''
+	let tribu_htm = "";
 
-	let nb_tribu = tribu.length
+	let nb_tribu = tribu.length;
 
-	item = tribu[0]
+	item = tribu[0];
 
 	let logo_path = item.logo_path ? item.logo_path : "/uploads/tribu_t/photo/avatar_tribu.jpg";
 	logo_path = IS_DEV_MODE ? logo_path : "/public" + logo_path;
 
-	let default_name_muable = !item.name_tribu_t_muable ? item.tableName.replace('tribu_t_','').replace('tribug_','').replace('_restaurant','').replace(/[0-9]_/g, '').replace('_',' ') : item.name_tribu_t_muable
+	let default_name_muable = !item.name_tribu_t_muable
+		? item.tableName
+				.replace("tribu_t_", "")
+				.replace("tribug_", "")
+				.replace("_restaurant", "")
+				.replace(/[0-9]_/g, "")
+				.replace("_", " ")
+		: item.name_tribu_t_muable;
 
-	let default_name = `Tribu ${item.tableName.includes("tribu_t")?"T":"G"} ${default_name_muable}` + (nb_tribu > 1?` et ${nb_tribu-1} autre(s) tribu(s)`:"")
-	
-	for(let t of tribu){
+	let default_name =
+		`Tribu ${item.tableName.includes("tribu_t") ? "T" : "G"} ${default_name_muable}` +
+		(nb_tribu > 1 ? ` et ${nb_tribu - 1} autre(s) tribu(s)` : "");
 
-		let type = t.tableName.includes("tribu_t")?"T":"G"
+	for (let t of tribu) {
+		let type = t.tableName.includes("tribu_t") ? "T" : "G";
 
-		let name_muable = (!t.name_tribu_t_muable) ? t.tableName.replace('tribu_t_','').replace('tribug_','').replace('_restaurant','').replace(/[0-9]_/g, '').replace('_',' ').replace('0','')  : t.name_tribu_t_muable
-		
-		name_muable = name_muable.replace('undefined','').replace('_restaurant','')
+		let name_muable = !t.name_tribu_t_muable
+			? t.tableName
+					.replace("tribu_t_", "")
+					.replace("tribug_", "")
+					.replace("_restaurant", "")
+					.replace(/[0-9]_/g, "")
+					.replace("_", " ")
+					.replace("0", "")
+			: t.name_tribu_t_muable;
 
-		let name_tribu = `Tribu ${type} ${name_muable}`
+		name_muable = name_muable.replace("undefined", "").replace("_restaurant", "");
 
-		let log = t.logo_path?t.logo_path:"/uploads/tribu_t/photo/avatar_tribu.jpg"
+		let name_tribu = `Tribu ${type} ${name_muable}`;
 
-		tribu_htm +=`<a href="#" data-name="${name_tribu}" onclick="openModalDetailPastille(this)" class="list-group-item list-group-item-action d-flex align-items-center tribu_${type}" data-bs-toggle="modal" data-bs-target="#modalCreatePopUp">
+		let log = t.logo_path ? t.logo_path : "/uploads/tribu_t/photo/avatar_tribu.jpg";
+
+		tribu_htm += `<a href="#" data-name="${name_tribu}" onclick="openModalDetailPastille(this)" class="list-group-item list-group-item-action d-flex align-items-center tribu_${type}" data-bs-toggle="modal" data-bs-target="#modalCreatePopUp">
 			<img class="icon_resto_legend" data-name="${name_tribu}" style="clip-path:circle()" src="/public${log}" alt="Icon Resto">
 			<label class="ms-2">${name_tribu}</label>
-		</a>`
+		</a>`;
 	}
 
 	const items = `
@@ -500,10 +516,10 @@ function itemRestoPastielleV2(name, tribu) {
 }
 
 function dataListMarker(data) {
-const result = Object.groupBy(data, ({ id }) => id);
+	const result = Object.groupBy(data, ({ id }) => id);
 	let dataTable = "";
 	// data.forEach((item, index) => {
-		// 	dataTable += itemRestoPastielle(index, item.depName, item.dep, item.name, item.id, item.logo_path, item.name_tribu_t_muable);
+	// 	dataTable += itemRestoPastielle(index, item.depName, item.dep, item.name, item.id, item.logo_path, item.name_tribu_t_muable);
 	// });
 
 	/** Edited by Elie */
@@ -570,7 +586,7 @@ function getDetailFromListRight(nom_dep, id_dep, id_resto) {
 	id_resto = parseFloat(id_resto);
 	if (CURRENT_MAP_INSTANCE.checkIsExist(id_resto)) {
 		CURRENT_MAP_INSTANCE.clickOnMarker(id_resto);
-    } else {
+	} else {
 		CURRENT_MAP_INSTANCE.fetchOneData(id_resto);
 	}
 }
@@ -714,206 +730,190 @@ function makeUserModifResto(e) {
 
 function updataMarkerIntCarte(idItem) {}
 
-function dockFicheRubrique(nombre=10){
-	let closeDetailElement = document.querySelector(".close_details_jheo_js")
-	let markerInfo = CURRENT_MAP_INSTANCE.marker_last_selected.options
-	let idRubrique = markerInfo.id
-	let typeRubrique = markerInfo.type ? markerInfo.type : "none"
-	closeDetailElement.click()
-let divParent = document.createElement("div")
-let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim()
-	if(nombre > 1){
-		let containerIcones = document.querySelector(".container-icones")
+function dockFicheRubrique(nombre = 10) {
+	let closeDetailElement = document.querySelector(".close_details_jheo_js");
+	let markerInfo = CURRENT_MAP_INSTANCE.marker_last_selected.options;
+	let idRubrique = markerInfo.id;
+	let typeRubrique = markerInfo.type ? markerInfo.type : "none";
+	closeDetailElement.click();
+	let divParent = document.createElement("div");
+	let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim();
+	if (nombre > 1) {
+		let containerIcones = document.querySelector(".container-icones");
 
-		if(containerIcones){
-
-			let listeIcones = document.querySelectorAll(".liste-icones-dock")
+		if (containerIcones) {
+			let listeIcones = document.querySelectorAll(".liste-icones-dock");
 			let listeIconesLength = listeIcones.length;
-			createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, listeIconesLength,containerIcones)
-		}else{
-			let newDivContainer = document.createElement("div")
-			newDivContainer.setAttribute("class", "leaflet-control container-icones d-none")
+			createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, listeIconesLength, containerIcones);
+		} else {
+			let newDivContainer = document.createElement("div");
+			newDivContainer.setAttribute("class", "leaflet-control container-icones d-none");
 
-		let btnId = ""
-			if(typeRubrique != "none"){
-		
-		btnId = "dockableBtn_" + typeRubrique + "_" + idRubrique
-				if(document.querySelector("#"+btnId) === null){
+			let btnId = "";
+			if (typeRubrique != "none") {
+				btnId = "dockableBtn_" + typeRubrique + "_" + idRubrique;
+				if (document.querySelector("#" + btnId) === null) {
 					newDivContainer.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
 			<i class="fa-solid fa-file"></i>
-			</button>`
+			</button>`;
 				}
-			}else{
-				btnId = "dockableBtn_" + idRubrique
-				if(document.querySelector("#"+btnId) === null){
+			} else {
+				btnId = "dockableBtn_" + idRubrique;
+				if (document.querySelector("#" + btnId) === null) {
 					newDivContainer.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
 										<i class="fa-solid fa-file"></i>
-		</button>`
-}
+		</button>`;
+				}
 			}
 
-		document.querySelector(".leaflet-top.leaflet-right").appendChild(newDivContainer)
+			document.querySelector(".leaflet-top.leaflet-right").appendChild(newDivContainer);
 
-		createDockableIcon(divParent, idRubrique, typeRubrique)
+			createDockableIcon(divParent, idRubrique, typeRubrique);
 		}
+	} else {
+		createDockableIcon(divParent, idRubrique, typeRubrique);
 
-}else{
-
-		createDockableIcon(divParent, idRubrique, typeRubrique)
-
-		document.querySelector("#openFlottant").appendChild(divParent)
+		document.querySelector("#openFlottant").appendChild(divParent);
 	}
 
-	CURRENT_MAP_INSTANCE.bindTooltipsDockOnHover()
-	
+	CURRENT_MAP_INSTANCE.bindTooltipsDockOnHover();
 }
 
-function reAfficherFiche(element, idRubrique, typeRubrique){
-let iconeId = ""
-	if(typeRubrique != "none"){
-		iconeId = "dockableBtn_" + typeRubrique + "_" + idRubrique
-		if(document.querySelector("#"+iconeId))
-			document.querySelector("#"+iconeId).remove()
-	}else{
-		
-		iconeId = "dockableBtn_" + idRubrique
-		if(document.querySelector("#"+iconeId))
-			document.querySelector("#"+iconeId).remove()
+function reAfficherFiche(element, idRubrique, typeRubrique) {
+	let iconeId = "";
+	if (typeRubrique != "none") {
+		iconeId = "dockableBtn_" + typeRubrique + "_" + idRubrique;
+		if (document.querySelector("#" + iconeId)) document.querySelector("#" + iconeId).remove();
+	} else {
+		iconeId = "dockableBtn_" + idRubrique;
+		if (document.querySelector("#" + iconeId)) document.querySelector("#" + iconeId).remove();
 	}
 
-	element.remove()
-	
-	removeOrEditSpecificElement()
+	element.remove();
 
-	if(typeRubrique != "none"){
+	removeOrEditSpecificElement();
+
+	if (typeRubrique != "none") {
 		if (CURRENT_MAP_INSTANCE.checkIsExist(idRubrique, typeRubrique)) {
 			CURRENT_MAP_INSTANCE.clickOnMarker(idRubrique, typeRubrique);
-		}	
-	}else{
-
+		}
+	} else {
 		if (CURRENT_MAP_INSTANCE.checkIsExist(idRubrique)) {
 			CURRENT_MAP_INSTANCE.clickOnMarker(idRubrique);
 		}
 	}
 }
 
-function removeOrEditSpecificElement(){
-	if(document.querySelector(".container-icones")){
-		if(document.querySelector(".container-icones").children.length == 0)
-			document.querySelector(".container-icones").remove()
+function removeOrEditSpecificElement() {
+	if (document.querySelector(".container-icones")) {
+		if (document.querySelector(".container-icones").children.length == 0)
+			document.querySelector(".container-icones").remove();
 	}
-	let dockDetail = document.querySelector(".dockableDetail")
-	if(dockDetail){
-		let iconesNumber = document.querySelector(".dockableDetail > button").textContent.replace(/\D/g, "")
-		iconesNumber != "" ? parseInt(iconesNumber) : 0
-		if(iconesNumber > 0){
+	let dockDetail = document.querySelector(".dockableDetail");
+	if (dockDetail) {
+		let iconesNumber = document.querySelector(".dockableDetail > button").textContent.replace(/\D/g, "");
+		iconesNumber != "" ? parseInt(iconesNumber) : 0;
+		if (iconesNumber > 0) {
 			iconesNumber = document.querySelectorAll('[id^="dockableBtn_"]').length;
-			if(iconesNumber >= 1){
-				if(iconesNumber > 1){
-					document.querySelector(".dockableDetail > button").textContent = "+" + iconesNumber
-				}else{
-					let iconeToGet = document.querySelector('[id^="dockableBtn_"]')
-					iconeToGetId = iconeToGet.id
-					iconeToGetOnClick = iconeToGet.getAttribute("onclick")
-					dockDetail.setAttribute("onclick", iconeToGetOnClick)
-					dockDetail.id = iconeToGetId.replace("dockableBtn","dockableIcone")
+			if (iconesNumber >= 1) {
+				if (iconesNumber > 1) {
+					document.querySelector(".dockableDetail > button").textContent = "+" + iconesNumber;
+				} else {
+					let iconeToGet = document.querySelector('[id^="dockableBtn_"]');
+					iconeToGetId = iconeToGet.id;
+					iconeToGetOnClick = iconeToGet.getAttribute("onclick");
+					dockDetail.setAttribute("onclick", iconeToGetOnClick);
+					dockDetail.id = iconeToGetId.replace("dockableBtn", "dockableIcone");
 					dockDetail.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Cliquer ici pour réafficher la fiche</div>
 											<button style="font-size: 1.1rem;">
 												<i class="fa-solid fa-file"></i>
-											</button>`
+											</button>`;
 				}
-				if(!document.querySelector(".container-icones").classList.contains("d-none")){
-					document.querySelector(".container-icones").classList.add("d-none")
+				if (!document.querySelector(".container-icones").classList.contains("d-none")) {
+					document.querySelector(".container-icones").classList.add("d-none");
 				}
-			}else{
-				dockDetail.remove()
+			} else {
+				dockDetail.remove();
 			}
 		}
 	}
 }
 
-function createDockableIcon(divParent, idRubrique, typeRubrique){
-	divParent.setAttribute("onclick",`reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')`)
-	divParent.setAttribute("style","margin-left:30px;")
-	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer"
+function createDockableIcon(divParent, idRubrique, typeRubrique) {
+	divParent.setAttribute("onclick", `reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')`);
+	divParent.setAttribute("style", "margin-left:30px;");
+	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer";
 
-	if(typeRubrique != "none"){
-		divParent.id = "dockableIcone_" + typeRubrique + "_" + idRubrique
-	}else{
-		divParent.id = "dockableIcone_" + idRubrique
+	if (typeRubrique != "none") {
+		divParent.id = "dockableIcone_" + typeRubrique + "_" + idRubrique;
+	} else {
+		divParent.id = "dockableIcone_" + idRubrique;
 	}
 
 	divParent.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Cliquer ici pour réafficher la fiche</div>
 							<button style="font-size: 1.1rem;">
 								<i class="fa-solid fa-file"></i>
-							</button>`
+							</button>`;
 
-	let dockableIconeElement = document.querySelector(".dockableDetail")
+	let dockableIconeElement = document.querySelector(".dockableDetail");
 
-	if(dockableIconeElement)
-		dockableIconeElement.remove()
+	if (dockableIconeElement) dockableIconeElement.remove();
 
-	document.querySelector("#openFlottant").appendChild(divParent)
+	document.querySelector("#openFlottant").appendChild(divParent);
 }
 
-function createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, nombreIcone, containerIcones){
-	divParent.setAttribute("onclick","afficherListeIcones()")
-	divParent.setAttribute("style","margin-left:30px;")
-	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer"
-	let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim()
-	let iconeId = ""
-	let canAdd = false
-	if(typeRubrique != "none"){
-
-		iconeId = "dockableBtn_" + typeRubrique + "_" + idRubrique
-		if(document.querySelector("#"+iconeId) === null){
+function createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, nombreIcone, containerIcones) {
+	divParent.setAttribute("onclick", "afficherListeIcones()");
+	divParent.setAttribute("style", "margin-left:30px;");
+	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer";
+	let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim();
+	let iconeId = "";
+	let canAdd = false;
+	if (typeRubrique != "none") {
+		iconeId = "dockableBtn_" + typeRubrique + "_" + idRubrique;
+		if (document.querySelector("#" + iconeId) === null) {
 			containerIcones.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock ms-1" id=${iconeId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
 								<i class="fa-solid fa-file"></i>
-							</button>`
-			canAdd = true
+							</button>`;
+			canAdd = true;
 		}
-	}else{
-		iconeId = "dockableBtn_" + idRubrique
-		if(document.querySelector("#"+iconeId) === null){
+	} else {
+		iconeId = "dockableBtn_" + idRubrique;
+		if (document.querySelector("#" + iconeId) === null) {
 			containerIcones.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock ms-1" id=${iconeId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
 								<i class="fa-solid fa-file"></i>
-							</button>`
-			canAdd = true
+							</button>`;
+			canAdd = true;
 		}
 	}
 
-	if(nombreIcone >= nombre){
-		nombreIcone = nombre
-		document.querySelectorAll(".liste-icones-dock")[0].remove()
-	}else{
-		if(canAdd)
-			nombreIcone = nombreIcone + 1
+	if (nombreIcone >= nombre) {
+		nombreIcone = nombre;
+		document.querySelectorAll(".liste-icones-dock")[0].remove();
+	} else {
+		if (canAdd) nombreIcone = nombreIcone + 1;
 	}
 
 	divParent.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Afficher tous</div>
 								<button style="font-size: 1.1rem;">
 									+${nombreIcone}
-								</button>`
+								</button>`;
 
-	let dockableIconeElement = document.querySelector(".dockableDetail")
+	let dockableIconeElement = document.querySelector(".dockableDetail");
 
-	if(dockableIconeElement)
-		dockableIconeElement.remove()
+	if (dockableIconeElement) dockableIconeElement.remove();
 
-	document.querySelector("#openFlottant").appendChild(divParent)
+	document.querySelector("#openFlottant").appendChild(divParent);
 }
 
-function afficherListeIcones(){
-	let containerIcones = document.querySelector(".container-icones")
-	if(containerIcones.classList.contains("d-none")){
-		containerIcones.classList.remove("d-none")
-	}else{
-		containerIcones.classList.add("d-none")
+function afficherListeIcones() {
+	let containerIcones = document.querySelector(".container-icones");
+	if (containerIcones.classList.contains("d-none")) {
+		containerIcones.classList.remove("d-none");
+	} else {
+		containerIcones.classList.add("d-none");
 	}
 }
-
-
-
 
 function openCollapseRubriqueFavory(favori_folder_id) {
 	if (!document.querySelector(`.sub_${favori_folder_id}`)) {
@@ -1118,10 +1118,10 @@ function pushItemFavory(modal_content_favory, etablisment_id) {
 				alert_message = "";
 			if (response.code === 201) {
 				class_alert = "alert-info";
-				alert_message = "Cette restaurant est enregister dans";
+				alert_message = "Ce restaurant est enregistré dans";
 			} else if (response.code === 200) {
 				class_alert = "alert-warning";
-				alert_message = "Cette restaurant est déja enregister dans";
+				alert_message = "Ce restaurant est déja enregistré dans";
 			}
 
 			btn_alert = `
@@ -1349,7 +1349,7 @@ function fetchFolderFavory() {
  */
 function createSingleElementFolder(folder_object) {
 	const folder_name = folder_object.name;
-    const livel_parent = folder_object.hasOwnProperty("livel_parent") ? folder_object.livel_parent : 0;
+	const livel_parent = folder_object.hasOwnProperty("livel_parent") ? folder_object.livel_parent : 0;
 
 	let font_size = parseFloat(livel_parent) / 10;
 	font_size = `${1 - font_size}rem`;
@@ -1514,7 +1514,7 @@ function handleCreateFolderFavory(data_folder) {
 				const new_folder_html = createSingleElementFolder({
 					id: folder.unique_id,
 					name: folder.name,
-                    livel_parent: folder.livel_parent,
+					livel_parent: folder.livel_parent,
 				});
 
 				if (folder.id_folder_parent == null || folder.id_folder_parent == "0") {
@@ -1635,4 +1635,3 @@ function pushMoveFavoryEtablisment(data_folder, modal_content_favory) {
 		})
 		.catch((error) => console.log(error));
 }
-

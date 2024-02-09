@@ -1987,7 +1987,7 @@ TributGService $tributGService,
 
         $default_folder= [
             "id" => null,
-            "name" => "Mes favori",
+            "name" => "Mes favoris",
             "id_folder_parent" => 0,
             "livel_parent" => 0
         ];
