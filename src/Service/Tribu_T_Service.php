@@ -279,7 +279,7 @@ class Tribu_T_Service extends PDOConnexionService
 
 
                     //creation table nom album
-                    $sqlCreateTableAlbum = " CREATE TABLE " . $output . "_album(
+                    $sqlCreateTableAlbum = " CREATE TABLE IF NOT EXISTS " . $output . "_album(
 
                         id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 
@@ -293,7 +293,7 @@ class Tribu_T_Service extends PDOConnexionService
                     $this->getPDO()->exec($sqlCreateTableAlbum);
 
                     //creation table path album
-                    $sqlCreateTablePathAlbum = " CREATE TABLE " . $output . "_album_path(
+                    $sqlCreateTablePathAlbum = " CREATE TABLE IF NOT EXISTS " . $output . "_album_path(
 
                         id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
 
@@ -724,6 +724,19 @@ class Tribu_T_Service extends PDOConnexionService
         $exec->execute();
         return $resultat = $exec->fetch(PDO::FETCH_ASSOC);
     }
+
+/**
+     * @author faniry
+     */
+    function getTribuTInfoV2($userId,$tribuTName){
+        $sql="SELECT *,tribu.roles as tribu_t_roles FROM ". 
+        $tribuTName ." as tribu LEFT JOIN user as u ON u.id=:user_id ";
+        $exec = $this->getPDO()->prepare($sql);
+        $exec->bindParam("user_id",$userId,PDO::PARAM_INT);
+        $exec->execute();
+        return $exec->fetch(PDO::FETCH_ASSOC);
+
+    } 
 
 
     function fetchTribuT($userId)
@@ -2801,6 +2814,148 @@ class Tribu_T_Service extends PDOConnexionService
             $this->getPDO()->query($alter); 
 
             // echo "Added $column_name";
+        }
+    }
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction pour la création d'une table de parrainage
+     * Localisation du fichier : Tribu_T_Service.php
+     * Je veux : créer une table de parrainage
+     * @param int $userId : identifiant de l'utilisateur connecté
+     */
+    public function createParrainageTable($userId){
+        $tableParrainage = "tableparrainage_".$userId;
+        $sql= "CREATE TABLE IF NOT EXISTS ". $tableParrainage .
+            "( `id` int(11) AUTO_INCREMENT PRIMARY KEY  NOT NULL,".
+            "`user_id` int(11) NOT NULL,".
+            "`tribu` TEXT NOT NULL,".
+            "`isParent` tinyint(1) NOT NULL DEFAULT 0,".
+            "`status` tinyint(1) NOT NULL DEFAULT 0,".
+            "`dateSauvegarde` datetime NOT NULL DEFAULT current_timestamp()".
+           " ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+        $stmt = $this->getPDO()->prepare($sql);
+        $stmt->execute();
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction pour vérifier si une tribu T existe dans la colonne tribu_t_owned ou tribu_t_joined de la table user
+     * Localisation du fichier : Tribu_T_Service.php
+     * Je veux : tester l'existence d'une tribu T dans la colonne tribu_t_owned ou tribu_t_joined de la table user
+     * @param string $tribu_T_name_table : nom de la table tribu T
+     * @param int $userId : identifiant de l'utilisateur connecté
+     * @param string $tribu_t_owned_or_join : tribu_t_owned ou tribu_t_joined
+     */
+    function checkIfTribuTExist($tribu_T_name_table, $userId, $tribu_t_owned_or_join)
+
+    {
+
+        $tribu_T_name_table = strtolower($tribu_T_name_table);
+
+        $fetch = $this->getPDO()->prepare("SELECT $tribu_t_owned_or_join FROM user WHERE id  = $userId");
+
+        $fetch->execute();
+
+        $result = $fetch->fetch(PDO::FETCH_ASSOC);
+
+        $list = $result[$tribu_t_owned_or_join];
+
+        $isExiste = false;
+
+        if (isset($list)) {
+
+            $jsonInitial = json_decode($list, true);
+
+            $array1 = $jsonInitial["tribu_t"];
+
+            if (array_key_exists("name", $array1)) {
+                $table = strtolower($array1["name"]);
+                if ($tribu_T_name_table == $table) {
+                    $isExiste = true;
+                }
+            } else {
+                for ($i = 0; $i < count($array1); $i++) {
+
+                    $table = strtolower($array1[$i]["name"]);
+
+                    if ($tribu_T_name_table == $table) {
+                        $isExiste = true;
+                    }
+                }
+            }
+
+        }
+        return $isExiste;
+    }
+/**
+     * @author TOMMY
+     */
+    public function isNotExistsAlbum($output){
+
+        //creation table nom album
+       
+        $count1=$this->showTableTribu($output."_album");
+
+        if($count1 == 0 ){
+            $sqlCreateTableAlbum = " CREATE TABLE IF NOT EXISTS " . $output . "_album(
+
+                id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                name_album varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+
+                datetime datetime NOT NULL DEFAULT current_timestamp()
+
+              ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+
+            $this->getPDO()->exec($sqlCreateTableAlbum);
+        }
+        $count2=$this->showTableTribu($output."_album_path");
+        if($count2 == 0){
+             //creation table path album
+            $sqlCreateTablePathAlbum = " CREATE TABLE IF NOT EXISTS " . $output . "_album_path(
+
+                id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+
+                path varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+
+                album_id int(11) NOT NULL,
+
+                FOREIGN KEY (album_id) REFERENCES " . $output . "_album(id)
+
+            ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+            $this->getPDO()->exec($sqlCreateTablePathAlbum);
+        }
+
+
+       
+    }
+
+     /**
+     * @author TOMMY
+     */
+   public function createTableAlbumNotExists($list){ 
+    
+
+        if (isset($list)) {
+
+            $jsonInitial =  $list;
+
+            $array1 = $jsonInitial["tribu_t"];
+
+            if (array_key_exists("name", $array1)) {
+                $table = $array1["name"];
+                $this->isNotExistsAlbum($table);
+            } else {
+                for ($i = 0; $i < count($array1); $i++) {
+
+                    $table =$array1[$i]["name"];
+
+                    $this->isNotExistsAlbum($table);
+                }
+            }
+
         }
     }
 }

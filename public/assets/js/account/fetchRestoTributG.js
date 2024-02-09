@@ -15,35 +15,7 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
         `;
         
 
-        if(!btn_member.classList.contains("active")){
-            btn_member.classList.add("active")
-            btn_member.classList.add("text-white")
-            btn_member.classList.remove("text-primary")
-        }
-
-        if(document.querySelector("#fetch_actialite_tribug_jheo_js").classList.contains("active")){
-            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.add("text-primary")
-        }
-
-        if(document.querySelector("#fetch_member_tribug_jheo_js").classList.contains("active")){
-            document.querySelector("#fetch_member_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_member_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_member_tribug_jheo_js").classList.add("text-primary")
-        }
-
-        if(document.querySelector("#fetch_photo_tribug_jheo_js").classList.contains("active")){
-            document.querySelector("#fetch_photo_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_photo_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_photo_tribug_jheo_js").classList.add("text-primary")
-        }
-
-        if(document.querySelector("#fetch_golf_tribug_jheo_js").classList.contains("active")){
-            document.querySelector("#fetch_golf_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_golf_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_golf_tribug_jheo_js").classList.add("text-primary")
-        }
+        removeActiveLinkOnG(document.querySelectorAll(".listNavBarTribu > a"), btn_member)
 
         document.querySelector(".content_bloc_jheo_js").innerHTML = `
             <div class="spinner-grow text-info d-block mx-auto" role="status">
@@ -137,15 +109,29 @@ if( document.querySelector("#fetch_resto_tribug_jheo_js")){
                             body += `
                                 <tr id="restaurant_${resto.id_resto}">
                                     <td class="d-flex bd-highlight align-items-center">
-                                        <div class="elie-img-pastilled"><img src="${document.querySelector('#profilTribu').src}"></div>
-                                        <span class="ms-3" style="font-size:12pt;cursor : pointer;" onclick ="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.codpost.substring(0, 2)}','${resto.id_resto}')">${denominationsF} </span>
+                                        <div class="elie-img-pastilled"><img src="${document.querySelector('#profilTribuG').src}"></div>
+                                        <span class="ms-3" style="font-size:12pt;cursor : pointer;" 
+                                            data-toggle="tooltip" data-placement="top" title="Cliquez pour voir les détails."
+                                            onclick ="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.codpost.substring(0, 2)}','${resto.id_resto}')">${denominationsF} </span>
                                     </td>
                                     <td class="data-note-${resto.id}">${note}/4</td>
                                     <td>
-                                        <a class="btn btn-sm bg_orange data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvisRestoG(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a>
+                                        <a class="btn btn-sm bg_orange data-avis-${resto.id}"
+                                            data-toggle="tooltip" data-placement="top" 
+                                            title="Découvrir les avis des partisans de ce restaurant." 
+                                            style="cursor: pointer;text-decoration:none;" 
+                                            onclick="openAvisRestoG(${nbrAvis}, ${resto.id})"> 
+                                            ${nbrAvis} Avis
+                                        </a>
                                     </td>
                                     <td>
-                                        <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupActionRestoG('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
+                                        <button 
+                                        class="btn btn-primary elie-plus-${resto.id}"
+                                        data-toggle="tooltip" data-placement="top" 
+                                        title="Choisissez une action à entreprendre pour ce restaurant." 
+                                        style="" 
+                                        onclick="openPopupActionRestoG('${resto.id}','${resto.denomination_f}', '${adresse}', '${resto.poi_x}','${resto.poi_y}','${text1}', '${action}')">
+                                        <i class="fas fa-plus"></i> Action pour ce restaurant</button>
                                     </td>
                                 </tr>
                             `
@@ -211,118 +197,6 @@ function openAvisRestoG(nb_avis, id_resto) {
     $("#staticBackdrop").modal("show");
 
 	showListInTribuT(id_resto, 'resto');
-
-    // if (parseInt(nb_avis) > 0) {
-
-    //     $("#avisRestoPastille").modal("show")
-
-    //     const table_resto = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")+"_restaurant"
-
-    //     ///avis/restaurant/{idRestaurant}
-    //     fetch('/avis/restaurant/global/'+ id_resto)
-    //     // fetch('/user/comment/tribu-g/restos-pastilles/' + table_resto + '/' + id_resto)
-    //         .then(response => response.json())
-    //         .then(response => {
-    //             console.log(response)
-    //             const avis= response.data; 
-    //             for (let avi of avis) {
-
-    //                 console.log(avi);
-
-    //                 let noteEtoile = ""
-
-                    
-
-    //                 switch (parseInt(avi.note)) {
-    //                     case 1:
-    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-    //                         break;
-    //                     case 2:
-    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-    //                         break;
-    //                     case 3:
-    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star"></i>`
-    //                         break;
-    //                     case 4:
-    //                         noteEtoile = `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i><i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`
-    //                         break;
-    //                     default:
-    //                         noteEtoile = `<i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i><i class="fa-solid fa-star"></i>`
-    //                 }
-
-    //                 let edit_avis_e = ''
-
-    //                 if(avi.user.id == document.querySelector('.information_user_conected_jheo_js').getAttribute('data-toggle-user-id')){
-    //                     edit_avis_e = `<div class="content_action">
-    //                         <button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal"
-    //                             data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"
-    //                             onclick="setUpdateNote(this, ${avi.id}, ${avi.note}, '${avi.avis}', ${id_resto})">
-    //                             <i class="fa-solid fa-pen-to-square"></i>
-    //                         </button>
-    //                     </div>
-    //                     `
-    //                 }
-
-    //                 document.querySelector("#bodyAvisRestoPastilleElie").innerHTML +=
-    //                     `<div class="card mb-2 card_avis_resto_jheo_js">
-    //                         <div class="card-body">
-
-    //                         <div class="avis_content">
-    //                             <div>
-    //                                 <div class="d-flex justify-content-between align-items-start">
-    //                                     <div class="d-flex justify-content-between align-items-start">
-    //                                         <div class="content_profil_image me-2">
-    //                                             <img class="profil_image" src="${avi.user.photo ? "/public" +  avi.user.photo : '/public/uploads/users/photos/default_pdp.png'}" alt="User">
-    //                                         </div>
-    //                                         <div class="content_info">
-    //                                             <h3 class="text-point-9"> <small class="fw-bolder text-black">${avi.user.fullname}</small></h3>
-    //                                             <cite class="font-point-6"> ${avi.datetime}</cite>
-    //                                         </div>
-    //                                     </div>
-    //                                     <div class="content_start">
-    //                                         <p class="mb-2"> ${noteEtoile}</p>
-
-    //                                         ${edit_avis_e}
-
-    //                                     </div>
-    //                                 </div>
-
-    //                                 <div class="mt-2">
-    //                                     <p class="text-point-9">${avi.avis}</p>
-    //                                 </div>
-    //                             </div>
-    //                         </div>
-
-    //                         </div>
-    //                     </div>
-    //                     `
-    //             }
-
-    //         })
-
-
-    // } else {
-
-    //     swal({
-    //         title: "Opps!",
-    //         text: "Aucun avis pour ce restaurant",
-    //         icon: "warning",
-    //         button: "Ok",
-    //     });
-
-    // }
-
-    // const myModalEl = document.getElementById('avisRestoPastille')
-    // if(myModalEl){
-    //     myModalEl.addEventListener('hidden.bs.modal', event => {
-    //         // do something...
-    //         if(document.querySelector("#bodyAvisRestoPastilleElie")){
-    //             document.querySelector("#bodyAvisRestoPastilleElie").innerHTML = ""
-    //         }
-    //     })
-    // }
-    
-
 }
 
 /**

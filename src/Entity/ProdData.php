@@ -9,8 +9,8 @@ class ProdData{
     // const  PORT_PROD= "465";
 
     const  NOM_SENDER= "CONSOMYZONE";
-    const  EMAIL_PROD= "consomyzone@geomadagascar.com";
-    const  MDP_PROD= "HCbBz9v7";
+    const  EMAIL_PROD= "testconsomyzone@geomadagascar.com";
+    const  MDP_PROD= "EEK9cfk9XMe3eD8bgmbY";
     const  SERVER_SMTP_PROD= "mail.geomadagascar.com";
     const  PORT_PROD= "587";
 }

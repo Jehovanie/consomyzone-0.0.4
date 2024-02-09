@@ -442,14 +442,14 @@ class MarckerClusterResto extends MapModule {
 		return data;
 	}
 
-	updateListRestoPastille(idResto, tribuName) {
-		this.listRestoPastille.push({ id_resto: idResto, tableName: tribuName });
+	updateListRestoPastille(idResto, tribuName, logo=null) {
+		this.listRestoPastille.push({ id_resto: idResto.toString(), tableName: tribuName, logo_path:logo});
 		this.updateStateResto(idResto);
 	}
 
 	updateListRestoDepastille(idResto, tribuName) {
 		this.listRestoPastille = this.listRestoPastille.filter((item) => {
-			return parseInt(item.id_resto) != parseInt(idResto) || item.tableName != tribuName;
+			return parseInt(item.id_resto) != parseInt(idResto) || item.tableName.replaceAll('_restaurant','') != tribuName.replaceAll('_restaurant','');
 		});
 		this.updateStateResto(idResto);
 	}
@@ -500,6 +500,7 @@ class MarckerClusterResto extends MapModule {
 					dep: restoPastille.dep,
 					logo_path: item.logo_path,
 					name_tribu_t_muable: item.name_tribu_t_muable,
+					tableName: item.tableName,
 				});
 			}
 		});

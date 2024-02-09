@@ -951,13 +951,11 @@ class TributGController extends AbstractController
         TributGService $tributGService,
     ){
         // $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+
         $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
+       
 
-        // dd($tributGService->getAllRestoTribuG($table_tributG_name));
-        // getAllRestoTribuG($table_name)
-
-
-        return $this->json($tributGService->getRestoPastillesTribuGV2($table_tributG_name));
+        return $this->json($tributGService->getRestoPastillesTribuGV2($table_tributG_name),200);
     }
 
     /**
@@ -1046,9 +1044,8 @@ class TributGController extends AbstractController
         // getAllRestoTribuG($table_name)
         
         $results= $tributGService->getGolfPastillesTribuGV2($table_tributG_name);
-        $results=mb_convert_encoding($results, 'UTF-8', 'UTF-8');
-
-        return $this->json($results);
+        
+        return $this->json($results,200);
     }
 
     /**
@@ -1109,6 +1106,7 @@ class TributGController extends AbstractController
         //     return $this->json([ "success" => false, "message" => "User not founder"], 401 );
         // }
         
+        $emailNotExist = [];
         $data = json_decode($request->getContent(), true);
         extract($data); /// $object, $description, $piece_joint
 
@@ -1161,8 +1159,39 @@ class TributGController extends AbstractController
                 array_push($all_user_receiver, $temp);
             }
         }
+$user_destination_plus = [];
 
-        $mailService->sendEmailNewsLetter($user_connected->getEmail(), $full_name_user_connected, $all_user_receiver, $context );
+        foreach ($destinations as $destination) {
+            $temp = [
+                "email" => $destination,
+            ];
+            array_push($user_destination_plus, $temp);
+        }
+
+        $listUserForAll = $userService->getListUserAll();
+        $allPartisanType = [];
+        foreach ($listUserForAll as $listUserFor) {
+            if ($listUserFor["type"] == "Type") {
+                $temp = [
+                    "email" => $listUserFor["email"],
+                    "fullName" => $listUserFor["pseudo"]
+                ];
+                array_push($allPartisanType, $temp);
+            }
+        }
+        $emailExist = [];
+
+        $user_destinations = array_merge($all_user_receiver, $user_destination_plus, $allPartisanType);
+        foreach ($user_destinations as $user_destination) {
+            $Responsecode = $mailService->sendEmailNewsLetter($user_connected->getEmail(), $full_name_user_connected, [$user_destination], $context);
+            if ($Responsecode == 550) {
+                array_push($emailNotExist, $user_destination);
+            } else {
+                array_push($emailExist, $user_destination);
+            }
+        }
+
+        $mailService->sendEmailNewsLetter($user_connected->getEmail(), $full_name_user_connected, $all_user_receiver, $context);
 
         foreach($all_user_receiver as $user_receiver ){
 
@@ -1177,6 +1206,38 @@ class TributGController extends AbstractController
         return $this->json([
             "success" => true
         ]);
+    }
+
+/**
+     * @author Tomm
+     * Get liste user all
+     */
+    #[Route("/tributG/get/list/user/for_all", name: "app_get_list_user_all_g", methods: ["GET"])]
+    public function getListUserGAll(
+        TributGService $tribuGService
+    ) {
+        $tribuGAllMembres = $tribuGService->fetchAllTribuGMember();
+
+        $tribuGMembresNotStatus = [];
+        foreach ($tribuGAllMembres as $tribuGAllMembre) {
+            $temp = [
+                "user_id" => $tribuGAllMembre["user_id"],
+                "tribu_g_name" => $tribuGAllMembre["tribug"],
+                "email" => $tribuGAllMembre["email"]
+            ];
+            array_push($tribuGMembresNotStatus, $temp);
+        }
+        $tribuGMembres = [];
+        foreach ($tribuGMembresNotStatus as $tribuGMembresNotStatu) {
+            $userStatus = strtoupper($tribuGService->getStatus($tribuGMembresNotStatu["tribu_g_name"], $tribuGMembresNotStatu["user_id"]));
+            $data = [
+                "tribu_g_name" => $tribuGMembresNotStatu["tribu_g_name"],
+                "email" => $tribuGMembresNotStatu["email"],
+                "status" => $userStatus
+            ];
+            array_push($tribuGMembres, $data);
+        }
+        return $this->json($tribuGMembres);
     }
 
 

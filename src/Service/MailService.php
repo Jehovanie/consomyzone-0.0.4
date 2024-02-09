@@ -11,7 +11,7 @@ use Twig\Environment;
 use App\Entity\ProdData;
 
 use App\Service\AgendaService;
-
+use Exception;
 use Symfony\Component\Mime\Address;
 
 use Symfony\Component\Mailer\Mailer;
@@ -19,13 +19,13 @@ use Symfony\Component\Mailer\Transport;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bridge\Twig\Mime\WrappedTemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-
+use Symfony\Component\HttpFoundation\Response;
 
 class MailService extends AbstractController {
 
 
-
+    private $twig;
+    private $defaultEmailSender;
     public function __construct(
         Environment $twig
     ){
@@ -113,7 +113,13 @@ class MailService extends AbstractController {
 
 
 
-    public function sendLinkOnEmailAboutAgendaSharing($email_to, $fullName_to, $context, $sender="ConsoMyZone", $cc= [], $cci= [] ):void
+    public function sendLinkOnEmailAboutAgendaSharing(
+        $email_to, 
+        $fullName_to, 
+        $context, 
+        $sender="ConsoMyZone", 
+        $cc= [], 
+        $cci= [] )
     {
         $customMailer =  $this->configSendEmail();
 
@@ -164,8 +170,16 @@ class MailService extends AbstractController {
             'link' => $context["link_confirm"],
             'content' => $context["content_mail"],
         ]));
-
+try{
         $customMailer->send($email);
+    return 250; 
+        }catch(Exception $e){
+            if($e->getCode()== 550){
+                return 550;
+
+            }
+        }
+       
     }
     
     public function sendEmailWithCc($to,$fullName_to,$cc,$objet,$message):void
@@ -360,8 +374,12 @@ class MailService extends AbstractController {
      * 
      * use in tribuGController, tribuTController
      */
-    public function sendEmailNewsLetter($email_from, $fullName_from, $all_user_receiver, $context):void
-    {
+    public function sendEmailNewsLetter(
+        $email_from,
+        $fullName_from,
+        $all_user_receiver,
+        $context
+    ) {
 
         if( count($all_user_receiver) === 0 ){
             return;
@@ -375,13 +393,15 @@ class MailService extends AbstractController {
                 // ->from(new Address($email_from ,$fullName_from)) 
                 ->subject($context["object_mail"]);
 
-        if( count( $all_user_receiver ) > 0 ){
-            $first_receiver= $all_user_receiver[0];
-            $email = $email->to(new Address($first_receiver["email"], $first_receiver["fullName"]));
+        if (count($all_user_receiver) > 0) {
+            $first_receiver = $all_user_receiver[0];
+            // $email = $email->to(new Address($first_receiver["email"], $first_receiver["fullName"]));
+$email = $email->to(new Address($first_receiver["email"]));
 
-            for( $i= 1; $i < count($all_user_receiver); $i++ ){
-                $other_receiver= $all_user_receiver[$i];
-                $email = $email->addTo(new Address($other_receiver["email"], $other_receiver["fullName"]));
+            for ($i = 1; $i < count($all_user_receiver); $i++) {
+                $other_receiver = $all_user_receiver[$i];
+                // $email = $email->addTo(new Address($other_receiver["email"], $other_receiver["fullName"]));
+            $email = $email->addTo(new Address($other_receiver["email"]));
             }
         }
 
@@ -408,7 +428,15 @@ class MailService extends AbstractController {
             'content' => $context["content_mail"],
         ]));
 
+// $customMailer->send($email);
+        try {
         $customMailer->send($email);
+return 250;
+        } catch (Exception $e) {
+            if ($e->getCode() == 550) {
+                return 550;
+            }
+        }
     }
 
     /**
@@ -550,6 +578,52 @@ class MailService extends AbstractController {
 
         $customMailer->send($email);
     }
+
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Send an email with templated email with non param other the use received.
+     * Use in: SecurityController.php, AgendaController.php
+     * 
+     * @param string $email_to: Email address to send the link
+     * @param string $fullName_to: Full name of the user to send the link
+     * @param array $context : [ [ "object" => ... "template" => ... ]]
+     * 
+     * @return void
+     */
+    public function sendEmailWithTemplatedEmail($email_to, $fullName_to, $context)
+    {
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
+                ->to(new Address($email_to, $fullName_to ))
+                ->subject($context["object"]);
+
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
+        $email =  $email->html($this->renderView($context["template"],[
+                'email' => new WrappedTemplatedEmail($this->twig, $email),
+                'today' => $date_fr,
+                'fullNameTo' => $fullName_to,
+                'user_sender' => [
+                    'fullname' => $context['user_sender']['fullname'],
+                    'email' => $context['user_sender']['email'],
+                ]
+            ]));
+        
+        // try {
+            $customMailer->send($email);
+        //     return 200;
+        // }catch (\Exception $e) {
+        //     return 550;
+        // }
+    }
+
 
 
 }

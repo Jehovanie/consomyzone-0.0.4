@@ -1278,7 +1278,24 @@ function showReponsePartenaire() {
 
             <span>J'ai le plaisir de vous inviter à rejoindre la tribu thématique</span> <span class="nom_tribu_t_envoyeur_invit_elie_js">${nameTribuT}</span> <span>nouvellement fondée sur l'application ConsoMyZone</span>.
             
-            <p>Nous serions ravis de vous compter parmi nos membres.  Votre présence sera une aide précieuse.</br>
+            <p>Nous serons ravis de vous compter parmi nos membres.  Votre présence sera une aide précieuse.</br>
+            
+            Dans cette attente, je vous adresse mes cordiales salutations.</p></br>
+          <span>${userSender}</span>
+        `);
+}
+
+function showInvitationEditorG() {
+	const nameTribuG = document.querySelector(".tributG_profile_name")?.textContent;
+	let userSender = "";
+	if (document.querySelector(".information_user_conected_jheo_js"))
+		userSender = document.querySelector(".information_user_conected_jheo_js").dataset.userfullname;
+	return (html = `
+        <span>Madame, Monsieur,</span></br>
+
+            <span>J'ai le plaisir de vous inviter à rejoindre la tribu géographique</span> <span class="nom_tribu_t_envoyeur_invit_elie_js">${nameTribuG}</span> <span>nouvellement fondée sur l'application ConsoMyZone</span>.
+            
+            <p>Nous serons ravis de vous compter parmi nos membres.  Votre présence sera une aide précieuse.</br>
             
             Dans cette attente, je vous adresse mes cordiales salutations.</p></br>
           <span>${userSender}</span>

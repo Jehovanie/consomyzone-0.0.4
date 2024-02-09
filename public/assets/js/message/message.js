@@ -428,6 +428,17 @@ function sendMessageGrp(message, files, sender, where, type) {
           content_loading.parentElement.removeChild(content_loading);
         }, 2000);
       });
+
+      document.querySelector(".message-active").setAttribute("data-date", new Date().toUTCString())
+      document.querySelector("div.message-active > a > div > div.col-8 > p.text_message_jheo_js").textContent = message.length > 50 ? "(Message long) ..." : message
+      document.querySelector("div.message-active > a > div > div.col-4 > p.heure_message").innerHTML = `à l'instant <i class="fa-regular fa-clock"></i>`
+
+      /** Appel de triage de message */
+  
+      orderOldMessage()
+  
+      /** End appel triage */
+
     } else {
       swal({
         title: "Ouups!!",
@@ -488,6 +499,19 @@ function sendMessage(message, file_list) {
       setTimeout(() => {
         content_loading.parentElement.removeChild(content_loading);
       }, 2000);
+
+      document.querySelector(".message-active").setAttribute("data-date", new Date().toUTCString())
+
+      document.querySelector("div.message-active > a > div > div.col-8 > p.text_message_jheo_js").textContent = message.length > 50 ? "(Message long) ..." : message
+
+      document.querySelector("div.message-active > a > div > div.col-4 > p.heure_message").innerHTML = `à l'instant <i class="fa-regular fa-clock"></i>`
+      
+      /** Appel de triage de message */
+  
+      orderOldMessage()
+  
+      /** End appel triage */
+
     })
     .catch((e) => {
       const content_loading = document.querySelector(
@@ -1068,7 +1092,7 @@ if (
   location.href.includes("/user/message/perso")
 ) {
   const fanss = document.querySelectorAll(`.mpcm_faniry_js`);
-  console.log(fanss);
+  // console.log(fanss);
   let results = removeReplicatedFan(fanss);
   if (results.length > 0) {
     const fanOnlineContainer = document.querySelector(
@@ -1292,12 +1316,12 @@ function showListTribus() {
 function orderOldMessage() {
   // Trier messages templates
   let parent = document.querySelector(
-    "div.all_mpcmz_faniry_js.content_list_message_tomm_js"
+    "div.all_mpcmz_faniry_js"
   );
 
   if (parent) {
     let ms = document.querySelectorAll(
-      "div.all_mpcmz_faniry_js.content_list_message_tomm_js > div.content-message-nanta-css"
+      "div.all_mpcmz_faniry_js > div.content-message-nanta-css"
     );
     let datas = [];
     ms.forEach((m) => {

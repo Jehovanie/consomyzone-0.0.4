@@ -1,0 +1,127 @@
+<div class="modal fade" id="newFolderModal" tabindex="-1" aria-labelledby="newFolderModal" 
+    aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" 
+    aria-labelledby="newFolderModal">
+
+	<div class="modal-dialog modal-dialog-scrollable">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h1 class="modal-title fs-5">Favori</h1>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body modal_content_favori_jheo_js">
+
+				<div class="content_info_alert">
+					<div class="alert alert-info d-flex justify-content-start align-items-center" role="alert">
+						<i class="fa-solid fa-circle-check me-2"></i>
+						Cette restaurant est enregister dans
+						<span class="text-decoration-underline text-sm ms-2">
+							Mes favori
+						</span>
+					</div>
+				</div>
+
+				<form>
+					<div class="content_change_directory_favory">
+						<div class="d-flex justify-content-start align-items-center">
+							<p class="fw-bolder font_size_09 me-2">Voulez-vous change l'emplacement ?</p>
+						</div>
+					</div>
+
+					<div class="mt-3 collapse" id="parentdossier">
+						<div class="content_hearder mb-1">
+							<h5 class="card-title fw-bold">Liste de vos dossies</h5>
+						</div>
+						<hr>
+						<div class="mt-1">
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+								<label class="form-check-label" for="flexRadioDefault1">
+									<i class="fa-solid fa-folder text-warning"></i>
+									Default radio
+								</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+								<label class="form-check-label" for="flexRadioDefault1">
+									<i class="fa-solid fa-folder text-warning"></i>
+									Default radio
+								</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+								<label class="form-check-label" for="flexRadioDefault1">
+									<i class="fa-solid fa-folder text-warning"></i>
+									Default radio
+								</label>
+							</div>
+							<div class="form-check">
+								<input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+								<label class="form-check-label" for="flexRadioDefault1">
+									<i class="fa-solid fa-folder text-warning"></i>
+									Default radio
+								</label>
+							</div>
+							<div>
+								<button type="button" class="text-decoration-underline text-primary" data-bs-toggle="modal" data-bs-target="#new_folder_favori">Crée un Nouveau dossier</button>
+							</div>
+
+						</div>
+					</div>
+				</form>
+
+			</div>
+			<div class="modal-footer hidden content_cta_move_favory_jheo_js">
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="new_folder_favori" tabindex="-1" aria-labelledby="new_folder_favoriLabel" 
+    data-bs-backdrop="static" data-bs-keyboard="false" 
+    aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title fw-bolder" id="new_folder_favoriLabel">Nouveau dossier favori</h5>
+				<button type="button" class="btn-close" 
+                    aria-label="Close" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#newFolderModal">
+                </button>
+			</div>
+			<div class="modal-body">
+                <div class="content_form_new_folder">
+                    <div class="form_new_folder">
+                        <div class="input-group-sm mb-3">
+                            <label for="folder_name">Nom</label>
+                            <input type="text" class="form-control input_new_folder_jheo_js" placeholder="Votre nom de fichier">
+							<div class="error_folder_name error_folder_name_jheo_js hidden">
+								Veillez entré le nom de votre dossier.
+							</div>
+                        </div>
+
+                        <div class="content_select_parent content_select_folder_favory_jheo_js">
+                            {# <label class="form-check-label" for="flexSwitchCheckDefault">Choisir un dossier parent</label>
+                            <select class="form-select form-select-sm" aria-label=".form-select-sm example">
+                                <option selected>Open this select menu</option>
+                                <option value="1">One</option>
+                                <option value="2">Two</option>
+                                <option value="3">Three</option>
+                            </select> #}
+                            <div class="loading_favory_folder d-flex justify-content-center align-items-center">
+                                <div class="spinner-border text-info loading_list_favory loading_list_favory_jheo_js" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+			<div class="modal-footer">
+				<button type="button" class="hidden cta_hidden_new_folder_favori_jheo_js" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#newFolderModal"></button>
+				<button type="button" class="btn btn-primary" onclick="addNewFolder()"
+                >OK</button>
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#newFolderModal">Annuler</button>
+			</div>
+		</div>
+	</div>
+</div>

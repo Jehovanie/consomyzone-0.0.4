@@ -14,8 +14,7 @@
 {% block javascripts %}
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
-	<script src="{{ asset('assets/js/module/avis_rubrique.js') }}" defer></script>
-	{# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
+		{# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{ asset('assets/js/account/profil_tribuG.js') }}" defer></script>
     {# <script src="{{ asset('assets/js/agenda/agenda.js') }}" defer></script> #}
 	<script  src="{{ asset('assets/js/account/publication_event.js') }}" defer></script>
@@ -26,6 +25,7 @@
 	<script src="{{ asset('assets/js/account/fetchRestoTributG.js') }}" defer></script>
 	<script src="{{ asset('assets/js/account/fetchGolfTributG.js') }}" defer></script>
     <script src="{{ asset('assets/js/account/fetchNewLetterTribuG.js') }}" defer></script>
+<script src="{{ asset('assets/js/module/avis_rubrique.js')}}" defer></script>
 
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer=""></script>
@@ -39,41 +39,15 @@
 		<!-- ===== Main Content Start ===== -->
 		<main class="gv hm hv content-actualite-connected">
 			<div class="sk bu 2xl:ud-p-11">
-
 				<div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 margin-top-230">
 					<!-- ====== Chart pub One Start -->
 					<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
-						<div class="head-pub">
-							<div class="pdp-content">
-								<img src="{{(userConnected.photo_profil) ? '/public' ~ userConnected.photo_profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="">
-							</div>
-							<div class="name-content-h">
-								<div
-									class="name-content ">
-									{# <p id="btnShowModalAddPub" class="form-pub">Partagez ce que vous pensez, Tommy...</p> #}
-									<input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill pub-g-input bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
-								</div>
-							</div>
-						</div>
-					</div>
-					<!-- ====== Chart pub One End -->
-				</div>
-
-				<h3 class="text-primary textIndicationNantaJs mt-3">Actualité de {{tributG.profil.name}}</h3>
-
-				<div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 content_bloc_jheo_js" style = "margin-top: 0.875rem !important">
-					{% include 'shard/publications/all_publication.html.twig' with { 'publications': tributG.publications } %}
-				</div>
-
-				<!-- ====== Chart Two Start -->
-				<div class="apropos-tribu-g yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al">
-					<div
-						class="kb qg ss">
-						{# <div class="kb qs">
-												<h4 class="tn kn zn gs">C'est quoi tribu G?</h4>
-											</div> #}
+						<div class="head-content">
+							<div class="row photo-nom-tribu-g">
+								<div class="col-2">
+									<div class="kb qg ss">
 						<div class="kb qs">
-							<img id="profilTribu" src="{{tributG.profil.avatar ? asset('uploads/tribus/photos/' ~ tributG.profil.avatar) : asset('uploads/tribu_t/photo/avatar_tribu.jpg')}}">
+							<img id="profilTribuG" src="{{tributG.profil.avatar ? asset('uploads/tribus/photos/' ~ tributG.profil.avatar) : asset('uploads/tribu_t/photo/avatar_tribu.jpg')}}">
 						</div>
 						<div class="responsif-none">
 							{% if tributG.profil.roles is same as("fondateur") %}
@@ -85,11 +59,10 @@
 								<div class="my-2"></div>
 							{% endif %}
 						</div>
-
 					</div>
-
-					<div>
-						<div class="-ud-ml-5 -ud-mb-9">
+</div>
+						<div class="col-10">
+									<div class="-ud-ml-5 -ud-mb-9 mt-5">
 							<div class="mb-5 text-center">
 								<h4 class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name={{tributG.profil.name}}>{{tributG.profil.name}}</h4>
 								<label class="d-none" id="my_tribu_g">{{tributG.table}}</label>
@@ -97,31 +70,9 @@
 									<i>{{tributG.profil.description }}</i>
 								</small>
 							</div>
-
 						</div>
-						{# <nav class="nav-tribu-g">
-							<ul id="navBarTribu">
-								<li class="listNavBarTribu tribu_active">
-									<a href="#" id="fetch_actialite_tribug_jheo_js" class="active text-white" lng-tag="actualite">Actualité</a>
-								</li>
-
-								<li class="listNavBarTribu">
-									<a style="cursor:pointer;" href="#" id="fetch_resto_tribug_jheo_js">Restaurants</a>
-								</li>
-
-								<li class="listNavBarTribu">
-									<a style="cursor:pointer;" href="#" id="fetch_golf_tribug_jheo_js">Mon golf</a>
-								</li>
-
-								<li class="listNavBarTribu">
-									<a style="cursor:pointer;" href="#" id="fetch_member_tribug_jheo_js">Les fans</a>
-								</li>
-
-								<li class="listNavBarTribu">
-									<a style="cursor:pointer;" href="#" id="fetch_photo_tribug_jheo_js">Photos</a>
-								</li>
-							</ul>
-						</nav> #}
+						</div>
+							</div>
 						<nav class="nav-tribu-g d-flex">
 							<ul id="navBarTribu">
 								<li class="listNavBarTribu tribu_active">
@@ -138,28 +89,145 @@
 
 								{% if tributG.profil.roles is same as("fondateur") %}
                                     <li class="listNavBarTribu">
-                                        <a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Lettre d'information</a>
+                                        <a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Communiquer</a>
                                     </li>
                                 {% endif %}
-
-
-							</ul>
-							<div class="dropdown setting-nav-tribu-g">
-								<a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-									<i class="fa-solid fa-bars"></i>
-								</a>
-
-								<ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
 									<li class="listNavBarTribu">
 										<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_member_tribug_jheo_js">Fans</a>
 									</li>
-
 									<li class="listNavBarTribu">
 										<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_photo_tribug_jheo_js">Photos</a>
 									</li>
+									<li class="listNavBarTribu">
+										<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_invitation_tribug_nanta_js" onclick="showInvitationsG()">Invitations</a>
+									</li>
 								</ul>
+{# <div class="dropdown setting-nav-tribu-g">
+									<a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
+										<i class="fa-solid fa-bars"></i>
+									</a>
+
+									<ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+										
+
+										
+									</ul>
+								</div> #}
+							</nav>
+						</div>
+					</div>
+					<!-- ====== Chart pub One End -->
+				</div>
+				<div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 margin-top-230">
+					<!-- ====== Chart pub One Start -->
+					<div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
+						<div class="head-pub">
+							<div class="pdp-content">
+								<img src="{{(userConnected.photo_profil) ? '/public' ~ userConnected.photo_profil : '/public/uploads/users/photos/default_pdp.png' }}" alt="">
 							</div>
-						</nav>
+						<div class="name-content-h">
+								<div
+									class="name-content ">
+									<input id="btnShowModalAddPub" type="text" class="form-control form-control-lg rounded-pill pub-g-input bg-transparent text-white" data-bs-toggle="modal" data-bs-target="#modal_publication_tributG" data-bs-whatever="@mdo" placeholder="Exprimez-vous...">
+								</div>
+							</div>
+						</div>
+					</div>
+					<!-- ====== Chart pub One End -->
+				</div>
+
+				<h3 class="text-primary textIndicationNantaJs mt-3">Actualité de {{tributG.profil.name}}</h3>
+
+				<div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 content_bloc_jheo_js" style = "margin-top: 0.875rem !important">
+					{% include 'shard/publications/all_publication.html.twig' with { 'publications': tributG.publications } %}
+				</div>
+
+				<!-- ====== Chart Two Start -->
+				<div class="apropos-tribu-g yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al">
+					
+					<h4 class ="fw-bold mb-2">Vos Tribus T</h3>
+
+					<div>
+						<p class ="fw-bold mb-2">Tribu-T que vous aviez créée.</>
+						<ul>
+							{% for  tribus in tribu_T_owned %}
+								
+								{% if tribus.logo_path  is defined %}
+										<li class="mb-2">
+							<div class="row card-my-tribu-t">
+								<div class="col-2">
+												
+													<img style="width:35px ; height:35px; clip-path:circle(40%)" class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? '/public' ~ tribus.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg' }}" alt=""> 
+												</div>
+												<div class="col-9">
+													<p>
+														<a href="{{path('app_my_tribu_t',{type:"owned", tribu:tribus.name})}}" class="tribu_t owned tribu_T_owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
+													</p>
+												</div>
+							</div>
+</li>
+								{% else %}
+									{% for tribu in tribus %}
+										<li class="mb-2">
+											<div class="row card-my-tribu-t">
+												<div class="col-2">
+												
+												<img style="width:35px ; height:35px; clip-path:circle(40%)" class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public'~ tribu.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
+												
+						</div>
+						<div class="col-9">
+							<p>
+														<a href="{{path('app_my_tribu_t',{type:"owned", tribu:tribu.name})}}" class="tribu_t owned tribu_T_owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
+													</p>
+												</div>
+											</div>
+                                    </li>
+{% endfor %}
+                                {% endif %}
+
+{% endfor %}
+
+							</ul>
+							
+						<hr class="mt-1 mb-1">
+								<p class="fw-bold mb-2">Tribu-T dont vous êtes membre</p>
+						<ul>
+							{% for  tribus in tribu_T_joined %}
+								{% if tribus.logo_path  is defined %}
+										<li class="mb-2">
+											<div class="row card-my-tribu-t">
+												<div class="col-2">
+														<img  style="width:35px ; height:35px; clip-path:circle(40%)"class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? '/public' ~ tribus.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt=""> 
+												</div>
+												<div class="col-9">
+													<p>
+														<a href="{{path('app_my_tribu_t',{type:"joined", tribu:tribus.name})}}" class="tribu_t owned tribu_T_joined other" data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
+													</p>
+												</div>
+											</div>
+									</li>
+{% else %}
+									{% for tribu in tribus %}
+									
+										{% set nameTribu = tribu.name|split('_') %}
+										{% set index = nameTribu|length -1  %}
+										<li class="mb-2">
+											<div class="row card-my-tribu-t">
+												<div class="col-2">
+													<img style="width:35px ; height:35px; clip-path:circle(40%)" class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public' ~ tribu.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
+												</div>
+												<div class="col-9">
+													<p>
+														<a href="{{path('app_my_tribu_t',{type:"joined", tribu:tribu.name})}}" class="tribu_t owned tribu_T_joined other" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :   tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
+													</p>
+												</div>
+											</div>
+									</li>
+{% endfor %}
+								{% endif %}
+				
+							{% endfor %}
+								</ul>
 					</div>
 				</div>
 				<!-- ====== Chart Two End -->
@@ -176,12 +244,7 @@
 					<div class="modal-body">
 						<div class="container text-center">
 							<i class="fas fa-question-circle fs-1 text-info"></i><br>
-							{# <p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
-							                    <div class="container mb-4 mt-5 content_btns_nanta_js">
-							                        <button type="button" id="data-note-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant"><i class="fas fa-edit"></i> Notez</button>
-							                        <button type="button" id="data-event-elie-js" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAgendaFromTribuT"><i class="fas fa-calendar"></i> Créer un évènement</button>
-							                        <button type="button" id="data-depastille-nanta-js" class="btn btn-warning" onclick="pastilleRestoForTribuTDashboard(this,false)">Dépastiller</button> #}
-							<p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
+														<p class="questionAction">Quelle action voulez-vous pour ce restaurant?</p>
 							<div class="container mb-4 mt-5 content_btns_nanta_js">
 								<button type="button" id="data-note-elie-js" class="btn btn-primary mt-1" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">
 									<i class="fas fa-edit"></i>
@@ -268,21 +331,82 @@
 				</div>
 			</div>
 		</div>
+	
+		<div class="modal fade" id="listUserModalLetterG" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog  modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="staticBackdropLabel">Selectionner</h5>
+						<button type="button" class="btn-close btn-close-letter-tomm-js" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body ">
+						<div class="multiselect list-user-letter-tomm-js"></div>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-primary selection-email-tomm-js">Selectionner</button>
+					</div>
+				</div>
+			</div>
+		</div>
 
-		{# {% include "tribu_g/modal_publication_new.html.twig" %} #}
+		<div class="modal fade" id="infoCsvModalLetterG" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+			<div class="modal-dialog  modal-dialog-centered modal-dialog-scrollable">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="staticBackdropLabel">Comment ça marche ?</h5>
+						<button type="button" class="btn-close btn-close-letter-tomm-js" data-bs-dismiss="modal" aria-label="Close"></button>
+					</div>
+					<div class="modal-body ">
+						<div class="card-body">
+							<h6 class="card-title" style="margin-bottom:10px">Glissez un fichier CSV avec séparateur
+								<span style="font-size:20px" class="badge bg-light text-danger fw-bold">;
+								</span>
+								et encodé en
+								<span style="font-size:20px" class="badge bg-light text-danger fw-bold">UTF-8</span>
+							</h6>
+							<p class="card-text">Le fichier doit avoir les colonnes suivantes  :</p>
+							<p class="card-text">
+								<small class="text-muted">
+									<span class="badge bg-light text-dark">Nom</span>
+									<span class="badge bg-light text-dark">Prénom</span>
+									<span class="badge bg-light text-dark">Email</span>
+								</small>
+							</p>
+							<div class="mt-3">
+								<small class="text-muted" style="max-width: inherit;font: size 0.9em;">
+									<p>
+										<span class="lead text-black">
+											Comment obtenir un fichier CSV encodé en
+											<span class="badge bg-light text-danger fw-bold">UTF-8</span>
+											avec séparateur
+											<span class="badge bg-light text-danger fw-bold">
+												;
+											</span>
+											?
+										</span>
+									</p>
+									<div class="mt-3 text-danger">
+										Sous Excel, faites un enregistrement sous, et puis choisissez le type : CSV UTF-8 (délimité par des virgules) (*.csv)
+									</div>
+								</small>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		
 		{% include "tribu_g/modal_publication.html.twig" %}
 		{% include 'tribu_t/modal_add_picture.twig' %}
 		{% include 'shard/modal/media_modal_tribu.html.twig' %}
-        {# {% include 'shard/restaurant/modal_avis_resto.html.twig' %}
-        {% include 'shard/golf/modal_avis_golf.twig' %} #}
-		{% include 'shard/modal/modal_avis.html.twig' %}
-		{% include 'shard/modal/list_avis.html.twig' %}
-		
-        {% include 'shard/modal/new_agenda_from_tribu_t.html.twig' %}
-		<!-- ===== Main Content End ===== -->
+        {% include 'shard/modal/modal_avis.html.twig'%}
+		{% include 'shard/modal/list_avis.html.twig'%}
+		{% include 'shard/modal/new_agenda_from_tribu_t.html.twig' %}
+		{% include 'shard/modal/addLinkInvitation.html.twig' %}
 		{% include 'shard/modal/modal_show_gallery.twig' %}
 		{% include 'shard/modal/liste_reacteur.html.twig' %}
-	</div>
+			</div>
 
 
 {% endblock %}

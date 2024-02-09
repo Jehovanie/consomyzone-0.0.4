@@ -2,7 +2,7 @@
  * global variable
  */
 var fileStore = [];
-var tribu_t_name_0 = "";
+var tribu_t_name_0 = ""; 
 var id_c_u; //id du user courant
 let image_listss = [];
 let dataExtension = [];
@@ -27,6 +27,7 @@ let __userLoggedId = document.querySelector(
 /// in the send email on the invitation tribu T
 let email_piece_joint_list = [];
 
+window.addEventListener("load", (event) => {
 /**
  * create tribu_t section
  */
@@ -125,7 +126,8 @@ document.getElementById("form_upload_update").onchange = (e) => {
 
         document.querySelector("#updateTribuInfo").dataset.name =
           e.target.files[0].name;
-        document.querySelector("#updateTribuInfo").dataset.url = uploaded_image;
+        document.querySelector("#updateTribuInfo").dataset.url =
+            uploaded_image;
       } else {
         document.querySelector("#updateTribuInfo").dataset.name = "";
         document.querySelector("#updateTribuInfo").dataset.url = "";
@@ -142,11 +144,195 @@ document.getElementById("form_upload_update").onchange = (e) => {
   reader.readAsDataURL(e.target.files[0]);
 };
 
+//rendre les publications image du tribu T selectionner sur l'écran
+  renderMyTribu();
+
+  /**
+   * send publication sectio
+   */
+  const btnSubmitPublication = document.querySelector(
+    "#submit-publication-tribu-t"
+  );
+  if (btnSubmitPublication) {
+    document
+      .querySelector("#publication_photo")
+      .addEventListener("change", getBase64V2);
+    btnSubmitPublication.onclick = (e) => {
+      e.preventDefault();
+      const formData = document.querySelector("#form-publication-tribu-t")
+        ? new FormData(document.querySelector("#form-publication-tribu-t"))
+        : null;
+      if (formData) sendPublication(formData);
+      else
+        new swal({
+          title: "Ouups",
+          text: "Erreur 500",
+          icon: "error",
+          button: "OK",
+        });
+    };
+  }
+});
+
+/**
+ * @author Faniry
+ * cette focntion rend la tribu T
+ */
+function renderMyTribu() {
+  const url = new URL(window.location.href.toString());
+  let params = new URLSearchParams(url.search);
+  if (params.size > 0) {
+    //?type=owned&tribu=tribu_t_28_lenfer&rank=28
+    const type = params.get("type").trim();
+    const tributName = params.get("tribu").trim();
+    //const id_c_u=params.get("rank").trim();
+    const id_c_u = document.querySelector(".information_user_conected_jheo_js")
+      ? document.querySelector(".information_user_conected_jheo_js").dataset
+          .toggleUserId
+      : 0;
+    console.log(type, tributName, id_c_u);
+    if (id_c_u > 0) {
+      showBlockPubV2(type, tributName, id_c_u);
+    } else
+      new swal({
+        title: "Ouups",
+        text: "Erreur 500",
+        icon: "error",
+        button: "OK",
+      });
+  } else {
+    showBlockPub();
+  }
+}
+
+/**
+ * @author Faniry
+ * @async function
+ * rend à l'écran les information de la tribu T donnée
+ * @param String type  le type= owned ou joined
+ * @param String tribu_t_name  le nom de la tribu t
+ * @param int id_c_u  id de l'utilisateur connecté
+ */
+async function showBlockPubV2(type, tribu_t_name, id_c_u) {
+  let currentTribuSelected = document.querySelector(
+    `a[data-table-name="${tribu_t_name}"]`
+  );
+
+  if (currentTribuSelected && (type =="owned" || type =="joined")) {
+    document
+      .querySelector(".apropos-tribu-t-tomm-js")
+      .classList.toggle("responsif-none");
+    document
+      .querySelector(".span-menu-tribut-tomm-js")
+      .classList.toggle("responsif-none");
+    document
+      .querySelector(".fermet-tribu-t-tomm-js")
+      .classList.toggle("responsif-none");
+    document
+      .querySelector(".menu-tribut-tomm-js")
+      .classList.toggle("span-btn-menu-tribut");
+    if (document.querySelector("#activeTribu")) {
+      document.querySelector("#activeTribu").classList.remove("p-2");
+      document.querySelector("#activeTribu").classList.remove("list-nav-left");
+      document.querySelector("#activeTribu").classList.remove("active");
+      document.querySelector("#activeTribu").removeAttribute("id");
+    }
+
+    currentTribuSelected.id = "activeTribu";
+    currentTribuSelected.classList.add("p-2");
+    currentTribuSelected.classList.add("list-nav-left");
+    currentTribuSelected.classList.add("active"); //p-2 list-nav-left active
+    const tribu_t_types = "tribu_T_" + type;
+    // let data = await showdData(tribu_t_name);
+    let data = await showdDataV2(id_c_u,tribu_t_name);
+    showdDataContent(data, type, tribu_t_name, id_c_u);
+
+    /**render pastiled resto */
+    if (
+      document.querySelector(
+        "#navBarTribu > li.listNavBarTribu.restoNotHide > a"
+      )
+    )
+      document.querySelector(
+        "#navBarTribu > li.listNavBarTribu.restoNotHide > a"
+      ).onclick = (e) => {
+        e.preventDefault();
+        if (document.querySelector("li.listNavBarTribu > a.active")) {
+          document
+            .querySelector("li.listNavBarTribu > a.active")
+            .classList.remove("active");
+        }
+        document
+          .querySelector("#navBarTribu > li.listNavBarTribu.restoNotHide > a")
+          .classList.add("active");
+        document.querySelector("#tribu_t_conteuneur").innerHTML = "";
+        showResto(tribu_t_name + "_restaurant", id_c_u);
+      };
+    /**end */
+
+    /**render photo gallery*/
+    document.querySelector("#see-gallery").onclick = (e) => {
+      e.preventDefault();
+      if (document.querySelector("li.listNavBarTribu > a.active")) {
+        document
+          .querySelector("li.listNavBarTribu > a.active")
+          .classList.remove("active");
+      }
+      document.querySelector("#see-gallery").classList.add("active");
+      document.querySelector("#tribu_t_conteuneur").innerHTML = "";
+      // showPhotos()
+      galleryAll(tribu_t_types);
+    };
+    /**end */
+
+    /**change pdp tribu_t */
+    if (document.querySelector("#fileInputModifTribuT")) {
+      document.querySelector("#fileInputModifTribuT").onchange = (e) => {
+        let files = e.target.files[0];
+        updatePdpTribu_T(files);
+      };
+    }
+    /**end */
+
+    /**render partisant*/
+    document.querySelector(".partisantT").onclick = (e) => {
+      if (document.querySelector("li.listNavBarTribu > a.active")) {
+        document
+          .querySelector("li.listNavBarTribu > a.active")
+          .classList.remove("active");
+      }
+      document.querySelector(".partisantT > a").classList.add("active");
+      document.querySelector("#tribu_t_conteuneur").innerHTML = "";
+      showPartisan();
+    };
+  } else {
+    document.querySelector("#content-pub-js").innerHTML =`
+      <div class="flex-container">
+      <div class="text-center">
+        <h1>
+          <span class="fade-in" id="digit1">4</span>
+          <span class="fade-in" id="digit2">0</span>
+          <span class="fade-in" id="digit3">4</span>
+        </h1>
+        <h3 class="fadeIn">Page non trouvée.</h3>
+        <a href="/user/account" style="text-decoration:underline; color:blue">Revenir à la page d'accueil.</a>
+      </div>
+    </div>
+    `
+  }
+
+  /**end */
+}
+
+/**
+ * @author Faniry x Tommy
+ */
 function showBlockPub() {
   const arrays = Array.from(document.querySelectorAll(".tribu_t"));
   for (let array of arrays) {
     array.onclick = async (e) => {
       e.preventDefault();
+
       document
         .querySelector(".apropos-tribu-t-tomm-js")
         .classList.toggle("responsif-none");
@@ -176,7 +362,7 @@ function showBlockPub() {
       const tribu_t_types = e.target.classList[2];
       // const tribu_t_name=e.target.textContent  data-table-name
       const tribu_t_name = e.target.dataset.tableName; ///  data-table-name
-      let data = await showdData(tribu_t_name);
+      let data = await showdDataV2(id_c_u,tribu_t_name);
       // console.log(data);
       showdDataContent(data, type, tribu_t_name, id_c_u);
 
@@ -243,26 +429,7 @@ function showBlockPub() {
   }
 }
 
-showBlockPub();
-
 /*------------end render tribu_t section--------------*/
-
-/**
- * send publication sectio
- */
-const btnSubmitPublication = document.querySelector(
-  "#submit-publication-tribu-t"
-);
-document
-  .querySelector("#publication_photo")
-  .addEventListener("change", getBase64V2);
-btnSubmitPublication.onclick = (e) => {
-  e.preventDefault();
-  const formData = new FormData(
-    document.querySelector("#form-publication-tribu-t")
-  );
-  sendPublication(formData);
-};
 
 /*---------------end send publication section--------------------*/
 
@@ -439,7 +606,8 @@ function updatePdpTribu_T(files) {
   fR.readAsDataURL(files);
 }
 
-/** @author elie (update)
+/**
+ * @author elie (update) x Faniry
  *  où: on Utilise cette block pour capture de photo de publication tribu T
  *  localisation : myTribuT.js,
  *  utilisation de selecteur modal_publication.html.twig
@@ -452,6 +620,7 @@ function sendPublication(formData) {
   /**
    * tester si on utilise la capture media
    */
+
   if (
     document
       .querySelector("#image-publication-tribu-t")
@@ -478,7 +647,19 @@ function sendPublication(formData) {
         },
         body: JSON.stringify(param),
       });
-      fetch(request);
+      fetch(request).then((response) => {
+        if (response.status == 200 && response.ok) {
+          $("#modal_publication").modal("toggle");
+          showActualites();
+        } else {
+          new swal({
+            title: "Ouups",
+            text: "Erreur 500",
+            icon: "error",
+            button: "OK",
+          });
+        }
+      });
     });
     fR.readAsDataURL(
       dataURLtoFile(
@@ -506,13 +687,26 @@ function sendPublication(formData) {
         },
         body: JSON.stringify(param),
       });
-      fetch(request);
+      fetch(request).then((response) => {
+        if (response.status == 200 && response.ok) {
+          $("#modal_publication").modal("toggle");
+          showActualites();
+        } else {
+          new swal({
+            title: "Ouups",
+            text: "Erreur 500",
+            icon: "error",
+            button: "OK",
+          });
+        }
+      });
     });
     fR.readAsDataURL(formData.get("photo"));
   }
 }
 
 /**
+* @author faniry x tommy x Elie
  * render tribu_t contet
  * @param {*} data
  * @param {*} type
@@ -520,11 +714,11 @@ function sendPublication(formData) {
  */
 function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
   let detailsTribuT = null;
+// console.log(dataFirst)
   if (type === "owned") detailsTribuT = dataFirst.tribu_t_owned;
   else detailsTribuT = dataFirst.tribu_t_joined;
 
-  // console.log(JSON.parse(detailsTribuT).tribu_t)
-
+  //check if nested array or not
   let tribu_t = Array.isArray(JSON.parse(detailsTribuT).tribu_t)
     ? Array.from(JSON.parse(detailsTribuT).tribu_t).filter(
         (e) => e.name == tribu_t_name
@@ -607,7 +801,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
       .querySelector("#activeTribu")
       .classList.contains("other")
       ? ` <li class="listNavBarTribu">
-            <a style="cursor:pointer;" id="fetch_new_letter_fans_tribuT_jheo_js" class="dropdown-item">Lettre d'information</a>
+            <a style="cursor:pointer;" id="fetch_new_letter_fans_tribuT_jheo_js" class="dropdown-item">Communiquer</a>
           </li>`
       : "";
       const postulantListe = ` <li class="listNavBarTribu postulantListe">
@@ -1521,6 +1715,11 @@ function test() {
   });
 }
 
+/**
+ * @deprecated
+ * @param {*} tribu_t_name 
+ * @returns 
+ */
 async function showdData(tribu_t_name) {
   const request1 = new Request(`/user/tribu_one/${tribu_t_name}`, {
     method: "GET",
@@ -1531,7 +1730,22 @@ async function showdData(tribu_t_name) {
   });
   return await fetch(request1).then((res) => res.json());
 }
-
+/**
+ * author faniry
+ * @param {*} id 
+ * @param {*} tribuTname 
+ * @returns 
+ */
+async function showdDataV2(id,tribuTname) {
+  const request1 = new Request(`/user/tribu_onev2/${id}/${tribuTname}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json; charset=utf-8",
+    },
+  });
+  return await fetch(request1).then((res) => res.json());
+}
 /**
  * this function show all resto pastilled
  * @param {*} table_rst_pastilled
@@ -1588,7 +1802,7 @@ function showResto(table_rst_pastilled, id_c_u) {
             <tr>
                 <th>Nom de restaurant</th>
                 <th>Note</th>
-                <th>Avis</th>
+                <th>Liste des avis</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -1639,6 +1853,8 @@ function showResto(table_rst_pastilled, id_c_u) {
           let text1 = "";
 
           let action = "";
+//${name}', '${adresse}', '${depName}','${dep}','${json.id}
+          //openDetail('denominationsF', 'adresse', 'resto.dep_name','resto.dep','resto.id')
 
           for (let [k, v] of id_user.entries()) {
             if (v === id_c_u) key = k;
@@ -1656,16 +1872,21 @@ function showResto(table_rst_pastilled, id_c_u) {
             action = "create";
             text1 = "Notez";
           }
-
+//http://localhost:8090/restaurant/specific?nom_dep=Allier&id_dep=03#
           body_table += `
                         <tr id="restaurant_${resto.id_resto}">
                             <td class="d-flex bd-highlight align-items-center">
                                 <div class="elie-img-pastilled">${image_tribu_t}</div>
-                                <!--<a target="_blank" href="/restaurant?id=${resto.id_resto}" class="text-decoration-none">-->
-                                    <span class="ms-3" style="font-size:12pt;">${denominationsF} </span> 
-                                <!--</a>-->
+                                <span class="ms-3" style="font-size:12pt;cursor:pointer" 
+                                  onclick="openDetail('${denominationsF}', '${adresse}', '${resto.dep_name}','${resto.dep}','${resto.id}')"
+                                  data-toggle="tooltip" data-placement="top" title="Cliquez pour voir les détails."
+                                >
+                                ${denominationsF} 
+                                </span> 
+                                
                             </td>
-                            <td class="data-note-${resto.id}">${note}/4</td>
+                            
+                            <td class="data-note-${resto.id}" style="cursor:not-allowed">${note}/4</td>
                             <td>
                                 <!--<div id="etoile_${id_resto}" class="non_active">
                                     <i class="fa-solid fa-star" data-rank="1"></i>
@@ -1674,11 +1895,21 @@ function showResto(table_rst_pastilled, id_c_u) {
                                     <i class="fa-solid fa-star" data-rank="4"> </i>-->
                                     <!--<a class="text-secondary" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#RestoModalComment${resto.id}" onclick="showComment(${resto.id})"> ${nbrAvis} Avis</a>-->
                                     <!--<a class="text-secondary data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" onclick="openAvis(${nbrAvis}, ${resto.id})"> ${nbrAvis} Avis</a> -->
-                                    <a class="btn btn-sm bg_orange data-avis-${resto.id}" style="cursor: pointer;text-decoration:none;" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListInTribuT('${resto.id}', 'resto')"> ${nbrAvis} Avis</a>
+                                    <a class="btn btn-sm bg_orange data-avis-${resto.id}" 
+                                      style="cursor: pointer;text-decoration:none;" 
+                                      data-toggle="tooltip" data-placement="top" 
+									                    title="Découvrir les avis des partisans de ce restaurant."
+                                      data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListInTribuT('${resto.id}', 'resto')"> ${nbrAvis} Avis
+                                      
+                                    </a>
                                 <!--</div>-->
                             </td>
                             <td>
-                                <button class="btn btn-primary elie-plus-${resto.id}" style="" onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}','${text1}', '${action}')"><i class="fas fa-plus"></i> Plus</button>
+                                <button class="btn btn-primary elie-plus-${resto.id}" style="" 
+                                onclick="openPopupAction('${resto.id}','${resto.denomination_f}', '${adresse}','${text1}', '${action}')"
+                                data-toggle="tooltip" data-placement="top" title="Choisissez une action  à entreprendre pour ce restaurant."
+                                >
+                                <i class="fas fa-plus"></i> Action pour ce restaurant</button>
                                 <!--<button type="button" class="btn btn-secondary disabled-link float-end" data-bs-toggle="modal" data-bs-target="#modal_repas" style="cursor:pointer;" onclick="createRepas('${resto.id_pastille}','${resto.denomination_f}', '${resto.latitude}','${resto.longitude}')">Créer un repas</button>
                                 
                                 <button type="button" class="btn btn-secondary disabled-link" data-bs-toggle="modal" data-bs-target="#RestoModalNote${id_resto_comment[key]}">${text1}</button>-->
@@ -1739,26 +1970,27 @@ function showResto(table_rst_pastilled, id_c_u) {
 
 // document.querySelector("#resto-rech")
 
-if (document.querySelector("#resto-rech")) {
-  const src_resto = document.querySelector("#resto-rech");
+//faniry j'ai commenté ce bout de code car il ne fait rien
+// if (document.querySelector("#resto-rech")) {
+  //   const src_resto = document.querySelector("#resto-rech");
 
-  src_resto.addEventListener("keyup", function onEvent(event) {
-    // alert("ato")
-    // const q = event.target.value.toLowerCase();
-    // if (event.keyCode === 13) {
-    //     alert("ato")
-    //     listResto()
-    // }else{
-    //     document.querySelectorAll("#restaurants > ul > li").forEach(elem=>{
-    //         if(elem.textContent.toLowerCase().includes(q)){
-    //             elem.style = "display : flex!important;"
-    //         }else{
-    //             elem.style = "display : none !important;"
-    //         }
-    //     })
-    // }
-  });
-}
+  //   src_resto.addEventListener("keyup", function onEvent(event) {
+    //     // alert("ato")
+    //     // const q = event.target.value.toLowerCase();
+    //     // if (event.keyCode === 13) {
+    //     //     alert("ato")
+    //     //     listResto()
+    //     // }else{
+    //     //     document.querySelectorAll("#restaurants > ul > li").forEach(elem=>{
+    //     //         if(elem.textContent.toLowerCase().includes(q)){
+    //     //             elem.style = "display : flex!important;"
+    //     //         }else{
+    //     //             elem.style = "display : none !important;"
+    //     //         }
+    //     //     })
+    //     // }
+  //   });
+// }
 
 function printNodeGlobale(element, globalNote) {
   let rankRange = [1, 2, 3, 4];
@@ -2283,22 +2515,19 @@ function loadFile(event) {
 /*-----------end------------------*/
 
 function showActualites() {
-  document.querySelector("#activeTribu").click();
-  document.querySelector(".fermet-tribu-t-tomm-js").click();
-}
+  const selected = document.querySelector("#activeTribu");
 
-if (document.querySelector("#submit-publication-tribu-t")) {
-  document
-    .querySelector("#submit-publication-tribu-t")
-    .addEventListener("click", () => {
-      document
-        .querySelector(
-          "#form-publication-tribu-t > div > div > div.modal-header > button"
-        )
-        .click();
-      setTimeout(showActualites, 5000);
-      //showActualites();
-    });
+  //<a href="/user/tribu/my-tribu-t?type=owned&amp;tribu=tribu_t_28_lenfer"
+  //class="tribu_t owned tribu_T_owned p-2 list-nav-left active"
+  //data-tribu-rank="28" data-table-name="tribu_t_28_lenfer" id="activeTribu">Tribu T l'enfer</a>*
+  const type = selected.classList[1].trim();
+  const tributName = selected.dataset.tableName.trim();
+  const id_c_u = document.querySelector(".information_user_conected_jheo_js")
+    ? document.querySelector(".information_user_conected_jheo_js").dataset
+        .toggleUserId
+    : 0;
+  if (id_c_u > 0) 
+    showBlockPubV2(type, tributName, id_c_u);
 }
 
 function showInvitations() {
@@ -2405,13 +2634,15 @@ function showInvitations() {
                     </div>
                     <div id="blockHistInvitation" class="mt-2 d-none">
                         <h5 class="modal-title text-primary mt-3 mb-3" id="exampleModalLabel">Historique des invitations par e-mail</h5>
-                        <table class="table">
+                        <table class="table" id="historique_invitation">
                             <thead>
                                 <tr>
                                     <th>E-mail</th>
                                     <th scope="col">Date</th>
                                     <th scope="col">Fan</th>
+                                    <th scope="col">Invité(e) par </th>
                                     <th scope="col">Status</th>
+                                    <th scope="col">Action</th>
                                 </tr>
                             </thead>
                             <tbody id="all_historique">
@@ -2421,6 +2652,7 @@ function showInvitations() {
                     </div>
                 </div>
         `;
+
   // <div class="mt-3" id="tribut-collapse">
   //     <div class="form-group multiple_destination_css">
   //         <label for="exampleFormControlInput1">Ajouter de Cc <span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs Cc.)</span></label>
@@ -2635,47 +2867,91 @@ function showInvitations() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(data),
-        })
-          .then((response) => {
+        }).then((response) => {
             if (!response.ok && response.status != 200) {
-              throw new Error("ERROR: " + response.status);
-            }
-            return response.json();
-          })
-          .then((result) => {
-            // input_principal.value = null;
-            // description.value = null;
-            // object.value = null;
+              new swal({
+              title: "Mail non envoyé",
+              text: "Le destinataire bloque le courrier électronique sur le serveur de messagerie du destinataire.",
+              icon: "error",
+              button: "OK",
+            }).then(() => {
+              form_parent
+                .querySelector(".btn_send_invitation_js_jheo")
+                .removeAttribute("disabled");
+              form_parent.querySelector(
+                ".btn_send_invitation_js_jheo"
+              ).textContent = "Envoyer l'invitation";
+            });
+          } else if (response.ok && response.status == 200) {
+            response.json().then((result) => {
+              const userEmailDoesntExist = result.data.email_not_exist;
+              if (userEmailDoesntExist.length > 0) {
+                let listEmail = "";
+                for (let email of userEmailDoesntExist) {
+                  listEmail += email + " ";
+                }
+                listEmail = listEmail.trim().replaceAll(" ", ",");
+                new swal({
+                  title: "informations",
+                  text: `On n'a pas pu envoyer l'invitation à ces emails: ${listEmail}`,
+                  icon: "info",
+                  button: "ok",
+                }).then(() => {
+                  let table_trib = document
+                    .querySelector("#blockSendEmailInvitation")
+                    .getAttribute("data-table");
 
-            //init Ckeditor for description by Elie
+            // sauvegarde de l'invitation
+                  saveInvitationStory(table_trib, result.data);
 
-            //editor.setData("Ecrivez votre message ici.");
+                  // }
+                  /// END OF THE RESET DATA.
 
-            //Send data invitation story into tribu
+                  form_parent
+                    .querySelector(".btn_send_invitation_js_jheo")
+                    .removeAttribute("disabled");
+                  form_parent.querySelector(
+                    ".btn_send_invitation_js_jheo"
+                  ).textContent = "Envoyer l'invitation";
+
+                  email_piece_joint_list.forEach((item) => {
+                    const id = item.id;
+                    const btn_item = document.querySelector(
+                      `.fa_solid_${id}_jheo_js`
+                    );
+                    if (!btn_item.classList.contains("btn-outline-danger")) {
+                      btn_item.classList.add("btn-outline-danger");
+                    }
+
+                    if (btn_item.classList.contains("btn-outline-primary")) {
+                      btn_item.classList.remove("btn-outline-primary");
+                    }
+
+                    btn_item.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
+
+                    btn_item.setAttribute(
+                      "onclick",
+                      `removeListeItem(this, '${id}')`
+                    );
+                  });
+
+                  document.querySelector("#successSendingMail").style.display =
+                    "block";
+
+                  setTimeout(() => {
+                    document.querySelector(
+                      "#successSendingMail"
+                    ).style.display = "none";
+                  }, 5000);
+                });
+              } else {
             let table_trib = document
               .querySelector("#blockSendEmailInvitation")
               .getAttribute("data-table");
 
             // sauvegarde de l'invitation
-            saveInvitationStory(table_trib, result.data);
-            //saveInvitationStory(table_trib, input_cc.value);
-
-            /// RESET DATA AFTER THE SENDING
-            // input_principal.value = null;
-            // input_cc.value = null;
-            // email_piece_joint_list = [];
-            // editor.setData("Ecrivez votre message ici.");
-
-            // document.querySelectorAll(".chip").forEach((item) => {
-            // 	item.parentElement.removeChild(item);
-            // });
-
-            // if (document.querySelector(".content_list_piece_joint_jheo_js")) {
-            // 	document.querySelector(".content_list_piece_joint_jheo_js").innerHTML = "";
-
-            // 	if (!content_list_piece_joint.classList.contains("d-none")) {
-            // 		content_list_piece_joint.classList.add("d-none");
-            // 	}
+            //saveInvitationStory(table_trib, result.data);
+            
             // }
             /// END OF THE RESET DATA.
 
@@ -2714,9 +2990,9 @@ function showInvitations() {
               document.querySelector("#successSendingMail").style.display =
                 "none";
             }, 5000);
-          })
-          .catch((e) => {
-            console.log(e);
+          }
+            });
+}
           });
       }
     });
@@ -2766,7 +3042,7 @@ function setActiveTab(elem, param) {
             .element
       ).style.display = "none";
       document.querySelector(".object_js_jheo").value =
-        "Invitation rejoindre ma tribu Thématique sur Consomyzone";
+        "Invitation à rejoindre ma tribu Thématique sur Consomyzone";
       break;
     }
     case "historique": {
@@ -2860,16 +3136,16 @@ function inviteUser(elem) {
   };
 }
 
-function verifieEmailValid(email) {
-  if (
-    email.match(
-      /(?:[a-z0-9+!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi
-    )
-  ) {
-    return true;
-  }
-  return false;
-}
+// function verifieEmailValid(email) {
+  //   if (
+    //     email.match(
+      //       /(?:[a-z0-9+!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi
+    //     )
+//   ) {
+    //     return true;
+  //   }
+//   return false;
+// }
 
 function ondeleteUser(e) {
   const email = e.parentElement;
@@ -3245,7 +3521,10 @@ function openOnNote(id_pastille, action) {
  * @param {string} adresse : adresse de resto
  * @param {string} action : action à faire pour le resto
  */
-function openOnEvent(id, nom, adresse, action) {
+function openOnEvent(id, nom, adresse, action = "") {
+if (action == "golf") document.getElementById("golfRadio").checked = true;
+  else if (action == "resto")
+    document.getElementById("restoRadio").checked = true;
   document.querySelector("#nomEtabEvent").value = nom;
 
   document.querySelector("#lieuEvent").value = adresse.toLowerCase().trim();
@@ -3260,6 +3539,7 @@ function openOnEvent(id, nom, adresse, action) {
 }
 
 /**
+* @modifier faniry
  * @constructor Fonction d'ouverture d'un modal detail option resto
  * @param {*} id_pastille : id resto
  * @param {*} denomination_f : nom resto
@@ -3275,43 +3555,24 @@ function openPopupAction(
   action,
   rubrique_type = "resto"
 ) {
-  if (rubrique_type == "resto") {
+  denomination_f = denomination_f.replaceAll("'", "\\'");
+  switch (rubrique_type) {
+    case "resto": {
     $("#detailOptionResto").modal("show");
-  } else {
-    $("#detailOptionGolf").modal("show");
-  }
-
-  document.querySelector("#data-note-elie-js").innerHTML =
+  document.getElementById("data-note-elie-js").innerHTML =
     `<i class="fas fa-edit"></i> ` + text1;
-
-  // document.querySelector("#data-note-elie-js").setAttribute("onclick", "openOnNote("+id_pastille+",\'"+ action+"\')")
-
   document
-    .querySelector("#data-event-elie-js")
+    .getElementById("data-event-elie-js")
     .setAttribute(
       "onclick",
-      "openOnEvent(" +
-        id_pastille +
-        ",'" +
-        denomination_f +
-        "','" +
-        adresse +
-        "','" +
-        action +
-        "')"
+      `openOnEvent(${id_pastille},'${denomination_f}','${adresse}',"resto")`
     );
-
   let btn = document.querySelector("#data-depastille-nanta-js");
   btn.dataset.id = id_pastille;
   btn.dataset.name = denomination_f;
   btn.dataset.tbname = document
     .querySelector("#activeTribu")
     .getAttribute("data-table-name");
-
-  // document.querySelector("#data-depastille-nanta-js").dataset.id = id_pastille
-  // document.querySelector("#data-depastille-nanta-js").dataset.name = denomination_f
-  // document.querySelector("#data-depastille-nanta-js").dataset.tbname = document.querySelector("#activeTribu").getAttribute("data-table-name")
-
   if (document.querySelector(".send_avis_jheo_js")) {
     //// reset function add avis resto
     document
@@ -3320,6 +3581,27 @@ function openPopupAction(
         "onclick",
         `addAvisInTribuT("${id_pastille}","${rubrique_type}")`
       );
+}
+                break;
+    }
+    case "golf": {
+      $("#detailOptionGolf").modal("show");
+      document
+        .getElementById("data-event-nanta-js")
+        .setAttribute(
+          "onclick",
+          `openOnEvent(${id_pastille},'${denomination_f}','${adresse}',"golf")`
+        );
+      const depastilledBtn = document.getElementById(
+        "data-depastilleGolf-nanta-js"
+      );
+      depastilledBtn.dataset.id = id_pastille;
+      depastilledBtn.dataset.name = denomination_f;
+      depastilledBtn.dataset.tbname = document
+        .querySelector("#activeTribu")
+        .getAttribute("data-table-name");
+      break;
+    }
   }
 }
 
@@ -3353,6 +3635,11 @@ function openDetail(nom_resto, adresse, nom_dep, id_dep, id_restaurant) {
         `;
 
       document.querySelector("#elie-resto-detail").innerHTML = result;
+if (document.querySelector(".content_tow_cta >.site_web")) {
+              document
+                .querySelector(".content_tow_cta >.site_web")
+                .classList.toggle("non_active");
+            }
     });
 }
 
@@ -3603,6 +3890,16 @@ function showEtabDetail(event, nom_dep, id_dep, id_etab) {
     });
 }
 
+/**
+ * @notused
+ * @deprecated
+ * @param {} id_pastille
+ * @param {*} denomination_f
+ * @param {*} adresse
+ * @param {*} note
+ * @param {*} create
+ * @param {*} type
+ */
 function openPopupActionGolf(
   id_pastille = null,
   denomination_f = null,
@@ -3617,8 +3914,14 @@ function openPopupActionGolf(
 
   // document.querySelector("#data-note-elie-js").innerHTML = `<i class="fas fa-edit"></i> ` + text1
 
-  document.querySelector("#data-note-nanta-js").removeAttribute("onclick");
-  document.querySelector("#data-event-nanta-js").removeAttribute("onclick");
+  //document.querySelector("#data-note-nanta-js").removeAttribute("onclick");
+  console.log("ee" + document.querySelector("#data-event-nanta-js"));
+  document
+    .querySelector("#data-event-nanta-js")
+    .setAttribute(
+      "onclick",
+      `openOnEvent(${id_pastille},'${denomination_f}','${adresse}')`
+    );
   let btn = document.querySelector("#data-depastilleGolf-nanta-js");
   btn.dataset.id = id_pastille;
   btn.dataset.name = denomination_f;
@@ -3650,6 +3953,11 @@ function fetchAllInvitationStory() {
     .querySelector("#tribu_t_name_main_head")
     .dataset.tribu.trim();
   let tbody_hist = document.querySelector("#all_historique");
+
+  let table_display_name = document.querySelector("#tribu_t_name_main_head").textContent.trim();
+
+	let fullName = document.querySelector("span.use-in-agd-nanta_js_css.status-tomm-js").textContent.trim();
+
   tbody_hist.innerHTML = `<td colspan="4"><div class="d-flex justify-content-center">
                         <div class="spinner-border" role="status">
                         <span class="visually-hidden">Loading...</span>
@@ -3678,19 +3986,36 @@ function fetchAllInvitationStory() {
                                   }</a>`
                                 : `<span class="badge text-bg-warning">Compte non trouvé</span>`
                             }</td>
+                            <td><a href="${item.sender? "/user/profil/"+item.sender.id :"#"}" class="badge text-bg-primary">${
+                              item.sender? item.sender.firstname + " " + item.sender.lastname :"Fondateur"
+                            }</a>
+                            </td>
                             <td>${
                               item.is_valid == 1
                                 ? `<span class="badge text-bg-success">Validé</span>`
                                 : `<span class="badge text-bg-warning">En attente</span>`
                             }</td>
+                            <td>
+                              ${item.is_valid == 0
+                                ? `<button class="badge text-bg-primary" onclick="relanceInvitationExterne('${table}', '${table_display_name}', '${item.email}', '${fullName}')">
+                                <i class="fa-solid fa-user-plus"></i> Relancer </button>`
+                                : ``
+                                }
+                            </td>
                         </tr>
                     `;
         }
-        $("#table-tribuG-member > table").DataTable({
+        if (!$.fn.dataTable.isDataTable("#historique_invitation")) {
+          $("#historique_invitation").DataTable({
           language: {
             url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
           },
+          "ordering": false,
         });
+        }
+  
+        $("#historique_invitation").DataTable().destroy();
+        
       } else {
         tbody_hist.innerHTML = "Aucun historique enregistré pour le moment!";
       }
@@ -3968,25 +4293,25 @@ function removeListeItem(e, id) {
   );
 }
 
-function addLinkOnMailBody() {
-  const link_name = document.querySelector(".link_name_jheo_js").value.trim();
-  const link_value = encodeURI(
-    document.querySelector(".link_value_jheo_js").value
-  );
+// function addLinkOnMailBody() {
+  //   const link_name = document.querySelector(".link_name_jheo_js").value.trim();
+  //   const link_value = encodeURI(
+    //     document.querySelector(".link_value_jheo_js").value
+  //   );
 
-  if (editor) {
-    editor.setData(
-      editor.getData() +
-        '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' +
-        link_value +
-        '" >' +
-        link_name +
-        " </a>"
-    );
-  }
+  //   if (editor) {
+    //     editor.setData(
+      //       editor.getData() +
+        //         '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' +
+        //         link_value +
+        //         '" >' +
+        //         link_name +
+        //         " </a>"
+    //     );
+  //   }
 
-  cancelAddLink();
-}
+  //   cancelAddLink();
+// }
 
 /**
  * @author Tomm
@@ -4308,6 +4633,8 @@ function renderPosulant(tribuName) {
     if (res.status === 200 && res.ok) {
       res.json().then((postulants) => {
         const container = document.querySelector("#tribu_t_conteuneur");
+        container.classList.add("bg-white")
+        container.classList.add("p-2")
         createPostulantUI(postulants, container,tribuName);
       });
     }
@@ -4320,15 +4647,12 @@ function renderPosulant(tribuName) {
  * @param array postulants
  * @param HTMLElement container
  */
-function createPostulantUI(postulants, container,tribuName) {
-  console.log(postulants)
+function createPostulantUI(postulants, container, tribuName) {
+  console.log(postulants);
   container.innerHTML = "";
-  if(!document.querySelector("#postulant_modal"))
+  if (!document.querySelector("#postulant_modal"))
       createModalForPostulant(container);
-  initCKEditor(
-    "exampleFormControlTextareaPostulant",
-    emailRelanceContent
-  );
+  initCKEditor("exampleFormControlTextareaPostulant", emailRelanceContent);
  
   const headTitles = ["Selectionnez tout", "Pseudo", "Email", "Relance"];
   const postulantTable = document.createElement("table");
@@ -4363,14 +4687,14 @@ function createPostulantUI(postulants, container,tribuName) {
 
   postulants.forEach((postulant) => {
     postulantTableBodyRow = document.createElement("tr");
-
+let idTmp=''+postulant.userId
     tdSelected = document.createElement("td");
     tdPseudo = document.createElement("td");
     tdPseudo.setAttribute("class","pso_faniry")
     tdEmail = document.createElement("td");
     tdEmail.setAttribute("class","ml_faniry");
     tdRelance = document.createElement("td");
-    tdSelected.innerHTML = `<input class="slct_pstl_fan_js" type="checkbox" name="SelectedMe" data-loop="${cryptageJs(postulant.userId)}"/>`;
+    tdSelected.innerHTML = `<input class="slct_pstl_fan_js" type="checkbox" name="SelectedMe" data-loop="${cryptageJs(idTmp)}"/>`;
     tdPseudo.innerText = postulant.pseudo;
     tdEmail.innerText = postulant.useremail;
     btnRelance = creaTeBtnRelance(postulant);
@@ -4425,7 +4749,7 @@ function relanceOneIvitation(element, data,tribuName) {
     } else {
       //TODO on relance la personne relative au boutton relance
         console.log(data)
-        const idCrypted=cryptageJs(data.userId);
+        const idCrypted=cryptageJs((''+data.userId));
         const cryiptedEmail=cryptageJs(data.useremail)
         const tribuTNameCrypted=cryptageJs(tribuName)
         document.getElementById("dest_area_pst").value=data.useremail
@@ -4514,7 +4838,7 @@ function creaTeBtnRelance(data) {
   const btn = document.createElement("button");
   btn.setAttribute("class", "btn btn-primary btn_relance_faniry_js");
   btn.id = `relance_${data.userId}_faniry_js`;
-  btn.dataset.rank = cryptageJs(data.userId);
+  btn.dataset.rank = cryptageJs((''+data.userId));
   btn.dataset.bsToggle = "modal";
   btn.dataset.bsTarget = "#postulant_modal";
   btn.setAttribute("type", "button");

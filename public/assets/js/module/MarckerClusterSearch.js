@@ -278,7 +278,8 @@ class MarckerClusterSearch extends MapModule {
 					dataFiltered.some(
 						(jtem) =>
 							parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax * numberOfRubrique
-					) && isInside
+					) &&
+					isInside
 				) {
 					this.settingSingleMarker(item, false);
 
@@ -1239,6 +1240,7 @@ class MarckerClusterSearch extends MapModule {
 					dep: restoPastille.dep,
 					logo_path: item.logo_path,
 					name_tribu_t_muable: item.name_tribu_t_muable,
+					tableName: item.tableName,
 				});
 			}
 		});
@@ -1320,7 +1322,7 @@ class MarckerClusterSearch extends MapModule {
 	 *
 	 * @returns
 	 */
-	checkIsExist(idToCheck, type) {
+	checkIsExist(idToCheck, type = "resto") {
 		const default_data = this.transformDataStructure();
 		if (default_data.some((item) => parseInt(item.id) === parseInt(idToCheck) && item.hasOwnProperty(type))) {
 			let isAlreadyExist = false;
@@ -1355,5 +1357,31 @@ class MarckerClusterSearch extends MapModule {
 				marker.fireEvent("click");
 			}
 		});
+	}
+
+	async fetchOneData(id) {
+		try {
+			await this.fetchOneResto(id);
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	async fetchOneResto(id) {
+		try {
+			const api_data = `/api/restaurant/one_data/${id}`;
+			const response = await fetch(api_data);
+			let { details } = await response.json();
+			console.log(details);
+			console.log(this.default_data);
+			this.default_data.results[0] = [...this.default_data.results[0], details];
+
+			this.settingSingleMarker(details, false);
+			this.clickOnMarker(id);
+
+			this.data = this.default_data;
+		} catch (e) {
+			console.log(e);
+		}
 	}
 }

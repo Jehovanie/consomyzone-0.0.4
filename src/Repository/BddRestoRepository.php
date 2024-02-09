@@ -1297,6 +1297,36 @@ class BddRestoRepository extends ServiceEntityRepository
     }
 
     /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Gat all resto in my favory id
+     * Use in: UserController.php
+     * 
+     * @param array Resto  [ [ idRubrique => ... ], ... ]
+     * 
+     */
+    public function getRestoFavory($data){
+        $tab= [];
+        foreach($data as $item){
+            $resto=  $this->createQueryBuilder("r")
+                ->select(
+                    "r.id,
+                    r.denominationF as name,
+                    r.dep,
+                    r.depName as nom_dep,
+                    CONCAT(r.numvoie,' ', r.typevoie, ' ', r.nomvoie) as address"
+                )
+                ->where("r.id =:id")
+                ->setParameter("id",intval($item["idRubrique"]))
+                ->getQuery()
+                ->getOneOrNullResult();
+
+            array_push($tab, $resto);
+        }
+        return $tab;
+    }
+
+    /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
      * où:la rubrique resto 

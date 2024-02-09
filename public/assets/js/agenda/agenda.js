@@ -51,38 +51,38 @@ document.addEventListener("DOMContentLoaded", function () {
 		});
 });
 
-if ("WebSocket" in window) {
-	(function () {
-		function refreshCSS() {
-			var sheets = [].slice.call(document.getElementsByTagName("link"));
-			var head = document.getElementsByTagName("head")[0];
-			for (var i = 0; i < sheets.length; ++i) {
-				var elem = sheets[i];
-				var parent = elem.parentElement || head;
-				parent.removeChild(elem);
-				var rel = elem.rel;
-				if ((elem.href && typeof rel != "string") || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-					var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, "");
-					elem.href = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_cacheOverride=" + new Date().valueOf();
-				}
-				parent.appendChild(elem);
-			}
-		}
-		var protocol = window.location.protocol === "http:" ? "ws://" : "wss://";
-		var address = protocol + window.location.host + window.location.pathname + "/ws";
-		var socket = new WebSocket(address);
-		socket.onmessage = function (msg) {
-			if (msg.data == "reload") window.location.reload();
-			else if (msg.data == "refreshcss") refreshCSS();
-		};
-		if (sessionStorage && !sessionStorage.getItem("IsThisFirstTime_Log_From_LiveServer")) {
-			console.log("Live reload enabled.");
-			sessionStorage.setItem("IsThisFirstTime_Log_From_LiveServer", true);
-		}
-	})();
-} else {
-	console.error("Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.");
-}
+// if ("WebSocket" in window) {
+	// 	(function () {
+		// 		function refreshCSS() {
+			// 			var sheets = [].slice.call(document.getElementsByTagName("link"));
+			// 			var head = document.getElementsByTagName("head")[0];
+			// 			for (var i = 0; i < sheets.length; ++i) {
+				// 				var elem = sheets[i];
+				// 				var parent = elem.parentElement || head;
+				// 				parent.removeChild(elem);
+				// 				var rel = elem.rel;
+				// 				if ((elem.href && typeof rel != "string") || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+					// 					var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, "");
+					// 					elem.href = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_cacheOverride=" + new Date().valueOf();
+				// 				}
+// 				parent.appendChild(elem);
+			// 			}
+// 		}
+// 		var protocol = window.location.protocol === "http:" ? "ws://" : "wss://";
+		// 		var address = protocol + window.location.host + window.location.pathname + "/ws";
+		// 		var socket = new WebSocket(address);
+		// 		socket.onmessage = function (msg) {
+			// 			if (msg.data == "reload") window.location.reload();
+			// 			else if (msg.data == "refreshcss") refreshCSS();
+		// 		};
+		// 		if (sessionStorage && !sessionStorage.getItem("IsThisFirstTime_Log_From_LiveServer")) {
+			// 			console.log("Live reload enabled.");
+			// 			sessionStorage.setItem("IsThisFirstTime_Log_From_LiveServer", true);
+		// 		}
+// 	})();
+// } else {
+	// 	console.error("Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.");
+// }
 
 ///// CANCEL CREATE AGENDA ------------------------------------------------------
 // if (document.querySelector(".cta_cancel_create_agenda_jheo_js") || document.querySelector(".btn_close_create_agenda_jheo_js")) {
@@ -1410,7 +1410,8 @@ function makeLoading() {
  * create new egenda
  * @param {*} agenda
  */
-function saveNewAgenda(agenda) {
+function saveNewAgenda(agenda, reload=1) {
+	let isReload= (!!reload)
 	const param = {
 		title: agenda.title,
 		type: agenda.type,
@@ -1466,12 +1467,20 @@ function saveNewAgenda(agenda) {
 		.then((response) => response.json())
 		.then((response) => {
 			swal("Bravo !", response.message, "success").then((value) => {
+if(isReload) 
 				location.reload();
 			});
 		});
 }
 
-function getObjectForNewAgenda(e) {
+/**
+ * @author Nantenaina x Faniry
+ * @param {*} e 
+ * @param {int } isReload  "La valeur est 0 ou 1, 
+ * indiquant si le système doit recharger la page après la création d'un événement. 
+ * Par défaut, la valeur est 1.
+ */
+function getObjectForNewAgenda(e, isReload=1) {
 	let state = true;
 
 	let isEtabCMZ = false;
@@ -1565,7 +1574,7 @@ function getObjectForNewAgenda(e) {
 			directoryroot: directoryroot,
 			fileName: fileName,
 		};
-		saveNewAgenda(agenda);
+		saveNewAgenda(agenda,isReload);
 		// const agenda_keys = Object.keys(agenda);
 		// agenda_keys.forEach(key => {
 		//     if (agenda[key] === '') {

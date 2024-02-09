@@ -66,6 +66,10 @@
   z-index: 1;
 }
 
+.containt.tribuT{
+  transform: translateX(-380px);
+}
+
 .word{
   display: inline-block;
   padding: 5px;

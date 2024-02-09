@@ -1541,7 +1541,7 @@ input::-ms-clear {
 	outline: none;
 	text-transform: uppercase;
 	font-weight: 400;
-	font-size: 10pt;
+	font-size: 10pt; 
 }
 
 .remove-image-uplaod:hover {
@@ -3487,6 +3487,96 @@ stop_audio_avis_elie_js {
 	margin-top: 15px;
 }
 
+.loading_list_favory {
+	margin: auto;
+	height: 20px !important;
+	width: 20px !important;
+}
+
+.icon_favory_rubrique {
+	display: block;
+	width: 21px;
+	height: 25px;
+}
+
+.font_size_09 {
+	font-size: 0.9rem;
+}
+
+.content_list_folder {
+	display: block;
+	max-height: 250px;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.content_list_folder::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+	background-color: #f5f5f5;
+	border-radius: 10px;
+}
+
+.content_list_folder::-webkit-scrollbar {
+	width: 6px;
+	background-color: #f5f5f5;
+}
+
+.content_list_folder::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background-color: #fff;
+	background-image: -webkit-gradient(linear, 40% 0%, 75% 84%, from(#4d9c41), to(#19911d), color-stop(0.6, #54de5d));
+}
+
+.error_folder_name {
+	width: 100%;
+	margin-top: rem;
+	font-size: 0.8em;
+	color: #dc3545;
+	font-weight: 400;
+}
+
+.border_input_danger {
+	border: 1px solid #dc3545 !important;
+}
+
+.custom_alert_danger {
+	text-align: center !important;
+	--bs-alert-padding-y: 5px !important;
+	font-size: 0.8rem !important;
+}
+
+.content_list_favory {
+	max-height: 66vh;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.content_list_favory::-webkit-scrollbar-track {
+	-webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.1);
+	background-color: #f5f5f5;
+	border-radius: 10px;
+}
+
+.content_list_favory::-webkit-scrollbar {
+	width: 6px;
+	background-color: #f5f5f5;
+}
+
+.content_list_favory::-webkit-scrollbar-thumb {
+	border-radius: 10px;
+	background-color: #fff;
+	background-image: -webkit-gradient(linear, 40% 0%, 75% 84%, from(#4d9c41), to(#19911d), color-stop(0.6, #54de5d));
+}
+
+.favory_folder_collapse {
+	font-size: 0.85rem;
+}
+
+.favory_etablisment{
+	cursor: pointer;
+	font-size: 0.9rem;
+}
+
 @media screen and (min-width: 360px) {
 	html {
 		height: 100% !important;
@@ -3620,3 +3710,181 @@ stop_audio_avis_elie_js {
   }
 /*end*/
   
+.multiselect {
+	width: 28em;
+	height: 15em;
+	border: solid 1px #c0c0c0;
+	-moz-box-shadow: inset 0 0 10px #c0c0c0;
+	-webkit-box-shadow: inset 0 0 10px #c0c0c0;
+	box-shadow: inset 0 0 10px #c0c0c0;
+	overflow: auto;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+.multiselect label {
+	display: block;
+	text-indent: -1.2em;
+	padding: 0.2em 0 0.2em 1.2em;
+}
+
+.multiselect-on {
+	color: #ffffff;
+	background-color: #0e8eff;
+}
+
+.multiselect-blurred {
+	background: lightgray;
+}
+/**** drop & input csv news letter *****/
+.drop_zone {
+	position: relative;
+	margin-left: 50%;
+	transform: translateX(-50%);
+	width: 100%;
+	height: 20px;
+	padding: 25px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	text-align: center;
+	font-family: "Quicksand", sans-serif;
+	font-weight: 500;
+	font-size: 14pt;
+	cursor: pointer;
+	color: #cccccc;
+	border: 2px dashed #009578;
+	border-radius: 10px;
+}
+
+.drop-zone-input {
+	display: none;
+}
+
+.drop-zone__thumb_letter {
+	width: 100%;
+	height: 100%;
+	border-radius: 10px;
+	background-color: #cccccc;
+	background-size: cover;
+	position: relative;
+}
+
+.icon-close-csv{
+	position: absolute;
+	right: -20px;
+	top: -10px;
+	z-index: 1;
+}
+
+.drop-zone__thumb_letter::after {
+	content: attr(data-label);
+	position: absolute;
+	top: -17px;
+	left: 0;
+	width: 100%;
+	padding: 5px 0;
+	color: #ffffff;
+	background: rgba(0, 0, 0, 0.75);
+	font-size: 14px;
+	text-align: center;
+}
+
+.head-content img {
+	height: 125px;
+	margin: 10px;
+	border-radius: 15px;
+}
+
+.photo-nom-tribu-g {
+	background-color: #8888;
+	width: 100%;
+	margin-right: auto !important;
+	margin-left: auto !important;
+}
+
+.new-letter-select {
+	position: relative;
+}
+
+.new-letter-select .tooltip-new-letter {
+	    position: absolute;
+    top: -30px;
+    left: 50%;
+    width: 290px;
+    transform: translateX(-50%);
+    background-color: #6e6e6e;
+    color: #fff;
+    padding: 6px 10px;
+    border-radius: 5px;
+    opacity: 0;
+    visibility: hidden;
+    font-size: 9pt;
+    font-family: sans-serif;
+    transition: all 0.3s ease;
+}
+
+.new-letter-select:hover .tooltip-new-letter {
+	opacity: 1;
+	visibility: visible;
+	top: 20px;
+}
+
+.content-csv-letter{
+	position: relative;
+}
+
+.qestion-csv-letter{
+	position: absolute;
+	right: 20px;
+	top: 5px;
+	color: #0d6efd;
+	animation: heartbeat 1s infinite alternate;
+}
+
+@keyframes heartbeat {
+	0% {
+		transform: scale(1);
+	}
+
+	50% {
+		transform: scale(1.1);
+	}
+
+	100% {
+		transform: scale(1);
+	}
+}
+/** Debut Pastille sur la carte*/
+.td_pastille .other_nb_tribu {
+	position: absolute;
+	margin-left: 20px;
+	color: red;
+	margin-bottom: 20px;
+	width: 25px;
+	text-align: center;
+	border-radius: 50%;
+	background-color: white;
+	cursor: pointer;
+}
+
+.other_nb_tribu:hover,
+.icon_resto_legend:hover {
+	transform: scale(1.2);
+}
+/** End Pastille sur la carte*/
+
+ /**new tribu G*/
+ .head-content img {
+    height: 125px;
+    margin: 10px;
+    border-radius: 15px;
+}
+
+.photo-nom-tribu-g {
+    background-color: #8888;
+    width: 100%;
+    margin-right: auto !important;
+    margin-left: auto !important;
+}
+/**end new tribu g*/

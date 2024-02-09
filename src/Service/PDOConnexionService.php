@@ -42,4 +42,16 @@ class PDOConnexionService
                     return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
                 },$str);
     }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * 
+     * Goal: Gerenate strong unique id
+     * 
+     * @return new unique id; 
+     */
+    public function generateUniqueID(){
+        $unique_id = md5(uniqid(mt_rand(), true));
+        return $unique_id;
+    }
 }

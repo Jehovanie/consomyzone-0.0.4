@@ -14,36 +14,7 @@ if (document.querySelector("#fetch_golf_tribug_jheo_js")) {
             </div>
         `;
 
-
-        if (!btn_member.classList.contains("active")) {
-            btn_member.classList.add("active")
-            btn_member.classList.add("text-white")
-            btn_member.classList.remove("text-primary")
-        }
-
-        if (document.querySelector("#fetch_actialite_tribug_jheo_js").classList.contains("active")) {
-            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.add("text-primary")
-        }
-
-        if (document.querySelector("#fetch_member_tribug_jheo_js").classList.contains("active")) {
-            document.querySelector("#fetch_member_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_member_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_member_tribug_jheo_js").classList.add("text-primary")
-        }
-
-        if (document.querySelector("#fetch_photo_tribug_jheo_js").classList.contains("active")) {
-            document.querySelector("#fetch_photo_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_photo_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_photo_tribug_jheo_js").classList.add("text-primary")
-        }
-
-        if (document.querySelector("#fetch_resto_tribug_jheo_js").classList.contains("active")) {
-            document.querySelector("#fetch_resto_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_resto_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_resto_tribug_jheo_js").classList.add("text-primary")
-        }
+        removeActiveLinkOnG(document.querySelectorAll(".listNavBarTribu > a"), btn_member)
 
         document.querySelector(".content_bloc_jheo_js").innerHTML = `
             <div class="spinner-grow text-info d-block mx-auto" role="status">
@@ -108,27 +79,43 @@ document.querySelector(".textIndicationNantaJs").textContent = "Golfs"
                     let id_c_u = document.querySelector(".main_user_id").getAttribute("data-my-id")
 
                     for (let golf of response) {
-
+// console.log(golf);
                         if (golf.isPastilled) {
 
                             let adresse_golf = golf.adr1 + " " + golf.nom_commune + " " + golf.cp + " " + golf.nom_dep
 
                             let note = golf.globalNote ? golf.globalNote : 0
-
+// console.log("id_comment"+ golf.id_golf_comment);
                             body += `
                                 <tr id="golf_${golf.id}">
                                     <td class="d-flex bd-highlight align-items-center">
-                                        <div class="elie-img-pastilled"><img src="${document.querySelector('#profilTribu').src}"></div>
-                                        <span class="ms-3" style="font-size:12pt;cursor : pointer;" onclick ="openDetailGolf('${golf.nom_golf}', '${adresse_golf}', '${golf.nom_dep}','${golf.cp}','${golf.id}')">${golf.nom_golf.charAt(0).toUpperCase() + golf.nom_golf.slice(1)} </span>
+                                        <div class="elie-img-pastilled"><img src="${document.querySelector('#profilTribuG').src}"></div>
+                                        <span class="ms-3" style="font-size:12pt;cursor : pointer;" 
+                                            data-toggle="tooltip" data-placement="top" title="Cliquez pour voir les détails."
+                                            onclick ="openDetailGolf('${golf.nom_golf}', '${adresse_golf}', '${golf.nom_dep}','${golf.cp}','${golf.id}')">${golf.nom_golf.charAt(0).toUpperCase() + golf.nom_golf.slice(1)} </span>
                                     </td>
                                     <td class="data-note-${golf.id}">
                                         ${note}
                                     </td>
                                     <td>
-                                        <a class="btn btn-sm bg_orange data-avis-${golf.id}" style="cursor: pointer;text-decoration:none;"  onclick="openAvisGolfG(${golf.nbrAvis}, ${golf.id})"> ${golf.nbrAvis} Avis</a>
+                                        <a 
+                                            class="btn btn-sm bg_orange data-avis-${golf.id}" 
+                                            style="cursor: pointer;text-decoration:none;"  
+                                            data-toggle="tooltip" data-placement="top" 
+                                            title="Découvrir les avis des partisans de ce golf." 
+                                            onclick="openAvisGolfG(${golf.nbrAvis}, ${golf.id})"> ${golf.nbrAvis} Avis
+                                           
+                                        </a>
                                     </td>
                                     <td>
-                                        <button class="btn btn-primary elie-plus-${golf.id}" style="" onclick='openPopupActionGolfG(${golf.id_golf_comment}, ${golf.id_golf_extension})'><i class="fas fa-plus"></i> Plus</button>
+                                        <button 
+                                        class="btn btn-primary elie-plus-${golf.id}" 
+                                        style="" 
+                                        data-toggle="tooltip" data-placement="top" 
+                                        title="Choisissez une action à entreprendre pour ce golf." 
+                                        onclick='openPopupActionGolfG(${golf.id_golf_pastilled}, ${golf.id_golf_extension})'>
+                                        <i class="fas fa-plus"></i> Action pour ce golf
+                                        </button>
                                     </td>
                                 </tr>
                             `

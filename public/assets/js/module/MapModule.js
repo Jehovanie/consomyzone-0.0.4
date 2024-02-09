@@ -386,7 +386,7 @@ class MapModule {
 			style: {
 				weight: 2,
 				opacity: 1,
-				color: "red",
+				color: "#74D0F1",
 				dashArray: "3",
 				fillOpacity: 0,
 			},
@@ -1088,15 +1088,20 @@ class MapModule {
 
 	///bind and add control on the right side of the map
 	bindOtherControles() {
-		// let htmlControl = `
-		//     <button class="btn btn-warning right_control_jheo_js" data-type="tiles_type_jheo_js"  style="font-size: 1.1rem;">
-		//         <i class="fa-solid fa-layer-group" data-type="tiles_type_jheo_js"></i>
-		//     </button>
-		//     <button class="btn btn-primary" data-type="couche_tabac_jheo_js" style="font-size: 1.1rem;">
-		//         <i class="fa-brands fa-connectdevelop" data-type="couche_tabac_jheo_js"></i>
-		//     </button>
-		// `;
+		let favory_rubrique = "";
+		if (this.mapForType === "resto" || this.mapForType === "tous") {
+			favory_rubrique = `
+				${this.createBtnControl(
+					"favoris_elie_js",
+					"fa-regular fa-bookmark",
+					"btn btn-dark p-3 pt-1 pb-1",
+					"Mes favoris géographiques."
+				)}
+			`;
+		}
+
 		let htmlControl = `
+            ${favory_rubrique}
             ${this.createBtnControl(
 				"tiles_type_jheo_js",
 				"fa-solid fa-layer-group",
@@ -1467,6 +1472,12 @@ class MapModule {
 					document.querySelector(".title_right_side_jheo_js").innerText =
 						"Listes des contours géographiques.";
 					this.injectChooseCouche();
+                } // Edited by Elie 24/01/2024
+				else if (rightSideContentType === "favoris_elie_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText =
+						"Liste de mes favoris géographiques.";
+					// alert("Please")
+					this.injectMyFavoris();
 				} else {
 					//// default tiles type
 					document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
@@ -3076,5 +3087,35 @@ class MapModule {
 				}
 			}
 		});
+	}
+
+	/**
+	 * @author Elie
+	 * @constructor Affichage de liste de dossier et sous dossier contenant mes favories géographiques
+	 */
+	injectMyFavoris() {
+		if (!document.querySelector(".content_right_side_body_jheo_js")) {
+			console.log("Selector not found : '.content_right_side_body_body'");
+			return false;
+		}
+
+		document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+			<div class="content_list_favory">
+				<div class="list_favory">
+					<ul class="list-group list-group-flush favory_list_jheo_js">
+						<div class="spinner-border text-info loading_list_favory loading_list_favory_jheo_js" role="status">
+							<span class="visually-hidden">Loading...</span>
+						</div>
+					</ul>
+				</div>
+			</div>
+		`;
+
+		const content_list_element = document.querySelector(`.favory_list_jheo_js`);
+		fecthListFavory(content_list_element);
+	}
+
+	fetchOneData() {
+		console.log("Fonction not implemented");
 	}
 }

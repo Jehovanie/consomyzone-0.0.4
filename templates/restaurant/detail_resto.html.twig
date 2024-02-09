@@ -180,11 +180,21 @@
 								</button>
 							{% endif %}
 
+                            <button type="button" class="btn btn-danger btn-sm ms-2"
+								data-status="create" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#newFolderModal"
+								onclick="makeFavori({{details.id}})"
+							>
+								<i class="fa-regular fa-star"></i>
+							</button>
+
 						{% elseif ( app.user and app.user.type is same as('Type') )%}
 							<button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalProfilUnCompleted()">Donner votre avis</button>
 							<button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_gris_actif_js_Elie " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour pastiller un restaurant." onclick="openSwalProfilUnCompleted()">Pastiller</button>
 							<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement" onclick="openSwalProfilUnCompleted()">
 								<i class="bi bi-pencil-square"></i>
+							</button>
+							<button type="button" class="btn btn-secondary btn-sm ms-2" onclick="openSwalProfilUnCompleted()">
+								<i class="fa-regular fa-star"></i>
 							</button>
 							{# <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#userModifResto" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement"><i class="bi bi-pencil-square"></i></button> #}
 						{% else %}
@@ -193,7 +203,12 @@
 							<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement" onclick="openSwalActif()">
 								<i class="bi bi-pencil-square"></i>
 							</button>
+							<button type="button" class="btn btn-secondary btn-sm ms-2" onclick="openSwalActif()">
+								<i class="fa-regular fa-star"></i>
+							</button>
 						{% endif %}
+
+
 
 						<div class="d-none content_avis_person_hidden_jheo_js" data-avis-note="{{details.avis.avisPerso.note ? details.avis.avisPerso.note : 0 }}" data-avis-text="{{ details.avis.avisPerso.text ? details.avis.avisPerso.text : 0 }}"></div>
 					</div>
@@ -600,3 +615,4 @@
 		</div>
 	</div>
 </div>
+

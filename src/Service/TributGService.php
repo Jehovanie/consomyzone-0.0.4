@@ -296,6 +296,17 @@ class TributGService extends PDOConnexionService{
 
                     $this->getPDO()->exec($sqlCreateTablePathAlbum);
 
+                    $query_table_invitation = "CREATE TABLE IF NOT EXISTS " . $name_table_tribuG . "_invitation(
+                        id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                        user_id int(11) DEFAULT NULL,
+                        sender_id int(11) DEFAULT NULL,
+                        email varchar(255) NOT NULL,
+                        is_valid tinyint(1) NOT NULL DEFAULT 0,
+                        datetime DATETIME NOT NULL DEFAULT current_timestamp()
+                      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+                    $this->getPDO()->exec($query_table_invitation);
+
                     /** End restaurant table */
 
 
@@ -1712,7 +1723,7 @@ class TributGService extends PDOConnexionService{
 
         $table_resto = $table_name."_restaurant";
 
-        $statement = $this->getPDO()->prepare('SELECT * FROM ' . $table_resto. '');
+        $statement = $this->getPDO()->prepare('SELECT * FROM ' . $table_resto. ' WHERE isPastilled = 1');
 
         $statement->execute();
 
@@ -1783,10 +1794,59 @@ class TributGService extends PDOConnexionService{
             $stmt = $this->getPDO()->prepare($sql);
             
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+            foreach ($results as &$result){
+                foreach ($result as $key => &$v){
+                    switch ($key) {
+                        case "All_com":{
+
+                            if(str_contains($v,",")){
+                               
+                                $strs=explode(",",$v);
+                                $newAllCom="";
+                                foreach( $strs as $str ){
+                                    $tmp=json_decode( $str,true);
+                                    $tmp=$this->convertUnicodeToUtf8($tmp);
+                                    $tmp = mb_convert_encoding($tmp, 'UTF-8', 'UTF-8');
+                                    $newAllCom.=$tmp.",";
+                                }
+                                $v=substr($newAllCom,0, -1);
+                            }else{
+                                $v=json_decode( $v,true);
+                                $v = $this->convertUnicodeToUtf8($v);
+                                $v = mb_convert_encoding($v, 'UTF-8', 'UTF-8');
+                            }
+                            
+                            break;
+                        } 
+                        case"avis":{
+
+                            $v=json_decode( $v,true);
+                            $v = $this->convertUnicodeToUtf8($v);
+                            $v = mb_convert_encoding($v, 'UTF-8', 'UTF-8');
+                            break;
+                        }
+
+                        default:{
+                            
+                            // $v = mb_convert_encoding($v, 'UTF-8', mb_detect_encoding($v));
+                            //use this utf8_encode instead of mb_convert_encoding
+                            $v=utf8_encode($v);
+                         
+                        }
+
+                    }
+                }
+            }
+          
+            return $results;
+
+        }else{
+            return [];
         }
 
-        $result=mb_convert_encoding($result, 'UTF-8', 'UTF-8');
+        // $result=mb_convert_encoding($result, 'UTF-8', 'UTF-8');
 
 		//$result=$serialize->serialize($result,'json');
 		
@@ -1815,26 +1875,74 @@ class TributGService extends PDOConnexionService{
     public function getGolfPastillesTribuGV2($table_name){
         $result= [];
 
-        $tableResto = $table_name."_golf";
+        $tableGolf= $table_name."_golf";
         
-        if( $this->isTableExist($tableResto)){
+        if( $this->isTableExist($tableGolf)){
             $tableComment = "avisgolf";
     
-            $sql="SELECT * FROM (SELECT t1.id , t2.id as id_golf_comment, t1.extensionId as id_golf_extension,t1.denomination_f, 
+            $sql="SELECT * FROM (SELECT t1.id as id_golf_pastilled, t2.id as id_golf_comment, t1.extensionId as id_golf_extension,t1.denomination_f, 
                               t1.isPastilled, t2.id_golf as id_golf, t2.id_user as id_user,t2.note,t2.avis,
                               GROUP_CONCAT(t2.id_user) as All_user ,GROUP_CONCAT(t2.avis) as All_com,FORMAT(AVG(t2.note),2) as globalNote, COUNT(t2.id_golf) as nbrAvis ,
                               GROUP_CONCAT(t2.id) as All_id_r_com
-                              FROM  $tableResto as t1 left join $tableComment  as t2 on t1.extensionId=t2.id_golf where  t1.isPastilled IS TRUE GROUP BY t1.id ) as tableRestCom  
+                              FROM  $tableGolf as t1 left join $tableComment  as t2 on t1.extensionId=t2.id_golf where  t1.isPastilled IS TRUE GROUP BY t1.id ) as tableRestCom  
               INNER JOIN golffrance ON tableRestCom.id_golf_extension=golffrance.id";
     
             // $sql2 = "SELECT * FROM $tableResto";
             $stmt = $this->getPDO()->prepare($sql);
             
             $stmt->execute();
-            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+            foreach ($results as &$result){
+                foreach ($result as $key => &$v){
+                    switch ($key) {
+                        case "All_com":{
+
+                            if(str_contains($v,",")){
+                               
+                                $strs=explode(",",$v);
+                                $newAllCom="";
+                                foreach( $strs as $str ){
+                                    $tmp=json_decode( $str,true);
+                                    $tmp=$this->convertUnicodeToUtf8($tmp);
+                                    $tmp = mb_convert_encoding($tmp, 'UTF-8', 'UTF-8');
+                                    $newAllCom.=$tmp.",";
+                                }
+                                $v=substr($newAllCom,0, -1);
+                            }else{
+                                $v=json_decode( $v,true);
+                                $v = $this->convertUnicodeToUtf8($v);
+                                $v = mb_convert_encoding($v, 'UTF-8', 'UTF-8');
+                            }
+                            
+                            break;
+                        } 
+                        case"avis":{
+
+                            $v=json_decode( $v,true);
+                            $v = $this->convertUnicodeToUtf8($v);
+                            $v = mb_convert_encoding($v, 'UTF-8', 'UTF-8');
+                            break;
+                        }
+
+                        default:{
+                            
+                            // $v = mb_convert_encoding($v, 'UTF-8', mb_detect_encoding($v));
+                            //use this utf8_encode instead of mb_convert_encoding
+                            $v=utf8_encode($v);
+                         
+                        }
+
+                    }
+                }
+            }
+            return $results;
+        }else{
+
+            return [];
         }
 
-        return $result;
+        
     }
 
 
@@ -2164,5 +2272,23 @@ class TributGService extends PDOConnexionService{
         $stmt->execute();
     }
 
-   
+   /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction pour créer une table invitation pour ma tribu G
+     * Localisation du fichier : TributGService.php
+     * Je veux : créer une table invitation pour ma tribu G
+     * @param int $userId : identifiant de l'utilisateur connecté
+    */
+    public function createInvitationTableG($userId){
+        $name_table_tribuG = $this->getTribuG($userId);
+        $query_table_invitation = "CREATE TABLE IF NOT EXISTS " . $name_table_tribuG . "_invitation(
+            id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+            user_id int(11) DEFAULT NULL,
+            sender_id int(11) DEFAULT NULL,
+            email varchar(255) NOT NULL,
+            is_valid tinyint(1) NOT NULL DEFAULT 0,
+            datetime DATETIME NOT NULL DEFAULT current_timestamp()
+          ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+        $this->getPDO()->exec($query_table_invitation);
+    }
 }

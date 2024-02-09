@@ -130,17 +130,42 @@ class AgendaController extends AbstractController
 
     #[Route('/agenda/make/confirmation/{fromId}/{toId}/{agendaId}/{isYes}', name: 'agenda_make_confirmation', methods: ["GET","POST"])]
     public function makeConfirmationAgenda($fromId,
-    $toId,
-    $agendaId,
-     $isYes,
-     UserRepository $userRepository){
+        $toId,
+        $agendaId,
+        $isYes,
+        UserRepository $userRepository,
+        MailService $mailService
+     ){
 
         // $confirm = $this->agendaService->setConfirmPartageAgenda( $fromId, $toId, $agendaId, $isYes);
        
         // return $this->json($confirm);
         $confirm = $this->agendaService->setConfirmPartageAgenda( $fromId, $toId, $agendaId, $isYes);
-       $userTo = $userRepository->findOneBy(["id" => $toId]);
+        $userTo = $userRepository->findOneBy(["id" => $toId]);
         $type = $userTo->getType();
+
+        
+        ////Send email remerciement: Jehovanie RAMANDIRJOEL ////
+        //// ajouter le 06-02-2024
+        if($confirm["response"] == "accepted"){
+            $user_sender = $userRepository->findOneBy(["id" => $fromId]);
+            
+            $mailService->sendEmailWithTemplatedEmail(
+                $userTo->getEmail(),
+                $userTo->getPseudo(),
+                [
+                    "object" => "Bienvenue dans notre communauté !",
+                    "template" => "emails/mail_remerciement_join_event.html.twig",
+                    'user_sender' => [
+                        'fullname' => $user_sender->getPseudo(),
+                        'email' => $user_sender->getEmail()
+                    ]
+                ]
+            );
+        }
+        //// email remerciement: Terminer ////
+
+
         return $this->json(["response"=>$confirm["response"], "type"=>$type]);
       
     }

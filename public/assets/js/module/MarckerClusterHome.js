@@ -56,7 +56,6 @@ class MarckerClusterHome extends MapModule {
 			this.data = this.default_data; /// { station, ferme, resto, golf, tabac, allIdRestoPasstille}
 
 			this.listRestoPastille = this.default_data.allIdRestoPastille; /// [  { id_resto : ..., tableName : ..., name_tribu_t_muable : ..., logo_path : ... } , ... ]
-
 			this.bindAction();
 		} catch (e) {
 			console.log(e);
@@ -1335,6 +1334,7 @@ class MarckerClusterHome extends MapModule {
 					dep: restoPastille.dep,
 					logo_path: item.logo_path,
 					name_tribu_t_muable: item.name_tribu_t_muable,
+					tableName: item.tableName,
 				});
 			}
 		});
@@ -1390,14 +1390,14 @@ class MarckerClusterHome extends MapModule {
 		});
 	}
 
-	updateListRestoPastille(idResto, tribuName) {
-		this.listRestoPastille.push({ id_resto: idResto, tableName: tribuName });
+	updateListRestoPastille(idResto, tribuName, logo=null) {
+		this.listRestoPastille.push({ id_resto: idResto.toString(), tableName: tribuName, logo_path:logo});
 		this.updateStateResto(idResto);
 	}
 
 	updateListRestoDepastille(idResto, tribuName) {
 		this.listRestoPastille = this.listRestoPastille.filter((item) => {
-			return parseInt(item.id_resto) != parseInt(idResto) || item.tableName != tribuName;
+			return parseInt(item.id_resto) != parseInt(idResto) || item.tableName.replaceAll('_restaurant','') != tribuName.replaceAll('_restaurant','');
 		});
 		this.updateStateResto(idResto);
 	}
@@ -1500,5 +1500,30 @@ class MarckerClusterHome extends MapModule {
 				console.log(marker);
 			}
 		});
+	}
+
+	async fetchOneData(id) {
+		try {
+			await this.fetchOneResto(id);
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	async fetchOneResto(id) {
+		try {
+			const api_data = `/api/restaurant/one_data/${id}`;
+			const response = await fetch(api_data);
+			let { details } = await response.json();
+
+			this.default_data.resto = [...this.default_data.resto, details];
+
+			this.settingSingleMarker(details, false);
+			this.clickOnMarker(id);
+
+			this.data = this.default_data;
+		} catch (e) {
+			console.log(e);
+		}
 	}
 }

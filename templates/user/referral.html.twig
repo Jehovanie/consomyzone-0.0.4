@@ -1,0 +1,119 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : Actualité
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/account/actualite.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/account/agenda/agenda.css')}}">
+{% endblock %}
+
+{% block javascripts %}
+    <script  src="{{ asset('assets/js/account/affiliate.js') }}"></script>.js
+    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>.js
+    <script  src="{{ asset('assets/js/account/actualiter_new_publication.js') }}" defer></script>
+{% endblock %}
+
+{% block body %}
+<div class="nh">
+    {% include 'shard/account_navleft_new.html.twig' %}
+    {% include 'shard/account_navbar_new.html.twig' %}
+
+    <!-- ===== Main Content Start ===== -->
+    <main class="gv hm hv content-actualite-connected">
+        <div class="sk bu 2xl:ud-p-11">
+            <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
+                <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr what-means-partenaire-Nantenaina_css" style="max-width: 54.75rem !important">
+                    <ul class="nav nav-tabs ml-3" id="smallNavAffiliate">
+                        <li class="nav-item">
+                            <a class="nav-link active text-secondary tab_parrain_nanta_js" href="#" onclick="setActiveTabAffiliate(this, 'parrain')">Parrains</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-secondary tab_filleul_nanta_js" href="#" onclick="setActiveTabAffiliate(this, 'filleul')">Filleuls</a>
+                        </li>
+                    </ul>
+                    <div id="blockListParrains" class="mt-2">
+                        <h5 class="modal-title text-primary mt-3 mb-3">Liste de vos parrains</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Fan</th>
+                                    <th>E-mail</th>
+                                    <th scope="col">Tribu</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if parrains | length > 0%}
+                                    {% for item in parrains %}  
+                                        <tr valign="middle">
+                                            <td class=""><a href="/user/profil/{{item.user_id}}" class="badge text-bg-primary">{{item.fullName}}</a></td>
+                                            <td>{{item.email}}</td>
+                                            <td><span class="badge text-bg-success"><a href="{% if item.isTribuG %}{{path('app_account')}}{% else %}{{path('app_my_tribu_t')}}{% endif %}">{% if item.isTribuG %}Tribu G {% else %}Tribu T {% endif %}{{item.tribuName}}</a></span></td>
+                                            <td class="" style="font-size:small;">{{item.dateSauvegarde}}</td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr class="text-center">
+                                        <td colspan="4">Vous n'avez aucun parrain</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="blockListFilleuls" class="mt-2" style="display:none;">
+                        <h5 class="modal-title text-primary mt-3 mb-3">Liste de vos filleuls</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Fan</th>
+                                    <th>E-mail</th>
+                                    <th scope="col">Tribu</th>
+                                    <th scope="col">Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                
+                            </tbody>
+                        </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ====== Chart Two Start -->
+            <div class="apropos-tribu-g yd vf 2xl:ud-max-w-180 rh ni bj wr nj xr al responsif-none" style="width: 350px !important;">
+                <div class="kb qg ss">
+                    <div class="kb qs">
+                        <h4 class="tn kn zn gs">C'est quoi un parrain dans CMZ?</h4>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="-ud-ml-5 -ud-mb-9 mb-3">
+                        <p style="text-align:justify">Un parrain est un partisan qui apporte un nouveau membre.</br>
+                        Pour devenir parrain, vous allez dans votre tribu G ou T puis inviter de nouveaux membres, par email, à s'inscrire dans CMZ.</p>
+                    </div>
+                </div>
+
+                <div class="kb qg ss">
+                    <div class="kb qs">
+                        <h4 class="tn kn zn gs">C'est quoi un filleul dans CMZ?</h4>
+                    </div>
+                </div>
+                <div>
+                    <div class="-ud-ml-5 -ud-mb-9 mb-3">
+                        <p style="text-align:justify">Un filleul est un partisan qui découvre CMZ grâce à la recommandation du parrain et qui décide de s'y inscrire.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- ====== Chart Two End -->
+        </div>
+    </main>
+    <!-- ===== Main Content End ===== -->
+
+</div>
+
+{% endblock %}

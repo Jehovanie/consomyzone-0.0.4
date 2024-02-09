@@ -3,39 +3,14 @@ if( document.querySelector("#fetch_photo_tribug_jheo_js")){
 
     btn_photos.addEventListener("click",(e) => {
         e.preventDefault();
-        if(!btn_photos.classList.contains("active")){
-            btn_photos.classList.add("active")
-            btn_photos.classList.add("text-white")
-            btn_photos.classList.remove("text-primary")
-        }
-
+        
         document.querySelector(".content_bloc_jheo_js").innerHTML = `<div class="mt-3 d-flex justify-content-center">
             <div class="spinner-border" role="status">
             <span class="sr-only">Loading...</span>
             </div>
         </div>`;
 
-        if(document.querySelector("#fetch_actialite_tribug_jheo_js").classList.contains("active")){
-            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_actialite_tribug_jheo_js").classList.add("text-primary")
-        }
-        if(document.querySelector("#fetch_member_tribug_jheo_js").classList.contains("active")){
-            document.querySelector("#fetch_member_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_member_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_member_tribug_jheo_js").classList.add("text-primary")
-        }
-        if(document.querySelector("#fetch_resto_tribug_jheo_js").classList.contains("active")){
-            document.querySelector("#fetch_resto_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_resto_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_resto_tribug_jheo_js").classList.add("text-primary")
-        }
-
-        if(document.querySelector("#fetch_golf_tribug_jheo_js").classList.contains("active")){
-            document.querySelector("#fetch_golf_tribug_jheo_js").classList.remove("active")
-            document.querySelector("#fetch_golf_tribug_jheo_js").classList.remove("text-white")
-            document.querySelector("#fetch_golf_tribug_jheo_js").classList.add("text-primary")
-        }
+        removeActiveLinkOnG(document.querySelectorAll(".listNavBarTribu > a"), btn_photos)
 
         document.querySelector(".content_bloc_jheo_js").innerHTML = `
             <div class="spinner-grow text-info d-block mx-auto" role="status">

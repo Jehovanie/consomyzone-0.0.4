@@ -48,7 +48,7 @@ function bindActionNewsLetterTribuT(tribuTName) {
 					logo_tribu = IS_DEV_MODE ? logo_tribu : "/public" + logo_tribu;
 
 					let text = `
-			            <div class="bg-white rounded-3 px-3 2xl:ud-max-w-230 uf content_news_letter">
+			            <div class="bg-white rounded-3 px-3 2xl:ud-max-w-230 uf content_news_letter content_news_letter_partisans_tomm_js" data-new-letter="lettre-partisans">
 			                <div id="blockSendEmailInvitation" class="mt-4 px-3">
 			                    <form class="content_form_send_invitation_email_js_jheo">
 			                        <div class="form-group content_cc_css_jheo mt-3">
@@ -58,6 +58,21 @@ function bindActionNewsLetterTribuT(tribuTName) {
 			                                </div>
 			                                <h5 class="card-title">${apropos_tribuT.name}</h5>
 			                                <p class="card-text">${apropos_tribuT.description ? apropos_tribuT.description :""}</p>
+			                            </div>
+			                        </div>
+
+<div class="form-group content_cc_css_jheo mt-3">
+										<label for="exampleFormControlInput1">Destinataires<span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs destinataires.)</span><i class="fa-solid fa-plus ms-5 new-letter-select new-letter-select-tomm-js"  data-bs-toggle="modal" data-bs-target="#listUserModalLetter"><span class="tooltip-new-letter">Selectionner l'email dans un autre tribu</span></i></label>
+										<input type="text" class="form-control single_destination_js_jheo single-destination-tomm-js" id="exampleFormControlInput1" placeholder="Saisir les ou l'adresse(s) e-mail du destinataire">
+									</div>
+
+									<div class="form-group content_cc_css_jheo mt-3 content-csv-letter">
+										<label class="label-csv-letter" for="exampleFormControlInput1">Destinataires<span class="info_multiple_mail">(*Par une fichier CSV.)</span> <i class="fa-regular fa-circle-question qestion-csv-letter" data-bs-toggle="modal" data-bs-target="#infoCsvModalLetter"></i></label>
+										<div class="drop_zone drop-zone-tomm-js">
+											<span class="drop-zone-prompt-tomm-js">Cliquez sur la bannière 
+														ou glissez le fichier ici directement.<br>
+														Le fichier doit avoir les colonnes Email - Nom - Prenom</span>
+											<input type="file" name="fileNewLetterShare" id="fileNewLetterShare" class="drop-zone-input drop-zone-input-tomm-js" accept='text/csv'>
 			                            </div>
 			                        </div>
 
@@ -83,13 +98,13 @@ function bindActionNewsLetterTribuT(tribuTName) {
 			                            </div>
 			                            <div class="p-2 bd-highlight content_input_piece_joint content_input_piece_joint_jheo_js">
 			                                <div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajout des pièce jointe.</div>
-			                                <label class="label_piece_joint_jheo_js" for="piece_joint"><i class="label_piece_joint_jheo_js fa-solid fa-paperclip"></i></label>
-			                                <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint" name="piece_joint" onchange="addPieceJoint(this)" />
+			                                <label class="label_piece_joint_jheo_js" for="piece_joint_new_letter"><i class="label_piece_joint_jheo_js fa-solid fa-paperclip"></i></label>
+			                                <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_new_letter" name="piece_joint_new_letter" onchange="addPieceJointNewsLetter(this)" />
 			                            </div>
 			                            <div class="p-2 bd-highlight content_input_piece_joint content_add_image_js">
 			                                <div class="pointer_cursor message_tooltip_piece_joint d-none add_image_jheo_js">Ajout des images.</div>
-			                                <label class="pointer_cursor label_add_image_jheo_js" for="piece_joint_image"><i class="fa-solid fa-image"></i></label>
-			                                <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_image" name="piece_joint_image" accept="image/png, image/jpeg, image/jpg" onchange="addPieceJointImage(this)"/>
+			                                <label class="pointer_cursor label_add_image_jheo_js" for="piece_joint_image_new_letter"><i class="fa-solid fa-image"></i></label>
+			                                <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_image_new_letter" name="piece_joint_image_new_letter" accept="image/png, image/jpeg, image/jpg" onchange="addPieceJointImageNewsLetter(this)"/>
 			                            </div>
 			                        </div>
 			                    </form>
@@ -107,9 +122,93 @@ function bindActionNewsLetterTribuT(tribuTName) {
 
 					///send action
 					handleSubmitSendNewsLetter(tribuTName);
+selectDestinationLetter()
+					const form_parent = document.querySelector(".content_form_send_invitation_email_js_jheo");
+					const input_principal = form_parent.querySelector(".single_destination_js_jheo");
+					controlInputEmailToMultiple([input_principal]);
+					clickInputCsvLetter()
+					
 				});
 		});
 	}
+}
+
+
+
+function selectDestinationLetter() {
+	document.querySelector(".btn-close-letter-tomm-js").addEventListener("click", () => {
+		if (document.querySelector(".list-user-letter-tomm-js > label")) {
+			document.querySelectorAll(".list-user-letter-tomm-js > label").forEach((child) => {
+				document.querySelector(".list-user-letter-tomm-js").removeChild(child)
+			})
+		}
+	})
+	document.querySelector(".new-letter-select-tomm-js").addEventListener("click", () => {
+		let inputDestination = document.querySelector(".single-destination-tomm-js")
+		if (inputDestination.value) {
+			inputDestination.removeAttribute("value")
+		}
+		const requete = new Request("/tributT/get/list/user/for_all",{
+				method: "GET",
+				headers: { 
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+			}
+  		);
+		fetch(requete)
+			.then((request) => request.json())
+			.then((response) => { 
+				response.forEach((items) => { 
+					items.forEach((item) => { 
+					let listEmail = ""
+						if (item.email) {
+							listEmail = JSON.parse(item.email).email
+}
+					let role = item.roles
+						let tribu = item.tribu_name
+						let elementHeadTribuName = document.querySelector("#tribu_t_name_main_head").getAttribute("data-tribu")
+						if (elementHeadTribuName) {
+							if (elementHeadTribuName !== tribu && role !== "Fondateur") {
+								let checkboxEmail = `<label><input type="checkbox" class="check-email-tomm-js" name="mail" value="${listEmail}" /> ${listEmail} <span class="text-warning"> ${tribu.replace(/[0-9]/g, "").replaceAll("_", " ")}</span></label>`
+					if (document.querySelector(".list-user-letter-tomm-js")) {
+						if (listEmail !== "") {
+							document.querySelector(".list-user-letter-tomm-js").innerHTML += checkboxEmail
+						}
+									
+					}
+
+					if (document.querySelector(".check-email-tomm-js")) {
+						let checkbox = document.querySelectorAll(".check-email-tomm-js")
+						checkbox.forEach((event) => {
+							event.addEventListener("click", () => {
+								if (event.checked == true) {
+									event.parentElement.classList.add("multiselect-on")
+									let emailValue = event.value
+									let inputDestination = document.querySelector(".single-destination-tomm-js")
+
+									document.querySelector(".selection-email-tomm-js").addEventListener("click", () => {
+										document.querySelector(".btn-close-letter-tomm-js").click()
+										let valueInputDestination = inputDestination.getAttribute("value")? inputDestination.getAttribute("value") + ", ": ""
+										inputDestination.setAttribute("value", `${valueInputDestination}${emailValue}`)
+										event.removeAttribute("checked")
+									})
+								} else { 
+
+									event.parentElement.classList.remove("multiselect-on")
+								}
+							})
+						 })
+						
+					}
+}
+						}
+							
+					})
+				})
+				
+			})
+	})
 }
 
 function showTextInformationFans(showTextOption) {
@@ -131,7 +230,9 @@ function showTextInformationFans(showTextOption) {
                 <figure class="figure">
                     <figcaption class="figure-caption">À très bientôt,</figcaption>
                     <figcaption class="figure-caption">Fondateur tribu ${apropos_tribuT.name}</figcaption>
-                    <figcaption class="figure-caption">${apropos_tribuT.description ? apropos_tribuT.description :""}</figcaption>
+                    <figcaption class="figure-caption">${
+						apropos_tribuT.description ? apropos_tribuT.description : ""
+					}</figcaption>
                     <figcaption class="figure-caption">${user_profil.lastname} ${user_profil.firstname} </figcaption>
                     <figcaption class="figure-caption">${user_profil.email}</figcaption>
                 </figure>
@@ -146,7 +247,7 @@ function showTextInformationFans(showTextOption) {
  * All add input image
  * Object element
  */
-function addPieceJoint(input) {
+function addPieceJointNewsLetter(input) {
 	if (input.files && input.files[0]) {
 		/// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants :
 		/// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
@@ -265,7 +366,7 @@ function addPieceJoint(input) {
  * All add input image
  * Object element
  */
-function addPieceJointImage(input) {
+function addPieceJointImageNewsLetter(input) {
 	if (input.files && input.files[0]) {
 		/// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants :
 		/// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
@@ -391,7 +492,7 @@ function addPieceJointImage(input) {
  *
  * @return void
  */
-function removeListeItem(e, id) {
+function removeListeItemNewsLetter(e, id) {
 	///remove html element
 	e.parentElement.remove();
 	///remove one element in the piece global
@@ -402,6 +503,7 @@ function handleSubmitSendNewsLetter(tribuTName) {
 	if (document.querySelector(".btn_submit_sendNewsLetter_jheo_js")) {
 		const btn_submit = document.querySelector(".btn_submit_sendNewsLetter_jheo_js");
 		btn_submit.addEventListener("click", () => {
+const destinationValue = document.querySelector(".single-destination-tomm-js").value
 			const objectNewsLetter = document.querySelector(".newLetter_object_jheo_js").value;
 			const description = editor.getData();
 
@@ -419,12 +521,49 @@ function handleSubmitSendNewsLetter(tribuTName) {
 
 				return 0;
 			}
-
+let dataInfos = []
+			let contenu = sessionStorage.getItem("csvContent")
+			let headerIndex = JSON.parse(sessionStorage.getItem("headerIndex"))
+			if (contenu) {
+				for (let i = 0; i < contenu.trim().split('\r\n').length; i++) {
+					if(i>0){
+						let email = contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexMail]
+						if(validateEmail(email)){
+							dataInfos.push({
+								lastname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexName],
+								firstname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexFirstName],
+								email : email
+							})
+						}else{
+							swal("Erreur !","Vérifier l'adresse email dans votre fichier !", "error")
+								.then((value) => {
+							});
+							resetFilePartage()
+							isValidateEmail = false
+							break;
+						}
+					}
+					
+				}
+			}
+        	
+			let destination = destinationValue.split(", ")
+			let emailCsv = []
+			dataInfos.forEach((value) => {
+				emailCsv.push(value.email)
+			})
+			let destinations = ""
+			if (destination == "") {
+				destinations = emailCsv
+			} else {
+				destinations = destination.concat(emailCsv)
+			}
 			let data = {
 				object: objectNewsLetter === "" ? "Lettre d'information" : objectNewsLetter,
 				description: editor.getData(),
 				piece_joint: new_letter_piece_joint_list,
 				table_name: tribuTName,
+destinations: destinations
 			};
 
 			if (status) {
@@ -448,11 +587,28 @@ function handleSubmitSendNewsLetter(tribuTName) {
 						btn_item.setAttribute("onclick", "");
 					});
 				}
-
+					// if (destinations == "") {
+					// 	swal("Attention !", "Veuillez ajouter une adresse email ou choisir un fichier CSV", "error")
+					// 	btn_submit.removeAttribute("disabled");
+					// 	btn_submit.textContent = "Envoyer";
+				// } else {
 				sendNewLetter(data);
+				resetFileLetter()
+				// }
+				
 			}
 		});
 	}
+}
+
+function resetFileLetter(){
+	document.querySelector(".drop-zone-tomm-js").innerHTML =
+						`<span class="drop-zone-prompt-tomm-js">Cliquez sur la bannière
+						ou glissez le fichier ici directement.<br/>Le fichier doit avoir les colonnes Email</span>
+                        <input type="file" name="fileNewLetterShare" id="fileNewLetterShare" class="drop-zone-input drop-zone-input-tomm-js" accept='text/csv'>`
+
+    sessionStorage.removeItem("csvContent");   
+    sessionStorage.removeItem("headerIndex");
 }
 
 function sendNewLetter(data) {
@@ -486,7 +642,7 @@ function sendNewLetter(data) {
 						}
 
 						btn_item.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
-						btn_item.setAttribute("onclick", `removeListeItem(this, '${id}')`);
+						btn_item.setAttribute("onclick", `removeListeItemNewsLetter(this, '${id}')`);
 					});
 				}
 			});
@@ -495,3 +651,229 @@ function sendNewLetter(data) {
 			console.log(e);
 		});
 }
+
+  /**
+ * @author Tomm
+ * @click clique l'input pour charge le csv sur le communique tribu t
+ */
+function clickInputCsvLetter() {
+	if (document.querySelector(".drop-zone-tomm-js")) {
+		let dropZoneNewLetter = document.querySelector(".drop-zone-tomm-js")
+		let inputZoneNewLetter = document.querySelectorAll(".drop-zone-input-tomm-js")
+		inputZoneNewLetter.forEach((inputElement) => {
+			const dropZoneElement = inputElement.closest(".drop-zone-tomm-js");
+
+			dropZoneElement.addEventListener("click", (e) => {
+				inputElement.click();
+			});
+
+			dropZoneElement.addEventListener("dragover", (e) => {
+				e.preventDefault();
+				dropZoneElement.classList.add("drop-zone--over");
+			});
+
+			["dragleave", "dragend"].forEach((type) => {
+				dropZoneElement.addEventListener(type, (e) => {
+					dropZoneElement.classList.remove("drop-zone--over");
+				});
+			});
+			changeElementCsvLetter(inputElement, dropZoneElement)
+		})
+		
+	}
+}
+
+/**
+ * @author Tomm
+ * @click clique ou draguer le csv pour le mise a jour de fichier sur l'imput sur communique tribu t
+ */
+function updateThumbnailNewLetter(dropZoneElement, file) {
+	let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb_letter");
+
+	// First time - remove the prompt
+	if (dropZoneElement.querySelector(".drop-zone-prompt-tomm-js")) {
+		dropZoneElement.querySelector(".drop-zone-prompt-tomm-js").remove();
+	}
+
+	// First time - there is no thumbnail element, so lets create it
+	if (!thumbnailElement) {
+		thumbnailElement = document.createElement("div");
+		thumbnailElement.classList.add("drop-zone__thumb_letter");
+		dropZoneElement.appendChild(thumbnailElement);
+	}
+
+	thumbnailElement.dataset.label = file.name;
+
+	// Show thumbnail for image files
+	if (file.type.startsWith("image/")) {
+		const reader = new FileReader();
+
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
+		};
+	} else {
+		thumbnailElement.style.backgroundImage = "url('/public/assets/image/doc.jfif')";
+	}
+}
+
+/**
+ * @author Tomm
+ * @click clique ou draguer le csv pour le changement de fichier sur l'imput sur communique tribu t
+ */
+function changeElementCsvLetter(inputElement, dropZoneElement) {
+	inputElement.addEventListener("change", (e) => {
+		if (e.target.files.length) {
+if (e.target.files[0]) {
+				if (document.querySelector(".drop-zone__thumb_letter")) {
+					document.querySelector(".drop-zone__thumb_letter").remove()
+				}
+				
+				checkFileExtensionLetter(dropZoneElement,e.target.files[0])
+			} else {
+			checkFileExtensionLetter(dropZoneElement,e.target.files[0])
+}
+		}
+	});
+	dropZoneElement.addEventListener("drop", (e) => {
+		e.preventDefault();
+	
+		if (e.dataTransfer.files.length) {
+if (e.dataTransfer.files[0]) {
+				if (document.querySelector(".drop-zone__thumb_letter")) {
+					document.querySelector(".drop-zone__thumb_letter").remove()
+				}
+				checkFileExtensionLetter(dropZoneElement,e.dataTransfer.files[0])
+			} else { 
+			checkFileExtensionLetter(dropZoneElement,e.dataTransfer.files[0])
+}
+		}
+		dropZoneElement.classList.remove("drop-zone--over");
+	});
+}
+
+/**
+ * @author Tomm
+ * @verifi verifier si le fichier est une csv
+ */
+function checkFileExtensionLetter(dropZoneElement,file){
+   
+    if(file.type ==="text/csv"){
+        findDefColumnLetter(dropZoneElement, file);
+    }else
+        swal("Attention !", "Veuillez choisir un fichier CSV", "error")
+        .then((value) => {
+            // location.reload();
+    });
+}
+
+
+/**
+ * @author Tomm
+ * @verif verifier si le ficher contient le nom prenom et mail
+ */
+function findDefColumnLetter(dropZoneElement, file){
+    let reader=new FileReader
+    reader.onload=()=>{
+        let csvContent
+        try{
+            csvContent= b64DecodeUnicodeLetter(reader.result.split(",")[1])
+
+            let header = csvContent.trim().split('\r\n')[0]
+            
+            header = header.normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/[^a-zA-Z;]/g, "").toLowerCase()
+header = header.replace(" ", "")
+            let param={}
+            let hasName=false, hasFirstName=false,hasMail=false
+            for (const [index, value] of header.split(";").entries()) {
+
+                    switch(value){
+                        case "nom":{
+                            param.indexName=index
+                            hasName=true
+                            break;
+                        }
+                        case "noms":{
+                            param.indexName=index
+                            hasName=true
+                            break;
+                        }
+                        case "prenom":{
+                            param.indexFirstName=index
+                            hasFirstName=true
+                            break;
+                        }
+                        case "prenoms":{
+                            param.indexFirstName=index
+                            hasFirstName=true
+                            break;
+                        }
+                        case "email":{
+                            param.indexMail=index
+                            hasMail=true
+                            break;
+                        }
+                        case "emails":{
+                            param.indexMail=index
+                            hasMail=true
+                            break;
+                        }
+                        case "mail":{
+                            param.indexMail=index
+                            hasMail=true
+                            break;
+                        }
+                        case "mails":{
+                            param.indexMail=index
+                            hasMail=true
+                            break;
+                        }
+                    }
+            }
+
+            if(hasMail && hasFirstName && hasName){
+                sessionStorage.setItem("csvContent", csvContent)
+                sessionStorage.setItem("headerIndex", JSON.stringify(param))
+				updateThumbnailNewLetter(dropZoneElement, file);
+            }else{
+                let errorFisrtName="", errorName="", errorMail=""
+                if(!hasFirstName)
+                    errorFisrtName="il manque la colonne prénom"
+                if(!hasName)
+                    errorName="il manque la colonne nom "
+
+                if(!hasMail)
+                    errorMail="il manque la colonne email"
+
+                
+                let error = errorFisrtName + " " + errorName + " " + errorMail 
+                swal("Attention !", error.trim(), "error")
+                .then((value) => {
+                    // location.reload();
+                });
+            }
+        }catch(exception){
+            if(exception instanceof URIError){
+                swal("Attention !","Votre fichier n'est pas encodé en UTF-8", "error")
+                .then((value) => {
+                    // location.reload();
+                });
+            }else{
+                console.log(exception)
+            }
+        }  
+    }
+    reader.readAsDataURL(file)
+}
+
+/**
+ * @author Tomm
+ * @change change le fichier en base64
+ */
+function b64DecodeUnicodeLetter(str) {
+    // Going backwards: from bytestream, to percent-encoding, to original string.
+    return decodeURIComponent(atob(str).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+}
+

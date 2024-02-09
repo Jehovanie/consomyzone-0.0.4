@@ -2283,12 +2283,14 @@ function showPastillTable(e, id) {
 	 */
 	const tribu_g_r = document.querySelector("#my_tribu_g").textContent.trim() + "_restaurant";
 	document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-id", id);
+	document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-tbname", tribu_g_r);
 	document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-name", e.target.dataset.name);
 
 	fetch("/user/tribu_g/isPastilled/" + tribu_g_r + "/" + id)
 		.then((res) => res.json())
 		.then((response) => {
 			const isOk = response.isPastilled;
+			document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-velona", response.profil_tribuG.logo_path);
 			if (isOk) {
 				document
 					.querySelector("#btn-pastille-elie-tbg")
@@ -4982,7 +4984,7 @@ function msgFlash(msg, target) {
 }
 
 /**
- * @author tomm
+ * @author tommy
  * @action get list golf pastile
  * @ou dans mytribuT.js
  */
@@ -5027,7 +5029,7 @@ function showGolf(tableGolfPastilled) {
 					let i = 0;
 					const action = "create";
 					const text1 = "Notez";
-
+//onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})"
 					for (const item of data) {
 						console.log(item);
 						if (item.isPastilled) {
@@ -5035,22 +5037,41 @@ function showGolf(tableGolfPastilled) {
 							let nbrAvis = item.nbrAvis;
 							let note = item.globalNote ? item.globalNote : 0;
 							let adresse = item.adr1 + " " + item.cp + " " + item.nom_commune;
-							let denomination = item.denomination_f.replaceAll("'", "\\'");
+							let denomination = item.nom_golf.replaceAll("'", "\\'");
 							tr += `<tr id="golf_${item.id_golf}">
                         <td class="d-flex bd-highlight align-items-center" >
-                            <div class="elie-img-pastilled"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">
+                            <div class="elie-img-pastilled" 
+								data-tbname=${tableGolfPastilled} 
+								data-id="${item.id}" data-name="${item.nom_golf}" 
+								ata-adresse="${item.adr1}" 
+								>
                             ${imgTbt}
                             </div>
-                            <span class="ms-3" style="font-size:12pt;"  data-tbname=${tableGolfPastilled} data-id="${item.id}" data-name="${item.nom_golf}" data-adresse="${item.adr1}" onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">${item.nom_golf}</span>
+                            <span class="ms-3" style="font-size:12pt; cursor:pointer"  
+								data-tbname=${tableGolfPastilled} data-id="${item.id}" 
+								data-name="${item.nom_golf}" data-adresse="${item.adr1}" 
+								data-toggle="tooltip" data-placement="top" title="Cliquez pour voir les détails."
+								onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})">${item.nom_golf}</span>
                         </td>
-                        <td class="data-note-${item.id}">${note}/4</td>
-                        <td>
+                        <td class="data-note-${item.id}" style="cursor:not-allowed">${note}/4</td>
+                        <td >
                         <span>
-                            <a  style="font-size:smaller cursor: pointer;text-decoration:none;" class="btn btn-sm bg_orange data-avis-${item.id}" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListInTribuT('${item.id}', 'golf')"> ${nbrAvis} Avis</a>
+                            <a  style="font-size:smaller cursor: pointer;text-decoration:none;" 
+									class="btn btn-sm bg_orange data-avis-${item.id}" 
+									data-toggle="tooltip" data-placement="top" 
+									title="Découvrir les avis des partisans de ce golf."
+									data-bs-toggle="modal" data-bs-target="#staticBackdrop" 
+									onclick="showListInTribuT('${item.id}', 'golf')"> ${nbrAvis} Avis
+								</a>
                             </span>
                             </td>
                             <td>
-                            <button class="btn btn-primary"  onclick="openPopupAction('${item.id}','${denomination}', '${adresse}','${text1}', '${action}', 'golf')"><i class="fas fa-plus"></i> Plus</button>
+                            <button class="btn btn-primary"  
+									data-toggle="tooltip" data-placement="top" 
+									title="Choisissez une action  à entreprendre pour ce golf."
+									onclick="openPopupAction('${item.id}','${denomination}', '${adresse}','${text1}', '${action}', 'golf')">
+									<i class="fas fa-plus"></i> Action pour ce golf
+								</button>
                             </td>
                     </tr>`;
 							// <a  style="font-size:smaller" class="btn btn-sm bg_orange data-avis-${item.id}" onclick="openAvis(${nbrAvis}, ${item.id})">${nbrAvis} avis</a>
@@ -5063,10 +5084,10 @@ function showGolf(tableGolfPastilled) {
                                       <table id="table_golf_pastilled" class="ta" style="width:100%">
                                           <thead>
                                               <tr>
-                                                  <th>Nom de golf</th>
+                                                  <th>Nom du golf</th>
                                                   <th>Note</th>
-                                                  <th>Avis</th>
-                                                  <th>Action</th>
+                                                  <th>Liste des avis</th>
+                                                  <th>Actions</th>
                                               </tr>
                                           </thead>
                                           <tbody>
@@ -5287,8 +5308,8 @@ function depastilleGolf(selector) {
 				if (document.querySelector(`#${tbl}`)) {
 					document.querySelector(`#${tbl}`).remove();
 				}
-				selector.className = "btn btn-success";
-				selector.innerText = "Pastillez";
+				selector.className = "btn btn-warning";
+				selector.innerText = "Dépastiller";
 				selector.setAttribute("onclick", `pastilleGolf(this, "${selector.dataset.tbname}")`);
 
 				if (document.querySelector(".content_tribuT_pastille_jheo_js")) {
@@ -5836,7 +5857,7 @@ function pastilleForTribuG(e, type, id, name) {
 						);
 
 						if (document.querySelector(".mainContainerLogoTribu")) {
-							updateListRestoPastille(e.dataset.id, e.dataset.tbname + "_restaurant", true);
+							// updateListRestoPastille(e.dataset.id, e.dataset.tbname + "_restaurant", true);
 
 							let img = document.createElement("img");
 							img.setAttribute("class", "logo_tribu_pastille");
@@ -5864,6 +5885,7 @@ function pastilleForTribuG(e, type, id, name) {
 								content_tribuG_pastille.querySelector(".mainContainerLogoTribu").appendChild(div);
 							}
 						}
+						CURRENT_MAP_INSTANCE.updateListRestoPastille(id, e.dataset.tbname + "_restaurant", "/uploads/tribus/photos/"+e.getAttribute("data-velona"));
 
 						if (document.querySelector("#fetch_resto_tribug_jheo_js")) {
 							document.querySelector("#fetch_resto_tribug_jheo_js").click();
@@ -5905,6 +5927,7 @@ function pastilleForTribuG(e, type, id, name) {
 						}
 					});
 				}
+				CURRENT_MAP_INSTANCE.updateListRestoDepastille(id, e.dataset.tbname + "_restaurant");
 			});
 	}
 }
@@ -6302,7 +6325,9 @@ function openOnNote(id_pastille, action) {
 
 	$("#modalAvis").modal("show");
   	document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action);
-    document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "addAvisInTribuG(" + id_pastille + ",'resto')");
+    document
+		.querySelector(".send_avis_jheo_js")
+		.setAttribute("onclick", "addAvisInTribuG(" + id_pastille + ",'resto')");
 }
 
 /**
@@ -6513,7 +6538,7 @@ function shuffle(array) {
 function controlInputEmailToMultiple(allInputHtml) {
 	allInputHtml.forEach((input) => {
 		input.addEventListener("keyup", (e) => {
-			console.log(e.target.value);
+			
 			if (e.code === "KeyM" || e.code === "Space") {
 				if (input.value.trim().endsWith(",")) {
 					const email = formatListInputEmail(input.value);
@@ -7765,7 +7790,7 @@ function fanIframeOld() {
 									: "/public/uploads/users/photos/default_pdp.png";
 							const link = "/api/message/perso_iframe?user_id=" + value.id;
 							const fullName = value.firstname + " " + value.lastname;
-							const is_online = value.is_online == 0 ? "background-color:gray":""
+							const is_online = value.is_online == 0 ? "background-color:gray" : "";
 							li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
@@ -7807,7 +7832,7 @@ function fanIframeOld() {
 									: "/public/uploads/users/photos/default_pdp.png";
 							const link = "/api/message/perso_iframe?user_id=" + value.id;
 							const fullName = value.firstname + " " + value.lastname;
-							const is_online = value.is_online == 0 ? "background-color:gray":""
+							const is_online = value.is_online == 0 ? "background-color:gray" : "";
 							li.innerHTML = `
                                 <div class="cg lc mg sh ol rl tq is content-message-nanta-css last_msg_user_${value.id}_jheo_js" data-toggle-user-id="${value.id}" data-message-id={{last_message.id is defined ? last_message.id : '0' }}>
                                     <div class="h mb sc yd of th">
@@ -7972,7 +7997,7 @@ function createCardPartisan(json, isIframe = false) {
   //content-message-nanta-css
   const divContainer = document.createElement("div");
   divContainer.setAttribute("class", `cg lc mg sh ol rl tq is  mss_fan_js`);
-  divContainer.dataset.rank = cryptageJs(json.id);
+  divContainer.dataset.rank = cryptageJs((''+json.id));
 
   const divHeader = document.createElement("div");
   divHeader.setAttribute("class", `h mb sc yd of th`);
@@ -8205,3 +8230,33 @@ function fanIframe() {
   });
 }
 //endblock
+function verifieEmailValid(email) {
+	if (
+	  email.match(
+		/(?:[a-z0-9+!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi
+	  )
+	) {
+	  return true;
+	}
+	return false;
+}
+
+function addLinkOnMailBody() {
+	const link_name = document.querySelector(".link_name_jheo_js").value.trim();
+	const link_value = encodeURI(
+	  document.querySelector(".link_value_jheo_js").value
+	);
+  
+	if (editor) {
+	  editor.setData(
+		editor.getData() +
+		  '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' +
+		  link_value +
+		  '" >' +
+		  link_name +
+		  " </a>"
+	  );
+	}
+  
+	cancelAddLink();
+}

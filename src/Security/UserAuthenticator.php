@@ -11,7 +11,7 @@ use App\Entity\Consumer;
 use App\Entity\Supplier;
 
 use App\Entity\User;
-
+use App\Repository\UserRepository;
 use App\Service\TributGService;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -50,6 +50,7 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordC
 
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
 use App\Service\Tribu_T_Service;
+use App\Service\UserService;
 
 class UserAuthenticator extends AbstractLoginFormAuthenticator
 
@@ -64,8 +65,11 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
 
     private UrlGeneratorInterface $urlGenerator;
-
-
+private $entityManager;
+    private $trib;
+    private $passwordHasher;
+    private $userRepository;
+    private $userService;
 
     public function __construct(UrlGeneratorInterface $urlGenerator, 
 
@@ -73,9 +77,11 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
     TributGService $trib,
 
-    UserPasswordHasherInterface $passwordHasher)
+    UserPasswordHasherInterface $passwordHasher,
+        UserRepository $userRepository,
 
-    {
+    UserService $userService
+    ) {
 
         $this->urlGenerator = $urlGenerator;
 
@@ -85,6 +91,9 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
         $this->passwordHasher = $passwordHasher;
 
+$this->userRepository = $userRepository;
+
+        $this->userService = $userService;
     }
 
 
@@ -189,7 +198,7 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
     {
 
         $tribu_T_Service = new Tribu_T_Service();
-
+        $tribu_G_Service = new TributGService();
         $user = $token->getUser();
 
         $user->setIsConnected(1);
@@ -249,6 +258,22 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
             $tribu_T_Service->creaTableTeamMessage($tableTribuTAmie);
     
             $tribu_T_Service->creaTableTeamMessage($tableTribuTFamille);
+        }
+
+        $tribu_T_Service->createParrainageTable($userId);
+
+        if ($user->getType() != "Type") {
+            $tribu_G_Service->createInvitationTableG($userId);
+
+$user = $this->userRepository->findOneById($userId);
+            $tibutTOwneds = json_decode($user->getTribuT($userId), true);
+            $tibutTJoineds = json_decode($user->getTribuTJoined($userId), true);
+        
+            // dump( $tibutTOwneds);
+            // dd($tibutTJoineds);
+            $tribu_T_Service->createTableAlbumNotExists($tibutTOwneds);
+            $tribu_T_Service->createTableAlbumNotExists($tibutTJoineds);
+            // $tibutTJoined
         }
 
         // return new RedirectResponse($this->urlGenerator->generate('app_account'));

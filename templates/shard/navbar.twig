@@ -184,7 +184,7 @@
 				<div class="d-flex justify-content-center align-items-center icon-connexion">
                     {% if app.user and app.user.type != "Type" and userConnected is defined %}
 
-                        <a class="cta_connexion_navbar cta_to_actualite_jheo_js" href="{{path('app_actualite')}}">
+                        <a class="cta_connexion_navbar cta_to_actualite_jheo_js" href="{{path('app_account')}}">
                             <img src="{{(userConnected.photo_profil) ? "/public" ~ userConnected.photo_profil : asset('/public/uploads/users/photos/default_pdp.png') }}" alt="pdp">
                         </a>
                         <div class="">

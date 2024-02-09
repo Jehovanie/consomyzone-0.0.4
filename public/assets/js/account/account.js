@@ -1,3 +1,4 @@
+let email_piece_joint_list_g = [];
 if (document.querySelector(".information_user_conected_jheo_js")) {
   const contentInfoUser = document.querySelector(
     ".information_user_conected_jheo_js"
@@ -1489,8 +1490,8 @@ fileInputProfils.forEach((fileInputProfil) => {
           let data = {
             image: avatarPartisant,
           };
-
-          setPhotoAfterUpload(data);
+          if(document.querySelector(".btn_submit_inscription_js") == null)
+              setPhotoAfterUpload(data);
         }
       }
     });
@@ -2093,6 +2094,7 @@ function getHistoInvitation(e) {
             language: {
               url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
             },
+            ordering: false,
           });
         }
   
@@ -2236,6 +2238,7 @@ function fetchInvitationExterne() {
           language: {
             url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
           },
+          ordering: false,
         });
       }
       
@@ -2755,4 +2758,688 @@ function getListeAbonnementSuperAdmin(e){
         });
       }
     })
+}
+
+function copyAffiliateLink(e) {
+  let reflink = document.getElementById("reflink");
+  reflink.select();
+  reflink.setSelectionRange(0, 99999);
+  navigator.clipboard.writeText(reflink.value);
+  e.target.textContent = "Copié"
+  e.target.setAttribute("style","color:green;background-color:white")
+  setTimeout(()=>{
+    e.target.textContent = "Copier"
+    e.target.removeAttribute("style")
+  },5000)
+}
+
+function showInvitationsG() {
+    removeActiveLinkOnG(document.querySelectorAll(".listNavBarTribu > a"), document.querySelector("#fetch_invitation_tribug_nanta_js"))
+    document.querySelector(".textIndicationNantaJs").textContent = "Invitations"
+    if (document.querySelector(".content_bloc_jheo_js"))
+      document.querySelector(".content_bloc_jheo_js").innerHTML = `
+                <div class="bg-white rounded-3 px-3" style="width:74%;">
+                    <ul class="nav nav-tabs ml-3" id="smallNavInvitation">
+                        <li class="nav-item">
+                            <a data-element="blockSendEmailInvitation" class="nav-link active text-secondary tab_invite_elie" href="#" onclick="setActiveTabG(this, 'email')">Par e-mail</a>
+                        </li>
+                        <li class="nav-item">
+                            <a data-element="blockHistInvitation" class="nav-link text-secondary tab_invite_elie" href="#" onclick="setActiveTabG(this, 'historique')">Historiques</a>
+                        </li>
+                    </ul>
+                    <div id="blockSendEmailInvitation" class="mt-4 px-3">
+                        <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre fan par e-mail</h5>
+                        <h6 class="modal-title text-primary" >Vous pouvez modifier le corps de l'e-mail comme vous le voulez.</h6>
+                        <h6 class="modal-title text-primary" >Le lien d'invitation sera généré automatiquement par CMZ.</h6>
+                        <h6 class="modal-title text-primary" >L'e-mail envoyé sera automatiquement signé à votre nom.</h6>
+                        <form class="content_form_send_invitation_email_js_jheo">
+                            <div class="alert alert-success mt-3" id="successSendingMail" role="alert" style="display:none;">
+                                Invitation envoyée avec succès !
+                            </div>
+                            <div class="form-group content_cc_css_jheo mt-3">
+                                <label for="exampleFormControlInput1">Destinataires<span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs destinataires.)</span></label>
+                                <input type="text" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir les ou l'adresse(s) e-mail du destinataire">
+                                <!--<a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
+                                    <span class="me-2 mt-2">Cc/Cci</span>
+                                </a>-->
+                            </div>
+
+                            
+                            <div class="form-group content_objet_css_jheo mt-3">
+                                <label for="exampleFormControlInput2">Objet</label>
+                                <input type="text" class="form-control object_js_jheo" id="exampleFormControlInput2" value="Invitation de rejoindre ma tribu Géographique sur Consomyzone" placeholder="Objet">
+                            </div>
+
+                            <div class="form-group mt-3">
+                                <label for="exampleFormControlTextarea1">Corps de l'e-mail</label>
+                                <div id="exampleFormControlTextarea32">
+                                    <div class="wrapper pt-3 pb-3">
+                                        <textarea cols="100 invitation_description_js_jheo" id="exampleFormControlTextarea1">
+                                            
+                                        </textarea>
+                        
+                                        <pre id="output"></pre>
+                                    </div>
+                                </div>
+                                <!--<textarea class="form-control invitation_description_js_jheo" id="exampleFormControlTextarea1" rows="3"></textarea>-->
+                            </div>
+
+                            <ul class="list-group content_list_piece_joint_jheo_js d-none"></ul>
+
+                            <div class="d-flex justify-content-start align-items-center">
+                                <div class="p-2 bd-highlight">
+                                    <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
+                                </div>
+                                <div class="p-2 bd-highlight content_input_piece_joint content_input_piece_joint_jheo_js">
+                                    <div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajout des pièce jointe.</div>
+                                    <label class="pointer_cursor label_piece_joint_jheo_js" for="piece_joint">
+                                        <i class="fa-solid fa-paperclip pointer_cursor label_piece_joint_jheo_js"></i>
+                                    </label>
+                                    <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint" name="piece_joint" onchange="addPieceJointG(this);" />
+                                </div>
+                                <div class="p-2 bd-highlight content_input_piece_joint content_add_link_jheo_js">
+                                    <div class="pointer_cursor message_tooltip_piece_joint d-none add_link_jheo_js">Ajout des liens.</div>
+                                    <div class="pointer_cursor label_add_link_jheo_js"><i class="fa-solid fa-link"></i></div>
+                                </div>
+                                <div class="p-2 bd-highlight content_input_piece_joint content_add_image_js">
+                                    <div class="pointer_cursor message_tooltip_piece_joint d-none add_image_jheo_js">Ajout des images.</div>
+                                    <label class="pointer_cursor label_add_image_jheo_js" for="piece_joint_image"><i class="fa-solid fa-image"></i></label>
+                                    <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_image" name="piece_joint_image" accept="image/png, image/jpeg, image/jpg" onchange="addPieceJointImageG(this);"/>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <div id="blockHistInvitation" class="mt-2 d-none">
+                        <h5 class="modal-title text-primary mt-3 mb-3" id="exampleModalLabel">Historique des invitations par e-mail</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>E-mail</th>
+                                    <th scope="col">Date</th>
+                                    <th scope="col">Fan</th>
+                                    <th scope="col">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="all_historique">
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+        `;
+
+  initCKEditor("exampleFormControlTextarea1", showInvitationEditorG);
+
+  if (document.querySelector(".content_add_link_jheo_js")) {
+    document
+      .querySelector(".label_add_link_jheo_js")
+      .addEventListener("click", () => {
+        $("#addLinkInvitation").modal("show")
+      });
+  }
+
+  ///hover tooltip piece joint, ...
+  displayTooltipHelpMsg();
+
+  /** JEHOVANNIE SEND INVITATION BY EMAIL */
+  const form_parent = document.querySelector(
+    ".content_form_send_invitation_email_js_jheo"
+  );
+  const input_principal = form_parent.querySelector(
+    ".single_destination_js_jheo"
+  );
+
+  const object = form_parent.querySelector(".object_js_jheo");
+  const description = form_parent.querySelector(
+    ".invitation_description_js_jheo"
+  );
+
+  document
+    .querySelector("#blockSendEmailInvitation")
+    .setAttribute(
+      "data-table",
+      document.querySelector(".tributG_profile_name").dataset.toggleTribugTable
+    );
+
+  input_principal.addEventListener("input", () => {
+    input_principal.style.border = "1px solid black";
+  });
+
+  object.addEventListener("input", () => {
+    object.style.border = "1px solid black";
+  });
+
+  controlInputEmailToMultiple([input_principal]);
+
+  form_parent
+    .querySelector(".btn_send_invitation_js_jheo")
+    .addEventListener("click", (e) => {
+      e.preventDefault();
+
+      ////get cc
+      let cc_destinataire = [];
+
+      let status = true;
+
+      if (input_principal.value === "") {
+        // console.log("Entre au moin une destination.");
+        input_principal.style.border = "1px solid red";
+        status = false;
+      }
+
+      if (checkIfExistMailInValid(input_principal.value)) {
+        input_principal.style.border = "1px solid red";
+        status = false;
+      }
+
+      let data = {
+        table: document
+          .querySelector("#blockSendEmailInvitation")
+          .getAttribute("data-table"),
+        principal: formatEmailAdresseFromStringLong(input_principal.value),
+        object: "",
+        description: "",
+      };
+
+      ///object
+      if (object.value === "") {
+        // console.log("Veillez entre un Object.");
+        object.style.border = "1px solid red";
+        status = false;
+      } else {
+        data = { ...data, object: object.value };
+      }
+      //Changing description check editor by Elie
+      data = { ...data, description: editor.getData() };
+
+      if (email_piece_joint_list_g.length > 0) {
+        data = { ...data, piece_joint: email_piece_joint_list_g };
+      } else {
+        data = { ...data, piece_joint: [] };
+      }
+
+      if (status) {
+
+        form_parent.querySelector(".btn_send_invitation_js_jheo").setAttribute("disabled", true);
+        form_parent.querySelector(".btn_send_invitation_js_jheo").textContent = "En cours...";
+
+        if (email_piece_joint_list_g.length > 0) {
+          email_piece_joint_list_g.forEach((item) => {
+            const id = item.id;
+            const btn_item = document.querySelector(`.fa_solid_${id}_jheo_js`);
+            if (btn_item.classList.contains("btn-outline-danger")) {
+              btn_item.classList.remove("btn-outline-danger");
+            }
+
+            if (!btn_item.classList.contains("btn-outline-primary")) {
+              btn_item.classList.add("btn-outline-primary");
+            }
+
+            btn_item.innerHTML = `<i class="fas fa-spinner fa-spin"></i>`;
+
+            btn_item.setAttribute("onclick", "");
+          });
+        }
+        console.log(data);
+        //////fetch data
+        fetch("/user/tribu/email/invitation", {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(data),
+        })
+          .then((response) => {
+            if (!response.ok && response.status != 200) {
+              throw new Error("ERROR: " + response.status);
+            }
+            return response.json();
+          })
+          .then((result) => {
+
+            let mailsInscrits = result.data[2]
+            let totalEmails = result.data[3] 
+            if(mailsInscrits.length > 0){
+                if(mailsInscrits.length > 1){
+                  let texte = ""
+                  for (const item of mailsInscrits) {
+                    texte += item + ", "
+                  }
+                  texte = texte.trim();
+                  texte = texte.replace(/,$/, '');
+                  if(totalEmails > mailsInscrits.length){
+                    swal("Attention !", "Les adresses emails " + texte + " sont déjà inscrits dans CMZ. Les invitations pour les autres adresses emails ont été envoyées.", "warning")
+                  }else{
+                    swal("Attention !", "Les adresses emails " + texte + " sont déjà inscrits dans CMZ.", "warning")
+                  }
+                }else{
+                  if(totalEmails > mailsInscrits.length){
+                    swal("Attention !", "L'adresse email " + mailsInscrits[0] + " est déjà inscrit dans CMZ. Les invitations pour les autres adresses emails ont été envoyées.", "warning")
+                  }else{
+                    swal("Attention !", "L'adresse email " + mailsInscrits[0] + " est déjà inscrit dans CMZ.", "warning")
+                  }
+                }
+            }else{
+            swal("Bravo !", "Invitation envoyée avec succès !", "success")
+          }
+
+            let table_trib = document
+              .querySelector("#blockSendEmailInvitation")
+              .getAttribute("data-table");
+
+            form_parent
+              .querySelector(".btn_send_invitation_js_jheo")
+              .removeAttribute("disabled");
+            form_parent.querySelector(
+              ".btn_send_invitation_js_jheo"
+            ).textContent = "Envoyer l'invitation";
+
+            email_piece_joint_list_g.forEach((item) => {
+              const id = item.id;
+              const btn_item = document.querySelector(
+                `.fa_solid_${id}_jheo_js`
+              );
+              if (!btn_item.classList.contains("btn-outline-danger")) {
+                btn_item.classList.add("btn-outline-danger");
+              }
+
+              if (btn_item.classList.contains("btn-outline-primary")) {
+                btn_item.classList.remove("btn-outline-primary");
+              }
+
+              btn_item.innerHTML = `<i class="fa-solid fa-trash-can"></i>`;
+
+              btn_item.setAttribute(
+                "onclick",
+                `removeListeItemG(this, '${id}')`
+              );
+            });
+
+            // document.querySelector("#successSendingMail").style.display =
+            //   "block";
+
+            // setTimeout(() => {
+            //   document.querySelector("#successSendingMail").style.display =
+            //     "none";
+            // }, 5000);
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
+    });
+
+}
+
+function removeActiveLinkOnG(allLinks,element){
+
+  allLinks.forEach(li=>{
+    if(li.classList.contains("active")){
+      li.classList.remove("active");
+      li.classList.remove("text-white");
+      li.classList.add("text-primary");
+    }
+  })
+
+  if (!element.classList.contains("active")) {
+    element.classList.add("active");
+    element.classList.add("text-white");
+    element.classList.remove("text-primary");
+  }
+
+}
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * This function is use listen the input file event onchange
+ * on the input piece joint in mail invitation
+ *
+ * All add input image
+ * Object element
+ */
+function addPieceJointG(input) {
+	if (input.files && input.files[0]) {
+	  /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants :
+	  /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+	  const listNotAccepted = [
+		"zip",
+		"css",
+		"html",
+		"sql",
+		"xml",
+		"gz",
+		"bz2",
+		"tgz",
+		"ade",
+		"adp",
+		"apk",
+		"appx",
+		"appxbundle",
+		"bat",
+		"cab",
+		"chm",
+		"cmd",
+		"com",
+		"cpl",
+		"diagcab",
+		"diagcfg",
+		"diagpack",
+		"dll",
+		"dmg",
+		"ex",
+		"ex_",
+		"exe",
+		"hta",
+		"img",
+		"ins",
+		"iso",
+		"isp",
+		"jar",
+		"jnlp",
+		"js",
+		"jse",
+		"lib",
+		"lnk",
+		"mde",
+		"msc",
+		"msi",
+		"msix",
+		"msixbundle",
+		"msp",
+		"mst",
+		"nsh",
+		"pif",
+		"ps1",
+		"scr",
+		"sct",
+		"shb",
+		"sys",
+		"vb",
+		"vbe",
+		"vbs",
+		"vhd",
+		"vxd",
+		"wsc",
+		"wsf",
+		"wsh",
+		"xll",
+	  ];
+  
+	  /// input value to get the original name of the file ( with the fake path )
+	  const value = input.value;
+  
+	  //// to get the extension file
+	  const temp = value.split(".");
+	  const extensions = temp[temp.length - 1]; /// extension
+  
+	  ///if the current extension is in the list not accepted.
+	  if (
+		!listNotAccepted.some(
+		  (item) => item.toLowerCase() === extensions.toLowerCase()
+		) &&
+		extensions !== value
+	  ) {
+		var reader = new FileReader();
+		reader.onload = function (e) {
+		  /// get name the originila name of the file
+		  const input_value = value.split("\\");
+		  const name = input_value[input_value.length - 1]; /// original name
+  
+		  ///unique  to identify the file item
+		  /// this not save in the database.
+		  const id_unique = new Date().getTime();
+  
+		  ////create item piece joint.
+		  createListItemPiece(name, id_unique);
+  
+		  //// save the item in variable global list piece jointe.
+		  email_piece_joint_list_g.push({
+			id: id_unique,
+			name,
+			base64File: e.target.result,
+		  });
+		};
+  
+		reader.readAsDataURL(input.files[0]);
+	  } else {
+		/// if the extension is not supported.
+		swal({
+		  title: "Le format de fichier n'est pas pris en charge!",
+		  icon: "error",
+		  button: "OK",
+		});
+	  }
+	}
+}
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * This function is use listen the input file event onchange
+ * on the input piece joint in mail invitation
+ *
+ * All add input image
+ * Object element
+ */
+function addPieceJointImageG(input) {
+	if (input.files && input.files[0]) {
+	  /// list all extensions not accepted by email :Les types de fichiers bloqués par Gmail sont les suivants :
+	  /// https://support.google.com/mail/answer/6590?hl=fr#zippy=%2Cmessages-avec-pi%C3%A8ces-jointes
+	  const listNotAccepted = [
+		"zip",
+		"css",
+		"html",
+		"sql",
+		"xml",
+		"gz",
+		"bz2",
+		"tgz",
+		"ade",
+		"adp",
+		"apk",
+		"appx",
+		"appxbundle",
+		"bat",
+		"cab",
+		"chm",
+		"cmd",
+		"com",
+		"cpl",
+		"diagcab",
+		"diagcfg",
+		"diagpack",
+		"dll",
+		"dmg",
+		"ex",
+		"ex_",
+		"exe",
+		"hta",
+		"img",
+		"ins",
+		"iso",
+		"isp",
+		"jar",
+		"jnlp",
+		"js",
+		"jse",
+		"lib",
+		"lnk",
+		"mde",
+		"msc",
+		"msi",
+		"msix",
+		"msixbundle",
+		"msp",
+		"mst",
+		"nsh",
+		"pif",
+		"ps1",
+		"scr",
+		"sct",
+		"shb",
+		"sys",
+		"vb",
+		"vbe",
+		"vbs",
+		"vhd",
+		"vxd",
+		"wsc",
+		"wsf",
+		"wsh",
+		"xll",
+	  ];
+	  const listAccepted = ["png", "gif", "jpeg", "jpg"];
+  
+	  /// input value to get the original name of the file ( with the fake path )
+	  const value = input.value;
+  
+	  //// to get the extension file
+	  const temp = value.split(".");
+	  const extensions = temp[temp.length - 1]; /// extension
+  
+	  ///if the current extension is in the list not accepted.
+	  if (
+		listAccepted.some((item) => item === extensions) &&
+		!listNotAccepted.some(
+		  (item) => item.toLowerCase() === extensions.toLowerCase()
+		) &&
+		extensions !== value
+	  ) {
+		var reader = new FileReader();
+		reader.onload = function (e) {
+		  /// get name the originila name of the file
+		  const input_value = value.split("\\");
+		  const name = input_value[input_value.length - 1]; /// original name
+  
+		  ///unique  to identify the file item
+		  /// this not save in the database.
+		  const id_unique = new Date().getTime();
+  
+		  ////create item piece joint.
+		  createListItemPiece(name, id_unique);
+  
+		  //// save the item in variable global list piece jointe.
+		  email_piece_joint_list_g.push({
+			id: id_unique,
+			name,
+			base64File: e.target.result,
+		  });
+		};
+  
+		reader.readAsDataURL(input.files[0]);
+	  } else {
+		/// if the extension is not supported.
+		swal({
+		  title: "Le format de fichier n'est pas pris en charge!",
+		  icon: "error",
+		  button: "OK",
+		});
+	  }
+	}
+}
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * This function remove the item on the list piece jointe
+ * and update variable global `email_piece_joint_list_g` list of the piece joint
+ *
+ * @param {*} e : event html object: item list piece jointe
+ * @param {*} id : unique id in to identify the item piece joint in the list `email_piece_joint_list_g`
+ *
+ * @return void
+ */
+function removeListeItemG(e, id) {
+	///remove html element
+	e.parentElement.remove();
+	///remove one element in the piece global
+	email_piece_joint_list_g = email_piece_joint_list_g.filter(
+	  (item) => item.id != id
+	);
+}
+
+function setActiveTabG(elem, param) {
+  document.querySelectorAll(".tab_invite_elie").forEach((it) => {
+    it.classList.remove("active");
+  });
+
+  if (!elem.classList.contains("active")) {
+    elem.classList.add("active");
+    document.querySelector("#" + elem.dataset.element).style = "";
+  }
+  switch (param) {
+    case "email": {
+      document.querySelector("#blockHistInvitation").classList.add("d-none");
+      document
+        .querySelector("#blockSendEmailInvitation")
+        .classList.remove("d-none");
+      break;
+    }
+    case "historique": {
+      document
+        .querySelector("#blockSendEmailInvitation")
+        .classList.add("d-none");
+      document.querySelector("#blockHistInvitation").classList.remove("d-none");
+      fetchAllInvitationStoryG();
+      break;
+    }
+  }
+}
+
+/**
+ * @constructor
+ * @author Nantenaina
+ * @Fonction fetch toutes les historiques dans la tribu G et affichage dans un tableau
+ */
+function fetchAllInvitationStoryG() {
+  let table = document.querySelector(".tributG_profile_name").dataset.toggleTribugTable.trim();
+  let tbody_hist = document.querySelector("#all_historique");
+  tbody_hist.innerHTML = `<td colspan="4"><div class="d-flex justify-content-center">
+                        <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div></td>`;
+  fetch("/tribu/invitation/get_all_story/" + table)
+    .then((response) => response.json())
+    .then((response) => {
+      // console.log(response)
+      if (response.length > 0) {
+        tbody_hist.innerHTML = "";
+        for (const item of response) {
+          // console.log(item);
+
+          tbody_hist.innerHTML += `<tr>
+                            <td>${item.email}</td>
+                            <td class="">${item.date}</td>
+                            <td class="">${
+                              item.user
+                                ? `<a href="/user/profil/${
+                                    item.user.userId.id
+                                  }" class="badge text-bg-primary">${
+                                    item.user.firstname +
+                                    " " +
+                                    item.user.lastname
+                                  }</a>`
+                                : `<span class="badge text-bg-warning">Compte non trouvé</span>`
+                            }</td>
+                            <td>${
+                              item.is_valid == 1
+                                ? `<span class="badge text-bg-success">Validé</span>`
+                                : `<span class="badge text-bg-warning">En attente</span>`
+                            }</td>
+                        </tr>
+                    `;
+        }
+        $("#table-tribuG-member > table").DataTable({
+          language: {
+            url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+          },
+        });
+      } else {
+        tbody_hist.innerHTML = `<tr class="text-center"><td colspan="4">Aucun historique enregistré pour le moment!</td></tr>`;
+      }
+    })
+    .catch((error) => console.log(error));
 }

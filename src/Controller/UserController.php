@@ -302,6 +302,11 @@ class UserController extends AbstractController
         }
         
         $all_TribuT= $userRepository->getListTableTribuT();
+        $tibu_T_data_owned = json_decode($user->getTribuT(), true);
+        $tibu_T_data_joined = json_decode($user->getTribuTJoined(), true);
+
+        $tribu_t_owned = !is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
+        $tribu_t_joined = !is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
 
         $new_publication = $this->createForm(PublicationType::class, [], []);
 
@@ -414,7 +419,8 @@ class UserController extends AbstractController
             ],
 
             "new_publication" => $new_publication->createView(),
-            "all_tribuT" => $all_TribuT
+            "tribu_T_owned" => $tribu_t_owned,
+            "tribu_T_joined" => $tribu_t_joined
         ]);
     }
 
@@ -2414,9 +2420,8 @@ class UserController extends AbstractController
                 $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
             }
 
-
-
-            $profil[0]->setPhotoProfil('/uploads/users/photos/photo_user_' . $userId . "/" . $imagename);
+            if($profil)
+                $profil[0]->setPhotoProfil('/uploads/users/photos/photo_user_' . $userId . "/" . $imagename);
 
 
 
@@ -3664,5 +3669,211 @@ class UserController extends AbstractController
         }else{
             return $this->json(["abonnements"=>[], "status"=>205]);
         }
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction pour l'affichage de la page de parrainage
+     * Localisation du fichier : UserController.php
+     * Je veux : afficher la liste des parrains et filleuls
+     * 
+     */
+    #[Route("/user/parrainage",name:"app_get_parrainage",methods:["POST","GET"])]
+    public function askToGetPartenaire(Status $status, UserService $userService, UserRepository $userRepository){
+        $userConnected= $status->userProfilService($this->getUser());
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $allParrains = $userService->getAllParains("tableparrainage_".$userId, $userRepository);
+        return $this->render("user/referral.html.twig",[
+            "userConnected" => $userConnected, "parrains"=>$allParrains
+        ]);
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction pour l'affichage de la liste de parains
+     * Localisation du fichier : UserController.php
+     * Je veux : afficher la liste de parains
+    */
+    #[Route("/user/get/all/parrains",name:"app_get_all_parrains",methods:["GET"])]
+    public function getAllParains(UserService $userService, UserRepository $userRepository){
+        $user = $this->getUser();
+        if($user){
+            $userId = $user->getId();
+            $allParrains = $userService->getAllParains("tableparrainage_".$userId, $userRepository);
+            return $this->json(["parrains"=>$allParrains, "isConnected"=>true]);
+        }else{
+            return $this->json(["parrains"=>[], "isConnected"=>false]);
+        }
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction pour l'affichage de la liste de filleuils
+     * Localisation du fichier : UserController.php
+     * Je veux : afficher la liste de filleuils
+    */
+    #[Route("/user/get/all/filleuils",name:"app_get_all_filleuils",methods:["GET"])]
+    public function getAllFilleuils(UserService $userService, UserRepository $userRepository){
+        $user = $this->getUser();
+        if($user){
+            $userId = $user->getId();
+            $allFilleuils = $userService->getAllFilleuils("tableparrainage_".$userId, $userRepository);
+            return $this->json(["filleuils"=>$allFilleuils, "isConnected"=>true]);
+        }else{
+            return $this->json(["filleuils"=>[], "isConnected"=>false]);
+        }
+    }
+
+    
+    #[Route("/rubrique/all_favori_folder", name: "api_get_all_favori_folder", methods: ["GET"])]
+    public function getAllFavoryFolder(
+        UserService $userService
+    ){
+        $current_user= $this->getUser();
+        
+        if( !$current_user ){
+            return $this->json([
+                "code" => 401,
+                "all_folder" => []     
+            ]);
+        }
+        
+        $all_folder = $userService->getAllFavoryFolder($current_user->getId());
+        
+        
+        return $this->json([
+            "code" => 200,
+            "all_folder" => $all_folder     
+        ]);
+    }
+
+    #[Route("/user/add_new_favori_folder", name: "api_add_new_favori_folder", methods: ["POST"])]
+    public function addNewFavoryFolder(
+        Request $request,
+        UserService $userService
+    ){
+        $data = json_decode($request->getContent(), true);
+        $folder_name= $data["folder_name"];
+
+        $parent_folder= $data["parent_folder"];
+        $parent_folder= $parent_folder != "0" ? $parent_folder : null; 
+
+        $current_user= $this->getUser();
+
+        if($userService->checkIsAlreadyExistFavoryFolder($current_user->getId(), $folder_name )){
+            return $this->json([
+                "code" => 200,
+                "message" => "already_exists"
+            ],200);
+        }
+
+        $folder= [
+            "name" => $folder_name,
+            "id_folder_parent" => $parent_folder,
+            "livel_parent" => 0
+        ];
+
+        $unique_id = $userService->createFavoryFolder( $current_user->getId(), $folder );
+        
+        return $this->json([
+            "code" => 201,
+            "data" => [
+                "name" => $folder["name"],
+                "id_folder_parent" => $folder["id_folder_parent"],
+                "livel_parent" => $folder["livel_parent"],
+                "unique_id" => $unique_id
+            ]
+        ],201);
+    }
+
+    #[Route("/user/change_favory_folder", name: "api_change_favory_folder", methods: ["POST"])]
+    public function change_favory_folder(
+        Request $request,
+        UserService $userService
+    ){
+        $data = json_decode($request->getContent(), true);
+        $etablisment_id= $data["etablisment_id"];
+        $new_favory_folder= $data["new_favory_folder"];
+
+        $current_user= $this->getUser();
+
+        $etablisment= [
+            "type" => "resto",
+            "id" => $etablisment_id
+        ];
+
+        $folder= [
+            "new_favory_folder" => $new_favory_folder
+        ];
+
+        $folder_information= $userService->changeFolderFavoryFolder(
+            $current_user->getId(),
+            $etablisment,
+            $folder
+        );
+
+        return $this->json([
+            "code" => 201,
+            "data" => [
+                "folder" => $folder_information,
+                "etablisment" => $etablisment
+            ]
+        ]);
+    }
+
+
+    #[Route("/rubrique/all_favori", name: "api_get_all_favori", methods: ["GET"])]
+    public function getAllFavory(
+        Request $request,
+        UserService $userService,
+        BddRestoRepository $bddRestoRepository
+    ){
+        $current_user= $this->getUser();
+
+        if( !$current_user ){
+            return $this->json([
+                "code" => 401,
+                "all_folder" => []     
+            ]);
+        }
+        ///for specific folder
+        $parent_favori_folder_id= $request->query->get("favoriFolder");
+        
+        ///result to return 
+        $results= [];
+        ////favory_folder
+        $all_folder = $userService->getFavoryFolder($current_user->getId(), $parent_favori_folder_id);
+        foreach ($all_folder as $folder){
+            array_push($results, [
+                "id" => $folder["id"],
+                "name" => $folder["name"],
+                "datetime" => $folder["datetime"],
+                "isfolder" => true
+            ]);
+        }
+
+        if($request->query->has("favoriFolder") ){
+            $favoriFolder_id= $request->query->get("favoriFolder");
+            $all_etablisment= $userService->getEtablismentInFolder($current_user->getId(), $favoriFolder_id);
+            if( count($all_etablisment) > 0 ){
+                $resto_favori= $bddRestoRepository->getRestoFavory($all_etablisment);
+                
+                foreach($resto_favori as $resto){
+                    array_push($results, [
+                        "id" => $resto["id"],
+                        "name" => $resto["name"],
+                        "dep" => $resto["dep"],
+                        "nom_dep" => $resto["nom_dep"],
+                        "isfolder" => false
+                    ]);
+                }
+            }
+        }
+        
+        return $this->json([
+            "code" => 200,
+            "data" => $results
+        ]);
     }
 }

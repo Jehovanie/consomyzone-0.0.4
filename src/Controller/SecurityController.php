@@ -16,6 +16,8 @@ use App\Entity\Supplier;
 
 use App\Service\MailService;
 
+use App\Service\UserService;
+
 use App\Form\InscriptionType;
 
 use App\Service\AgendaService;
@@ -33,6 +35,7 @@ use App\Repository\UserRepository;
 use App\Service\RequestingService;
 
 use App\Security\UserAuthenticator;
+use App\Form\InscriptionFilleulType;
 
 use App\Service\NotificationService;
 use App\Repository\CodeapeRepository;
@@ -366,7 +369,8 @@ class SecurityController extends AbstractController
         MessageService $messageService,
         VerifyEmailHelperInterface $verifyEmailHelper,
         AgendaService $agendaService,
-        CodeapeRepository $codeApeRep
+        CodeapeRepository $codeApeRep,
+        Tribu_T_Service $tribu_T_Service
     ) {
 
         $result = true;
@@ -503,7 +507,7 @@ class SecurityController extends AbstractController
         $agendaService->createTableAgenda("agenda_" . $numero_table);
         $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
         $agendaService->createAgendaStoryTable($numero_table);
-        
+        $tribu_T_Service->createParrainageTable($numero_table);
 
         ///keep the change in the user information
         // $entityManager->persist($user);
@@ -619,6 +623,7 @@ class SecurityController extends AbstractController
     }
 
 
+    //doesn't change the fucking code if you don't know what will you do!!!!
     #[Route(path: "/verification_email", name:"verification_email", methods: ["GET", "POST"])]
     public function verification_email(
         Request $request,
@@ -633,8 +638,9 @@ class SecurityController extends AbstractController
         Filesystem $filesyst,
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
-        Tribu_T_Service $serviceTribuT,
-        RequestingService $requesting
+        Tribu_T_Service $tribu_T_Service,
+        RequestingService $requesting,
+        UserService $userService
     ) {
         
         if ($this->getUser()) {
@@ -644,12 +650,15 @@ class SecurityController extends AbstractController
             }
         }
 
-///to get info
+        ///to get info
         ///id de l'utilisateur.
         $userToVerifie = $userRepository->find($request->query->get('id'));
-
+        
         //on utilise cette variable quand la requêst provient d'une relance
         $tribuT="";
+
+        //id decrypted on utile cette id pour le parainage si cela vient de la relance
+        $idDecrypted=null; 
         //verifie si relance , t =relance
         if($request->query->get('verif')!=null && strcmp($request->query->get('verif'),'t')==0){
             $key = hex2bin("000102030405060708090a0b0c0d0e0f");
@@ -657,6 +666,7 @@ class SecurityController extends AbstractController
             $idUserToVerifieBase64Decoded=base64_decode($request->query->get('id'),true);
             $decryptedIdUserToVerifie = openssl_decrypt($idUserToVerifieBase64Decoded, "AES-128-CBC", 
             $key, 0, $iv);
+            $idDecrypted=  $decryptedIdUserToVerifie;
             $userToVerifie = $userRepository->find($decryptedIdUserToVerifie);
             $tribuTBase64Decrypted=base64_decode($request->query->get('tribuT'),true);
             $tribuT=openssl_decrypt($tribuTBase64Decrypted, "AES-128-CBC", 
@@ -668,11 +678,28 @@ class SecurityController extends AbstractController
             $key = hex2bin("000102030405060708090a0b0c0d0e0f");
             $iv = hex2bin("101112131415161718191a1b1c1d1e1f");
             $idUserToVerifieBase64Decoded=base64_decode($request->query->get('id'),true);
+            $idDecrypted=  $decryptedIdUserToVerifie;
             $decryptedIdUserToVerifie = openssl_decrypt($idUserToVerifieBase64Decoded, "AES-128-CBC", 
             $key, 0, $iv);
             $userToVerifie = $userRepository->find($decryptedIdUserToVerifie);
             
             
+        }
+        //ne pas enlever ce bout de code ici demander avant de modifier
+        //ça créé des erreur 
+        if (!$userToVerifie) {
+            return new Response('<div class="flex-container" style="display:flex;  flex-direction: row ;justify-content: center">'.
+                                    '<div class="text-center" style="text-align: center!important;">'.
+                                    '<h1 style="font-size: 2.5rem;">'.
+                                        '<span class="fade-in" id="digit1">4</span>'.
+                                        '<span class="fade-in" id="digit2">0</span>'.
+                                        '<span class="fade-in" id="digit3">4</span>'.
+                                    '</h1>'.
+                                    '<h3 class="fadeIn" style="font-size: 1.75rem;">Page non trouvée.</h3>'.
+                                    '<a href="/" style="text-decoration:underline; color:blue">Revenir à la page d\'accueil.</a>'.
+                                    '</div>'.
+                                '</div>'
+                                ,404);
         }
 
         //verfiez si l'utilisateur à verifier est déjà membre dans cmz cad il de type= "consumer"
@@ -770,12 +797,7 @@ class SecurityController extends AbstractController
             
         }
 
-
-        if (!$userToVerifie) {
-            throw $this->createNotFoundException();
-        }
-
-        ///a verifier
+        //a verifier
         // try {
         //     $verifyEmailHelper->validateEmailConfirmation(
         //         $request->getUri(),
@@ -789,6 +811,10 @@ class SecurityController extends AbstractController
         ///change the to true the email verified
         $userToVerifie->setVerifiedMail(true);  ///get the user from database by id
 
+        $tableParrainage = $idDecrypted !=null ? "tableparrainage_".$idDecrypted : "tableparrainage_".$request->query->get('id');
+        if(count($userService->getParainG($tableParrainage)) > 0){
+            return $this->redirectToRoute('verification_filleul', ['id' => $request->query->get('id')]);
+        }
 
         ////CREATE NEW FORM TO COMPLETE USER PROFIL
         $flash = [];
@@ -1024,6 +1050,59 @@ class SecurityController extends AbstractController
                     
             // }
 
+            // Générer des tribus T ami et famille
+            $userId = $idDecrypted!=null ? $idDecrypted : $request->query->get('id');
+            $suffixeTableTribuTAmie = "A";
+            $suffixeTableTribuTFamille = "F";
+            $tableTribuTAmie = "tribu_t_" . $userId . "_" .$suffixeTableTribuTAmie;
+            $tableTribuTFamille = "tribu_t_" . $userId . "_" .$suffixeTableTribuTFamille;
+            $nomTribuTAmie = "Tribu A";
+            $descriptionTribuTAmie = "Tribu T pour mes amis";
+            $nomTribuTFamille = "Tribu F";
+            $descriptionTribuTFamille = "Tribu T pour ma famille";
+            $tribu_T_Service->createTribuTable($suffixeTableTribuTAmie, $userId, $nomTribuTAmie, $descriptionTribuTAmie);
+            $tribu_T_Service->createTribuTable($suffixeTableTribuTFamille, $userId, $nomTribuTFamille, $descriptionTribuTFamille);
+
+            $extension = [];
+            $extension["restaurant"] = 1;
+            $extension["golf"] = 1;
+            if(!$tribu_T_Service->checkIfTribuTExist($tableTribuTAmie, $userId, "tribu_t_owned"))
+                $tribu_T_Service->setTribuT($tableTribuTAmie, $descriptionTribuTAmie, "", $extension, $userId, "tribu_t_owned", $nomTribuTAmie);
+            
+            if(!$tribu_T_Service->checkIfTribuTExist($tableTribuTFamille, $userId, "tribu_t_owned"))
+                $tribu_T_Service->setTribuT($tableTribuTFamille, $descriptionTribuTFamille, "", $extension, $userId, "tribu_t_owned", $nomTribuTFamille);
+            
+            if ($extension["restaurant"] == 1) {
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "restaurant");
+
+                $tribu_T_Service->createTableComment($tableTribuTAmie, "restaurant_commentaire");
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "restaurant");
+
+                $tribu_T_Service->createTableComment($tableTribuTFamille, "restaurant_commentaire");
+            }
+
+            if ($extension["golf"] == 1) {
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "golf");
+
+                $tribu_T_Service->createTableComment($tableTribuTAmie, "golf_commentaire");
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "golf");
+
+                $tribu_T_Service->createTableComment($tableTribuTFamille, "golf_commentaire");
+            }
+
+            $tribu_T_Service->creaTableTeamMessage($tableTribuTAmie);
+            $tribu_T_Service->creaTableTeamMessage($tableTribuTFamille);
+
+            // UPDATE TABLE PARRAINAGE
+            $tribu_T_Service->createParrainageTable($userId);
+            $userService->updateTableParrainage("tableparrainage_".$userId, $userId);
+
+            ///// END NOTIFICATION ////
+
             return $authenticator->authenticateUser(
                 $userToVerifie,
                 $loginAuth,
@@ -1057,7 +1136,8 @@ class SecurityController extends AbstractController
         CodeapeRepository $codeApeRep,
         AgendaService $agendaService,
         RequestingService $requesting,
-        Status $status
+        Status $status,
+        UserService $userService
     ) {
 
         
@@ -1067,7 +1147,7 @@ class SecurityController extends AbstractController
         }
 
         if(!$request->query->get("email") || !$request->query->get("tribu")){
-            return new Response("<strong>La syntaxe de la requête est erronée. Veuillez contacter celui l'administrateur du site. <strong>",400);
+            return new Response("<strong>La syntaxe de la requête est erronée. Veuillez contacter l'administrateur du site. <strong>",400);
         }
 
         if($userRepository->findOneBy(["email" =>$request->query->get("email") ])){
@@ -1077,17 +1157,23 @@ class SecurityController extends AbstractController
              * @author Elie <eliefenohasina@gmail.com>
              */ 
 
-            $tribuTService->updateInvitationStory($request->query->get("tribu").'_invitation', 1, $request->query->get("email"),$user->getId());
-
             $usr_to_confirm = $userRepository->findOneBy(["email" =>$request->query->get("email") ]);
+            $tribuTService->updateInvitationStory($request->query->get("tribu").'_invitation', 1, $request->query->get("email"),$usr_to_confirm->getId());
              ///update status of the user in table tribu T
-            $tribuTService->confirmMemberTemp($request->query->get("tribu"), $usr_to_confirm->getId(), $usr_to_confirm->getEmail());
+            $isTribuG = explode("_",$request->query->get("tribu"))[0] === "tribug";
+            if(!$isTribuG)
+                $tribuTService->confirmMemberTemp($request->query->get("tribu"), $usr_to_confirm->getId(), $usr_to_confirm->getEmail());
 
             /**
              * end Elie
              */
 
             return $this->redirectToRoute("app_accpeted_invitations");
+        }
+
+        $isTribuG = explode("_",$request->query->get("tribu"))[0] === "tribug";
+        if($isTribuG){
+            return $this->redirectToRoute('verification_filleul', ['tribu' => $request->query->get("tribu"),'email' => $request->query->get('email'), 'prtid' => $request->query->get('prtid')]);
         }
         //// check if this table tribu T exist
         if(!$tribuTService->isTableExist($request->query->get("tribu"))){
@@ -1215,7 +1301,8 @@ class SecurityController extends AbstractController
 
             ////name tribu to join
             $tribuTtoJoined= $request->query->get("tribu");
-                
+            $isTribuG = explode("_",$tribuTtoJoined)[0] === "tribug";                
+            if(!$isTribuG){
             //// apropos user fondateur tribuT with user fondateur
             $userFondateurTribuT= $tribuTService->getTribuTInfo($tribuTtoJoined);
 
@@ -1263,7 +1350,28 @@ class SecurityController extends AbstractController
 
             ///update status of the user in table tribu T
             $tribuTService->confirmMemberTemp($request->query->get("tribu"), $user->getId(), $user->getEmail());
+            
+            
+            ////Send email remerciement: Jehovanie RAMANDIRJOEL ////
+            //// ajouter le 05-02-2024
+            $user_sender = $userRepository->findOneBy(["id" => intval($userPostID)]);
 
+            $mailService->sendEmailWithTemplatedEmail(
+                $user->getEmail(),
+                $user->getPseudo(),
+                [
+                    "object" => "Bienvenue dans notre communauté !",
+                    "template" => "emails/mail_remerciement_inscription.html.twig",
+                    "user_sender" => [
+                        'fullname' => $user_sender->getPseudo(),
+                        'email' => $user_sender->getEmail()
+                    ]
+                ]
+            );
+            //// email remerciement: Terminer //// 
+            
+        }
+                   
             /**
              * Persist user on confidentiality table
              * @author Nantenaina        
@@ -1283,6 +1391,10 @@ class SecurityController extends AbstractController
             * @end Nantenaina     
             */
 
+            //CREATE TABLE PARRAINAGE PUIS INSERER UNE NouVELLE LIGNE
+            $tribuTService->createParrainageTable($numero_table);
+            if($request->query->get("prtid"))
+                $userService->saveOneParainOrFilleuil("tableparrainage_".$numero_table, $request->query->get("prtid"), $tribuTtoJoined, 0, 0);
             //// prepare email which we wish send
             $signatureComponents = $verifyEmailHelper->generateSignature(
                 "verification_email", /// lien de revenir
@@ -1295,13 +1407,15 @@ class SecurityController extends AbstractController
              * update invitation story in tribu T
              * @author Elie <eliefenohasina@gmail.com>
              */ 
-
+            if($isTribuG){
+                $userService->updateInvitationStoryG($request->query->get("tribu").'_invitation', intval($request->query->get("prtid")), $request->query->get("email"), $numero_table);
+            }else{
              $tribuTService->updateInvitationStory(
                 $request->query->get("tribu").'_invitation', 
                 1, 
                 $request->query->get("email"),
                 $user->getId());
-
+            }
             /**
              * end Elie
              */
@@ -1600,6 +1714,568 @@ class SecurityController extends AbstractController
         $r = $serialize->serialize(["response"=>"0k"], 'json');
 
         return new JsonResponse($r, 200, [], true);
+    }
+
+#[Route(path: "/verification/filleul/old", name:"verification_filleul_old", methods: ["GET", "POST"])]
+    public function verificationFilleulOld(
+        Request $request,
+        Status $status,
+        UserRepository $userRepository,
+        NotificationService $notificationService,
+        TributGService $tributGService,
+        EntityManagerInterface $entityManager,
+        UserAuthenticatorInterface $authenticator,
+        UserAuthenticator $loginAuth,
+        VerifyEmailHelperInterface $verifyEmailHelper,
+        Filesystem $filesyst,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository,
+        Tribu_T_Service $tribu_T_Service,
+        UserService $userService
+    ) {
+        ///to get info
+        ///id de l'utilisateur.
+        $userToVerifie = $userRepository->find($request->query->get('id'));
+
+        if ($this->getUser()) {
+            $userConnected= $status->userProfilService($this->getUser());
+            if( $userConnected["userType"] !== "Type"){
+                return $this->redirectToRoute('app_home');
+            }
+        }
+
+
+        if (!$userToVerifie) {
+            throw $this->createNotFoundException();
+        }
+
+
+        ///change the to true the email verified
+        $userToVerifie->setVerifiedMail(true);  ///get the user from database by id
+
+        $tableParrainage = "tableparrainage_".$request->query->get('id');
+        $rowParain = $userService->getParainG($tableParrainage);
+        if(count($rowParain) < 1){
+            return $this->redirectToRoute('app_login');
+        }
+
+
+        $idParain = $rowParain[0]["user_id"];
+
+        $tribuGParainInfos = $userService->getTribuGParainInfo($idParain);
+
+        // dd($tribuGParainInfos);
+
+        ////CREATE NEW FORM TO COMPLETE USER PROFIL
+        $flash = [];
+
+        $form = $this->createForm(InscriptionFilleulType::class);
+      
+        $form->handleRequest($request);
+        if ($form->isSubmitted()) {
+            ///get the data
+            extract($form->getData());
+         
+            if( $consumerRepository->findOneBy(["userId" => $this->getUser() ]) ||  $supplierRepository->findOneBy(["userId" => $this->getUser() ]) ){
+                return $authenticator->authenticateUser( $userToVerifie, $loginAuth, $request );
+            }
+
+            /// if the user is consumer
+            if ($Consommateur && !$Fournisseur) {
+
+                $user_profil = new Consumer();
+                $userToVerifie->setType("consumer");
+
+                ///the user is supplier
+            } else {
+
+                $user_profil = new Supplier();
+                $user_profil->setCommerce($commerce);
+                $user_profil->setCodeape($code_ape);
+                $user_profil->setWebsite($site_web);
+                $user_profil->setFacebook($facebook);
+                $user_profil->setTwitter($twitter);
+                $userToVerifie->setType("supplier");
+
+            }
+
+            $user_profil->setFirstname($nom);
+            $user_profil->setLastname($prenom);//$tribuGParainInfos["num_rue"]
+            $user_profil->setNumRue($tribuGParainInfos["num_rue"]);
+            $user_profil->setTelephone($telephone);
+            $user_profil->setCodePostal($tribuGParainInfos["code_postal"]);
+            $user_profil->setCommune($tribuGParainInfos["commune"]);
+            $user_profil->setPays($tribuGParainInfos["pays"]);
+
+            if( $telephone ){
+                $user_profil->setTelFixe($telephone);
+            }else{
+                $user_profil->setTelFixe("");
+            }
+
+            $user_profil->setQuartier($tribuGParainInfos["quartier"]);
+
+            $departement = substr($tribuGParainInfos["code_postal"],0,-3);
+
+            $user_profil->setTributg($tribuGParainInfos["tributg"]);
+
+
+            ////set profil
+            if( $profil ){
+                ///path file folder
+                $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $userToVerifie->getId() . "/";
+                $dir_exist = $filesyst->exists($path);
+
+                if ($dir_exist == false) {
+                    $filesyst->mkdir($path, 0777);
+                }
+
+                $temp = explode(";", $profil );
+                $extension = explode("/", $temp[0])[1];
+                $image_name = "profil_". $nom . "." . $extension;
+
+                ///save image in public/uploader folder
+                file_put_contents($path ."/". $image_name, file_get_contents($profil));
+                
+                ///set use profile
+                $user_profil->setPhotoProfil( '/uploads/users/photos/photo_user_' . $userToVerifie->getId() . "/" . $image_name);
+            }
+
+            // $user_profil->setPhotoCouverture("photo de couverture");
+
+            $user_profil->setUserId($userToVerifie);
+
+            $user_profil->setIsVerifiedTributGAdmin(0);
+
+            $user_profil->setTributg($tribuGParainInfos["tributg"]);
+
+            ///attribution des tribut.
+            $resultat = $tributGService->createTableTributG($tribuGParainInfos["tributg"], $userToVerifie->getId());
+
+            ///save the user information
+            $entityManager->persist($user_profil);
+            $entityManager->flush();
+
+            $userService->updateInvitationStoryG($tribuGParainInfos["tributg"].'_invitation', $tribuGParainInfos["user_id"], $userToVerifie->getEmail(), $userToVerifie->getId(), 1);
+
+            ////  NOTIFICATION
+
+            ///switch type of the notification
+            $notification = [
+                "admin" => "Nous vous informons qu'une nouvelle tribu G a été créée.",
+                "fondateur" => "Nous avons un grand plaisir de vous annoncer que la tribu G selon votre code postal a été créée et vous êtes l'administrateur provisoire.",
+                "current" => "Nous avons un grand plaisir de vous avoir parmi nous dans la tribu G d'après votre code postal. De la part de tous les membres et la direction, nous aimerions présenter nos salutations cordiales et la bonne chance.",
+                "other" => "Nous avons un grand plaisir de vous annonce que notre tribu G a un nouveau fan."
+            ];
+
+
+
+            $type = "/user/account";
+            $all_user_sending_notification = $tributGService->getAllTributG($user_profil->getTributG()); /// [ ["user_id" => 1], ... ]
+
+            foreach ($all_user_sending_notification as $user_to_send_notification) { ///["user_id" => 1]
+                
+                $user_id_post = intval($user_to_send_notification["user_id"]);
+                if ($user_id_post === $userToVerifie->getId()) { ///current user connecter
+
+                    if ($resultat == 0) {
+
+                        $message_notification = $notification["fondateur"];
+                    } else {
+
+                        $message_notification = $notification["current"];
+                    }
+                } else {
+                    // $message_notification = $notification["other"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/profil/" .  $request->query->get('id') . "' alt='Nouvelle membre'>Voir son profil</a>";
+                    $message_notification = $notification["other"];
+                }
+
+                $notificationService->sendNotificationForOne(
+                    $userToVerifie->getId(),
+                    $user_id_post,
+                    $type,
+                    $message_notification
+                );
+            }
+
+            ////notification for super admin
+            if ($userRepository->findByRolesUserSuperAdmin() && $resultat == 0) {
+
+                $super_admin = $userRepository->findByRolesUserSuperAdmin();
+                // $message_notification = $notification["admin"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/dashboard-membre?table=" .  $name_tributG . "' alt='Nouvelle membre'>Valider</a>";
+                $message_notification = $notification["admin"];
+
+                $notificationService->sendNotificationForOne(
+                    $userToVerifie->getId(),
+                    $super_admin->getId(),
+                    $type,
+                    $message_notification,
+                );
+            }
+
+            // Générer des tribus T ami et famille
+            $userId = $request->query->get('id');
+            $suffixeTableTribuTAmie = "A";
+            $suffixeTableTribuTFamille = "F";
+            $tableTribuTAmie = "tribu_t_" . $userId . "_" .$suffixeTableTribuTAmie;
+            $tableTribuTFamille = "tribu_t_" . $userId . "_" .$suffixeTableTribuTFamille;
+            $nomTribuTAmie = "Tribu A";
+            $descriptionTribuTAmie = "Tribu T pour mes amis";
+            $nomTribuTFamille = "Tribu F";
+            $descriptionTribuTFamille = "Tribu T pour ma famille";
+            $tribu_T_Service->createTribuTable($suffixeTableTribuTAmie, $userId, $nomTribuTAmie, $descriptionTribuTAmie);
+            $tribu_T_Service->createTribuTable($suffixeTableTribuTFamille, $userId, $nomTribuTFamille, $descriptionTribuTFamille);
+
+            $extension = [];
+            $extension["restaurant"] = 1;
+            $extension["golf"] = 1;
+            if(!$tribu_T_Service->checkIfTribuTExist($tableTribuTAmie, $userId, "tribu_t_owned"))
+                $tribu_T_Service->setTribuT($tableTribuTAmie, $descriptionTribuTAmie, "", $extension, $userId, "tribu_t_owned", $nomTribuTAmie);
+            
+            if(!$tribu_T_Service->checkIfTribuTExist($tableTribuTFamille, $userId, "tribu_t_owned"))
+                $tribu_T_Service->setTribuT($tableTribuTFamille, $descriptionTribuTFamille, "", $extension, $userId, "tribu_t_owned", $nomTribuTFamille);
+            
+            if ($extension["restaurant"] == 1) {
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "restaurant");
+
+                $tribu_T_Service->createTableComment($tableTribuTAmie, "restaurant_commentaire");
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "restaurant");
+
+                $tribu_T_Service->createTableComment($tableTribuTFamille, "restaurant_commentaire");
+            }
+
+            if ($extension["golf"] == 1) {
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "golf");
+
+                $tribu_T_Service->createTableComment($tableTribuTAmie, "golf_commentaire");
+
+                $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "golf");
+
+                $tribu_T_Service->createTableComment($tableTribuTFamille, "golf_commentaire");
+            }
+
+            $tribu_T_Service->creaTableTeamMessage($tableTribuTAmie);
+            $tribu_T_Service->creaTableTeamMessage($tableTribuTFamille);
+
+            // UPDATE TABLE PARRAINAGE
+            $tribu_T_Service->createParrainageTable($userId);
+            $userService->updateTableParrainage("tableparrainage_".$userId, $userId);
+
+            ///// END NOTIFICATION ////
+
+            return $authenticator->authenticateUser(
+                $userToVerifie,
+                $loginAuth,
+                $request
+            );
+        }
+
+        // return $this->redirectToRoute("connection");
+        return $this->render("user/settingFilleul.html.twig", [
+            "form_inscription" => $form->createView(),
+            "last_email" => $userToVerifie->getEmail(),
+            "flash" => $flash,
+            "pseudo" => $userToVerifie->getPseudo()
+        ]);
+    }
+
+    #[Route(path: "/verification/filleul", name:"verification_filleul", methods: ["GET", "POST"])]
+    public function verificationFilleul(
+        Request $request,
+        Status $status,
+        UserRepository $userRepository,
+        NotificationService $notificationService,
+        TributGService $tributGService,
+        UserPasswordHasherInterface $passwordHasher,
+        EntityManagerInterface $entityManager,
+        UserAuthenticatorInterface $authenticator,
+        UserAuthenticator $loginAuth,
+        Filesystem $filesyst,
+        Tribu_T_Service $tribu_T_Service,
+        UserService $userService,
+        MessageService $messageService,
+        AgendaService $agendaService,
+    ) {
+
+        $userToVerifie = null;
+        if ($this->getUser()) {
+            $userConnected= $status->userProfilService($this->getUser());
+            if( $userConnected["userType"] !== "Type"){
+                return $this->redirectToRoute('app_home');
+            }
+        }
+
+        $tribuG = $request->query->get("tribu");
+        $emailToVerifie = $request->query->get('email');
+        $parentId = $request->query->get('prtid');
+        if($tribuG && $emailToVerifie && $parentId){
+            $userToVerifie = $userRepository->findOneBy(["email"=>$emailToVerifie]);
+            if($userToVerifie){
+                return $this->redirectToRoute("app_accpeted_invitations");
+            }else{
+                
+                $idParain = $parentId;
+
+                $tribuGParainInfos = $userService->getTribuGParainInfo($idParain);
+
+
+                ////CREATE NEW FORM TO COMPLETE USER PROFIL
+                $flash = [];
+
+                $form = $this->createForm(InscriptionFilleulType::class);
+            
+                $form->handleRequest($request);
+                if ($form->isSubmitted()) {
+                    ///get the data
+                    extract($form->getData());
+
+                    $userToVerifie = new User();
+                    ///change the to true the email verified
+                    $userToVerifie->setVerifiedMail(true);  ///get the user from database by id
+                    $userToVerifie->setEmail($email);
+                    $userToVerifie->setPseudo($pseudo);
+                    $userToVerifie->setPassword($password);
+                    $userToVerifie->setRoles(["ROLE_USER"]);
+                    $hashedPassword = $passwordHasher->hashPassword(
+                        $userToVerifie,
+                        $userToVerifie->getPassword()
+                    );
+                    $userToVerifie->setPassword($hashedPassword);
+
+                    ///DEBUT
+                    $userToVerifie->setIsConnected(true);
+                    $userToVerifie->setIdle(300);
+                    $userToVerifie->setTablemessage("tablemessage");
+                    $userToVerifie->setTablenotification("tablenotification");
+                    $userToVerifie->setTablerequesting("tablerequesting");
+                    $userToVerifie->setNomTableAgenda("agenda");
+                    $userToVerifie->setNomTablePartageAgenda("partage_agenda");
+
+                    ///FIN
+
+                    /// if the user is consumer
+                    if ($Consommateur && !$Fournisseur) {
+                        $userToVerifie->setType("consumer");
+                    } else {
+                        $userToVerifie->setType("supplier");
+                    }
+
+                    $entityManager->persist($userToVerifie);
+                    $entityManager->flush();
+
+                    $userId = $userToVerifie->getId();
+
+                    $userToVerifie->setTablemessage("tablemessage_" . $userId);
+                    $userToVerifie->setTablenotification("tablenotification_" . $userId);
+                    $userToVerifie->setTablerequesting("tablerequesting_" . $userId);
+                    $userToVerifie->setNomTableAgenda("agenda_" . $userId);
+                    $userToVerifie->setNomTablePartageAgenda("partage_agenda_" . $userId);
+                    $entityManager->flush();
+
+
+                    ///create table dynamique
+                    $notificationService->createTable("tablenotification_" . $userId);
+                    $messageService->createTable("tablemessage_" . $userId);
+                    $this->requesting->createTable("tablerequesting_" . $userId);
+                    $agendaService->createTableAgenda("agenda_" . $userId);
+                    $agendaService->createTablePartageAgenda("partage_agenda_" . $userId);
+                    $agendaService->createAgendaStoryTable($userId);
+
+                    if ($Consommateur && !$Fournisseur) {
+                        $user_profil = new Consumer();
+                    } else {
+                        $user_profil = new Supplier();
+                        $user_profil->setCommerce($commerce);
+                        $user_profil->setCodeape($code_ape);
+                        $user_profil->setWebsite($site_web);
+                        $user_profil->setFacebook($facebook);
+                        $user_profil->setTwitter($twitter);
+                    }
+
+                    $user_profil->setFirstname($nom);
+                    $user_profil->setLastname($prenom);//$tribuGParainInfos["num_rue"]
+                    $user_profil->setNumRue($tribuGParainInfos["num_rue"]);
+                    $user_profil->setTelephone($telephone);
+                    $user_profil->setCodePostal($tribuGParainInfos["code_postal"]);
+                    $user_profil->setCommune($tribuGParainInfos["commune"]);
+                    $user_profil->setPays($tribuGParainInfos["pays"]);
+
+                    if( $telephone ){
+                        $user_profil->setTelFixe($telephone);
+                    }else{
+                        $user_profil->setTelFixe("");
+                    }
+
+                    $user_profil->setQuartier($tribuGParainInfos["quartier"]);
+
+                    $departement = substr($tribuGParainInfos["code_postal"],0,-3);
+
+                    $user_profil->setTributg($tribuGParainInfos["tributg"]);
+
+
+                    ////set profil
+                    if( $profil ){
+                        ///path file folder
+                        $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $userId . "/";
+                        $dir_exist = $filesyst->exists($path);
+
+                        if ($dir_exist == false) {
+                            $filesyst->mkdir($path, 0777);
+                        }
+
+                        $temp = explode(";", $profil );
+                        $extension = explode("/", $temp[0])[1];
+                        $image_name = "profil_". $nom . "." . $extension;
+
+                        ///save image in public/uploader folder
+                        file_put_contents($path ."/". $image_name, file_get_contents($profil));
+                        
+                        ///set use profile
+                        $user_profil->setPhotoProfil( '/uploads/users/photos/photo_user_' . $userId . "/" . $image_name);
+                    }
+
+                    $user_profil->setUserId($userToVerifie);
+
+                    $user_profil->setIsVerifiedTributGAdmin(0);
+
+                    $user_profil->setTributg($tribuGParainInfos["tributg"]);
+
+                    ///attribution des tribut.
+                    $resultat = $tributGService->createTableTributG($tribuGParainInfos["tributg"], $userId);
+
+                    ///save the user information
+                    $entityManager->persist($user_profil);
+                    $entityManager->flush();
+
+                    $userService->updateInvitationStoryG($tribuGParainInfos["tributg"].'_invitation', $tribuGParainInfos["user_id"], $email, $userId, 1);
+
+                    ////  NOTIFICATION
+
+                    ///switch type of the notification
+                    $notification = [
+                        "admin" => "Nous vous informons qu'une nouvelle tribu G a été créée.",
+                        "fondateur" => "Nous avons un grand plaisir de vous annoncer que la tribu G selon votre code postal a été créée et vous êtes l'administrateur provisoire.",
+                        "current" => "Nous avons un grand plaisir de vous avoir parmi nous dans la tribu G d'après votre code postal. De la part de tous les membres et la direction, nous aimerions présenter nos salutations cordiales et la bonne chance.",
+                        "other" => "Nous avons un grand plaisir de vous annonce que notre tribu G a un nouveau fan."
+                    ];
+
+                    $type = "/user/account";
+                    $all_user_sending_notification = $tributGService->getAllTributG($user_profil->getTributG()); /// [ ["user_id" => 1], ... ]
+
+                    foreach ($all_user_sending_notification as $user_to_send_notification) { ///["user_id" => 1]
+                        
+                        $user_id_post = intval($user_to_send_notification["user_id"]);
+                        if ($user_id_post === $userId) { ///current user connecter
+
+                            if ($resultat == 0) {
+
+                                $message_notification = $notification["fondateur"];
+                            } else {
+
+                                $message_notification = $notification["current"];
+                            }
+                        } else {
+                            // $message_notification = $notification["other"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/profil/" .  $request->query->get('id') . "' alt='Nouvelle membre'>Voir son profil</a>";
+                            $message_notification = $notification["other"];
+                        }
+
+                        $notificationService->sendNotificationForOne(
+                            $userId,
+                            $user_id_post,
+                            $type,
+                            $message_notification
+                        );
+                    }
+
+                    ////notification for super admin
+                    if ($userRepository->findByRolesUserSuperAdmin() && $resultat == 0) {
+
+                        $super_admin = $userRepository->findByRolesUserSuperAdmin();
+                        // $message_notification = $notification["admin"] . "<br/> <a class='d-block w-50 mx-auto btn btn-primary text-center' href='/user/dashboard-membre?table=" .  $name_tributG . "' alt='Nouvelle membre'>Valider</a>";
+                        $message_notification = $notification["admin"];
+
+                        $notificationService->sendNotificationForOne(
+                            $userId,
+                            $super_admin->getId(),
+                            $type,
+                            $message_notification,
+                        );
+                    }
+
+                    // Générer des tribus T ami et famille
+                    $suffixeTableTribuTAmie = "A";
+                    $suffixeTableTribuTFamille = "F";
+                    $tableTribuTAmie = "tribu_t_" . $userId . "_" .$suffixeTableTribuTAmie;
+                    $tableTribuTFamille = "tribu_t_" . $userId . "_" .$suffixeTableTribuTFamille;
+                    $nomTribuTAmie = "Tribu A";
+                    $descriptionTribuTAmie = "Tribu T pour mes amis";
+                    $nomTribuTFamille = "Tribu F";
+                    $descriptionTribuTFamille = "Tribu T pour ma famille";
+                    $tribu_T_Service->createTribuTable($suffixeTableTribuTAmie, $userId, $nomTribuTAmie, $descriptionTribuTAmie);
+                    $tribu_T_Service->createTribuTable($suffixeTableTribuTFamille, $userId, $nomTribuTFamille, $descriptionTribuTFamille);
+
+                    $extension = [];
+                    $extension["restaurant"] = 1;
+                    $extension["golf"] = 1;
+                    if(!$tribu_T_Service->checkIfTribuTExist($tableTribuTAmie, $userId, "tribu_t_owned"))
+                        $tribu_T_Service->setTribuT($tableTribuTAmie, $descriptionTribuTAmie, "", $extension, $userId, "tribu_t_owned", $nomTribuTAmie);
+                    
+                    if(!$tribu_T_Service->checkIfTribuTExist($tableTribuTFamille, $userId, "tribu_t_owned"))
+                        $tribu_T_Service->setTribuT($tableTribuTFamille, $descriptionTribuTFamille, "", $extension, $userId, "tribu_t_owned", $nomTribuTFamille);
+                    
+                    if ($extension["restaurant"] == 1) {
+
+                        $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "restaurant");
+
+                        $tribu_T_Service->createTableComment($tableTribuTAmie, "restaurant_commentaire");
+
+                        $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "restaurant");
+
+                        $tribu_T_Service->createTableComment($tableTribuTFamille, "restaurant_commentaire");
+                    }
+
+                    if ($extension["golf"] == 1) {
+
+                        $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "golf");
+
+                        $tribu_T_Service->createTableComment($tableTribuTAmie, "golf_commentaire");
+
+                        $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "golf");
+
+                        $tribu_T_Service->createTableComment($tableTribuTFamille, "golf_commentaire");
+                    }
+
+                    $tribu_T_Service->creaTableTeamMessage($tableTribuTAmie);
+                    $tribu_T_Service->creaTableTeamMessage($tableTribuTFamille);
+
+                    // CREATE TABLE PARRAINAGE
+                    $tribu_T_Service->createParrainageTable($userId);
+                    $tableParrainageFilleul = "tableparrainage_".$userId;
+                    $tableParrainageParrain = "tableparrainage_".$idParain;
+                    $userService->saveOneParainOrFilleuil($tableParrainageFilleul, $idParain, $tribuGParainInfos["tributg"], 0, 1);
+                    $userService->saveOneParainOrFilleuil($tableParrainageParrain, $userId, $tribuGParainInfos["tributg"], 1, 1);
+                    
+                    return $authenticator->authenticateUser(
+                        $userToVerifie,
+                        $loginAuth,
+                        $request
+                    );
+                }
+            }
+        }else{
+            return $this->redirectToRoute('app_home');
+        }
+
+        return $this->render("user/settingFilleul.html.twig", [
+            "form_inscription" => $form->createView(),
+            "last_email" => $emailToVerifie,
+            "pseudo" => "Pseudo",
+            //"flash" => $flash,
+            "flash" => $flash
+        ]);
     }
 
 }

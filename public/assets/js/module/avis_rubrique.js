@@ -1245,6 +1245,7 @@ let dateString = dateForName.getDate() + "_" + month + "_" + dateForName.getFull
  * @author Elie
  * @utilisation : evenement de capture audio pour un avis rubrique
  */
+if(recordAudio) {
 recordAudio.addEventListener("click", (event) => {
 	if (soundClips.querySelector("audio") || soundClips.querySelector("video") || soundClips.querySelector("img")) {
 		swal({
@@ -1264,11 +1265,12 @@ recordAudio.addEventListener("click", (event) => {
 		// startRecordingAudio(true)
 	}
 });
-
+}
 /**
  * @author Elie
  * @utilization : evenement de stop audio
  */
+if(stopAudio)
 stopAudio.addEventListener("click", (event) => {
 	mediaRecorder.stop();
 	//console.log(mediaRecorder.state);
@@ -1288,6 +1290,7 @@ stopAudio.addEventListener("click", (event) => {
  * @author ELie
  * @utilisation evenement de l'input avis pour initialisation de la media
  */
+if(msgTxt)
 msgTxt.addEventListener("keyup", (event) => {
 	// console.log("manoratra");
 	if (event.target.value == "") {
@@ -1301,6 +1304,7 @@ msgTxt.addEventListener("keyup", (event) => {
  * @author Elie
  * @utilisation Recorder par un camera pour un avis rubrique
  */
+if(recordCam)
 recordCam.addEventListener("click", (event) => {
 	setMediaStream(constraints);
 });
@@ -1539,6 +1543,7 @@ const getCameraSelection = async () => {
 		<label class="form-check-label" for="check-${i}">${videoDevice.label}</label></div>`;
 		i++;
 	});
+if(cameraOptions)
 	cameraOptions.innerHTML = options.join("");
 };
 
@@ -1559,6 +1564,7 @@ const getMicroSelectionAudio = async () => {
 		i++;
 	});
 	// microOptions.innerHTML = options.join('');
+if(document.querySelector("#selectMicroOption"))
 	document.querySelector("#selectMicroOption").innerHTML = options.join("");
 };
 
@@ -1579,6 +1585,7 @@ const getMicroSelectionCamera = async () => {
 		<label class="form-check-label" style="display: inline;" for="check-${i}">${videoDevice.label}</label></div>`;
 		i++;
 	});
+if(microOptions)
 	microOptions.innerHTML = options.join("");
 	// document.querySelector("#selectMicroOption").innerHTML = options.join('');
 };

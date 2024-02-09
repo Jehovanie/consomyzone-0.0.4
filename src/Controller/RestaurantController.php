@@ -1951,4 +1951,66 @@ TributGService $tributGService,
        
         return new Response($content); 
     }
+
+
+    #[Route("/user/add_resto_favory", name: "api_add_resto_favory_default", methods: ["POST"])]
+    public function pushOneToDefaultFavory(
+        Request $request,
+        UserService $userService
+    ){
+        $data = json_decode($request->getContent(), true);
+        $etablisment_id = $data["etablisment_id"];
+
+        $current_user= $this->getUser();
+
+        ///check if this rubrique is already in the favori
+        if($userService->checkIsAlreadyInFavory($current_user->getId(), $etablisment_id)){
+            $favory= $userService->getInformationEtablismentFavory($current_user->getId(), $etablisment_id);
+
+            return $this->json([
+                "code" => 200,
+                "message" => "already created",
+                "data" => [
+                    "etablisment" => [
+                        "id" => $favory["idRubrique"],
+                        "type" => $favory["rubriqueType"]
+                    ],
+                    "folder" => [
+                        "id" => $favory["idFolder"],
+                        "name" => $favory["name"],
+                        "id_folder_parent" => $favory["idFolderParent"],
+                        "livel_parent" => $favory["livel_parent"]
+                    ],
+                ]
+            ]);
+        }
+
+        $default_folder= [
+            "id" => null,
+            "name" => "Mes favori",
+            "id_folder_parent" => 0,
+            "livel_parent" => 0
+        ];
+
+       
+        $etablisment= [
+            "type" => "resto",
+            "id" => $etablisment_id,
+        ];
+
+        $result = $userService->saveFavory(
+            $current_user->getId(),
+            $etablisment,
+            $default_folder
+        );
+
+        return $this->json([
+            "code" => 201,
+            "message" => "success",
+            "data" => [
+                "etablisment" => $etablisment,
+                "folder" => $default_folder,
+            ]
+        ]);
+    }
 }
