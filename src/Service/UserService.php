@@ -1190,7 +1190,7 @@ class UserService  extends PDOConnexionService{
         $livel_parent= intval($one_favori_folder["livel_parent"]) +1;
 
         $request_check_favory = $this->getPDO()->prepare(
-            "SELECT idRubrique, idFolder, datetime FROM $table_favori_etablisment WHERE idFolder= :idFolder AND rubriqueType= :rubriqueType"
+            "SELECT id, idRubrique, idFolder, datetime FROM $table_favori_etablisment WHERE idFolder= :idFolder AND rubriqueType= :rubriqueType"
         );
         $request_check_favory->bindParam(':idFolder', $favoriFolder_id);
         $request_check_favory->bindParam(':rubriqueType', $rubriqueType);
@@ -1422,6 +1422,32 @@ class UserService  extends PDOConnexionService{
 
         $result = $request_check_favory->fetchAll(PDO::FETCH_ASSOC);
         return $result;
+    }
+
+
+    public function removeFavoriteEtablisment($userId, $etablisment_id){
+        $table_favori_etablisment= "favori_etablisment_" . $userId;
+        
+        $etablisment_id= intval($etablisment_id);
+
+        $request_check_favory = $this->getPDO()->prepare(
+            "SELECT id FROM $table_favori_etablisment WHERE id= :id"
+        );
+        $request_check_favory->bindParam(':id', $etablisment_id);
+        $request_check_favory->execute();
+        $result = $request_check_favory->fetch(PDO::FETCH_ASSOC);
+
+        if( !$result ){
+            return false;
+        }
+        
+        $request_delete_favory = $this->getPDO()->prepare(
+            "DELETE FROM $table_favori_etablisment WHERE id= :id"
+        );
+        $request_delete_favory->bindParam(':id', $etablisment_id);
+        $result = $request_delete_favory->execute();
+ 
+        return true;
     }
 
 

@@ -3865,6 +3865,7 @@ class UserController extends AbstractController
                         "name" => $resto["name"],
                         "dep" => $resto["dep"],
                         "nom_dep" => $resto["nom_dep"],
+                        "id_favory_etablisment" => $resto["id_favory_etablisment"],
                         "isfolder" => false
                     ]);
                 }
@@ -3874,6 +3875,26 @@ class UserController extends AbstractController
         return $this->json([
             "code" => 200,
             "data" => $results
+        ]);
+    }
+
+    #[Route("/user/favori_etablisment/remove", name: "api_remove_favori_etablisment", methods: ["POST"])]
+    public function RemoveFavoriEtablisment(
+        Request $request,
+        UserService $userService
+    ){
+        $data = json_decode($request->getContent(), true);
+        $etablisment_id= $data["etablisment_id"];
+
+        $current_user= $this->getUser();
+
+        $isDeleted = $userService->removeFavoriteEtablisment($current_user->getId(), $etablisment_id);
+
+        return $this->json([
+            "code" => 200,
+            "data" => [
+                "isDeleted" => $isDeleted,
+            ]
         ]);
     }
 }

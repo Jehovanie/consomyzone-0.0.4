@@ -1005,10 +1005,17 @@ function createItemFavoryElement(object) {
 	let icon_path = "/assets/icon/NewIcons/icon-resto-new-B.png";
 	icon_path = IS_DEV_MODE ? icon_path : `/public${icon_path}`;
 
+	const id_favory_etablisment = object.id_favory_etablisment;
+
 	return `
-		<li class="list-group-item d-flex justify-content-start align-items-center">
-			<img class="icon_favory_rubrique" src="${icon_path}" alt="${object.name}">
-			<span class="ms-2 favory_etablisment" onclick="getDetailFromListRight('${object.nom_dep}', '${object.dep}', '${object.id}')">${object.name}</span>
+		<li class="favory_etablisment_${id_favory_etablisment}_jheo_js list-group-item d-flex justify-content-between align-items-center">
+			<div class="d-flex justify-content-start align-items-center">
+				<img class="icon_favory_rubrique" src="${icon_path}" alt="${object.name}">
+			    <span class="ms-2 favory_etablisment" onclick="getDetailFromListRight('${object.nom_dep}', '${object.dep}', '${object.id}')">${object.name}</span>
+			</div>
+			<span class="remove_etablisment_${id_favory_etablisment}_jheo_js text-danger float-end" style="cursor:pointer" onclick="removeFavoryEtablisment('${id_favory_etablisment}')">
+				<i class="fas fa-trash" aria-hidden="true"></i>
+			</span>
 		</li>
 	`;
 }
@@ -1149,9 +1156,14 @@ function handleChangeDirectory(modal_content_favory, etablisment_id) {
 		<form>
 			<div class="content_change_directory_favory">
 				<div class="d-flex justify-content-start align-items-center">
-					<p class="font_size_09 text-decoration-underline text-primary">
+					<button class="font_size_09 text-decoration-underline text-primary"
+						type="button"
+						data-bs-dismiss="modal"
+						data-bs-toggle="collapse" href="#parentdossier"
+						onclick="handleMoveDirectory('${etablisment_id}')"
+					>
 						Voulez-vous changer l'emplacement?
-					</p>
+					</button>
 				</div>
 			</div>
 
@@ -1634,4 +1646,54 @@ function pushMoveFavoryEtablisment(data_folder, modal_content_favory) {
 			}
 		})
 		.catch((error) => console.log(error));
+}
+
+/**
+ * @author Jehovanie RAMANDIRJOEL <jehovanieram@gmail.com>
+ *
+ * Goal: delete favori etablisment
+ * @param {integer} id_favory_etablisment : id favori etablisment 
+ */
+function removeFavoryEtablisment(id_favory_etablisment) {
+	let link = "/user/favori_etablisment/remove";
+
+	if (document.querySelector(`.remove_etablisment_${id_favory_etablisment}_jheo_js`)) {
+		const remove_etab = document.querySelector(`.remove_etablisment_${id_favory_etablisment}_jheo_js`);
+		remove_etab.innerHTML = `
+			<i class="fa-solid fa-spinner fa-spin"></i>
+		`;
+	}
+
+	const request = new Request(link, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			etablisment_id: id_favory_etablisment,
+		}),
+	});
+
+	fetch(request)
+		.then((response) => response.json())
+		.then((data) => {
+			console.log(data);
+			if (document.querySelector(`.favory_etablisment_${id_favory_etablisment}_jheo_js`)) {
+				document.querySelector(`.favory_etablisment_${id_favory_etablisment}_jheo_js`).remove();
+			}
+		})
+		.catch((error) => console.log(error));
+}
+
+/**
+ * @author Elie
+ * affichage detail pastille
+ * @param {*} elem
+ */
+function openModalDetailPastille(elem) {
+	document.querySelector("#modalCreatePopUpLabel").innerHTML = elem.getAttribute("data-name");
+	document.querySelector(".textInfos").innerHTML =
+		"Ce restaurant est pastillé par la tribu " + elem.getAttribute("data-name");
+	document.querySelector(".tbtName").innerHTML = elem.getAttribute("data-name");
 }
