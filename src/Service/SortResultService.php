@@ -626,7 +626,7 @@ class SortResultService extends StringTraitementService
 
         extract($table); /// $resto, $ferme, $station, $golf, $tabac
         $results= [];
-        if( count($resto) < 2 || count($ferme) < 2 || count($station) < 2 || count($golf) < 2 || count($tabac) < 2){
+        if( count($resto) < 2 || count($ferme) < 2 || count($station) < 2 || count($golf) < 2 || count($tabac) < 2 || count($marche) < 2){
             $key =  count($resto) > 0 ? $resto[0]["departement"] : ( 
                         count($ferme) > 0 ? $ferme[0]["departement"] : ( 
                             count($station) > 0 ? $station[0]["departement"] : ( 
@@ -696,6 +696,7 @@ class SortResultService extends StringTraitementService
                 $result_golf= 0;
                 $result_tabac= 0;
                 $result_total= 0;
+                $result_marche= 0;
 
                 if( SortResultService::findData($resto, $i) ){
                     $data= SortResultService::findData($resto, $i);
@@ -722,6 +723,11 @@ class SortResultService extends StringTraitementService
                     $result_tabac += intval($data["account_per_dep"]);
                 }
 
+                if( SortResultService::findData($marche, $i) ){
+                    $data= SortResultService::findData($marche, $i);
+                    $result_marche += intval($data["account_per_dep"]);
+                }
+
                 $result_total= $result_resto + $result_ferme + $result_station + $result_golf +  $result_tabac;
 
                 $result= [
@@ -732,7 +738,8 @@ class SortResultService extends StringTraitementService
                         "ferme" => $result_ferme,
                         "station" => $result_station,
                         "golf" => $result_golf,
-                        "tabac" => $result_tabac
+                        "tabac" => $result_tabac,
+                        "marche" => $result_marche
                     ]
                 ];
 

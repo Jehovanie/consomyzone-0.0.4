@@ -1,0 +1,156 @@
+<div class="content_home content_body_details_jheo_js" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
+	<div class="left_content_home">
+		<div class="description" id="details-coord">
+			<div class="content_titre_details">
+				<div class="titre text-center">
+					<div class="restoNameWithLogoTribu mb-2 mt-4">
+						<div class="col-12 mt-2">
+							<div class="text-center">
+								<p class="rubriqueNameDetail" data-name="{{details.denominationF | raw}}">{{details.denominationF | raw}}</p>
+							</div>
+						</div>
+					</div>
+
+					<figcaption class="blockquote-footer card-text cmz-adresse">
+						Adresse :
+						<a href="#" class="small text-center ">
+							{{details.adresse|lower}}
+						</a>
+					</figcaption>
+				</div>
+
+				<div class="content_all_action mt-2 mb-2">
+					<div  class="d-flex justify-content-center align-items-stretch flex-gap-2">
+						<span>
+							<a id="see-tom-js" style="font-size:smaller" class="btn btn-sm btn-secondary" onclick="openSwalNonActif()">
+								<span class="nbr_avis_marche_jheo_js">0</span>
+								avis
+							</a>
+						</span>
+						<button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick=" openSwalNonActif()">Donner votre avis</button>
+						<button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_gris_actif_js_Elie " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour pastiller un restaurant." onclick="openSwalNonActif()">Pastiller</button>
+						<button type="button" class="btn btn-secondary btn-sm ms-2" onclick="openSwalNonActif()">
+							<i class="fa-regular fa-star"></i>
+						</button>
+					</div>
+				</div>
+			</div>
+			<div class="content_body mt-2 p-4">
+				<div class="content_specificite mb-3">
+					<div class="specificite">
+						<p class="h5">
+							<i class="fa-solid fa-gem text-primary me-1 ft_09"></i>
+							Spécificité: 
+						</p>
+						<ul class="list-group">
+							<li class="list-group-item">
+								{% if details.specificite is not same as("") %}
+									<h5 class="ms-4"> {{ details.specificite }} </h5>
+								{% else %}
+									<h5 class="ms-4 text-muted"> Non spécifier </h5>
+								{% endif %}
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="content_jour_de_marche  mb-3">
+					<div class="jour_de_marche">
+						<p class="h5">
+							<i class="fa-solid fa-calendar-days text-warning me-1 ft_09"></i>
+							Notre jour de marche: 
+						</p>
+						<ul class="list-group">
+							{% if details.jour_de_marche_1 is not same as("") %}
+								<li class="list-group-item">
+									<h6 class="text-secondary">
+										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
+										{{ details.jour_de_marche_1|lower }}
+									</h6>
+								</li>
+							{% endif %}
+
+							{% if details.jour_de_marche_2 is not same as("") %}
+								<li class="list-group-item">
+									<h6 class="text-secondary">
+										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
+										{{ details.jour_de_marche_2|lower }}
+									</h6>
+								</li>
+							{% endif %}
+
+							{% if details.jour_de_marche_3 is not same as("") %}
+								<li  class="list-group-item">
+									<h6 class="text-secondary">
+										<i class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
+										{{ details.jour_de_marche_3|lower }}
+									</h6>
+								</li>
+							{% endif %}
+
+							{% if details.jour_de_marche_4 is not same as("") %}
+								<li class="list-group-item">
+									<h6 class="text-secondary">
+										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
+										{{ details.jour_de_marche_4|lower }}
+									</h6>
+								</li>
+							{% endif %}
+
+							{% if details.jour_de_marche_5 is not same as("") %}
+								<li class="list-group-item">
+									<h6 class="text-secondary">
+										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
+										{{ details.jour_de_marche_5|lower }}
+									</h6>
+								</li>
+							{% endif %}
+
+
+							{% if details.jour_de_marche_6 is not same as("") %}
+								<li class="list-group-item">
+									<h6 class="text-secondary">
+										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
+										{{ details.jour_de_marche_6|lower }}
+									</h6>
+								</li>
+							{% endif %}
+
+							{% if details.jour_de_marche_7 is not same as("") %}
+								<li class="list-group-item">
+									<h6 class="text-secondary">
+										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
+										{{ details.jour_de_marche_7|lower }}
+									</h6>
+								</li>
+							{% endif %}
+						</ul>
+					</div>
+				</div>
+
+				{# <div class="content_specificite mb-3">
+					<div class="specificite">
+						<p class="h5">
+							<i   class="fa-solid fa-location-crosshairs text-primary me-1"></i>Siège: 
+						</p>
+						<ul class="list-group">
+							<li class="list-group-item">
+								<span class="fw_lighter ft_09">Departement:</span> {{ details.dep}}
+							</li>
+							<li class="list-group-item">
+								<span class="fw_lighter ft_09">Commune:</span> {{ details.commune}}
+							</li>
+							<li class="list-group-item">
+								<span class="fw_lighter ft_09">Codinsee:</span> {{ details.villenorm}}
+							</li>
+							<li class="list-group-item">
+								<span class="fw_lighter ft_09">Code postal:</span> {{ details.codpost}}
+							</li>
+						</ul>
+					</div>
+				</div> #}
+			</div>
+		</div>
+	</div>
+</div>
+
+{# {{ dump(details)}} #}

@@ -105,53 +105,6 @@ class MarckerClusterFerme extends MapModule {
 		console.log(this.map);
 	}
 
-	createMarkersCluster() {
-		this.markers = L.markerClusterGroup({
-			chunkedLoading: true,
-			animate: true,
-			disableClusteringAtZoom: true,
-			animateAddingMarkers: true,
-			chunkedLoading: true,
-			chunkInterval: 500,
-			chunkDelay: 100,
-		});
-		// const that= this;
-		// this.markers = L.markerClusterGroup({
-		//     chunkedLoading: true,
-		//     iconCreateFunction: function (cluster) {
-		//         if(that.marker_last_selected){
-		//             let sepcMarmerIsExist = false;
-		//             for (let g of  cluster.getAllChildMarkers()){
-		//                 if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) {
-		//                     sepcMarmerIsExist = true;
-		//                     break;
-		//                 }
-		//             }
-
-		//             if(sepcMarmerIsExist){
-		//                 return L.divIcon({
-		//                     html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + '</div>',
-		//                     className: "spec_cluster",
-		//                     iconSize:L.point(35,35)
-		//                 });
-		//             }else{
-		//                 return L.divIcon({
-		//                     html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-		//                     className: "mycluster",
-		//                     iconSize:L.point(35,35)
-		//                 });
-		//             }
-		//         }else{
-		//             return L.divIcon({
-		//                 html: '<div class="markers_tommy_js">' + cluster.getChildCount() + '</div>',
-		//                 className: "mycluster",
-		//                 iconSize:L.point(35,35)
-		//             });
-		//         }
-		//     },
-		// });
-	}
-
 	addMarker(newData) {
 		const zoom = this.map._zoom;
 		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
@@ -255,12 +208,12 @@ class MarckerClusterFerme extends MapModule {
 			this.markers.refreshClusters();
 
 			this.renderFicheDetails(item);
-			
-			if(document.querySelector("#dockableIcone_"+item.id))
-				document.querySelector("#dockableIcone_"+item.id).remove()
-			if(document.querySelector("#dockableBtn_"+item.id))
-				document.querySelector("#dockableBtn_"+item.id).remove()
-			removeOrEditSpecificElement()
+
+			if (document.querySelector("#dockableIcone_" + item.id))
+				document.querySelector("#dockableIcone_" + item.id).remove();
+			if (document.querySelector("#dockableBtn_" + item.id))
+				document.querySelector("#dockableBtn_" + item.id).remove();
+			removeOrEditSpecificElement();
 		});
 	}
 

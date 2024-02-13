@@ -81,55 +81,6 @@ class MarckerClusterResto extends MapModule {
 		}
 	}
 
-	createMarkersCluster() {
-		this.markers = L.markerClusterGroup({
-			chunkedLoading: true,
-			chunkInterval: 500,
-			chunkDelay: 100,
-			maxClusterRadius: 80, //A cluster will cover at most this many pixels from its center
-			clusterPane: L.Marker.prototype.options.pane,
-			spiderfyOnMaxZoom: true,
-			disableClusteringAtZoom: true,
-		});
-
-		// const that = this;
-		// this.markers = L.markerClusterGroup({
-		// 	chunkedLoading: true,
-		// 	disableClusteringAtZoom: 7,
-		// 	iconCreateFunction: function (cluster) {
-		// 		console.log(cluster);
-		// 		if (that.marker_last_selected) {
-		// 			let sepcMarmerIsExist = false;
-		// 			for (let g of cluster.getAllChildMarkers()) {
-		// 				if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) {
-		// 					sepcMarmerIsExist = true;
-		// 					break;
-		// 				}
-		// 			}
-		// 			if (sepcMarmerIsExist) {
-		// 				return L.divIcon({
-		// 					html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + "</div>",
-		// 					className: "spec_cluster",
-		// 					iconSize: L.point(35, 35),
-		// 				});
-		// 			} else {
-		// 				return L.divIcon({
-		// 					html: '<div class="markers_tommy_js">' + cluster.getChildCount() + "</div>",
-		// 					className: "mycluster",
-		// 					iconSize: L.point(35, 35),
-		// 				});
-		// 			}
-		// 		} else {
-		// 			return L.divIcon({
-		// 				html: '<div class="markers_tommy_js">' + cluster.getChildCount() + "</div>",
-		// 				className: "mycluster",
-		// 				iconSize: L.point(35, 35),
-		// 			});
-		// 		}
-		// 	},
-		// });
-	}
-
 	/**
 	 *  @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
 	 *
@@ -351,7 +302,6 @@ class MarckerClusterResto extends MapModule {
 
 			this.updateMarkersDisplay(new_size);
 			this.addPeripheriqueMarker(new_size);
-
 		});
 	}
 
@@ -442,14 +392,17 @@ class MarckerClusterResto extends MapModule {
 		return data;
 	}
 
-	updateListRestoPastille(idResto, tribuName, logo=null) {
-		this.listRestoPastille.push({ id_resto: idResto.toString(), tableName: tribuName, logo_path:logo});
+	updateListRestoPastille(idResto, tribuName, logo = null) {
+		this.listRestoPastille.push({ id_resto: idResto.toString(), tableName: tribuName, logo_path: logo });
 		this.updateStateResto(idResto);
 	}
 
 	updateListRestoDepastille(idResto, tribuName) {
 		this.listRestoPastille = this.listRestoPastille.filter((item) => {
-			return parseInt(item.id_resto) != parseInt(idResto) || item.tableName.replaceAll('_restaurant','') != tribuName.replaceAll('_restaurant','');
+			return (
+				parseInt(item.id_resto) != parseInt(idResto) ||
+				item.tableName.replaceAll("_restaurant", "") != tribuName.replaceAll("_restaurant", "")
+			);
 		});
 		this.updateStateResto(idResto);
 	}

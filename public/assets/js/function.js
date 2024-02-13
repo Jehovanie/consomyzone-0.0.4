@@ -420,6 +420,27 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome = false, select_
 	fetchDetails(id_selector, pathDetails);
 }
 
+function getDetailMarche(codeDepart, nameDepart, idMarche, inHome = false, select_dem) {
+	let remove = !inHome
+		? document.getElementById("remove-detail-marche")
+		: document.getElementById("remove-detail-home");
+	remove.removeAttribute("class", "hidden");
+
+	if (screen.width <= 991) {
+		remove.setAttribute("class", "navleft-detail-mobile fixed-top ");
+	} else {
+		remove.setAttribute("class", "navleft-detail key_draggable_details_jheo_js");
+	}
+
+	const id_selector = !inHome ? "#content_detail_marche_js_jheo" : "#content_details_home_js_jheo";
+
+	document.querySelector(id_selector).innerHTML = createMiniCMZloading();
+
+	const pathDetails = `/marche/${codeDepart}/details/${idMarche}`;
+
+	fetchDetails(id_selector, pathDetails);
+}
+
 function addListFermeMobile() {
 	document.querySelector(".open-navleft-mobile-tomm-js").addEventListener("click", () => {
 		document.querySelector(".open-navleft-mobile-tomm-js").style.opacity = 0;
@@ -2290,7 +2311,9 @@ function showPastillTable(e, id) {
 		.then((res) => res.json())
 		.then((response) => {
 			const isOk = response.isPastilled;
-			document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-velona", response.profil_tribuG.logo_path);
+			document
+				.querySelector("#btn-pastille-elie-tbg")
+				.setAttribute("data-velona", response.profil_tribuG.logo_path);
 			if (isOk) {
 				document
 					.querySelector("#btn-pastille-elie-tbg")
@@ -4681,7 +4704,7 @@ function setGallerieImageV2() {
  * @param {string} email
  * @param {int} invite_to
  */
-function saveInvitationStory(table_trib, email,withMessage=true) {
+function saveInvitationStory(table_trib, email, withMessage = true) {
 	fetch("/tribu/invitation/save_story/" + table_trib, {
 		method: "POST",
 		headers: {
@@ -4695,19 +4718,17 @@ function saveInvitationStory(table_trib, email,withMessage=true) {
 		.then((r) => r.json())
 		.then((res) => {
 			if (res.status == "ok") {
-				if(withMessage)
+				if (withMessage)
 					swal({
 						text: "Votre nouvelle invitation par e-mail pour joindre la tribu T est envoyée au destinataire.",
 						icon: "info",
 					});
-
 			} else if (res.status == "!ok") {
-				if(withMessage)
+				if (withMessage)
 					swal({
 						text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
 						icon: "warning",
 					});
-
 			}
 			// console.log(res);
 		});
@@ -5029,7 +5050,7 @@ function showGolf(tableGolfPastilled) {
 					let i = 0;
 					const action = "create";
 					const text1 = "Notez";
-//onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})"
+					//onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})"
 					for (const item of data) {
 						console.log(item);
 						if (item.isPastilled) {
@@ -5885,7 +5906,11 @@ function pastilleForTribuG(e, type, id, name) {
 								content_tribuG_pastille.querySelector(".mainContainerLogoTribu").appendChild(div);
 							}
 						}
-						CURRENT_MAP_INSTANCE.updateListRestoPastille(id, e.dataset.tbname + "_restaurant", "/uploads/tribus/photos/"+e.getAttribute("data-velona"));
+						CURRENT_MAP_INSTANCE.updateListRestoPastille(
+							id,
+							e.dataset.tbname + "_restaurant",
+							"/uploads/tribus/photos/" + e.getAttribute("data-velona")
+						);
 
 						if (document.querySelector("#fetch_resto_tribug_jheo_js")) {
 							document.querySelector("#fetch_resto_tribug_jheo_js").click();
@@ -6324,8 +6349,8 @@ function openOnNote(id_pastille, action) {
 	// document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")");
 
 	$("#modalAvis").modal("show");
-  	document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action);
-    document
+	document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action);
+	document
 		.querySelector(".send_avis_jheo_js")
 		.setAttribute("onclick", "addAvisInTribuG(" + id_pastille + ",'resto')");
 }
@@ -6538,7 +6563,6 @@ function shuffle(array) {
 function controlInputEmailToMultiple(allInputHtml) {
 	allInputHtml.forEach((input) => {
 		input.addEventListener("keyup", (e) => {
-			
 			if (e.code === "KeyM" || e.code === "Space") {
 				if (input.value.trim().endsWith(",")) {
 					const email = formatListInputEmail(input.value);
@@ -7983,52 +8007,48 @@ function lookupFanIframe(event, useDefaulAction = true, myaction1 = null, myacti
  * créé la carte pour le partisan
  */
 function createCardPartisan(json, isIframe = false) {
-  const photoProfil =
-    json.image_profil != null
-      ? "/public" + json.image_profil
-      : "/public/uploads/users/photos/default_pdp.png";
-  let link = !isIframe
-    ? "/user/message/perso?user_id=" + json.id
-    : "/api/message/perso_iframe?user_id=" + json.id;
+	const photoProfil =
+		json.image_profil != null ? "/public" + json.image_profil : "/public/uploads/users/photos/default_pdp.png";
+	let link = !isIframe ? "/user/message/perso?user_id=" + json.id : "/api/message/perso_iframe?user_id=" + json.id;
 
-  const fullName = json.firstname + " " + json.lastname;
+	const fullName = json.firstname + " " + json.lastname;
 
-  // last_msg_user_${json.id}_jheo_js
-  //content-message-nanta-css
-  const divContainer = document.createElement("div");
-  divContainer.setAttribute("class", `cg lc mg sh ol rl tq is  mss_fan_js`);
-  divContainer.dataset.rank = cryptageJs((''+json.id));
+	// last_msg_user_${json.id}_jheo_js
+	//content-message-nanta-css
+	const divContainer = document.createElement("div");
+	divContainer.setAttribute("class", `cg lc mg sh ol rl tq is  mss_fan_js`);
+	divContainer.dataset.rank = cryptageJs("" + json.id);
 
-  const divHeader = document.createElement("div");
-  divHeader.setAttribute("class", `h mb sc yd of th`);
-  const img = document.createElement("img");
-  img.setAttribute("class", `vc yd qk rk elie-pdp-modif`);
-  img.src = photoProfil;
-  img.style = "cursor:pointer;";
-  img.dataset.bsToggle = "modal";
-  img.dataset.bsTarget = "#modal_show_photo_mess";
+	const divHeader = document.createElement("div");
+	divHeader.setAttribute("class", `h mb sc yd of th`);
+	const img = document.createElement("img");
+	img.setAttribute("class", `vc yd qk rk elie-pdp-modif`);
+	img.src = photoProfil;
+	img.style = "cursor:pointer;";
+	img.dataset.bsToggle = "modal";
+	img.dataset.bsTarget = "#modal_show_photo_mess";
 
-  const span = document.createElement("span");
-  //span.setAttribute("class","onlinestat_fan_js")
-  let isActive = !!json.is_online;
-  if (isActive) {
-    span.setAttribute("class", "g l m jc wc ce th pi ij xj onlinestat_fan_js");
-  } else {
-    span.setAttribute("class", "g l m jc wc ce th pi ij onlinestat_fan_js");
-    span.style.backgroundColor = "gray";
-  }
+	const span = document.createElement("span");
+	//span.setAttribute("class","onlinestat_fan_js")
+	let isActive = !!json.is_online;
+	if (isActive) {
+		span.setAttribute("class", "g l m jc wc ce th pi ij xj onlinestat_fan_js");
+	} else {
+		span.setAttribute("class", "g l m jc wc ce th pi ij onlinestat_fan_js");
+		span.style.backgroundColor = "gray";
+	}
 
-  img.onclick = function () {
-    setPhotoMessage(this);
-  };
+	img.onclick = function () {
+		setPhotoMessage(this);
+	};
 
-  divHeader.appendChild(img);
-  divHeader.appendChild(span);
+	divHeader.appendChild(img);
+	divHeader.appendChild(span);
 
-  const a = document.createElement("a");
-  a.href = link;
-  a.setAttribute("class", "yd");
-  a.innerHTML = `<div class="row">
+	const a = document.createElement("a");
+	a.href = link;
+	a.setAttribute("class", "yd");
+	a.innerHTML = `<div class="row">
 					  <div class="col-8">
 						  <h5 class="mn un zn gs">
 							  ${fullName}
@@ -8036,9 +8056,9 @@ function createCardPartisan(json, isIframe = false) {
 					  </div>
 				  </div>`;
 
-  divContainer.appendChild(divHeader);
-  divContainer.appendChild(a);
-  return divContainer;
+	divContainer.appendChild(divHeader);
+	divContainer.appendChild(a);
+	return divContainer;
 }
 
 /**
@@ -8046,29 +8066,29 @@ function createCardPartisan(json, isIframe = false) {
  * créé le listing des tribu
  */
 function createListTribu(photoTribu, title) {
-  const li = document.createElement("li");
-  const img = document.createElement("img");
-  const i = document.createElement("i");
-  const span = document.createElement("span");
+	const li = document.createElement("li");
+	const img = document.createElement("img");
+	const i = document.createElement("i");
+	const span = document.createElement("span");
 
-  li.style = "cursor:pointer";
-  li.setAttribute("class", "listing_fa_js");
-  li.style.padding = "0.75em";
-  li.style.width = "30%";
+	li.style = "cursor:pointer";
+	li.setAttribute("class", "listing_fa_js");
+	li.style.padding = "0.75em";
+	li.style.width = "30%";
 
-  img.src = photoTribu;
-  i.setAttribute("class", "fa-solid fa-chevron-right superior");
-  i.style.float = "right";
-  span.setAttribute("class", "name_tribu_faniry_js");
-  span.textContent = title;
+	img.src = photoTribu;
+	i.setAttribute("class", "fa-solid fa-chevron-right superior");
+	i.style.float = "right";
+	span.setAttribute("class", "name_tribu_faniry_js");
+	span.textContent = title;
 
-  //li.appendChild(img);
-  span.appendChild(i);
-  li.appendChild(span);
-  // li.appendChild(i);
+	//li.appendChild(img);
+	span.appendChild(i);
+	li.appendChild(span);
+	// li.appendChild(i);
 
-  i.onclick = (e) => {};
-  return li;
+	i.onclick = (e) => {};
+	return li;
 }
 
 /**
@@ -8078,24 +8098,24 @@ function createListTribu(photoTribu, title) {
  * @param {*} container
  */
 function hideContainer(targetElement, container) {
-  const icon = targetElement.querySelector(".superior");
-  targetElement.onclick = (e) => {
-    let targ = e.target;
-    if (
-      targ.classList.contains("listing_fa_js") ||
-      targ.classList.contains("name_tribu_faniry_js") ||
-      targ.classList.contains("superior")
-    ) {
-      targetElement.classList.toggle("active_amis_list_fa_js");
-      if (!targetElement.classList.contains("active_amis_list_fa_js")) {
-        container.classList.toggle("d-none");
-        icon.style.transform = "rotate(0deg)";
-      } else {
-        container.classList.toggle("d-none");
-        icon.style.transform = "rotate(90deg)";
-      }
-    }
-  };
+	const icon = targetElement.querySelector(".superior");
+	targetElement.onclick = (e) => {
+		let targ = e.target;
+		if (
+			targ.classList.contains("listing_fa_js") ||
+			targ.classList.contains("name_tribu_faniry_js") ||
+			targ.classList.contains("superior")
+		) {
+			targetElement.classList.toggle("active_amis_list_fa_js");
+			if (!targetElement.classList.contains("active_amis_list_fa_js")) {
+				container.classList.toggle("d-none");
+				icon.style.transform = "rotate(0deg)";
+			} else {
+				container.classList.toggle("d-none");
+				icon.style.transform = "rotate(90deg)";
+			}
+		}
+	};
 }
 
 /**
@@ -8103,16 +8123,14 @@ function hideContainer(targetElement, container) {
  * met à jour la list le status online des user
  */
 function updateListFan() {
-  setInterval(
-    () => {
-      const el = Array.from(document.getElementsByClassName("mss_fan_js")).map(
-        (el) => el.dataset.rank
-      );
-      myMessageWorker.postMessage(el);
-    },
-    10000,
-    myMessageWorker
-  );
+	setInterval(
+		() => {
+			const el = Array.from(document.getElementsByClassName("mss_fan_js")).map((el) => el.dataset.rank);
+			myMessageWorker.postMessage(el);
+		},
+		10000,
+		myMessageWorker
+	);
 }
 
 /**
@@ -8121,142 +8139,132 @@ function updateListFan() {
  * @param {*} data
  */
 function reRenderPartisanStatus(data) {
-  const objectKey = Object.keys(data);
-  console.log(objectKey);
-  for (const [key, value] of Object.entries(data)) {
-    const divs = document.querySelectorAll(
-      `div.mss_fan_js[data-rank="${key}"]`
-    );
-    let isOnline = !!value;
-    for (let div of divs) {
-      const span = div.querySelector(".onlinestat_fan_js");
-      if (isOnline) {
-        span.style.backgroundColor = "";
-        span.classList.add("xj");
-      } else {
-        span.classList.remove("xj");
-        span.style.backgroundColor = "gray";
-      }
-    }
-  }
+	const objectKey = Object.keys(data);
+	console.log(objectKey);
+	for (const [key, value] of Object.entries(data)) {
+		const divs = document.querySelectorAll(`div.mss_fan_js[data-rank="${key}"]`);
+		let isOnline = !!value;
+		for (let div of divs) {
+			const span = div.querySelector(".onlinestat_fan_js");
+			if (isOnline) {
+				span.style.backgroundColor = "";
+				span.classList.add("xj");
+			} else {
+				span.classList.remove("xj");
+				span.style.backgroundColor = "gray";
+			}
+		}
+	}
 }
 /**
  * @author faniry
  * affiche la liste d'amis
  */
 function fanIframe() {
-  fetch("/user/get/allfans").then((r) => {
-    const ulContainer = document.querySelector(".fan_actif_tom_js");
-    ulContainer.innerHTML = "";
-    ulContainer.innerHTML = `<div class="spinner-border text-primary mx-auto" role="status">
+	fetch("/user/get/allfans").then((r) => {
+		const ulContainer = document.querySelector(".fan_actif_tom_js");
+		ulContainer.innerHTML = "";
+		ulContainer.innerHTML = `<div class="spinner-border text-primary mx-auto" role="status">
 								<span class="visually-hidden">Loading...</span>
 							</div>`;
-    if (r.status === 200 && r.ok) {
-      r.json().then((jsons) => {
-        const length = jsons.length;
+		if (r.status === 200 && r.ok) {
+			r.json().then((jsons) => {
+				const length = jsons.length;
 
-        ulContainer.innerHTML = "";
-        for (let i = 0; i < length; i++) {
-          //pour les tribu T
-          if (i === 0) {
-            const tribusT = jsons[i];
-            const tribusTLength = tribusT.length;
-            for (let j = 0; j < tribusTLength; j++) {
-              console;
-              const amis = tribusT[j].amis;
-              const bigContainer = document.createElement("div");
-              bigContainer.style.background = "#efe8e8cc";
-              bigContainer.style.borderTop = "2px solid #227BC9";
-              const photoTribuT = tribusT[j]["logo_path"];
-              const title = `Liste des partisans dans votre tribu T ${tribusT[j]["name_tribu_t_muable"]}`;
-              const li = createListTribu(photoTribuT, title);
-              bigContainer.setAttribute(
-                "class",
-                "list-group list-group-flush big_container_js d-none"
-              );
-              if (amis.length > 0)
-                for (let c = 0; c < amis.length; c++) {
-                  const div = createCardPartisan(amis[c],true);
-                  bigContainer.appendChild(div);
-                }
-              else {
-                const span = document.createElement("span");
-                span.innerText = "Aucun partisan";
-                bigContainer.appendChild(span);
-              }
-              li.appendChild(bigContainer);
-              ulContainer.appendChild(li);
-              hideContainer(li, bigContainer);
-            }
-          } else {
-            //pour tribu G
-            const tribuG = jsons[i];
-            const tribuGLength = tribuG.length;
-            let li = null;
-            const bigContainer = document.createElement("div");
-            bigContainer.style.background = "#efe8e8cc";
-            bigContainer.style.borderTop = "2px solid #227BC9";
-            bigContainer.setAttribute(
-              "class",
-              "list-group list-group-flush big_container_js d-none"
-            );
-            if (tribuGLength > 0)
-              for (let c = 0; c < tribuGLength; c++) {
-                if (c === 0) {
-                  const photoTribuG = tribuG[c]["avatarTribuG"];
-                  const title = `Liste des partisans dans votre tribu G ${tribuG[c]["nom_tribuG"]}`;
-                  li = createListTribu(photoTribuG, title);
-                }
-                const div = createCardPartisan(tribuG[c], true);
-                bigContainer.appendChild(div);
-              }
-            else {
-              const span = document.createElement("span");
-              span.innerText = "Aucun partisan";
-              bigContainer.appendChild(span);
-            }
-            li.appendChild(bigContainer);
-            ulContainer.appendChild(li);
-            hideContainer(li, bigContainer);
-          }
-        }
-        updateListFan();
+				ulContainer.innerHTML = "";
+				for (let i = 0; i < length; i++) {
+					//pour les tribu T
+					if (i === 0) {
+						const tribusT = jsons[i];
+						const tribusTLength = tribusT.length;
+						for (let j = 0; j < tribusTLength; j++) {
+							console;
+							const amis = tribusT[j].amis;
+							const bigContainer = document.createElement("div");
+							bigContainer.style.background = "#efe8e8cc";
+							bigContainer.style.borderTop = "2px solid #227BC9";
+							const photoTribuT = tribusT[j]["logo_path"];
+							const title = `Liste des partisans dans votre tribu T ${tribusT[j]["name_tribu_t_muable"]}`;
+							const li = createListTribu(photoTribuT, title);
+							bigContainer.setAttribute("class", "list-group list-group-flush big_container_js d-none");
+							if (amis.length > 0)
+								for (let c = 0; c < amis.length; c++) {
+									const div = createCardPartisan(amis[c], true);
+									bigContainer.appendChild(div);
+								}
+							else {
+								const span = document.createElement("span");
+								span.innerText = "Aucun partisan";
+								bigContainer.appendChild(span);
+							}
+							li.appendChild(bigContainer);
+							ulContainer.appendChild(li);
+							hideContainer(li, bigContainer);
+						}
+					} else {
+						//pour tribu G
+						const tribuG = jsons[i];
+						const tribuGLength = tribuG.length;
+						let li = null;
+						const bigContainer = document.createElement("div");
+						bigContainer.style.background = "#efe8e8cc";
+						bigContainer.style.borderTop = "2px solid #227BC9";
+						bigContainer.setAttribute("class", "list-group list-group-flush big_container_js d-none");
+						if (tribuGLength > 0)
+							for (let c = 0; c < tribuGLength; c++) {
+								if (c === 0) {
+									const photoTribuG = tribuG[c]["avatarTribuG"];
+									const title = `Liste des partisans dans votre tribu G ${tribuG[c]["nom_tribuG"]}`;
+									li = createListTribu(photoTribuG, title);
+								}
+								const div = createCardPartisan(tribuG[c], true);
+								bigContainer.appendChild(div);
+							}
+						else {
+							const span = document.createElement("span");
+							span.innerText = "Aucun partisan";
+							bigContainer.appendChild(span);
+						}
+						li.appendChild(bigContainer);
+						ulContainer.appendChild(li);
+						hideContainer(li, bigContainer);
+					}
+				}
+				updateListFan();
 
-        myMessageWorker.onmessage = (e) => {
-          reRenderPartisanStatus(e.data);
-        };
-      });
-    }
-  });
+				myMessageWorker.onmessage = (e) => {
+					reRenderPartisanStatus(e.data);
+				};
+			});
+		}
+	});
 }
 //endblock
 function verifieEmailValid(email) {
 	if (
-	  email.match(
-		/(?:[a-z0-9+!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi
-	  )
+		email.match(
+			/(?:[a-z0-9+!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi
+		)
 	) {
-	  return true;
+		return true;
 	}
 	return false;
 }
 
 function addLinkOnMailBody() {
 	const link_name = document.querySelector(".link_name_jheo_js").value.trim();
-	const link_value = encodeURI(
-	  document.querySelector(".link_value_jheo_js").value
-	);
-  
+	const link_value = encodeURI(document.querySelector(".link_value_jheo_js").value);
+
 	if (editor) {
-	  editor.setData(
-		editor.getData() +
-		  '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' +
-		  link_value +
-		  '" >' +
-		  link_name +
-		  " </a>"
-	  );
+		editor.setData(
+			editor.getData() +
+				'<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' +
+				link_value +
+				'" >' +
+				link_name +
+				" </a>"
+		);
 	}
-  
+
 	cancelAddLink();
 }

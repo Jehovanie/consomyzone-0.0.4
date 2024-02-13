@@ -12,6 +12,7 @@ use App\Repository\UserRepository;
 use App\Service\GolfFranceService;
 use App\Service\SortResultService;
 use App\Repository\TabacRepository;
+use App\Repository\MarcheRepository;
 use App\Repository\AvisGolfRepository;
 use App\Repository\BddRestoRepository;
 use App\Repository\FermeGeomRepository;
@@ -26,9 +27,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Repository\StationServiceFrGeomRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class HomeController extends AbstractController
 {
@@ -778,6 +779,7 @@ class HomeController extends AbstractController
         StationServiceFrGeomRepository $stationServiceFrGeomRepository,
         GolfFranceRepository $golfFranceRepository,
         TabacRepository $tabacRepository,
+        MarcheRepository $marcheRepository
     ){
         $dep_specifique= intval($dep) === 0 ? null : ( strlen($dep) === 1 ?  "0" . intval($dep) : $dep);
         if( $type === "resto" || $type === "restaurant"){
@@ -790,6 +792,8 @@ class HomeController extends AbstractController
             $nbr_etablisement_per_dep = $golfFranceRepository->getAccountAllPerDep($dep_specifique);
         }else if( $type === "tabac"){
             $nbr_etablisement_per_dep = $tabacRepository->getAccountAllPerDep($dep_specifique);
+        }else if( $type === "marche"){
+            $nbr_etablisement_per_dep = $marcheRepository->getAccountAllPerDep($dep_specifique);
         }else if ($type === "tous"){
             
             $resto = $bddRestoRepository->getAccountAllPerDep($dep_specifique);
@@ -797,13 +801,16 @@ class HomeController extends AbstractController
             $station = $stationServiceFrGeomRepository->getAccountAllPerDep($dep_specifique);
             $golf = $golfFranceRepository->getAccountAllPerDep($dep_specifique);
             $tabac = $tabacRepository->getAccountAllPerDep($dep_specifique);
+            $marche = $marcheRepository->getAccountAllPerDep($dep_specifique);
+
 
             $nbr_etablisement_per_dep= SortResultService::mergeByCalculateData([
                 "resto" => $resto, 
                 "ferme" => $ferme, 
                 "station" => $station, 
                 "golf" => $golf, 
-                "tabac" => $tabac
+                "tabac" => $tabac,
+                "marche" => $marche
             ]);
 
         }

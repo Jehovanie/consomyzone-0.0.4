@@ -391,7 +391,7 @@ class MapModule {
 				fillOpacity: 0,
 			},
 			onEachFeature: (feature, layer) => {
-			const details_html =
+				const details_html =
 					feature.properties.hasOwnProperty("details") && feature.properties.details != null
 						? `
 						<span class="badge rounded-pill bg-secondary">R:${feature.properties.details.resto}</span>
@@ -1472,7 +1472,7 @@ class MapModule {
 					document.querySelector(".title_right_side_jheo_js").innerText =
 						"Listes des contours géographiques.";
 					this.injectChooseCouche();
-                } // Edited by Elie 24/01/2024
+				} // Edited by Elie 24/01/2024
 				else if (rightSideContentType === "favoris_elie_js") {
 					document.querySelector(".title_right_side_jheo_js").innerText =
 						"Liste de mes favoris géographiques.";
@@ -2280,7 +2280,7 @@ class MapModule {
 					}
 				}
 			});
-					}
+		}
 		// else {
 		// 	/** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
 		// 	/** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
@@ -2925,6 +2925,63 @@ class MapModule {
 			user_status = { ...user_status, mon_golf: true };
 		}
 		return user_status;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 * @deplaced from MarkerClusterResto
+	 *
+	 * Goal: Create special markerClusterGroup for the count etablisement per dep.
+	 *
+	 * I call this on onInit function inside child
+	 */
+	createMarkersCluster() {
+		this.markers = L.markerClusterGroup({
+			chunkedLoading: true,
+			chunkInterval: 500,
+			chunkDelay: 100,
+			maxClusterRadius: 80, //A cluster will cover at most this many pixels from its center
+			clusterPane: L.Marker.prototype.options.pane,
+			spiderfyOnMaxZoom: true,
+			disableClusteringAtZoom: true,
+		});
+
+		// const that = this;
+		// this.markers = L.markerClusterGroup({
+		// 	chunkedLoading: true,
+		// 	disableClusteringAtZoom: 7,
+		// 	iconCreateFunction: function (cluster) {
+		// 		console.log(cluster);
+		// 		if (that.marker_last_selected) {
+		// 			let sepcMarmerIsExist = false;
+		// 			for (let g of cluster.getAllChildMarkers()) {
+		// 				if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) {
+		// 					sepcMarmerIsExist = true;
+		// 					break;
+		// 				}
+		// 			}
+		// 			if (sepcMarmerIsExist) {
+		// 				return L.divIcon({
+		// 					html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + "</div>",
+		// 					className: "spec_cluster",
+		// 					iconSize: L.point(35, 35),
+		// 				});
+		// 			} else {
+		// 				return L.divIcon({
+		// 					html: '<div class="markers_tommy_js">' + cluster.getChildCount() + "</div>",
+		// 					className: "mycluster",
+		// 					iconSize: L.point(35, 35),
+		// 				});
+		// 			}
+		// 		} else {
+		// 			return L.divIcon({
+		// 				html: '<div class="markers_tommy_js">' + cluster.getChildCount() + "</div>",
+		// 				className: "mycluster",
+		// 				iconSize: L.point(35, 35),
+		// 			});
+		// 		}
+		// 	},
+		// });
 	}
 
 	/**

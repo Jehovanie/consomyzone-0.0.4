@@ -6,6 +6,7 @@ use App\Repository\MarcheRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @ORM\Table(name="marche_de_france")
  * @ORM\Entity(repositoryClass=MarcheRepository::class)
  */
 class Marche
@@ -23,9 +24,9 @@ class Marche
     private $clenum;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, name="denomination_f")
      */
-    private $denomination_f;
+    private $denominationF;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -80,6 +81,11 @@ class Marche
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
+    private $jour_de_marche_5;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
     private $jour_de_marche_6;
 
     /**
@@ -88,14 +94,14 @@ class Marche
     private $jour_de_marche_7;
 
     /**
-     * @ORM\Column(type="decimal", precision=16, scale=14)
+     * @ORM\Column(name="poi_x", type="decimal", precision=16, scale=14)
      */
-    private $poi_x;
+    private $poiX;
 
     /**
-     * @ORM\Column(type="decimal", precision=16, scale=14)
+     * @ORM\Column(name="poi_y", type="decimal", precision=16, scale=14)
      */
-    private $poi_y;
+    private $poiY;
 
     /**
      * @ORM\Column(type="string", length=50, nullable=true)
@@ -141,12 +147,12 @@ class Marche
 
     public function getDenominationF(): ?string
     {
-        return $this->denomination_f;
+        return $this->denominationF;
     }
 
-    public function setDenominationF(string $denomination_f): self
+    public function setDenominationF(string $denominationF): self
     {
-        $this->denomination_f = $denomination_f;
+        $this->denominationF = $denominationF;
 
         return $this;
     }
@@ -271,6 +277,18 @@ class Marche
         return $this;
     }
 
+    public function getJourDeMarche5(): ?string
+    {
+        return $this->jour_de_marche_5;
+    }
+
+    public function setJourDeMarche5(?string $jour_de_marche_5): self
+    {
+        $this->jour_de_marche_5 = $jour_de_marche_5;
+
+        return $this;
+    }
+
     public function getJourDeMarche6(): ?string
     {
         return $this->jour_de_marche_6;
@@ -297,24 +315,24 @@ class Marche
 
     public function getPoiX(): ?string
     {
-        return $this->poi_x;
+        return $this->poiX;
     }
 
-    public function setPoiX(string $poi_x): self
+    public function setPoiX(string $poiX): self
     {
-        $this->poi_x = $poi_x;
+        $this->poiX = $poiX;
 
         return $this;
     }
 
     public function getPoiY(): ?string
     {
-        return $this->poi_y;
+        return $this->poiY;
     }
 
-    public function setPoiY(string $poi_y): self
+    public function setPoiY(string $poiY): self
     {
-        $this->poi_y = $poi_y;
+        $this->poiY = $poiY;
 
         return $this;
     }

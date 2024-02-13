@@ -39,6 +39,279 @@ class MarcheRepository extends ServiceEntityRepository
         }
     }
 
+    /**
+     *  @author update by Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     *  Goal: Get the number of elements per department is idDep is null, and count all if else.
+     *  Use in: MarcheController.php , ... 
+     *  
+     *  @param {integer|null } $idDep: code de departement
+     * 
+     *  @return {integer} number of elements in departement or all
+     *  
+     */
+    function getAccountMarche($idDep=null){
+        $qb= $this->createQueryBuilder("r");
+        $qb->select(
+            $qb->expr()->countDistinct(
+                $qb->expr()->concat(
+                    'r.id', "' '",
+                    'r.dep',"' '",
+                    'r.denominationF',"' '",
+                    'r.clenum',"' '",
+                    'r.adresse',"' '",
+                    'r.codpost',"' '",
+                    'r.commune',"' '",
+                    'r.villenorm',"' '",
+                    'r.specificite',"' '",
+                    'r.codinsee'
+                )
+            )
+        );
+
+        if( $idDep ){
+            $qb = $qb->where("r.dep =:dep")
+                     ->setParameter("dep", $idDep);
+        }
+
+        $scalar_result= $qb->getQuery()->getSingleScalarResult();
+        return $scalar_result;
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+     * 
+     * @param null|integer $code_dep,
+     * 
+     * Similar of the getAccountMarche but not returns a scalar
+     * but object like array ( deparement , number total ) if there is no departement specified
+     * 
+     * Use in: HomeController.php
+     * 
+     * @return array [ [ "departement" => .., "account_per_dep" => ... ], ... ]
+     */
+    function getAccountAllPerDep($code_dep=null){
+        $qb = $this->createQueryBuilder('r');
+        $qb->select(
+            $qb->expr()->countDistinct(
+                $qb->expr()->concat(
+                    'r.id', "' '",
+                    'r.dep',"' '",
+                    'r.denominationF',"' '",
+                    'r.clenum',"' '",
+                    'r.adresse',"' '",
+                    'r.codpost',"' '",
+                    'r.commune',"' '",
+                    'r.villenorm',"' '",
+                    'r.specificite',"' '",
+                    'r.codinsee'
+                )
+            ) . ' as account_per_dep',
+            'r.dep as departement'
+        )->groupBy('r.dep');
+        
+        if( $code_dep != null ){
+            if( intval($code_dep) === 20 ){
+                $qb = $qb->where('r.dep = :depA')
+                         ->andWhere('r.dep = :depB')                   
+                         ->setParameter('depA', '2A')
+                         ->setParameter('depB', '2B');
+            }else{
+                $qb = $qb->where('r.dep = :dep')
+                         ->setParameter('dep', $code_dep);
+            }
+          
+        }
+
+        $result= $qb->getQuery()->getResult();
+
+        return count($result) > 0 ? $result : [ 
+            [ 
+                "departement" => $code_dep,
+                "account_per_dep" => 0 
+            ]
+        ];
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
+     * 
+     * Get random data 
+     * 
+     * @param integer $limits: number of the data to get
+     * 
+     * @return array Resto
+     */
+    public function getSomeDataShuffle($limits= 1000){
+        $query=  $this->createQueryBuilder("r");
+
+        $query= $query->select(
+                        "r.id,
+                        r.clenum,
+                        r.denominationF as nameFilter,
+                        r.adresse,
+                        r.codpost,
+                        r.commune,
+                        r.codinsee,
+                        r.villenorm,
+                        r.specificite,
+                        r.jour_de_marche_1,
+                        r.jour_de_marche_2,
+                        r.jour_de_marche_3,
+                        r.jour_de_marche_4,
+                        r.jour_de_marche_5,
+                        r.jour_de_marche_6,
+                        r.jour_de_marche_7,
+                        r.poi_qualitegeorue,
+                        r.dcomiris,
+                        r.dep,
+                        r.date_data,
+                        r.date_inser,
+                        r.poiY as lat,
+                        r.poiX as long"
+                )->distinct(
+                    $query->expr()->concat(
+                        'r.id', "' '",
+                        'r.dep',"' '",
+                        'r.denominationF',"' '",
+                        'r.clenum',"' '",
+                        'r.adresse',"' '",
+                        'r.nomvoie',"' '",
+                        'r.compvoie',"' '",
+                        'r.villenorm',"' '",
+                        'r.poiX',"' '",
+                        'r.poiY'
+                    )
+                );
+
+        return $query->orderBy('RAND()')
+                    ->setMaxResults($limits)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    /**
+     *  @author updated by Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     *  
+     *  Goal: Get data Marche between bound latitude and longitude 
+     *  Use in: MarcheController.php, ... 
+     * 
+     *  @param {decimal} $minx,$miny, $maxx, $maxy: lat long min and max delimite the bound
+     *         {integer|null} $idDep code of departement if this sepecified
+     *         {integer|null} $codinsee: code Insee of arrondissement in departement.
+     *         {integer} number data to return by default 250
+     * 
+     *  @return {array} list of the Marche.
+     */
+    public function getDataBetweenAnd($minx, $miny, $maxx, $maxy, $idDep= null, $codinsee= null, $taille= 250){
+        $idDep= strlen($idDep) === 1  ? "0" . $idDep : $idDep;
+        
+        $query = $this->createQueryBuilder("r");
+
+        $query = $query->select(
+                        "r.id,
+                        r.clenum,
+                        r.denominationF as nameFilter,
+                        r.adresse,
+                        r.codpost,
+                        r.commune,
+                        r.codinsee,
+                        r.villenorm,
+                        r.specificite,
+                        r.jour_de_marche_1,
+                        r.jour_de_marche_2,
+                        r.jour_de_marche_3,
+                        r.jour_de_marche_4,
+                        r.jour_de_marche_5,
+                        r.jour_de_marche_6,
+                        r.jour_de_marche_7,
+                        r.poi_qualitegeorue,
+                        r.dcomiris,
+                        r.dep,
+                        r.date_data,
+                        r.date_inser,
+                        r.poiY as lat,
+                        r.poiX as long"
+                    )
+                    ->distinct(
+                        $query->expr()->concat(
+                            'r.id', "' '",
+                            'r.dep',"' '",
+                            'r.denominationF',"' '",
+                            'r.clenum',"' '",
+                            'r.adresse',"' '",
+                            'r.nomvoie',"' '",
+                            'r.compvoie',"' '",
+                            'r.villenorm',"' '",
+                            'r.poiX',"' '",
+                            'r.poiY'
+                        ))
+                    ->where("r.poiX >= :minx")
+                    ->andWhere("r.poiX <= :maxx")
+                    ->andWhere("r.poiY >= :miny")
+                    ->andWhere("r.poiY <= :maxy")
+                    ->setParameter("minx", $minx)
+                    ->setParameter("maxx", $maxx)
+                    ->setParameter("miny", $miny)
+                    ->setParameter("maxy", $maxy);
+                                        
+        if( $idDep ){
+            $query = $query->andWhere("r.dep =:dep")
+                           ->setParameter("dep", $idDep);
+        }
+
+        if( $codinsee ){
+            $query = $query->andWhere("r.codinsee =:codinsee")
+                           ->setParameter("codinsee", $codinsee);
+        }
+
+        return $query->orderBy('RAND()')
+                    ->setMaxResults($taille)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Get on element by the id
+     * Use in: MarcheController.php
+     */
+    public function getOneItemByID($id){
+        return  $this->createQueryBuilder("r")
+                ->select(
+                    "r.id,
+                    r.clenum,
+                    r.denominationF,
+                    r.denominationF as nameFilter,
+                    r.adresse,
+                    r.codpost,
+                    r.commune,
+                    r.codinsee,
+                    r.villenorm,
+                    r.specificite,
+                    r.jour_de_marche_1,
+                    r.jour_de_marche_2,
+                    r.jour_de_marche_3,
+                    r.jour_de_marche_4,
+                    r.jour_de_marche_5,
+                    r.jour_de_marche_6,
+                    r.jour_de_marche_7,
+                    r.poi_qualitegeorue,
+                    r.dcomiris,
+                    r.dep,
+                    r.date_data,
+                    r.date_inser,
+                    r.poiY as lat,
+                    r.poiX as long"
+                )
+                ->where("r.id =:id")
+                ->setParameter("id", $id)
+                ->getQuery()
+                ->getOneOrNullResult();
+    }
+
+
 //    /**
 //     * @return Marche[] Returns an array of Marche objects
 //     */

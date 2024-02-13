@@ -1541,7 +1541,7 @@ input::-ms-clear {
 	outline: none;
 	text-transform: uppercase;
 	font-weight: 400;
-	font-size: 10pt; 
+	font-size: 10pt;
 }
 
 .remove-image-uplaod:hover {
@@ -2769,7 +2769,7 @@ textarea {
 	border-bottom: 5px solid transparent;
 	border-left: 5px solid transparent;
 }
-
+#remove-detail-marche,
 #remove-detail-resto,
 #remove-detail-ferme,
 #remove-detail-ferme,
@@ -3572,7 +3572,7 @@ stop_audio_avis_elie_js {
 	font-size: 0.85rem;
 }
 
-.favory_etablisment{
+.favory_etablisment {
 	cursor: pointer;
 	font-size: 0.9rem;
 }
@@ -3614,80 +3614,77 @@ stop_audio_avis_elie_js {
 }
 /*list téléchargement*/
 /**download list*/
-.list-dw{
-    list-style-type: none !important;
-    margin-bottom: 70px;
-  }
-  
-  li.list-dw> a {
-    position: relative;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    text-decoration: none;
-    padding: 35px 20px 13px 60px;
-    margin-right: 40px;
-    color: #444;
-    background: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/download.png")
-      2px 0 no-repeat;
-  }
-  li.list-dw >a:hover {
-    border-color: #444;
-    box-shadow: 0 0 10px #444;
-  }
-  li.list-dw >a:active {
-    border-color: #ccc;
-    box-shadow: none;
-  }
-  
+.list-dw {
+	list-style-type: none !important;
+	margin-bottom: 70px;
+}
 
-  li.list-dw >a.pdf:before
- {
-    position: absolute;
-    width: 62px;
-    height: 72px;
-    top: 2px;
-    left: 2px;
-    transition: all 0.4s;
-  }
-  
-  li.list-dw >a[href$=".ppt"]:before {
-    content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/ppt.png");
-  }
-  li.list-dw >a.pdf:before {
-    content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/pdf.png");
-  }
-  li.list-dw >a[href$=".doc"]:before {
-    content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/doc.png");
-  }
-  li.list-dw >a[href$=".xls"]:before {
-    content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/xls.png");
-  }
-  li.list-dw >a[href$=".zip"]:before {
-    content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/zip.png");
-  }
-  
-  li.list-dw >a[href$=".ppt"]:hover:before,
-  li.list-dw >a.pdf:hover:before,
-  li.list-dw >a[href$=".doc"]:hover:before,
-  li.list-dw >a[href$=".xls"]:hover:before,
-  li.list-dw >a[href$=".zip"]:hover:before {
-    opacity: 0;
-  }
-  
-  li.list-dw >a[href$=".ppt"]:after,
-  li.list-dw >a.pdf:after,
-  li.list-dw >a[href$=".doc"]:after,
-  li.list-dw >a[href$=".xls"]:after,
-  li.list-dw >a[href$=".zip"]:after {
-    content: "Télécharger.";
-    position: absolute;
-    top: 10px;
-    left: 60px;
-    color: #aaa;
-  }
+li.list-dw > a {
+	position: relative;
+	border: 1px solid #ccc;
+	border-radius: 6px;
+	text-decoration: none;
+	padding: 35px 20px 13px 60px;
+	margin-right: 40px;
+	color: #444;
+	background: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/download.png") 2px 0 no-repeat;
+}
+li.list-dw > a:hover {
+	border-color: #444;
+	box-shadow: 0 0 10px #444;
+}
+li.list-dw > a:active {
+	border-color: #ccc;
+	box-shadow: none;
+}
+
+li.list-dw > a.pdf:before {
+	position: absolute;
+	width: 62px;
+	height: 72px;
+	top: 2px;
+	left: 2px;
+	transition: all 0.4s;
+}
+
+li.list-dw > a[href$=".ppt"]:before {
+	content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/ppt.png");
+}
+li.list-dw > a.pdf:before {
+	content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/pdf.png");
+}
+li.list-dw > a[href$=".doc"]:before {
+	content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/doc.png");
+}
+li.list-dw > a[href$=".xls"]:before {
+	content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/xls.png");
+}
+li.list-dw > a[href$=".zip"]:before {
+	content: url("https://s3-us-west-2.amazonaws.com/s.cdpn.io/41294/zip.png");
+}
+
+li.list-dw > a[href$=".ppt"]:hover:before,
+li.list-dw > a.pdf:hover:before,
+li.list-dw > a[href$=".doc"]:hover:before,
+li.list-dw > a[href$=".xls"]:hover:before,
+li.list-dw > a[href$=".zip"]:hover:before {
+	opacity: 0;
+}
+
+li.list-dw > a[href$=".ppt"]:after,
+li.list-dw > a.pdf:after,
+li.list-dw > a[href$=".doc"]:after,
+li.list-dw > a[href$=".xls"]:after,
+li.list-dw > a[href$=".zip"]:after {
+	content: "Télécharger.";
+	position: absolute;
+	top: 10px;
+	left: 60px;
+	color: #aaa;
+}
 
 /*liste partisan dans rubrique message*/
-.name_tribu_faniry_js:after {    
+.name_tribu_faniry_js:after {
 	background: none repeat scroll 0 0 transparent;
 	/* bottom: 0; */
 	content: "";
@@ -3695,21 +3692,21 @@ stop_audio_avis_elie_js {
 	height: 2px;
 	left: 50%;
 	/* position: absolute; */
-	background:#227BC9;
+	background: #227bc9;
 	transition: width 0.3s ease 0s, left 0.3s ease 0s;
 	width: 0;
-  }
-  .name_tribu_faniry_js:hover:after { 
-	width: 100%; 
-	left: 0; 
-  }
-
-  .name_tribu_faniry_js.active:after{
-	width: 100%; 
+}
+.name_tribu_faniry_js:hover:after {
+	width: 100%;
 	left: 0;
-  }
+}
+
+.name_tribu_faniry_js.active:after {
+	width: 100%;
+	left: 0;
+}
 /*end*/
-  
+
 .multiselect {
 	width: 28em;
 	height: 15em;
@@ -3770,7 +3767,7 @@ stop_audio_avis_elie_js {
 	position: relative;
 }
 
-.icon-close-csv{
+.icon-close-csv {
 	position: absolute;
 	right: -20px;
 	top: -10px;
@@ -3808,20 +3805,20 @@ stop_audio_avis_elie_js {
 }
 
 .new-letter-select .tooltip-new-letter {
-	    position: absolute;
-    top: -30px;
-    left: 50%;
-    width: 290px;
-    transform: translateX(-50%);
-    background-color: #6e6e6e;
-    color: #fff;
-    padding: 6px 10px;
-    border-radius: 5px;
-    opacity: 0;
-    visibility: hidden;
-    font-size: 9pt;
-    font-family: sans-serif;
-    transition: all 0.3s ease;
+	position: absolute;
+	top: -30px;
+	left: 50%;
+	width: 290px;
+	transform: translateX(-50%);
+	background-color: #6e6e6e;
+	color: #fff;
+	padding: 6px 10px;
+	border-radius: 5px;
+	opacity: 0;
+	visibility: hidden;
+	font-size: 9pt;
+	font-family: sans-serif;
+	transition: all 0.3s ease;
 }
 
 .new-letter-select:hover .tooltip-new-letter {
@@ -3830,11 +3827,11 @@ stop_audio_avis_elie_js {
 	top: 20px;
 }
 
-.content-csv-letter{
+.content-csv-letter {
 	position: relative;
 }
 
-.qestion-csv-letter{
+.qestion-csv-letter {
 	position: absolute;
 	right: 20px;
 	top: 5px;
@@ -3874,17 +3871,17 @@ stop_audio_avis_elie_js {
 }
 /** End Pastille sur la carte*/
 
- /**new tribu G*/
- .head-content img {
-    height: 125px;
-    margin: 10px;
-    border-radius: 15px;
+/**new tribu G*/
+.head-content img {
+	height: 125px;
+	margin: 10px;
+	border-radius: 15px;
 }
 
 .photo-nom-tribu-g {
-    background-color: #8888;
-    width: 100%;
-    margin-right: auto !important;
-    margin-left: auto !important;
+	background-color: #8888;
+	width: 100%;
+	margin-right: auto !important;
+	margin-left: auto !important;
 }
 /**end new tribu g*/

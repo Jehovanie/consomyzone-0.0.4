@@ -6,6 +6,7 @@ const all_instances = [
 	{ name: "search", value: typeof OBJECT_MARKERS_SEARCH !== "undefined" ? OBJECT_MARKERS_SEARCH : null },
 	{ name: "station", value: typeof OBJECT_MARKERS_STATION !== "undefined" ? OBJECT_MARKERS_STATION : null },
 	{ name: "resto", value: typeof OBJECT_MARKERS_RESTO !== "undefined" ? OBJECT_MARKERS_RESTO : null },
+	{ name: "marche", value: typeof OBJECT_MARKERS_MARCHE !== "undefined" ? OBJECT_MARKERS_MARCHE : null },
 ];
 
 const data = all_instances.find((item) => item.value !== null);

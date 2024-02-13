@@ -37,7 +37,7 @@
     <section class="gj do ir hj sp jr i pg hj-resto">
         <div>
             <div class=" responsif-none" id="tous">
-                {% include 'shard/restaurant/resto_navleft.twig' %}
+                {% include 'shard/marche/marche_navleft.html.twig' %}
             </div>
             <div class="responsif-none">
                 {% include 'shard/navbar.twig' %}
@@ -48,37 +48,15 @@
             </div>
             
             <div>
-            {% if (app.user) %}
-                <div class="open-navleft-mobile responsif-none-pc tc _o open-navleft-resto-mobile-tomm-js" id="open-navleft-resto-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
-            {% else %}
-                <div class="open-navleft-mobile responsif-none-pc tc _o open-navleft-resto-mobile-tomm-js" id="open-navleft-resto-mobile-tomm-js">
-            {% endif %}
-                    <i class="fa-solid fa-bars"></i>
-                </div>
-            
-            {# {% set listDepExist = [1,2,3,4, 6,7,8,9,13, 15,33, 35, 44, 49,59,63, 67, 69, 75, 77, 78, 91, 92, 93, 94, 95 ] %}
-
-            <div class="content_filter_dep liste-depart-tomm responsif-none-pc">
-                <select class="form-select" aria-label="Sélectionnez un département" style="" id="selectDepartRestoTommJs" onchange="selectDepartRestoMobile()">
-                    <option value="Tous">Liste des departements</option>
-                    {% for departement in departements %}
-                        {% if departement.id|number_format in listDepExist %}
-                            {% set pathDep = (departement.id is same as('75')) ? "app_dep_restaurant_arrondisme" : "app_specific_dep_restaurant" %}
-                            <option value="{{departement.id }}" data-dep-name="{{departement.departement}}">
-                                    {{departement.id }} {{departement.departement}}
-                            </option>
-                        {% endif %}
-                    {% endfor %}
-                </select>
-            </div> #}
-
-
-                {# <div class="open-search-mobil open-search-mobil-tomm-js responsif-none-pc " id="open-search-resto-mobil-tomm-js">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </div> #}
-                {# <div class="search-resto-mobil search-mobil-tomm-js search-resto-mobil-none vd to/4 to/4/2 wf yf responsif-none-pc" id="search-resto-mobil">
-                    {% include 'shard/search_mobile.html.twig' %}
-                </div> #}
+                {% if (app.user) %}
+                    <div class="open-navleft-mobile responsif-none-pc tc _o open-navleft-resto-mobile-tomm-js" id="open-navleft-resto-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+                        <i class="fa-solid fa-bars"></i>
+                    </div>
+                {% else %}
+                    <div class="open-navleft-mobile responsif-none-pc tc _o open-navleft-resto-mobile-tomm-js" id="open-navleft-resto-mobile-tomm-js">
+                        <i class="fa-solid fa-bars"></i>
+                    </div>
+                {% endif %}
 
                 <div class="list-depart-resto-mobile-tomm-js" id="list-depart-resto-mobile-tomm-js"></div>
 
@@ -114,7 +92,7 @@
 
     </section>
 
-{{ include('shard/restaurant/detail_resto_navleft.html.twig') }}
+{{ include('shard/marche/detail_marche_navleft.html.twig') }}
 {# {{ include('shard/restaurant/modal_modif_avis.html.twig') }} #}
 {{ include('shard/chatBot.html.twig') }}
 {{ include('shard/restaurant/modal_user_modif_resto.twig') }}
