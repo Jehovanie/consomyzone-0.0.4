@@ -18,8 +18,12 @@ class MarckerClusterMarche extends MapModule {
 			////create new marker Cluster special for count per dep.
 			this.createMarkersClusterForCountPerDep();
 
-			/// Tow possiblities : all departement, arrondissement, in departement
-			this.api_data = `/api/marche`;
+			/// Tow possiblities : all departement, in departement
+			if (this.id_dep && this.nom_dep) {
+				this.api_data = `/api/marche_specifique/${this.id_dep}`;
+			} else {
+				this.api_data = "/api/marche";
+			}
 
 			/// if the user just did a search
 			let param = "";
@@ -215,6 +219,12 @@ class MarckerClusterMarche extends MapModule {
 	}
 
 	displayData() {
+		console.log("Id departement:");
+		console.log(this.id_dep);
+
+		console.log("Nom dep:");
+		console.log(this.nom_dep);
+
 		console.log("Default_data: ");
 		console.log(this.default_data);
 

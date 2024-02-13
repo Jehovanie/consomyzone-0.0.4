@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ConsoMyZone: Marche 
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/marche/app.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/marche/sepecific_departement.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/marche/app_specifique.css')}}">
+    <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
+{% endblock %}
+
+{% block javascripts %}
+	<script type="text/javascript" src="{{ asset('assets/js/marche/data_marche.js') }}" defer></script>
+
+    <script src="{{asset('assets/js/module/leaflet.shpfile.js')}}" defer></script>
+    <script src="{{asset('assets/js/module/shp.js')}}" defer></script>
+    
+
+    <script type="text/javascript" src="{{ asset('assets/js/module/MapModule.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/module/MarckerClusterMarche.js') }}" defer></script>
+	<script type="text/javascript" src="{{asset('assets/js/marche/marckerClusterMarche_spec.js')}}" defer></script>
+
+    <script type="text/javascript" src="{{ asset('assets/js/module/data_for_all.js') }}" defer></script>
+	<script type="text/javascript" src="{{ asset('assets/js/marche/filter_a-z_asc_desc.js') }}" defer></script>
+	<script type="text/javascript" src="{{asset('assets/js/marche/details.js')}}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/module/avis_rubrique.js') }}" defer></script>
+    <script type="text/javascript" src="{{ asset('assets/js/marche/specific_departement.js') }}" defer></script>
+
+{% endblock %}
+
+
+{% block body %}
+    {# {% include 'shard/modalSearch.twig' %} #}
+	<div class="marche_specifique_dep_js_jheo" data-resto-codeDep= "{{id_dep}}" data-resto-nameDep="{{nom_dep  is defined ? nom_dep : "null"}}" >
+		<div class="responsif-none" id="tous" >
+			{% include 'shard/marche/specific_marche_navleft.html.twig' %}
+		</div>
+        <div class="responsif-none">
+            {% include 'shard/navbar.twig' %}
+        </div>
+    </div>
+    <div>
+        {% if (app.user) %}
+            <div class="open-navleft-mobile responsif-none-pc tc _o open-navleft-resto-mobile-tomm-js" id="open-navleft-resto-mobile-tomm-js" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+        {% else %}
+            <div class="open-navleft-mobile responsif-none-pc tc _o open-navleft-resto-mobile-tomm-js" id="open-navleft-resto-mobile-tomm-js">
+                <i class="fa-solid fa-bars"></i>
+            </div>
+        {% endif %}
+          
+        <div class="list-depart-resto-mobile-tomm-js" id="list-depart-resto-mobile-tomm-js"></div>
+			<div class="d-flex content_cart_map content_cart_map_jheo_js">
+				<div class="cart_map cart_map_js cart_map_js_jheo cart_map_jheo_js">
+
+					<div class="chargement_content chargement_content_js_jheo" id="toggle_chargement">
+                        <div class="containt">
+                            <div class="word word-1">C</div>
+                            <div class="word word-2">M</div>
+                            <div class="word word-3">Z</div>
+                        </div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+    {% if (app.user) %}
+        <div class="FtBjOlVf" data-dem="2ahUK:Ewip3tqU6Ob7AhW3gc:4B.{{app.user.id}}H:bAUBJQQ-EN6BAhzEAo"></div>
+    {% endif %}
+
+    {{ include('shard/marche/detail_marche_navleft.html.twig') }}
+    {{ include('shard/chatBot.html.twig') }}
+
+{% endblock %}

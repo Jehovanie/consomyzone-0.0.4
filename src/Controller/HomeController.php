@@ -793,6 +793,7 @@ class HomeController extends AbstractController
         }else if( $type === "tabac"){
             $nbr_etablisement_per_dep = $tabacRepository->getAccountAllPerDep($dep_specifique);
         }else if( $type === "marche"){
+            $dep_specifique= intval($dep_specifique);
             $nbr_etablisement_per_dep = $marcheRepository->getAccountAllPerDep($dep_specifique);
         }else if ($type === "tous"){
             

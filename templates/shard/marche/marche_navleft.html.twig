@@ -60,7 +60,7 @@
                         {% for departement in departements %}
                             <li>
                                 {% set pathDep = "app_specific_marche" %}
-                                <a class="text-decoration-none text-dark" href="{{path(pathDep, {'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
+                                <a class="text-decoration-none text-dark" href="{{path(pathDep, { 'nom_dep': departement.departement, 'id_dep': departement.id }) }}">
                                     <div class="row container-depart pt-4 element element_js_jheo" data-toggle-depart-id="{{departement.id}}" data-toggle-depart-name="{{departement.departement}}">
                                         <div class="col-md-2">
                                             <h5 class="id_departement">{{departement.id }}</h5>

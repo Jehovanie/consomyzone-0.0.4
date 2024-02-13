@@ -137,12 +137,14 @@ class MarcheRepository extends ServiceEntityRepository
      * @author Jehovanie RAMANDRIJOEL <jehovenierama@gmail.com>
      * 
      * Get random data 
+     * Use in MarcheController
      * 
+     * @param integer $id_dep: specifique departement
      * @param integer $limits: number of the data to get
      * 
      * @return array Resto
      */
-    public function getSomeDataShuffle($limits= 1000){
+    public function getSomeDataShuffle($id_dep=null, $limits= 1000){
         $query=  $this->createQueryBuilder("r");
 
         $query= $query->select(
@@ -184,6 +186,11 @@ class MarcheRepository extends ServiceEntityRepository
                     )
                 );
 
+        if( $id_dep != null ){
+            $query= $query->where("r.dep =:dep")
+                          ->setParameter("dep",$id_dep);
+        }
+
         return $query->orderBy('RAND()')
                     ->setMaxResults($limits)
                     ->getQuery()
@@ -204,7 +211,6 @@ class MarcheRepository extends ServiceEntityRepository
      *  @return {array} list of the Marche.
      */
     public function getDataBetweenAnd($minx, $miny, $maxx, $maxy, $idDep= null, $codinsee= null, $taille= 250){
-        $idDep= strlen($idDep) === 1  ? "0" . $idDep : $idDep;
         
         $query = $this->createQueryBuilder("r");
 
@@ -309,6 +315,44 @@ class MarcheRepository extends ServiceEntityRepository
                 ->setParameter("id", $id)
                 ->getQuery()
                 ->getOneOrNullResult();
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Get all marche in departement.
+     * Use in: MarcheController.php
+     */
+    public function getAllRestoIdForSpecificDepartement($dep)
+    {
+        return $this->createQueryBuilder("r")
+            ->select(
+                "r.id,
+                r.denominationF as nom,
+                r.denominationF as nameFilter,
+                r.denominationF,
+                r.adresse as add,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.specificite,
+                r.jour_de_marche_1,
+                r.jour_de_marche_2,
+                r.jour_de_marche_3,
+                r.jour_de_marche_4,
+                r.jour_de_marche_5,
+                r.jour_de_marche_6,
+                r.jour_de_marche_7,
+                r.dep,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat"
+            )
+            ->where("r.dep =:dep")
+            ->setParameter("dep",$dep)
+            ->getQuery()
+            ->getResult();
     }
 
 
