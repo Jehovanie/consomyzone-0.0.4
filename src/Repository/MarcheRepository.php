@@ -150,6 +150,7 @@ class MarcheRepository extends ServiceEntityRepository
         $query= $query->select(
                         "r.id,
                         r.clenum,
+                        r.denominationF,
                         r.denominationF as nameFilter,
                         r.adresse,
                         r.codpost,
@@ -217,6 +218,7 @@ class MarcheRepository extends ServiceEntityRepository
         $query = $query->select(
                         "r.id,
                         r.clenum,
+                        r.denominationF,
                         r.denominationF as nameFilter,
                         r.adresse,
                         r.codpost,

@@ -274,4 +274,35 @@ class MarckerClusterMarche extends MapModule {
 			console.log(e);
 		}
 	}
+
+	getAlreadyInit() {
+		return this.ALREADY_INIT;
+	}
+
+	setAlreadyInit(val) {
+		this.ALREADY_INIT = val;
+	}
+
+	filterByFirstLetterOnName(letter) {
+		const new_data = [];
+		this.removeMarker();
+
+		this.default_data.forEach((item) => {
+			if (item.denominationF.toLowerCase().charAt(0) === letter.toLowerCase()) {
+				new_data.push(item);
+			}
+		});
+		// alert(new_data.length)
+		this.addMarker(new_data);
+	}
+
+	removeMarker() {
+		this.markers.clearLayers();
+		this.map.removeLayer(this.markers);
+	}
+
+	resetToDefaultMarkers() {
+		this.removeMarker();
+		this.addMarker(this.default_data);
+	}
 }
