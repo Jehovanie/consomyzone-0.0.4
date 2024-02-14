@@ -509,7 +509,7 @@ class MarckerClusterSearch extends MapModule {
 
 			if (document.querySelector("#dockableIcone_" + type + "_" + item.id))
 				document.querySelector("#dockableIcone_" + type + "_" + item.id).remove();
-			
+
 			if (document.querySelector("#dockableBtn_" + type + "_" + item.id))
 				document.querySelector("#dockableBtn_" + type + "_" + item.id).remove();
 

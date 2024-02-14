@@ -317,6 +317,8 @@ class HomeController extends AbstractController
 
                 break;
             case "marche":
+                $cles1= intval($cles1);
+
                 $marche = $marcheRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($marche[0])>0){
 
@@ -517,6 +519,7 @@ class HomeController extends AbstractController
                     $results[0] = array_merge($station[0]);
                     $results[1] = $station[1];
                 }elseif($cles0 == "MARCHE" || $cles0 == "MARCHES"){
+                    $cles1= intval($cles1);
                     $marche = $marcheRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     $otherMarche= false;
 
@@ -621,11 +624,11 @@ class HomeController extends AbstractController
                         }
                     }
 
-                    $marche = $marcheRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    $marche = $marcheRepository->getBySpecificClef($cles0, intval($cles1), $page, $size);
                     $otherMarche= false;
                     if(!count($marche[0])>0){
-                        $marche = $marcheRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                        $marche0 = $sortResultService->getDataByCommune($marche, $cles1, "marche", $cles0);
+                        $marche = $marcheRepository->getBySpecificClefOther($cles0, intval($cles1), $page, $size);
+                        $marche0 = $sortResultService->getDataByCommune($marche, intval($cles1), "marche", $cles0);
                         if(count($marche0["data"])>0){
                             $marche[0] = $marche0["data"];
                             $marche[1] = $marche0["nombre"];

@@ -163,6 +163,7 @@ class MarckerClusterMarche extends MapModule {
 			icon: setIconn(icon.path, "", icon.size, zoom),
 			cleNom: item.denominationF,
 			id: item.id,
+			type: "marche",
 			draggable: false,
 		});
 

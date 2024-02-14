@@ -732,11 +732,13 @@ function makeUserModifResto(e) {
 function updataMarkerIntCarte(idItem) {}
 
 function dockFicheRubrique(nombre = 10) {
-	let closeDetailElement = document.querySelector(".close_details_jheo_js");
 	let markerInfo = CURRENT_MAP_INSTANCE.marker_last_selected.options;
 	let idRubrique = markerInfo.id;
 	let typeRubrique = markerInfo.type ? markerInfo.type : "none";
+
+	let closeDetailElement = document.querySelector(".close_details_jheo_js");
 	closeDetailElement.click();
+
 	let divParent = document.createElement("div");
 	let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim();
 	if (nombre > 1) {
@@ -754,16 +756,20 @@ function dockFicheRubrique(nombre = 10) {
 			if (typeRubrique != "none") {
 				btnId = "dockableBtn_" + typeRubrique + "_" + idRubrique;
 				if (document.querySelector("#" + btnId) === null) {
-					newDivContainer.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
-			<i class="fa-solid fa-file"></i>
-			</button>`;
+					newDivContainer.innerHTML += `
+						<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+							<i class="fa-solid fa-file"></i>
+						</button>
+					`;
 				}
 			} else {
 				btnId = "dockableBtn_" + idRubrique;
 				if (document.querySelector("#" + btnId) === null) {
-					newDivContainer.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
-										<i class="fa-solid fa-file"></i>
-		</button>`;
+					newDivContainer.innerHTML += `
+						<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+							<i class="fa-solid fa-file"></i>
+						</button>
+					`;
 				}
 			}
 
@@ -1653,7 +1659,7 @@ function pushMoveFavoryEtablisment(data_folder, modal_content_favory) {
  * @author Jehovanie RAMANDIRJOEL <jehovanieram@gmail.com>
  *
  * Goal: delete favori etablisment
- * @param {integer} id_favory_etablisment : id favori etablisment 
+ * @param {integer} id_favory_etablisment : id favori etablisment
  */
 function removeFavoryEtablisment(id_favory_etablisment) {
 	let link = "/user/favori_etablisment/remove";
