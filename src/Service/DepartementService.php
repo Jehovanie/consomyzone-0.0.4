@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Service\DepartementService;
+
 class DepartementService{
 
     /**

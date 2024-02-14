@@ -589,6 +589,72 @@ class SortResultService extends StringTraitementService
                         }
                     }
                 }
+            }elseif($type== "marche"){
+
+                if($cle0 !=""){
+                    if(str_contains($key["denominationF"], $cle0)){
+                        if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                            $levCommune = levenshtein(strtoupper($key["adresse"]), strtoupper($cles1));
+        
+                            if($hasCP){
+                                $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                                $cles1 = trim($cles1);
+                                $levCommune = levenshtein(strtoupper($key["adresse"]), strtoupper($cles1));
+                            }
+            
+                            if($levCommune <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+        
+                        }elseif ($hasNumVoie && !$hasCP) {
+                            $street = explode(trim($key["codpost"]),trim($key["addresse"]));
+                            $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                            if($levStreet <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }else{
+                            $levAdresse = levenshtein(strtoupper($key["addresse"]), strtoupper(trim($cles1)));
+                            if($levAdresse <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }
+                    }
+                }else{
+
+                    if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                        $levCommune = levenshtein(strtoupper($key["commune"]), strtoupper($cles1));
+    
+                        if($hasCP){
+                            $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                            $cles1 = trim($cles1);
+                            $levCommune = levenshtein(strtoupper($key["commune"]), strtoupper($cles1));
+                        }
+        
+                        if($levCommune <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+    
+                    }elseif ($hasNumVoie && !$hasCP) {
+                        $street = explode(trim($key["codpost"]),trim($key["adresse"]));
+                        $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                        if($levStreet <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }else{
+                        $levAdresse = levenshtein(strtoupper($key["adresse"]), strtoupper(trim($cles1)));
+                        if($levAdresse <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }
+                }
             }
 
         }

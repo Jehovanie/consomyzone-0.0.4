@@ -3,8 +3,9 @@
 namespace App\Repository;
 
 use App\Entity\Marche;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Service\DepartementService;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
  * @extends ServiceEntityRepository<Marche>
@@ -212,7 +213,6 @@ class MarcheRepository extends ServiceEntityRepository
      *  @return {array} list of the Marche.
      */
     public function getDataBetweenAnd($minx, $miny, $maxx, $maxy, $idDep= null, $taille= 250){
-        
         $query = $this->createQueryBuilder("r");
 
         $query = $query->select(
@@ -321,15 +321,18 @@ class MarcheRepository extends ServiceEntityRepository
      * Goal: Get all marche in departement.
      * Use in: MarcheController.php
      */
-    public function getAllRestoIdForSpecificDepartement($dep)
-    {
+    public function getAllRestoIdForSpecificDepartement($dep){
+
         return $this->createQueryBuilder("r")
             ->select(
                 "r.id,
+                r.id as id_etab,
                 r.denominationF as nom,
                 r.denominationF as nameFilter,
                 r.denominationF,
+                r.adresse,
                 r.adresse as add,
+                r.adresse as rue,
                 r.codpost,
                 r.villenorm,
                 r.commune,
@@ -353,6 +356,176 @@ class MarcheRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+    ///jheo : getByCles 
+    public function getBySpecificClef(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
+        $departementService = new DepartementService();
+        $departement = $departementService->getDepWithKeyNomDep();
+
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+            $mot_cles1= intval($mot_cles1);
+        }
+
+        $qb = $this->createQueryBuilder("p")
+                ->select(
+                    "p.id,
+                    p.clenum,
+                    p.denominationF,
+                    p.denominationF as nom,
+                    p.denominationF as nameFilter,
+                    p.adresse,
+                    p.adresse as add,
+                    p.codpost,
+                    p.commune,
+                    p.codinsee,
+                    p.villenorm,
+                    p.specificite,
+                    p.jour_de_marche_1 as marche,
+                    p.jour_de_marche_1,
+                    p.jour_de_marche_2,
+                    p.jour_de_marche_3,
+                    p.jour_de_marche_4,
+                    p.jour_de_marche_5,
+                    p.jour_de_marche_6,
+                    p.jour_de_marche_7,
+                    p.poi_qualitegeorue,
+                    p.dcomiris,
+                    p.dep,
+                    p.dep as depName,
+                    p.date_data,
+                    p.date_inser,
+                    p.poiY as lat,
+                    p.poiX as long"
+                );
+
+        if( $mot_cles0 !== "" && $mot_cles1 === "" ){
+
+            if( strlen($mot_cles0) <= 2 ){
+                
+                $qb = $qb->where("p.denominationF LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                $qb = $qb->where("REPLACE(p.denominationF) LIKE :cles0")
+                            ->setParameter('cles0', '%' . $mot_cles0. '%');
+            }
+                
+        }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
+            if( strlen($mot_cles1) <= 2 ){
+                $qb = $qb->where("p.dep LIKE :cles1")
+                         ->setParameter('cles1', $mot_cles1 );
+            }else{
+                $qb = $qb->where("REPLACE(p.adresse) LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
+        }else {
+            if(strtolower($mot_cles0) === "marche" || strtolower($mot_cles0) === "marché" || strtolower($mot_cles0) == "marches"){
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("p.dep LIKE :cles1")
+                             ->setParameter('cles1',  $mot_cles1 );
+                }else{
+                    //dd("p.numvoie,' ',p.typevoie, ' ',p.nomvoie, ' ',p.codpost, ' ',p.villenorm");
+                    $qb = $qb->where("REPLACE(p.adresse) LIKE :cles1 ")
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }else{
+                if( strlen($mot_cles1) <= 2 ){
+                    $qb = $qb->where("REPLACE(p.denominationF) LIKE :cles0 AND p.dep LIKE :cles1")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }else{
+                    $qb = $qb->where("(REPLACE(p.denominationF) LIKE :cles0) AND (REPLACE(p.adresse) LIKE :cles1 )")
+                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
+                }
+            }
+        }
+
+        $qb = $qb->getQuery();
+        $results = $qb->execute();
+
+        return [ $results , count($results) , "marche"];
+    }
+
+
+    public function getBySpecificClefOther(string $mot_cles0, string $mot_cles1, int $page = 0, $size=20){
+        $departementService = new DepartementService();
+        $departement = $departementService->getDepWithKeyNomDep();
+
+        if(array_key_exists(strtolower($mot_cles1), $departement)){
+            $mot_cles1 = $departement[strtolower($mot_cles1)];
+        }
+
+        $qb = $this->createQueryBuilder("p")
+                ->select(
+                    "p.id,
+                    p.clenum,
+                    p.denominationF,
+                    p.denominationF as nom,
+                    p.denominationF as nameFilter,
+                    p.adresse,
+                    p.adresse as add,
+                    p.codpost,
+                    p.commune,
+                    p.codinsee,
+                    p.villenorm,
+                    p.specificite,
+                    p.jour_de_marche_1 as marche,
+                    p.jour_de_marche_1,
+                    p.jour_de_marche_2,
+                    p.jour_de_marche_3,
+                    p.jour_de_marche_4,
+                    p.jour_de_marche_5,
+                    p.jour_de_marche_6,
+                    p.jour_de_marche_7,
+                    p.poi_qualitegeorue,
+                    p.dcomiris,
+                    p.dep,
+                    p.dep as depName,
+                    p.date_data,
+                    p.date_inser,
+                    p.poiY as lat,
+                    p.poiX as long"
+                );
+
+        if( $mot_cles0 !== "" && $mot_cles1 === "" ){
+            if( strlen($mot_cles0) <= 2 ){
+                $qb = $qb->where("p.denominationF LIKE :cles0")
+                         ->setParameter('cles0', '%'. $mot_cles0. '%' );
+            }else{
+                $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0")
+                            ->orWhere("p.denominationF LIKE :cles0")
+                            ->setParameter('cles0', '%' . $mot_cles0. '%');
+            }
+                
+        }else if ($mot_cles0 === "" && $mot_cles1 !== "" ){
+            if( strlen($mot_cles1) <= 2 ){
+                $qb = $qb->where("p.dep LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+                $qb = $qb->where("MATCH_AGAINST(p.adresse) AGAINST( :cles1 boolean) > 0")
+                         ->orWhere("CONCAT(p.adresse) LIKE :cles1")
+                         ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+
+        }else {
+            if( strlen($mot_cles1) <= 2 ){
+                $qb = $qb->where("MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0 AND p.dep LIKE :cles1")
+                            ->orWhere("p.denominationF LIKE :cles0 AND p.dep LIKE :cles1")
+                            ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }else{
+                $qb = $qb->where("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.numvoie, p.typevoie, p.nomvoie, p.codpost, p.villenorm) AGAINST( :cles1 boolean) > 0)")
+                            ->orWhere("(p.denominationF LIKE :cles0) OR (CONCAT(p.addresse) LIKE :cles1 )")
+                            ->setParameter('cles0', '%'. $mot_cles0. '%' )
+                            ->setParameter('cles1', '%'. $mot_cles1. '%' );
+            }
+        }
+        $qb = $qb->getQuery();
+        $results = $qb->execute();
+
+        return [ $results , count($results) , "marche"];
+    }
 
 //    /**
 //     * @return Marche[] Returns an array of Marche objects
