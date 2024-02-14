@@ -291,14 +291,14 @@ class MarckerClusterSearch extends MapModule {
 				}
 				// this.settingSingleMarker(item, false);
 			});
-			
+
 			/// check if the zoom related to the marker poi
 			if (zoom >= this.zoom_max_for_count_per_dep) {
 				this.map.addLayer(this.markers);
 			}
 
 			this.removePolylineAndSpyderfyMarker();
-					}
+		}
 	}
 
 	addStation(dataStation) {
@@ -395,6 +395,10 @@ class MarckerClusterSearch extends MapModule {
 			}
 		} else if (item.tabac !== undefined) {
 			icon_path = isSelected ? "assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
+		} else if (item.marche !== undefined) {
+			icon_path = isSelected
+				? "assets/icon/NewIcons/icon_marche_selected.png"
+				: "assets/icon/NewIcons/icon_marche.png";
 		}
 
 		return { path: icon_path, size: icon_size };
@@ -411,6 +415,8 @@ class MarckerClusterSearch extends MapModule {
 			this.settingSingleMarkerGolf(item, isSelected);
 		} else if (item.tabac !== undefined) {
 			this.settingSingleMarkerTabac(item, isSelected);
+		} else if (item.marche !== undefined) {
+			this.settingSingleMarkerMarche(item, isSelected);
 		}
 	}
 
@@ -503,8 +509,10 @@ class MarckerClusterSearch extends MapModule {
 
 			if (document.querySelector("#dockableIcone_" + type + "_" + item.id))
 				document.querySelector("#dockableIcone_" + type + "_" + item.id).remove();
+			
 			if (document.querySelector("#dockableBtn_" + type + "_" + item.id))
 				document.querySelector("#dockableBtn_" + type + "_" + item.id).remove();
+
 			removeOrEditSpecificElement();
 		});
 	}
@@ -636,6 +644,8 @@ class MarckerClusterSearch extends MapModule {
 			} else {
 				getDetailTabac(item.dep, item.nom_dep, item.id, true);
 			}
+		} else if (type === "marche") {
+			getDetailMarche(item.dep, item.depName, item.id, true);
 		}
 	}
 
@@ -763,6 +773,35 @@ class MarckerClusterSearch extends MapModule {
 		this.markers.addLayer(marker);
 	}
 
+	settingSingleMarkerMarche(item, isSelected = false) {
+		const zoom = this.map._zoom;
+		const icon = this.getIcon(item, isSelected);
+
+		let marker = null;
+		marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), {
+			icon: setIconn(icon.path, "", icon.size, zoom),
+			cleNom: item.denominationF,
+			id: item.id,
+			type: "marche",
+			draggable: false,
+		});
+
+		const title = `
+					<div>
+						<span class='fw-bolder'> Marche: </span>  
+						${item.denominationF}<br>
+						<span class='fw-bolder'>Adresse:</span>
+						${item.adresse}
+					</div>
+				`;
+
+		marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+
+		this.bindEventClick(marker, item, "marche");
+
+		this.markers.addLayer(marker);
+	}
+
 	updateLastMarkerSelected(marker, type) {
 		if (this.marker_last_selected && this.marker_last_selected != marker) {
 			const default_data = this.default_data.results[0];
@@ -792,6 +831,11 @@ class MarckerClusterSearch extends MapModule {
 				last_item = default_data.find(
 					(item) =>
 						parseInt(item.id) === parseInt(this.marker_last_selected.options.id) && item.tabac != undefined
+				);
+			} else if (this.marker_last_selected_type === "marche") {
+				last_item = default_data.find(
+					(item) =>
+						parseInt(item.id) === parseInt(this.marker_last_selected.options.id) && item.marche != undefined
 				);
 			}
 
