@@ -260,9 +260,11 @@ class MapModule {
 
 	async settingGeos() {
 		let number_etablisement = null;
+
 		const current_url = new URL(window.location.href);
 		if (current_url.href.includes("search")) {
 			const data = this.data.results[0];
+
 			number_etablisement = {
 				type: "search",
 				departement: "0",
@@ -399,6 +401,7 @@ class MapModule {
 						<span class="badge rounded-pill bg-danger">S:${feature.properties.details.station}</span>
 						<span class="badge rounded-pill bg-light text-black">G:${feature.properties.details.golf}</span>
 						<span class="badge rounded-pill bg-dark">T:${feature.properties.details.tabac}</span>
+						<span class="badge rounded-pill bg-dark">M:${feature.properties.details.marche}</span>
 					`
 						: "";
 
@@ -2400,11 +2403,12 @@ class MapModule {
 		if (Array.isArray(this.default_data)) {
 			default_data = this.default_data;
 		} else if (this.default_data.hasOwnProperty("ferme") && this.default_data.hasOwnProperty("resto")) {
-			default_data = default_data.concat(this.default_data.ferme);
-			default_data = default_data.concat(this.default_data.station);
+			default_data = default_data.concat(this.default_data.marche);
 			default_data = default_data.concat(this.default_data.resto);
 			default_data = default_data.concat(this.default_data.golf);
+			default_data = default_data.concat(this.default_data.ferme);
 			default_data = default_data.concat(this.default_data.tabac);
+			default_data = default_data.concat(this.default_data.station);
 		} else if (
 			this.default_data.hasOwnProperty("results") &&
 			this.default_data.hasOwnProperty("cles0") &&

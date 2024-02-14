@@ -24,6 +24,8 @@ use App\Entity\AdressIpAndPosition;
 
 use App\Repository\TabacRepository;
 
+use App\Repository\MarcheRepository;
+
 use App\Repository\CodeapeRepository;
 
 use App\Repository\AvisGolfRepository;
@@ -37,7 +39,6 @@ use App\Controller\RestaurantController;
 use App\Repository\GolfFranceRepository;
 
 use Doctrine\ORM\EntityManagerInterface;
-
 use App\Repository\DepartementRepository;
 use App\Repository\AvisRestaurantRepository;
 use Symfony\Component\HttpFoundation\Request;
@@ -319,6 +320,7 @@ class ToutsController extends AbstractController
         AvisGolfRepository $avisGolfRepository,
         GolfFranceService $golfFranceService,
         TabacRepository $tabacRepository,
+        MarcheRepository $marcheRepository,
         AvisRestaurantRepository $avisRestaurantRepository,
         RestaurantController $restaurantController,
         Tribu_T_Service $tribu_T_Service,
@@ -364,6 +366,7 @@ class ToutsController extends AbstractController
                 "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
                 "golf" => $golfFranceService->mergeDatasAndAvis($golfs, $moyenne_golfs),
                 "tabac" => $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, 100),
+                "marche" => $marcheRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, 100),
                 "allIdRestoPastille" => $arrayIdResto
             ]);
         }
@@ -385,6 +388,7 @@ class ToutsController extends AbstractController
             "resto" => $restaurantController->mergeDatasAndAvis($restos,$moyenneNote),
             "golf" => $golfFranceService->mergeDatasAndAvis($golfs, $moyenne_golfs),
             "tabac" => $tabacRepository->getSomeDataShuffle($taille),
+            "marche" => $marcheRepository->getSomeDataShuffle(null, $taille),
             "allIdRestoPastille" => $arrayIdResto
         ]);
     }

@@ -158,6 +158,7 @@ class MarcheRepository extends ServiceEntityRepository
                         r.codinsee,
                         r.villenorm,
                         r.specificite,
+                        r.jour_de_marche_1 as marche,
                         r.jour_de_marche_1,
                         r.jour_de_marche_2,
                         r.jour_de_marche_3,
@@ -206,12 +207,11 @@ class MarcheRepository extends ServiceEntityRepository
      * 
      *  @param {decimal} $minx,$miny, $maxx, $maxy: lat long min and max delimite the bound
      *         {integer|null} $idDep code of departement if this sepecified
-     *         {integer|null} $codinsee: code Insee of arrondissement in departement.
      *         {integer} number data to return by default 250
      * 
      *  @return {array} list of the Marche.
      */
-    public function getDataBetweenAnd($minx, $miny, $maxx, $maxy, $idDep= null, $codinsee= null, $taille= 250){
+    public function getDataBetweenAnd($minx, $miny, $maxx, $maxy, $idDep= null, $taille= 250){
         
         $query = $this->createQueryBuilder("r");
 
@@ -226,6 +226,7 @@ class MarcheRepository extends ServiceEntityRepository
                         r.codinsee,
                         r.villenorm,
                         r.specificite,
+                        r.jour_de_marche_1 as marche,
                         r.jour_de_marche_1,
                         r.jour_de_marche_2,
                         r.jour_de_marche_3,
@@ -266,11 +267,6 @@ class MarcheRepository extends ServiceEntityRepository
         if( $idDep ){
             $query = $query->andWhere("r.dep =:dep")
                            ->setParameter("dep", $idDep);
-        }
-
-        if( $codinsee ){
-            $query = $query->andWhere("r.codinsee =:codinsee")
-                           ->setParameter("codinsee", $codinsee);
         }
 
         return $query->orderBy('RAND()')
