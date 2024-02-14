@@ -515,6 +515,9 @@ if (document.querySelector(".list-nav-bar")) {
 	} else if (activPage.includes("/ferme")) {
 		document.querySelector("#ferme-page").classList.add("active");
 		document.querySelector(".ferme-page-mobile").classList.add("active-mobile");
+	} else if (activPage.includes("/marche")) {
+		document.querySelector("#marche-page").classList.add("active");
+		document.querySelector(".marche-page-mobile").classList.add("active-mobile");
 	} else if (activPage.includes("/restaurant")) {
 		document.querySelector("#resto-page").classList.add("active");
 		document.querySelector(".resto-page-mobile").classList.add("active-mobile");
@@ -940,16 +943,15 @@ function showModalEditor(isG, isListeInfile = false) {
 	// date limite de confirmation par défaut (3 semaine avant la date de l'événement)
 	let dateOld = new Intl.DateTimeFormat("fr-FR", { dateStyle: "full" }).format(new Date(back));
 
-  if (document.querySelector("#object_share_event") && agenda)
-    document.querySelector("#object_share_event").value =
-      agenda.title + ", " + fullname;
-  // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité
-  //</span>
-  if (agenda && agenda.isVisioCMZ == 1) {
-    let img = agenda.file_path
-      ? `<img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js"></img>`
-      : "";
-    return (html = ` 
+	if (document.querySelector("#object_share_event") && agenda)
+		document.querySelector("#object_share_event").value = agenda.title + ", " + fullname;
+	// <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité
+	//</span>
+	if (agenda && agenda.isVisioCMZ == 1) {
+		let img = agenda.file_path
+			? `<img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js"></img>`
+			: "";
+		return (html = ` 
         <p>Madame / Monsieur 
         <br>
             Je vous annonce la tenue de la visioconférence
@@ -1142,7 +1144,7 @@ function findInNet(server, denomination_f, adresse) {
 		case "map":
 			window.open("https://www.google.com/maps?q=" + denomination_f + " " + adresse);
 			break;
-				case "tripadvisor":
+		case "tripadvisor":
 			window.open("https://www.tripadvisor.com/Search?q=" + denomination_f);
 			break;
 		case "michelin":
@@ -1151,49 +1153,47 @@ function findInNet(server, denomination_f, adresse) {
 		case "bing":
 			window.open("https://www.bing.com/search?q=" + denomination_f + " " + adresse);
 			break;
-		case "thefork":{
+		case "thefork": {
 			const request = new Request(`/get/link/thefork/${denomination_f.replaceAll(" ", "_")}/${adresse}`, {
-				method: 'GET',
+				method: "GET",
 			});
 			fetch(request)
-			.then((response) => response.text())
-			.then((result) => {
-				const htmlParse = new DOMParser().parseFromString(result, "text/html")
-								let linkTheForkGoogle = htmlParse.querySelector("#main > div > div > div.egMi0 > a")
-				let linkTheForkGoogleHref = linkTheForkGoogle.getAttribute("href")
-				let linkTheFork = linkTheForkGoogleHref.split("/")[3]
-				let theFork = linkTheFork.split(".")[1]
-				
-				if (theFork === 'thefork') {
-					let nameRestoTheForkSplit = linkTheForkGoogleHref.split("/")[5]
+				.then((response) => response.text())
+				.then((result) => {
+					const htmlParse = new DOMParser().parseFromString(result, "text/html");
+					let linkTheForkGoogle = htmlParse.querySelector("#main > div > div > div.egMi0 > a");
+					let linkTheForkGoogleHref = linkTheForkGoogle.getAttribute("href");
+					let linkTheFork = linkTheForkGoogleHref.split("/")[3];
+					let theFork = linkTheFork.split(".")[1];
 
-					let adressRestoTheFork = nameRestoTheForkSplit.split("-")[0]
-					if (adressRestoTheFork == adresse.toLowerCase()) {
+					if (theFork === "thefork") {
+						let nameRestoTheForkSplit = linkTheForkGoogleHref.split("/")[5];
+
+						let adressRestoTheFork = nameRestoTheForkSplit.split("-")[0];
+						if (adressRestoTheFork == adresse.toLowerCase()) {
+							swal({
+								title: "The fork",
+								text: "On ne trouve pas le lien exacte pour aller au restaurant sur the fork",
+								icon: "error",
+								button: "OK",
+							});
+						} else {
+							let nameRestoTheFork = nameRestoTheForkSplit.split("&")[0];
+							window.open("https://www.thefork.fr/restaurant/" + nameRestoTheFork);
+						}
+					} else {
 						swal({
 							title: "The fork",
 							text: "On ne trouve pas le lien exacte pour aller au restaurant sur the fork",
 							icon: "error",
 							button: "OK",
 						});
-					} else {
-						let nameRestoTheFork = nameRestoTheForkSplit.split("&")[0]
-						window.open("https://www.thefork.fr/restaurant/" + nameRestoTheFork);
 					}
-					
-				} else {
-					swal({
-						title: "The fork",
-						text: "On ne trouve pas le lien exacte pour aller au restaurant sur the fork",
-						icon: "error",
-						button: "OK",
-					});
-				}
-			})
+				});
 			break;
 		}
-			// const linkTheFork1 = `https://www.google.com/search?q=the+fork+${denomination_f.replaceAll(" ", "+")}+${adresse}`
-			// console.log(linkTheFork1)
-			
+		// const linkTheFork1 = `https://www.google.com/search?q=the+fork+${denomination_f.replaceAll(" ", "+")}+${adresse}`
+		// console.log(linkTheFork1)
 	}
 }
 

@@ -3,6 +3,9 @@
 	margin-top: unset !important;
 	font-size: 10pt;
 }
+.cart_map {
+	width: 102vw;
+}
 
 .navleft .list-depart {
 	margin-top: 0 !important;

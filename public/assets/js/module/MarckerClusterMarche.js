@@ -166,8 +166,17 @@ class MarckerClusterMarche extends MapModule {
 			draggable: false,
 		});
 
-		this.bindEventClick(marker, item);
+		const title = `
+		    <div>
+				<span class='fw-bolder'> Marche: </span>  
+				${item.denominationF}<br>
+				<span class='fw-bolder'>Adresse:</span>
+				${item.adresse}
+			</div>
+		`;
+		marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
 
+		this.bindEventClick(marker, item);
 		this.markers.addLayer(marker);
 	}
 
