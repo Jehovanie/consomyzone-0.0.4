@@ -317,7 +317,7 @@ class HomeController extends AbstractController
 
                 break;
             case "marche":
-                $cles1= intval($cles1);
+                $cles1= intval($cles1) === 0 ? $cles1 : intval($cles1);
 
                 $marche = $marcheRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($marche[0])>0){
@@ -624,11 +624,12 @@ class HomeController extends AbstractController
                         }
                     }
 
-                    $marche = $marcheRepository->getBySpecificClef($cles0, intval($cles1), $page, $size);
+                    $temp_cles1=intval($cles1) === 0 ? $cles1 : intval($cles1);
+                    $marche = $marcheRepository->getBySpecificClef($cles0, $temp_cles1, $page, $size);
                     $otherMarche= false;
                     if(!count($marche[0])>0){
-                        $marche = $marcheRepository->getBySpecificClefOther($cles0, intval($cles1), $page, $size);
-                        $marche0 = $sortResultService->getDataByCommune($marche, intval($cles1), "marche", $cles0);
+                        $marche = $marcheRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $marche0 = $sortResultService->getDataByCommune($marche, $cles1, "marche", $cles0);
                         if(count($marche0["data"])>0){
                             $marche[0] = $marche0["data"];
                             $marche[1] = $marche0["nombre"];

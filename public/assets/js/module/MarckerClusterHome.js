@@ -193,7 +193,7 @@ class MarckerClusterHome extends MapModule {
 				this.addStation(station);
 			}
 
-			// ///all golf
+			///all golf
 			if (golf.length > 0) {
 				this.addGolf(golf);
 			}

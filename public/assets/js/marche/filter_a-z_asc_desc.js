@@ -188,7 +188,13 @@ function refreshDataList() {
 		".content_list_marche_spec_js_jheo .card-list.name_marche_js_jheo"
 	);
 
-	pagginationModule(".content_list_marche_spec_js_jheo", ".name_ferme_js_jheo", 10);
+	for (let i = 0; i < all_card_elements.length; i++) {
+		if (all_card_elements[i].classList.contains("hidden")) {
+			all_card_elements[i].classList.remove("hidden");
+		}
+	}
+
+	pagginationModule(".content_list_marche_spec_js_jheo", ".name_marche_js_jheo", 10);
 
 	document.querySelector(".content_nombre_result_js_jheo").innerText = all_card_elements.length;
 

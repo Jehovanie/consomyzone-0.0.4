@@ -504,7 +504,7 @@ class MarcheRepository extends ServiceEntityRepository
                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }else{
                 $qb = $qb->where("MATCH_AGAINST(p.adresse) AGAINST( :cles1 boolean) > 0")
-                         ->orWhere("CONCAT(p.adresse) LIKE :cles1")
+                         ->orWhere("p.adresse LIKE :cles1")
                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
 
@@ -515,8 +515,8 @@ class MarcheRepository extends ServiceEntityRepository
                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }else{
-                $qb = $qb->where("(MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0) OR (MATCH_AGAINST(p.addresse) AGAINST( :cles1 boolean) > 0)")
-                            ->orWhere("(p.denominationF LIKE :cles0) OR (CONCAT(p.addresse) LIKE :cles1 )")
+                $qb = $qb->where("( MATCH_AGAINST(p.denominationF) AGAINST( :cles0 boolean) > 0 ) OR ( MATCH_AGAINST(p.addresse) AGAINST( :cles1 boolean) > 0 )")
+                            ->orWhere("(p.denominationF LIKE :cles0) OR (p.addresse LIKE :cles1 )")
                             ->setParameter('cles0', '%'. $mot_cles0. '%' )
                             ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }

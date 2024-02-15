@@ -517,7 +517,9 @@ if (document.querySelector(".list-nav-bar")) {
 		document.querySelector(".ferme-page-mobile").classList.add("active-mobile");
 	} else if (activPage.includes("/marche")) {
 		document.querySelector("#marche-page").classList.add("active");
-		document.querySelector(".marche-page-mobile").classList.add("active-mobile");
+		if (document.querySelector(".marche-page-mobile")){
+			document.querySelector(".marche-page-mobile").classList.add("active-mobile");
+		}
 	} else if (activPage.includes("/restaurant")) {
 		document.querySelector("#resto-page").classList.add("active");
 		document.querySelector(".resto-page-mobile").classList.add("active-mobile");
