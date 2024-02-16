@@ -289,6 +289,7 @@ function bindEventForAllDay(info) {
 	$("#createAgenda").modal("show");
 	document.querySelector("#createOrEditBtn").disabled = false;
 	document.querySelector("#deleteAgendaBtn").disabled = false;
+	document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block"
 	// if (document.querySelector("#createOrEditBtn").textContent.toLowerCase().trim() == "modifier") {
 		
 	// }
@@ -352,9 +353,11 @@ function setAndShowModal(agenda) {
 	if (agenda.user_id == document.querySelector("#createOrEditBtn").dataset.usi) {
 		document.querySelector("#createOrEditBtn").disabled = false;
 		document.querySelector("#deleteAgendaBtn").disabled = false;
+		document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block"
 	} else {
 		document.querySelector("#createOrEditBtn").disabled = true;
 		document.querySelector("#deleteAgendaBtn").disabled = true;
+		document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "none"
 	}
 
 	if (document.querySelector("#shareAgendaBtn").classList.contains("d-none")) {
@@ -689,6 +692,7 @@ function deleteAgenda() {
 					$("#createAgenda").modal("hide");
 					document.querySelector("#createOrEditBtn").disabled = false;
 					document.querySelector("#deleteAgendaBtn").disabled = false;
+					document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block"
 					swal("Bravo !", response.message, "success").then((value) => {
 						location.reload();
 					});
@@ -1774,6 +1778,7 @@ function initInputForm() {
 	if (!document.querySelector("#shareAgendaBtn").classList.contains("d-none")) {
 		document.querySelector("#shareAgendaBtn").classList.add("d-none");
 	}
+	document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block"
 }
 
 if (document.querySelector("#shareAgendaBtn")) {
@@ -2290,3 +2295,28 @@ function setUserInput(){
 		classL.add("userInput")
 	}
 }
+
+function resetInputData(){
+	document.querySelectorAll("input[name=etabRadioOptions]").forEach(item=>{
+		item.checked = false
+	})
+	document.querySelector("#eventTitle").value = ""
+	document.querySelector("#typeEvent").value = "Evènement"
+	document.querySelector("#nomEtabEvent").value = ""
+	document.querySelector("#lieuEvent").value = ""
+	document.querySelector("#containerNomEtab").style.display = "none"
+	document.querySelector("#containerAdresseEtab").style.display = "none"
+	document.querySelector("#eventDesc").value = ""
+	document.querySelector("#nbrParticipant").value = "50"
+	document.querySelector(".img_upload_agenda").innerHTML = `<div class="preview text-center d-none preview_image_nanta_js">
+			  <img id="image-preview" class="image-upload-image">
+			  <div class="image-title-wrap">
+				<button type="button" onclick="resetImagePreview()" class="remove-image-uplaod">
+				  Changer l'image
+				</button>
+			  </div>
+			</div>
+			<button class="btn btn-info btnAddPhoto_nanta_js" data-bs-target="#addPictureModal" data-bs-toggle="modal">
+			  <b><i class="bi bi-plus" style="font-size:20px;"></i> Ajouter une photo à votre événement</b>
+			</button>`
+  }

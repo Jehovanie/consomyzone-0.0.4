@@ -1,0 +1,189 @@
+{# MODAL FOR UPDATE ETABLISHMENT INFOS #}
+<div class="modal fade" id="userModifResto" tabindex="-1" aria-labelledby="userModifRestoTitles" aria-hidden="true" style="z-index: 100000;">
+  <div class="modal-dialog modal-dialog-scrollable modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <input type="hidden" name="newIdResto" id="newIdResto">
+        <h5 class="modal-title" id="userModifRestoTitles">Modifier les informations à propos de cet établissement.</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="container">
+            <div class="mb-3">
+                <label for="newPhoneNumber" class="form-label text_black"><b>Nouvelles coordonnées géographiques</b></label>
+                <div class="row">
+                    <div class="col-6">
+                        <label for="newLatitude" class="form-label text_black">Latitude</label>
+                        <input type="text" name="newLatitude" class="form-control input_black" id="newLatitude" disabled>
+                    </div>
+                    <div class="col-6">
+                        <label for="newLongitude" class="form-label text_black">Longitude</label>
+                        <input type="text" name="newLongitude" class="form-control input_black" id="newLongitude" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+              <label for="restoNewDenominationF" class="form-label text_black"><b>Nouveau nom du restaurant</b> (Facultatif)</label>
+              <input type="text" name="restoNewDenominationF" class="form-control input_black" id="restoNewDenominationF" placeholder="Saisir le nouveau nom du restaurant">
+            </div>
+            <div class="mb-3">
+                <label for="newAdresse" class="form-label text_black"><b>Nouvelle adresse</b> (Facultative)</label>
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label for="newNumVoie" class="form-label text_black">Numéro de voie</label>
+                        <input type="number" name="newNumVoie" class="form-control input_black" id="newNumVoie"  placeholder="Saisir le numéro de voie">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="newTypeVoie" class="form-label text_black">Type de voie</label>
+                        <input type="text" name="newTypeVoie" class="form-control input_black" id="newTypeVoie"  placeholder="Saisir le type de voie">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="newNomVoie" class="form-label text_black">Nom de voie</label>
+                        <input type="text" name="newNomVoie" class="form-control input_black" id="newNomVoie"  placeholder="Saisir le nom de voie">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="newCompVoie" class="form-label text_black">Complémentaire de voie</label>
+                        <input type="text" name="newCompVoie" class="form-control input_black" id="newCompVoie"  placeholder="Saisir le complémentaire de voie">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-4">
+                        <label for="newCP" class="form-label text_black">Code postal</label>
+                        <input type="text" name="newCP" class="form-control input_black" id="newCP"  placeholder="Saisir le code postal">
+                    </div>
+                    <div class="col-8">
+                        <label for="newVille" class="form-label text_black">Ville</label>
+                        <input type="text" name="newVille" class="form-control input_black" id="newVille"  placeholder="Saisir la ville">
+                    </div>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="newPhoneNumber" class="form-label text_black"><b>Numéro de téléphone</b> (Facultatif)</label>
+                <input type="tel" name="newPhoneNumber" class="form-control input_black" id="newPhoneNumber"  placeholder="Saisir le nouveau numéro de téléphone">
+            </div>
+
+            <div class="mb-3">
+                <label for="newPhoneNumber" class="form-label text_black"><b>Type du restaurant</b> (Facultatif)</label>
+                <div id="newDetailMenu">
+                  <div class="mb-3">
+                    <label class="form-check-label text_black">Restaurant : </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="newRestoRadio" id="falseResto" value="0">
+                        <label class="form-check-label text_black" for="falseResto" data-bs-toggle="tooltip" data-bs-placement="top" title="Si ce n'est pas un restaurant">Non</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="newRestoRadio" id="trueResto" value="1">
+                      <label class="form-check-label text_black" for="trueResto" data-bs-toggle="tooltip" data-bs-placement="top" title="Si c'est un restaurant">Oui</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-check-label text_black">Brasserie : </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="newBrasserieRadio" id="falseBrasserie" value="0">
+                        <label class="form-check-label text_black" for="falseBrasserie" data-bs-toggle="tooltip" data-bs-placement="top" title="Si ce n'est pas une brasserie">Non</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="newBrasserieRadio" id="trueBrasserie" value="1">
+                      <label class="form-check-label text_black" for="trueBrasserie" data-bs-toggle="tooltip" data-bs-placement="top" title="Si c'est une brasserie">Oui</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-check-label text_black">Crêperie : </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="newCreperieRadio" id="falseCreperie" value="0">
+                        <label class="form-check-label text_black" for="falseCreperie" data-bs-toggle="tooltip" data-bs-placement="top" title="Si ce n'est pas une crêperie">Non</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="newCreperieRadio" id="trueCreperie" value="1">
+                      <label class="form-check-label text_black" for="trueCreperie" data-bs-toggle="tooltip" data-bs-placement="top" title="Si c'est une crêperie">Oui</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-check-label text_black">Fast food : </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="newFastFoodRadio" id="falseFastFood" value="0">
+                        <label class="form-check-label text_black" for="falseFastFood" data-bs-toggle="tooltip" data-bs-placement="top" title="Si ce n'est pas un fast food">Non</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="newFastFoodRadio" id="trueFastFood" value="1">
+                      <label class="form-check-label text_black" for="trueFastFood" data-bs-toggle="tooltip" data-bs-placement="top" title="Si c'est un fast food">Oui</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-check-label text_black">Pizzeria : </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="newPizzeriaRadio" id="falsePizzeria" value="0">
+                        <label class="form-check-label text_black" for="falsePizzeria" data-bs-toggle="tooltip" data-bs-placement="top" title="Si ce n'est pas une pizzeria">Non</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="newPizzeriaRadio" id="truePizzeria" value="1">
+                      <label class="form-check-label text_black" for="truePizzeria" data-bs-toggle="tooltip" data-bs-placement="top" title="Si c'est une pizzeria">Oui</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-check-label text_black">Boulangerie : </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="newBoulangerieRadio" id="falseBoulangerie" value="0">
+                        <label class="form-check-label text_black" for="falseBoulangerie" data-bs-toggle="tooltip" data-bs-placement="top" title="Si ce n'est pas une boulangerie">Non</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="newBoulangerieRadio" id="trueBoulangerie" value="1">
+                      <label class="form-check-label text_black" for="trueBoulangerie" data-bs-toggle="tooltip" data-bs-placement="top" title="Si c'est une boulangerie">Oui</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-check-label text_black">Bar : </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="newBarRadio" id="falseBar" value="0">
+                        <label class="form-check-label text_black" for="falseBar" data-bs-toggle="tooltip" data-bs-placement="top" title="Si ce n'est pas un bar">Non</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="newBarRadio" id="trueBar" value="1">
+                      <label class="form-check-label text_black" for="trueBar" data-bs-toggle="tooltip" data-bs-placement="top" title="Si c'est un bar">Oui</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-check-label text_black">Cuisine monde : </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="newCuisineMondeRadio" id="falseCuisineMonde" value="0">
+                        <label class="form-check-label text_black" for="falseCuisineMonde" data-bs-toggle="tooltip" data-bs-placement="top" title="Si ce n'est pas une cuisine monde">Non</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="newCuisineMondeRadio" id="trueCuisineMonde" value="1">
+                      <label class="form-check-label text_black" for="trueCuisineMonde" data-bs-toggle="tooltip" data-bs-placement="top" title="Si c'est une cuisine monde">Oui</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-check-label text_black">Café : </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="newCafeRadio" id="falseCafe" value="0">
+                        <label class="form-check-label text_black" for="falseCafe" data-bs-toggle="tooltip" data-bs-placement="top" title="Si ce n'est pas un café">Non</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="newCafeRadio" id="trueCafe" value="1">
+                      <label class="form-check-label text_black" for="trueCafe" data-bs-toggle="tooltip" data-bs-placement="top" title="Si c'est un café">Oui</label>
+                    </div>
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-check-label text_black">Salon thé : </label>
+                    <div class="form-check form-check-inline">
+                        <input class="form-check-input" type="radio" name="newSalonTheRadio" id="falseSalonThe" value="0">
+                        <label class="form-check-label text_black" for="falseSalonThe" data-bs-toggle="tooltip" data-bs-placement="top" title="Si ce n'est pas un salon thé">Non</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="radio" name="newSalonTheRadio" id="trueSalonThe" value="1">
+                      <label class="form-check-label text_black" for="trueSalonThe" data-bs-toggle="tooltip" data-bs-placement="top" title="Si c'est un salon thé">Oui</label>
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-primary" onclick="makeUserModifResto(event)">Modifier</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -8,7 +8,7 @@ let idleTimer = setTimeout(function () {
 let idleTimer2 = setTimeout(function () {
 	console.log("debut");
 }, 30000);
-let heartBeatTimer = setTimeout(() => {}, 100);
+let heartBeatTimer = setTimeout(() => { }, 100);
 const myMessageWorker = new Worker("/public/assets/js/message/worker.js");
 /*
 
@@ -417,6 +417,27 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome = false, select_
 	document.querySelector(id_selector).innerHTML = createMiniCMZloading();
 
 	const pathDetails = `/restaurant/${nameDepart}/${codeDepart}/details/${idResto}`;
+	fetchDetails(id_selector, pathDetails);
+}
+
+function getDetailMarche(codeDepart, nameDepart, idMarche, inHome = false, select_dem) {
+	let remove = !inHome
+		? document.getElementById("remove-detail-marche")
+		: document.getElementById("remove-detail-home");
+	remove.removeAttribute("class", "hidden");
+
+	if (screen.width <= 991) {
+		remove.setAttribute("class", "navleft-detail-mobile fixed-top ");
+	} else {
+		remove.setAttribute("class", "navleft-detail key_draggable_details_jheo_js");
+	}
+
+	const id_selector = !inHome ? "#content_detail_marche_js_jheo" : "#content_details_home_js_jheo";
+
+	document.querySelector(id_selector).innerHTML = createMiniCMZloading();
+
+	const pathDetails = `/marche/${codeDepart}/details/${idMarche}`;
+
 	fetchDetails(id_selector, pathDetails);
 }
 
@@ -1207,7 +1228,7 @@ function readURL(input) {
 		reader.onload = function (e) {
 			if (!checkFileExtension(listExt, e.target.result)) {
 				swal({
-					title: "Le format de fichier n'est pas pris en charge!",
+					title: "Ce format n'est pas pris en charge!",
 					text: "Le fichier autorisé doit être une image.",
 					icon: "error",
 					button: "OK",
@@ -1215,7 +1236,7 @@ function readURL(input) {
 			} else {
 				if (!checkTailleImage(octetMax, e.target.result)) {
 					swal({
-						title: "Le fichier est trop volumineux!",
+						title: "Ce fichier est trop volumineux!",
 						text: "La taille de l'image doit être inférieure à 2Mo.",
 						icon: "error",
 						button: "OK",
@@ -1591,11 +1612,10 @@ function handleNewComment(userInformations, comment) {
 
 	content_comment.innerHTML = `
         <div class="h sa wf uk th ni ej">
-            <a href="#"> <img class="profil_publication" src="${
-				userInformations.profil !== ""
-					? "/public" + userInformations.profil
-					: "/public/uploads/users/photos/default_pdp.png"
-			}" alt="User"/> </a>
+            <a href="#"> <img class="profil_publication" src="${userInformations.profil !== ""
+			? "/public" + userInformations.profil
+			: "/public/uploads/users/photos/default_pdp.png"
+		}" alt="User"/> </a>
         </div>
 
         <div>
@@ -2290,7 +2310,9 @@ function showPastillTable(e, id) {
 		.then((res) => res.json())
 		.then((response) => {
 			const isOk = response.isPastilled;
-			document.querySelector("#btn-pastille-elie-tbg").setAttribute("data-velona", response.profil_tribuG.logo_path);
+			document
+				.querySelector("#btn-pastille-elie-tbg")
+				.setAttribute("data-velona", response.profil_tribuG.logo_path);
 			if (isOk) {
 				document
 					.querySelector("#btn-pastille-elie-tbg")
@@ -2619,17 +2641,13 @@ function getDataSpecificMobile(nom_dep, id_dep, isArrondissement) {
 				}
 
 				listSpecMobile.innerHTML += `
-                    <li class="nav-item icon-tabac me-3 item_carrousel_${
-						response.id
-					}_jheo_js content_avie_details_tomm_js " data-toggle-id-resto="${
-					response.id
-				}" data-toggle-type="resto">
+                    <li class="nav-item icon-tabac me-3 item_carrousel_${response.id
+					}_jheo_js content_avie_details_tomm_js " data-toggle-id-resto="${response.id
+					}" data-toggle-type="resto">
                             <div class="containt-specific">
-                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${
-									response.id
-								}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${
-					response.id
-				}')">
+                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${response.id
+					}" onclick="getDetailFromListLeft('${response.depName}', '${response.dep}', '${response.id
+					}')">
                                     <div class="row">
                                         <div class="col-6">
                                             <p class="text-point-12 fw-bold">${response.nom}</p>
@@ -2666,11 +2684,9 @@ function getDataSpecificMobile(nom_dep, id_dep, isArrondissement) {
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center flex-gap-2 content_btn_avis">
                                     <span>
-                                        <a id="see-tom-js${
-											response.id
-										}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie('${
-					response.id
-				}')">
+                                        <a id="see-tom-js${response.id
+					}" class="text-black text-point-9 btn btn-warning" data-bs-toggle="modal" data-bs-target="#staticBackdrop" onclick="showListAvie('${response.id
+					}')">
                                             <span class="nbr_avis_resto_jheo_js">${response.avis.nbr}    </span> avis
                                         </a>
                                     </span>
@@ -2863,9 +2879,8 @@ function getRestoSpecSearchMobile(nom_dep, id_dep, idResto) {
 			listSpecMobile.innerHTML = `
                     <li class="nav-item icon-tabac me-3 content_avie_details_tomm_js " data-toggle-id-resto="${idRestaurant}">
                             <div class="containt-specific">
-                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${idRestaurant}" onclick="getDetailFromListLeft('${
-				restaurants.depName
-			}', '${restaurants.dep}', '${idRestaurant}')">
+                                <div class="click-detail" data-bs-toggle="modal" data-bs-target="#ModalDetailMobile${idRestaurant}" onclick="getDetailFromListLeft('${restaurants.depName
+				}', '${restaurants.dep}', '${idRestaurant}')">
                                     <div class="row">
                                         <div class="col-6">
                                             <p class="text-point-12 fw-bold">${restaurants.nom}</p>
@@ -2945,9 +2960,8 @@ function getRestoSpecSearchMobile(nom_dep, id_dep, idResto) {
                                     </form>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-warning send_avis_${idRestaurant}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${
-				response.id
-			}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
+                                    <button type="button" class="btn btn-warning send_avis_${idRestaurant}_jheo_js"  data-bs-dismiss="modal" data-bs-toggle="modal"   data-bs-target="#staticBackdrop${response.id
+				}" id="Submit-Avis-resto-tom-js" onclick="addAvisRestoMobile(${response.id}, ${id_user})">Envoyer</button>
                                 </div>
                             </div>
                         </div>
@@ -4247,7 +4261,7 @@ function showImagePreview(e) {
 
 		if (!e.target.files[0].type.includes("image/")) {
 			swal({
-				title: "Le format de fichier n'est pas pris en charge!",
+				title: "Ce format n'est pas pris en charge!",
 				text: "Le fichier autorisé doit être une image",
 				icon: "error",
 				button: "Ok",
@@ -4266,7 +4280,7 @@ function showImagePreview(e) {
 				if (document.querySelector("#selectRepertoryModal")) $("#selectRepertoryModal").modal("show");
 			} else {
 				swal({
-					title: "Le fichier est trop volumineux.",
+					title: "Ce fichier est trop volumineux.",
 					text: "La taille de l'image doit être inférieure à 2Mo",
 					icon: "error",
 					button: "Ok",
@@ -4569,7 +4583,7 @@ function setDirForImage(e) {
  * @param {string} data source
  */
 function setPhotoAfterUpload(data) {
-	swal("Voulez-vous definir cette photo comme photo de profil?", {
+	swal("Voulez-vous définir cette photo comme photo de profil?", {
 		buttons: {
 			cancel: "Non, pas maintenant",
 			confirm: {
@@ -4596,7 +4610,7 @@ function setPhotoAfterUpload(data) {
 
 						if (response.success) {
 							swal({
-								title: "Modifié",
+								title: "Modifiée",
 								text: response.message,
 								icon: "success",
 								button: "OK",
@@ -4625,7 +4639,7 @@ function setPhotoAfterUpload(data) {
 
 						if (response.success) {
 							swal({
-								title: "Téléchargé",
+								title: "Téléchargée",
 								text: response.message,
 								icon: "success",
 								button: "OK",
@@ -4681,7 +4695,7 @@ function setGallerieImageV2() {
  * @param {string} email
  * @param {int} invite_to
  */
-function saveInvitationStory(table_trib, email,withMessage=true) {
+function saveInvitationStory(table_trib, email, withMessage = true) {
 	fetch("/tribu/invitation/save_story/" + table_trib, {
 		method: "POST",
 		headers: {
@@ -4695,16 +4709,15 @@ function saveInvitationStory(table_trib, email,withMessage=true) {
 		.then((r) => r.json())
 		.then((res) => {
 			if (res.status == "ok") {
-				if(withMessage)
+				if (withMessage)
 					swal({
 						text: "Votre nouvelle invitation par e-mail pour joindre la tribu T est envoyée au destinataire.",
 						icon: "info",
 					});
-
 			} else if (res.status == "!ok") {
-				if(withMessage)
+				if (withMessage)
 					swal({
-						text: "Vous êtes déjà invité cette adresse à rejoindre votre tribu T.",
+						text: "Vous avez déjà invité cette adresse e-mail à rejoindre votre tribu T.",
 						icon: "warning",
 					});
 
@@ -4780,7 +4793,7 @@ function arrangeSetingApparitionMobile() {
  * cette fonction se trouve dans function.js
  */
 function showMoreInformation() {
-	swal("Cher et Chère partisan.", "Cette page est en cours de rédaction, merci de votre compréhension.", "info");
+	swal("Cher partisan.", "Cette page est en cours de rédaction, merci de votre compréhension.", "info");
 }
 
 /**
@@ -4854,14 +4867,14 @@ function resetTimer(idle = 300) {
 }
 
 function prelogout() {
-	swal("Du à une inactivité de votre part et pour des raisons de sécurité nous allons vous déconnecter.", {
+	swal("Dues à une inactivité de votre part et pour des raisons de sécurité nous allons vous déconnecter.", {
 		buttons: {
 			continuer: {
 				text: "continuer",
 				value: "continue",
 			},
 			deconnecter: {
-				text: "deconnecter",
+				text: "déconnecter",
 				value: "exit",
 			},
 		},
@@ -4929,7 +4942,7 @@ function updateLocation(event) {
 							tmp = action + " minute";
 						}
 						new swal(
-							"Bonjour cher et chère Fan",
+							"Bonjour cher Partisan",
 							"Vous avez modifié(e) votre délai de déconnexion automatique sur " + tmp,
 							"info"
 						);
@@ -4942,22 +4955,22 @@ function updateLocation(event) {
 
 function msgErrorAlertAvis(e) {
 	if (e.message == "note sup à 4") {
-		new swal("Attention !", "la note que vous aviez donnés est supérieur à 4 !", "warning").then((value) => {
+		new swal("Attention !", "La note que vous avez donné est supérieure à 4 !", "warning").then((value) => {
 			document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click();
 		});
 	} else if (e.message == "non numerique") {
-		new swal("Attention !", "la note que vous aviez donnés n'est pas du type numeric !", "warning").then(
+		new swal("Attention !", "La note que vous avez donné n'est pas du type numérique !", "warning").then(
 			(value) => {
 				document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click();
 			}
 		);
 	} else if (e.message == "note not found") {
 		/// veulliez saisir un note de 0 à 4
-		new swal("Attention !", "Veulliez saisir un note de 0 à 4", "warning").then((value) => {
+		new swal("Attention !", "Veuillez saisir une note de 0 à 4", "warning").then((value) => {
 			document.querySelector("#staticBackdrop > div > div > div.modal-header.bg-light > button").click();
 		});
 	} else if (e.message == "no content") {
-		new swal("Attention !", "Veulliez saisir un note et un petit message ou annuler cette action.", "warning");
+		new swal("Attention !", "Veuillez saisir une note et un avis, pour valider votre avis.", "warning");
 	} else {
 		console.log(e);
 	}
@@ -5022,14 +5035,13 @@ function showGolf(tableGolfPastilled) {
 			.then((response) => response.json())
 			.then((data) => {
 				if (data.length > 0) {
-					let imgTbt = `<img id="avatarTribuT" src="${
-						document.querySelector("#avatarTribuT").src
-					}" alt="123">`;
+					let imgTbt = `<img id="avatarTribuT" src="${document.querySelector("#avatarTribuT").src
+						}" alt="123">`;
 					let tr = "";
 					let i = 0;
 					const action = "create";
 					const text1 = "Notez";
-//onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})"
+					//onclick="showEtabDetail(event,'${item.nom_dep}', ${item.dep}, ${item.id})"
 					for (const item of data) {
 						console.log(item);
 						if (item.isPastilled) {
@@ -5885,7 +5897,11 @@ function pastilleForTribuG(e, type, id, name) {
 								content_tribuG_pastille.querySelector(".mainContainerLogoTribu").appendChild(div);
 							}
 						}
-						CURRENT_MAP_INSTANCE.updateListRestoPastille(id, e.dataset.tbname + "_restaurant", "/uploads/tribus/photos/"+e.getAttribute("data-velona"));
+						CURRENT_MAP_INSTANCE.updateListRestoPastille(
+							id,
+							e.dataset.tbname + "_restaurant",
+							"/uploads/tribus/photos/" + e.getAttribute("data-velona")
+						);
 
 						if (document.querySelector("#fetch_resto_tribug_jheo_js")) {
 							document.querySelector("#fetch_resto_tribug_jheo_js").click();
@@ -6324,8 +6340,8 @@ function openOnNote(id_pastille, action) {
 	// document.querySelector(".send_avis_jheo_js").setAttribute("onclick", "setSendNote(this," + id_pastille + ")");
 
 	$("#modalAvis").modal("show");
-  	document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action);
-    document
+	document.querySelector(".send_avis_jheo_js").setAttribute("data-action", action);
+	document
 		.querySelector(".send_avis_jheo_js")
 		.setAttribute("onclick", "addAvisInTribuG(" + id_pastille + ",'resto')");
 }
@@ -6349,7 +6365,7 @@ function setSendNote(params, id_pastille) {
 		if (parseFloat(note.value) > 4) {
 			swal({
 				title: "Erreur de saisie de note!",
-				text: "Une note doit être inférieur ou égale à 4",
+				text: "Une note doit être inférieure ou égale à 4",
 				icon: "error",
 				button: "Ok",
 			});
@@ -6538,7 +6554,7 @@ function shuffle(array) {
 function controlInputEmailToMultiple(allInputHtml) {
 	allInputHtml.forEach((input) => {
 		input.addEventListener("keyup", (e) => {
-			
+
 			if (e.code === "KeyM" || e.code === "Space") {
 				if (input.value.trim().endsWith(",")) {
 					const email = formatListInputEmail(input.value);
@@ -6649,7 +6665,7 @@ function insertPhotoRubrique(rubrique, id_rubrique) {
 
 	fetch(request)
 		.then((response) => response.json())
-		.then((data) => {});
+		.then((data) => { });
 }
 
 /**
@@ -6820,15 +6836,15 @@ function addPhotoToGallery(...args) {
 
 			if (!checkFileExtension(listExt, photoRubrique)) {
 				swal({
-					title: "Le format de fichier n'est pas pris en charge!",
-					text: "Le fichier autorisé doit être une image ou des fichier (.jpeg, .jpg, .png, gif, tiff, jpe, webp)",
+					title: "Ce format n'est pas pris en charge!",
+					text: "Le fichier autorisé doit être une image ou des fichiers (.jpeg, .jpg, .png, gif, tiff, jpe, webp)",
 					icon: "error",
 					button: "OK",
 				});
 			} else {
 				if (!checkTailleImage(octetMax, photoRubrique)) {
 					swal({
-						title: "Le fichier est trop volumineux!",
+						title: "Ce fichier est trop volumineux!",
 						text: "La taille de l'image doit être inférieure à 2Mo.",
 						icon: "error",
 						button: "OK",
@@ -6852,8 +6868,8 @@ function addPhotoToGallery(...args) {
 						.then((res) => {
 							if (res.result == "success") {
 								swal({
-									title: "Ajout succès!",
-									text: "Votre photo sera affiché qu'après avoir été approuvée par l'administrateur",
+									title: "Ajout avec succès!",
+									text: "Votre photo ne sera affichée qu'après avoir été approuvée par l'administrateur",
 									icon: "success",
 									button: "OK",
 								});
@@ -6862,7 +6878,7 @@ function addPhotoToGallery(...args) {
 							if (res.error) {
 								swal({
 									title: res.error,
-									text: "Veuillez connecter pour vous ajouter des photos !",
+									text: "Veuillez-vous connecter pour ajouter vos photos !",
 									icon: "error",
 									button: "Se connecter",
 								}).then((res) => {
@@ -6878,8 +6894,8 @@ function addPhotoToGallery(...args) {
 		fileReader.readAsDataURL(e.files[0]);
 	} else {
 		swal({
-			title: "Erreur de parametre",
-			text: "Veuillez spécifier votre parametre de votre function!",
+			title: "Erreur de paramètre",
+			text: "Veuillez spécifier le paramètre de votre function!",
 			icon: "error",
 			button: "OK",
 		});
@@ -6908,8 +6924,8 @@ function validatePhoto(id_rubrique, id_gallery, file_path, rubrique) {
 	).then((response) => {
 		if (response.status == 201) {
 			swal({
-				title: "Photo accepté!",
-				text: "Le photo est actuellement affiché dans le detail de " + rubrique + "!",
+				title: "Photo acceptée!",
+				text: "La photo est actuellement affichée dans le détail de " + rubrique + "!",
 				icon: "success",
 				button: "OK",
 			}).then((re) => {
@@ -6944,8 +6960,8 @@ function rejectPhoto(id_rubrique, id_gallery, file_path, rubrique) {
 	).then((response) => {
 		if (response.status == 201) {
 			swal({
-				title: "Photo rejeté!",
-				text: "Le photo est rejecté dans le detail de " + rubrique + "!",
+				title: "Photo rejetée!",
+				text: "La photo est rejetée dans le détail de " + rubrique + "!",
 				icon: "success",
 				button: "OK",
 			}).then((re) => {
@@ -7444,11 +7460,11 @@ function getAllReaction(pubId, tablePub, userOwnID) {
 
 	const request = new Request(
 		"/user/get/reaction/pub?tbl_tribu_t_reaction=" +
-			tbl_tribu_t_reaction +
-			"&pub_id=" +
-			pubId +
-			"&user_id=" +
-			userOwnID
+		tbl_tribu_t_reaction +
+		"&pub_id=" +
+		pubId +
+		"&user_id=" +
+		userOwnID
 	);
 
 	fetch(request)
@@ -7460,11 +7476,10 @@ function getAllReaction(pubId, tablePub, userOwnID) {
 				let listLIcomment = '<ul class="list-group">';
 
 				for (let reaction of response) {
-					listLIcomment += `<li class="list-group-item d-flex align-items-center"> <img class="user-pdp-reaction me-2" src="${
-						reaction.photo_profil
+					listLIcomment += `<li class="list-group-item d-flex align-items-center"> <img class="user-pdp-reaction me-2" src="${reaction.photo_profil
 							? "/public" + reaction.photo_profil
 							: "/public/uploads/users/photos/default_pdp.png"
-					}" all="..."/><a href="/user/profil/${reaction.user_id}">${reaction.userfullname}</a> </li>`;
+						}" all="..."/><a href="/user/profil/${reaction.user_id}">${reaction.userfullname}</a> </li>`;
 				}
 				listLIcomment += "</ul>";
 
@@ -7983,52 +7998,52 @@ function lookupFanIframe(event, useDefaulAction = true, myaction1 = null, myacti
  * créé la carte pour le partisan
  */
 function createCardPartisan(json, isIframe = false) {
-  const photoProfil =
-    json.image_profil != null
-      ? "/public" + json.image_profil
-      : "/public/uploads/users/photos/default_pdp.png";
-  let link = !isIframe
-    ? "/user/message/perso?user_id=" + json.id
-    : "/api/message/perso_iframe?user_id=" + json.id;
+	const photoProfil =
+		json.image_profil != null
+			? "/public" + json.image_profil
+			: "/public/uploads/users/photos/default_pdp.png";
+	let link = !isIframe
+		? "/user/message/perso?user_id=" + json.id
+		: "/api/message/perso_iframe?user_id=" + json.id;
 
-  const fullName = json.firstname + " " + json.lastname;
+	const fullName = json.firstname + " " + json.lastname;
 
-  // last_msg_user_${json.id}_jheo_js
-  //content-message-nanta-css
-  const divContainer = document.createElement("div");
-  divContainer.setAttribute("class", `cg lc mg sh ol rl tq is  mss_fan_js`);
-  divContainer.dataset.rank = cryptageJs((''+json.id));
+	// last_msg_user_${json.id}_jheo_js
+	//content-message-nanta-css
+	const divContainer = document.createElement("div");
+	divContainer.setAttribute("class", `cg lc mg sh ol rl tq is  mss_fan_js`);
+	divContainer.dataset.rank = cryptageJs(('' + json.id));
 
-  const divHeader = document.createElement("div");
-  divHeader.setAttribute("class", `h mb sc yd of th`);
-  const img = document.createElement("img");
-  img.setAttribute("class", `vc yd qk rk elie-pdp-modif`);
-  img.src = photoProfil;
-  img.style = "cursor:pointer;";
-  img.dataset.bsToggle = "modal";
-  img.dataset.bsTarget = "#modal_show_photo_mess";
+	const divHeader = document.createElement("div");
+	divHeader.setAttribute("class", `h mb sc yd of th`);
+	const img = document.createElement("img");
+	img.setAttribute("class", `vc yd qk rk elie-pdp-modif`);
+	img.src = photoProfil;
+	img.style = "cursor:pointer;";
+	img.dataset.bsToggle = "modal";
+	img.dataset.bsTarget = "#modal_show_photo_mess";
 
-  const span = document.createElement("span");
-  //span.setAttribute("class","onlinestat_fan_js")
-  let isActive = !!json.is_online;
-  if (isActive) {
-    span.setAttribute("class", "g l m jc wc ce th pi ij xj onlinestat_fan_js");
-  } else {
-    span.setAttribute("class", "g l m jc wc ce th pi ij onlinestat_fan_js");
-    span.style.backgroundColor = "gray";
-  }
+	const span = document.createElement("span");
+	//span.setAttribute("class","onlinestat_fan_js")
+	let isActive = !!json.is_online;
+	if (isActive) {
+		span.setAttribute("class", "g l m jc wc ce th pi ij xj onlinestat_fan_js");
+	} else {
+		span.setAttribute("class", "g l m jc wc ce th pi ij onlinestat_fan_js");
+		span.style.backgroundColor = "gray";
+	}
 
-  img.onclick = function () {
-    setPhotoMessage(this);
-  };
+	img.onclick = function () {
+		setPhotoMessage(this);
+	};
 
-  divHeader.appendChild(img);
-  divHeader.appendChild(span);
+	divHeader.appendChild(img);
+	divHeader.appendChild(span);
 
-  const a = document.createElement("a");
-  a.href = link;
-  a.setAttribute("class", "yd");
-  a.innerHTML = `<div class="row">
+	const a = document.createElement("a");
+	a.href = link;
+	a.setAttribute("class", "yd");
+	a.innerHTML = `<div class="row">
 					  <div class="col-8">
 						  <h5 class="mn un zn gs">
 							  ${fullName}
@@ -8036,9 +8051,9 @@ function createCardPartisan(json, isIframe = false) {
 					  </div>
 				  </div>`;
 
-  divContainer.appendChild(divHeader);
-  divContainer.appendChild(a);
-  return divContainer;
+	divContainer.appendChild(divHeader);
+	divContainer.appendChild(a);
+	return divContainer;
 }
 
 /**
@@ -8046,29 +8061,29 @@ function createCardPartisan(json, isIframe = false) {
  * créé le listing des tribu
  */
 function createListTribu(photoTribu, title) {
-  const li = document.createElement("li");
-  const img = document.createElement("img");
-  const i = document.createElement("i");
-  const span = document.createElement("span");
+	const li = document.createElement("li");
+	const img = document.createElement("img");
+	const i = document.createElement("i");
+	const span = document.createElement("span");
 
-  li.style = "cursor:pointer";
-  li.setAttribute("class", "listing_fa_js");
-  li.style.padding = "0.75em";
-  li.style.width = "30%";
+	li.style = "cursor:pointer";
+	li.setAttribute("class", "listing_fa_js");
+	li.style.padding = "0.75em";
+	li.style.width = "30%";
 
-  img.src = photoTribu;
-  i.setAttribute("class", "fa-solid fa-chevron-right superior");
-  i.style.float = "right";
-  span.setAttribute("class", "name_tribu_faniry_js");
-  span.textContent = title;
+	img.src = photoTribu;
+	i.setAttribute("class", "fa-solid fa-chevron-right superior");
+	i.style.float = "right";
+	span.setAttribute("class", "name_tribu_faniry_js");
+	span.textContent = title;
 
-  //li.appendChild(img);
-  span.appendChild(i);
-  li.appendChild(span);
-  // li.appendChild(i);
+	//li.appendChild(img);
+	span.appendChild(i);
+	li.appendChild(span);
+	// li.appendChild(i);
 
-  i.onclick = (e) => {};
-  return li;
+	i.onclick = (e) => { };
+	return li;
 }
 
 /**
@@ -8078,24 +8093,24 @@ function createListTribu(photoTribu, title) {
  * @param {*} container
  */
 function hideContainer(targetElement, container) {
-  const icon = targetElement.querySelector(".superior");
-  targetElement.onclick = (e) => {
-    let targ = e.target;
-    if (
-      targ.classList.contains("listing_fa_js") ||
-      targ.classList.contains("name_tribu_faniry_js") ||
-      targ.classList.contains("superior")
-    ) {
-      targetElement.classList.toggle("active_amis_list_fa_js");
-      if (!targetElement.classList.contains("active_amis_list_fa_js")) {
-        container.classList.toggle("d-none");
-        icon.style.transform = "rotate(0deg)";
-      } else {
-        container.classList.toggle("d-none");
-        icon.style.transform = "rotate(90deg)";
-      }
-    }
-  };
+	const icon = targetElement.querySelector(".superior");
+	targetElement.onclick = (e) => {
+		let targ = e.target;
+		if (
+			targ.classList.contains("listing_fa_js") ||
+			targ.classList.contains("name_tribu_faniry_js") ||
+			targ.classList.contains("superior")
+		) {
+			targetElement.classList.toggle("active_amis_list_fa_js");
+			if (!targetElement.classList.contains("active_amis_list_fa_js")) {
+				container.classList.toggle("d-none");
+				icon.style.transform = "rotate(0deg)";
+			} else {
+				container.classList.toggle("d-none");
+				icon.style.transform = "rotate(90deg)";
+			}
+		}
+	};
 }
 
 /**
@@ -8103,16 +8118,16 @@ function hideContainer(targetElement, container) {
  * met à jour la list le status online des user
  */
 function updateListFan() {
-  setInterval(
-    () => {
-      const el = Array.from(document.getElementsByClassName("mss_fan_js")).map(
-        (el) => el.dataset.rank
-      );
-      myMessageWorker.postMessage(el);
-    },
-    10000,
-    myMessageWorker
-  );
+	setInterval(
+		() => {
+			const el = Array.from(document.getElementsByClassName("mss_fan_js")).map(
+				(el) => el.dataset.rank
+			);
+			myMessageWorker.postMessage(el);
+		},
+		10000,
+		myMessageWorker
+	);
 }
 
 /**
@@ -8121,122 +8136,122 @@ function updateListFan() {
  * @param {*} data
  */
 function reRenderPartisanStatus(data) {
-  const objectKey = Object.keys(data);
-  console.log(objectKey);
-  for (const [key, value] of Object.entries(data)) {
-    const divs = document.querySelectorAll(
-      `div.mss_fan_js[data-rank="${key}"]`
-    );
-    let isOnline = !!value;
-    for (let div of divs) {
-      const span = div.querySelector(".onlinestat_fan_js");
-      if (isOnline) {
-        span.style.backgroundColor = "";
-        span.classList.add("xj");
-      } else {
-        span.classList.remove("xj");
-        span.style.backgroundColor = "gray";
-      }
-    }
-  }
+	const objectKey = Object.keys(data);
+	console.log(objectKey);
+	for (const [key, value] of Object.entries(data)) {
+		const divs = document.querySelectorAll(
+			`div.mss_fan_js[data-rank="${key}"]`
+		);
+		let isOnline = !!value;
+		for (let div of divs) {
+			const span = div.querySelector(".onlinestat_fan_js");
+			if (isOnline) {
+				span.style.backgroundColor = "";
+				span.classList.add("xj");
+			} else {
+				span.classList.remove("xj");
+				span.style.backgroundColor = "gray";
+			}
+		}
+	}
 }
 /**
  * @author faniry
  * affiche la liste d'amis
  */
 function fanIframe() {
-  fetch("/user/get/allfans").then((r) => {
-    const ulContainer = document.querySelector(".fan_actif_tom_js");
-    ulContainer.innerHTML = "";
-    ulContainer.innerHTML = `<div class="spinner-border text-primary mx-auto" role="status">
+	fetch("/user/get/allfans").then((r) => {
+		const ulContainer = document.querySelector(".fan_actif_tom_js");
+		ulContainer.innerHTML = "";
+		ulContainer.innerHTML = `<div class="spinner-border text-primary mx-auto" role="status">
 								<span class="visually-hidden">Loading...</span>
 							</div>`;
-    if (r.status === 200 && r.ok) {
-      r.json().then((jsons) => {
-        const length = jsons.length;
+		if (r.status === 200 && r.ok) {
+			r.json().then((jsons) => {
+				const length = jsons.length;
 
-        ulContainer.innerHTML = "";
-        for (let i = 0; i < length; i++) {
-          //pour les tribu T
-          if (i === 0) {
-            const tribusT = jsons[i];
-            const tribusTLength = tribusT.length;
-            for (let j = 0; j < tribusTLength; j++) {
-              console;
-              const amis = tribusT[j].amis;
-              const bigContainer = document.createElement("div");
-              bigContainer.style.background = "#efe8e8cc";
-              bigContainer.style.borderTop = "2px solid #227BC9";
-              const photoTribuT = tribusT[j]["logo_path"];
-              const title = `Liste des partisans dans votre tribu T ${tribusT[j]["name_tribu_t_muable"]}`;
-              const li = createListTribu(photoTribuT, title);
-              bigContainer.setAttribute(
-                "class",
-                "list-group list-group-flush big_container_js d-none"
-              );
-              if (amis.length > 0)
-                for (let c = 0; c < amis.length; c++) {
-                  const div = createCardPartisan(amis[c],true);
-                  bigContainer.appendChild(div);
-                }
-              else {
-                const span = document.createElement("span");
-                span.innerText = "Aucun partisan";
-                bigContainer.appendChild(span);
-              }
-              li.appendChild(bigContainer);
-              ulContainer.appendChild(li);
-              hideContainer(li, bigContainer);
-            }
-          } else {
-            //pour tribu G
-            const tribuG = jsons[i];
-            const tribuGLength = tribuG.length;
-            let li = null;
-            const bigContainer = document.createElement("div");
-            bigContainer.style.background = "#efe8e8cc";
-            bigContainer.style.borderTop = "2px solid #227BC9";
-            bigContainer.setAttribute(
-              "class",
-              "list-group list-group-flush big_container_js d-none"
-            );
-            if (tribuGLength > 0)
-              for (let c = 0; c < tribuGLength; c++) {
-                if (c === 0) {
-                  const photoTribuG = tribuG[c]["avatarTribuG"];
-                  const title = `Liste des partisans dans votre tribu G ${tribuG[c]["nom_tribuG"]}`;
-                  li = createListTribu(photoTribuG, title);
-                }
-                const div = createCardPartisan(tribuG[c], true);
-                bigContainer.appendChild(div);
-              }
-            else {
-              const span = document.createElement("span");
-              span.innerText = "Aucun partisan";
-              bigContainer.appendChild(span);
-            }
-            li.appendChild(bigContainer);
-            ulContainer.appendChild(li);
-            hideContainer(li, bigContainer);
-          }
-        }
-        updateListFan();
+				ulContainer.innerHTML = "";
+				for (let i = 0; i < length; i++) {
+					//pour les tribu T
+					if (i === 0) {
+						const tribusT = jsons[i];
+						const tribusTLength = tribusT.length;
+						for (let j = 0; j < tribusTLength; j++) {
+							console;
+							const amis = tribusT[j].amis;
+							const bigContainer = document.createElement("div");
+							bigContainer.style.background = "#efe8e8cc";
+							bigContainer.style.borderTop = "2px solid #227BC9";
+							const photoTribuT = tribusT[j]["logo_path"];
+							const title = `Liste des partisans dans votre tribu T ${tribusT[j]["name_tribu_t_muable"]}`;
+							const li = createListTribu(photoTribuT, title);
+							bigContainer.setAttribute(
+								"class",
+								"list-group list-group-flush big_container_js d-none"
+							);
+							if (amis.length > 0)
+								for (let c = 0; c < amis.length; c++) {
+									const div = createCardPartisan(amis[c], true);
+									bigContainer.appendChild(div);
+								}
+							else {
+								const span = document.createElement("span");
+								span.innerText = "Aucun partisan";
+								bigContainer.appendChild(span);
+							}
+							li.appendChild(bigContainer);
+							ulContainer.appendChild(li);
+							hideContainer(li, bigContainer);
+						}
+					} else {
+						//pour tribu G
+						const tribuG = jsons[i];
+						const tribuGLength = tribuG.length;
+						let li = null;
+						const bigContainer = document.createElement("div");
+						bigContainer.style.background = "#efe8e8cc";
+						bigContainer.style.borderTop = "2px solid #227BC9";
+						bigContainer.setAttribute(
+							"class",
+							"list-group list-group-flush big_container_js d-none"
+						);
+						if (tribuGLength > 0)
+							for (let c = 0; c < tribuGLength; c++) {
+								if (c === 0) {
+									const photoTribuG = tribuG[c]["avatarTribuG"];
+									const title = `Liste des partisans dans votre tribu G ${tribuG[c]["nom_tribuG"]}`;
+									li = createListTribu(photoTribuG, title);
+								}
+								const div = createCardPartisan(tribuG[c], true);
+								bigContainer.appendChild(div);
+							}
+						else {
+							const span = document.createElement("span");
+							span.innerText = "Aucun partisan";
+							bigContainer.appendChild(span);
+						}
+						li.appendChild(bigContainer);
+						ulContainer.appendChild(li);
+						hideContainer(li, bigContainer);
+					}
+				}
+				updateListFan();
 
-        myMessageWorker.onmessage = (e) => {
-          reRenderPartisanStatus(e.data);
-        };
-      });
-    }
-  });
+				myMessageWorker.onmessage = (e) => {
+					reRenderPartisanStatus(e.data);
+				};
+			});
+		}
+	});
 }
 //endblock
 function verifieEmailValid(email) {
 	if (
-	  email.match(
-		/(?:[a-z0-9+!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi
-	  )
+		email.match(
+			/(?:[a-z0-9+!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])/gi
+		)
 	) {
-	  return true;
+		return true;
 	}
 	return false;
 }
@@ -8244,19 +8259,19 @@ function verifieEmailValid(email) {
 function addLinkOnMailBody() {
 	const link_name = document.querySelector(".link_name_jheo_js").value.trim();
 	const link_value = encodeURI(
-	  document.querySelector(".link_value_jheo_js").value
+		document.querySelector(".link_value_jheo_js").value
 	);
-  
+
 	if (editor) {
-	  editor.setData(
-		editor.getData() +
-		  '<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' +
-		  link_value +
-		  '" >' +
-		  link_name +
-		  " </a>"
-	  );
+		editor.setData(
+			editor.getData() +
+			'<a class="link-primary link-offset-2 link-underline-opacity-25 link-underline-opacity-100-hover" href="' +
+			link_value +
+			'" >' +
+			link_name +
+			" </a>"
+		);
 	}
-  
+
 	cancelAddLink();
 }

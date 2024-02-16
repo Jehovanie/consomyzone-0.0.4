@@ -24,12 +24,12 @@
 					</div> #}
 					<div class="d-flex record">
 						<div class="audio-record">
-							<i class="fa-solid fa-microphone start_audio_avis_elie_js" id="start_audio_avis_elie_js">
-								<span class="audio_tooltip_start">Démarrer un avis vocal</span>
+							<i class="fa-solid fa-microphone audio_recorder_faniry_js" id="star_faniry_audio_record_js">
+								{# <span class="audio_tooltip_start">Démarrer un avis vocal</span> #}
 							</i>
 							{# <i class="fa-solid fa-chevron-up chevron-options"></i> #}
-							<i class="fa-solid fa-stop red stop_audio_avis_elie_js d-none" id="stop_audio_avis_elie_js">
-								<span class="audio_tooltip_stop">Enregistrer l'avis vocal</span>
+							<i class="fa-solid fa-stop red audio_recorder_faniry_js d-none" id="stop_faniry_audio_record_js">
+								{# <span class="audio_tooltip_stop">Arrêter l'avis vocal</span> #}
 							</i>
 						</div>
 						<div class="camera-record d-none">
@@ -77,20 +77,41 @@
 	</div>
 </div>
 
+{# onclick="startRecordingAudio(false) #}
 {# Modal input avis ( resto, golf,...) #}
 <div class="modal" tabindex="-1" id="modalMicroOption">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title">Sélectionner un micro de votre choix</h5>
-				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				<h5 class="modal-title">Faite part de votre avis aux partisans de consoMyZone.</h5>
+				<button type="button" class="btn-close btn_faniry_close" data-bs-dismiss="modal" aria-label="Close" data-bs-toggle="modal" data-bs-target="#modalAvis"></button>
 			</div>
 			<div class="modal-body">
-				<div class="d-flex flex-column" id="selectMicroOption"></div>
+				<div class="wrapper_dictaphone_css">
+					<section class="main-controls-dictaphone">
+						<canvas class="visualizer_frequency mt-3" height="60px" width="480"></canvas>
+						<div id="time" class="mt-3"> 
+							<span class="digit" id="min"> 
+								00</span> 
+							<span class="txt">Min</span> 
+							<span class="digit" id="sec"> 
+								00</span> 
+							<span class="txt">Sec</span> 
+							<span class="digit" id="count"> 
+								00</span> 
+						</div> 
+						<div id="buttons" class="mt-3">
+							<button  type="button" class="btn btn-primary record_faniry">Enregistrer</button>
+							<button type="button" class="btn btn-warning stop_faniry" disabled="">Arrêter</button>
+						</div>
+					</section>
+					<section class="sound-clips-faniry-js"></section>
+				</div>
+				
 			</div>
 			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" onclick="startRecordingAudio(false)">Démarrer l'enregistrement</button>
-				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Annuler</button>
+				{# <button type="button" class="btn btn-primary" >Démarrer l'enregistrement</button>
+				<button type="button" class="btn btn-secondary" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Annuler</button> #}
 			</div>
 		</div>
 	</div>

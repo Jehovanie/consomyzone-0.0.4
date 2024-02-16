@@ -2474,4 +2474,65 @@ class MessageController extends AbstractController
             "isInTribut" => $request->query->get("tribuT") ? true : false
         ]);
     }
+
+    #[Route("/user/get/not/show/message", name: "not_show_message_sse")]
+    public function getNotShowMessage(
+        Request $request,
+        UserRepository $userRepository,
+        MessageService $messageService,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository
+    ) {
+        /// GET THE LAST MESSAGE FOR ALL USER
+
+        ///last message for each user
+        $all_message = $messageService->getMessageForEveryUser(
+            $this->getUser()->getTablemessage(),
+            intval($this->getUser()->getId())
+        );
+        ///last message for each user and their profil .
+        $results = [];
+        foreach ($all_message as $message) {
+            ///get id user post the message
+            $id_user_send_message = $message[0]["user_post"];
+
+            ///find the user by their id
+            $user = $userRepository->find(intval($id_user_send_message));
+
+            ///their profile
+            if ($user->getType() == "consumer") {
+                $profil_user_send_message = $consumerRepository->findOneBy(["userId" => intval($id_user_send_message)]);
+            } else {
+                $profil_user_send_message = $supplierRepository->findOneBy(["userId" => intval($id_user_send_message)]);
+            }
+
+            ///format single profil with message
+            $result = [
+                "firstname" => $profil_user_send_message->getFirstName(),
+                "lastname" => $profil_user_send_message->getLastname(),
+                "profil" => $profil_user_send_message->getPhotoProfil(),
+                "pseudo" => $this->getUser()->getPseudo(),
+                "message" => $message[0]
+            ];
+
+            //// push in the results
+            array_push($results, $result);
+        }
+        /// send ssevent
+        $response = new StreamedResponse();
+        $response->setCallback(function () use (&$results) {
+
+            echo "data:" . json_encode($results) .  "\n\n";
+            ob_end_flush();
+            flush();
+        });
+
+        $response->headers->set('Access-Control-Allow-Origin', '*');
+        $response->headers->set('Access-Control-Allow-Headers', 'origin, content-type, accept');
+        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, PUT, DELETE, PATCH, OPTIONS');
+        $response->headers->set('Cache-Control', 'no-cache');
+        $response->headers->set('Content-Type', 'text/event-stream');
+
+        return $response;
+    }
 }

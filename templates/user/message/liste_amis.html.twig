@@ -40,11 +40,8 @@
 		<!-- ===== Main Content Start ===== --> #}
 		<main class="gv om hv wd account-message-conected">
             <div class="container-bar-recherche-message">
-                <input type="text" class="search_input_message" id="fan_look_tom_js" placeholder="Recherche des fan dans consomyzone" oninput="lookupFan(event)">
-            </div>
-            <div class="lookup_fan_result lookup_fan_result_tom_js d-none">
-               
-            </div>
+                <input type="text" class="search_input_message" id="fan_look_tom_js" placeholder="Rechercher des partisans dans consomyzone" oninput="lookupFan(event)">
+                        </div>
             <div class="sv en-lign-mobile en-lign-mobile-tomm-js list-amie-message">
                     <!-- ====== Chat List Start -->
                     <div class="vc xk">
@@ -96,14 +93,15 @@
                                           
                                     {% endfor %}
                                     {% if isZeroMessage.noMessage is same as('oui') and isZeroMessage.haveMessage is same as('non') %}
-                                         <div>Vous n'avez aucun message. Rechercher d'autres fan en ligne est envoyés leur des messages. </div>
+                                         <div>Vous n'avez aucun message. Rechercher d'autres partisans en ligne est envoyés leur des messages.
+									</div>
                                     {% endif %}
 
                                     <!-- end List Chat -->
                                 {% else %}
                                     <div class="cg lc mg sh ol rl tq is">
                                         <div class="bg-light bg-gradient p-3">
-                                            <p class="text-center text-danger">Actuellement, vous êtes le seul fan dans votre tribu G, invité vos amis à rejoindre Consomyzone.</p>
+                                            <p class="text-center text-danger">Actuellement, vous êtes le seul partisan dans votre tribu G, invité vos amis à rejoindre Consomyzone.</p>
                                         </div>
                                     </div>
                                 {% endif %}

@@ -589,6 +589,72 @@ class SortResultService extends StringTraitementService
                         }
                     }
                 }
+            }elseif($type== "marche"){
+
+                if($cle0 !=""){
+                    if(str_contains($key["denominationF"], $cle0)){
+                        if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                            $levCommune = levenshtein(strtoupper($key["adresse"]), strtoupper($cles1));
+        
+                            if($hasCP){
+                                $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                                $cles1 = trim($cles1);
+                                $levCommune = levenshtein(strtoupper($key["adresse"]), strtoupper($cles1));
+                            }
+            
+                            if($levCommune <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+        
+                        }elseif ($hasNumVoie && !$hasCP) {
+                            $street = explode(trim($key["codpost"]),trim($key["addresse"]));
+                            $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                            if($levStreet <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }else{
+                            $levAdresse = levenshtein(strtoupper($key["addresse"]), strtoupper(trim($cles1)));
+                            if($levAdresse <= 3){
+                                array_push($data0, $key);
+                                $i++;
+                            }
+                        }
+                    }
+                }else{
+
+                    if((!$hasCP && !$hasNumVoie) ||  ($hasCP && !$hasNumVoie)){
+        
+                        $levCommune = levenshtein(strtoupper($key["commune"]), strtoupper($cles1));
+    
+                        if($hasCP){
+                            $cles1 = preg_replace('/(\d+)/i', '', $cles1);
+                            $cles1 = trim($cles1);
+                            $levCommune = levenshtein(strtoupper($key["commune"]), strtoupper($cles1));
+                        }
+        
+                        if($levCommune <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+    
+                    }elseif ($hasNumVoie && !$hasCP) {
+                        $street = explode(trim($key["codpost"]),trim($key["adresse"]));
+                        $levStreet = levenshtein(strtoupper(trim($street[0])), strtoupper(trim($cles1)));
+                        if($levStreet <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }else{
+                        $levAdresse = levenshtein(strtoupper($key["adresse"]), strtoupper(trim($cles1)));
+                        if($levAdresse <= 3){
+                            array_push($data0, $key);
+                            $i++;
+                        }
+                    }
+                }
             }
 
         }
@@ -626,7 +692,7 @@ class SortResultService extends StringTraitementService
 
         extract($table); /// $resto, $ferme, $station, $golf, $tabac
         $results= [];
-        if( count($resto) < 2 || count($ferme) < 2 || count($station) < 2 || count($golf) < 2 || count($tabac) < 2){
+        if( count($resto) < 2 || count($ferme) < 2 || count($station) < 2 || count($golf) < 2 || count($tabac) < 2 || count($marche) < 2 ){
             $key =  count($resto) > 0 ? $resto[0]["departement"] : ( 
                         count($ferme) > 0 ? $ferme[0]["departement"] : ( 
                             count($station) > 0 ? $station[0]["departement"] : ( 
@@ -644,6 +710,7 @@ class SortResultService extends StringTraitementService
             $result_station= 0;
             $result_golf= 0;
             $result_tabac= 0;
+            $result_marche= 0;
             $result_total= 0;
 
             if( SortResultService::findData($resto, $key) ){
@@ -671,7 +738,17 @@ class SortResultService extends StringTraitementService
                 $result_tabac += intval($data["account_per_dep"]);
             }
 
-            $result_total= $result_resto + $result_ferme + $result_station + $result_golf +  $result_tabac;
+            if( SortResultService::findData($marche, $key) ){
+                $data= SortResultService::findData($marche, $key);
+                $result_marche += intval($data["account_per_dep"]);
+            }
+
+            $result_total= $result_resto + 
+                           $result_ferme + 
+                           $result_station + 
+                           $result_golf + 
+                           $result_tabac +
+                           $result_marche;
                            
 
             $result= [
@@ -682,7 +759,8 @@ class SortResultService extends StringTraitementService
                     "ferme" => $result_ferme,
                     "station" => $result_station,
                     "golf" => $result_golf,
-                    "tabac" => $result_tabac
+                    "tabac" => $result_tabac,
+                    "marche" => $result_marche
                 ]
             ];
 
@@ -696,6 +774,7 @@ class SortResultService extends StringTraitementService
                 $result_golf= 0;
                 $result_tabac= 0;
                 $result_total= 0;
+                $result_marche= 0;
 
                 if( SortResultService::findData($resto, $i) ){
                     $data= SortResultService::findData($resto, $i);
@@ -722,7 +801,17 @@ class SortResultService extends StringTraitementService
                     $result_tabac += intval($data["account_per_dep"]);
                 }
 
-                $result_total= $result_resto + $result_ferme + $result_station + $result_golf +  $result_tabac;
+                if( SortResultService::findData($marche, $i) ){
+                    $data= SortResultService::findData($marche, $i);
+                    $result_marche += intval($data["account_per_dep"]);
+                }
+
+                $result_total= $result_resto + 
+                               $result_ferme + 
+                               $result_station + 
+                               $result_golf + 
+                               $result_tabac +
+                               $result_marche;
 
                 $result= [
                     "departement" => strlen($i) === 1 ?  "0" . intval($i) : strval($i),
@@ -732,7 +821,8 @@ class SortResultService extends StringTraitementService
                         "ferme" => $result_ferme,
                         "station" => $result_station,
                         "golf" => $result_golf,
-                        "tabac" => $result_tabac
+                        "tabac" => $result_tabac,
+                        "marche" => $result_marche
                     ]
                 ];
 

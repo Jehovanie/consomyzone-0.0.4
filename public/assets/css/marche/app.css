@@ -1,0 +1,29 @@
+.navleft .list-depart {
+	margin-top: 100px;
+	margin-top: unset !important;
+	font-size: 10pt;
+}
+.cart_map {
+	width: 102vw;
+}
+
+.navleft .list-depart {
+	margin-top: 0 !important;
+}
+
+.content_description {
+	height: 600px;
+}
+
+/* #remove-detail-marche {
+	top: 100px;
+	left: -35px;
+} */
+
+.fw_lighter {
+	font-weight: lighter;
+}
+
+.ft_09 {
+	font-size: 0.9rem;
+}

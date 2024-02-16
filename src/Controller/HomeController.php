@@ -12,6 +12,7 @@ use App\Repository\UserRepository;
 use App\Service\GolfFranceService;
 use App\Service\SortResultService;
 use App\Repository\TabacRepository;
+use App\Repository\MarcheRepository;
 use App\Repository\AvisGolfRepository;
 use App\Repository\BddRestoRepository;
 use App\Repository\FermeGeomRepository;
@@ -37,6 +38,34 @@ class HomeController extends AbstractController
     public function getListGuideCMZ(){
 
         return $this->render("ficheUtilisation.html.twig");
+    }
+    #[Route("/user/liste/guide/cmz", name:"app_loged_guide_cmz")]
+    public function getListGuideCMZLogedUser(
+        EntityManagerInterface $entityManager,
+        Status $status
+    ){
+        $userConnected= $status->userProfilService($this->getUser());
+        
+        $user = $this->getUser();
+       
+        $userType = $user->getType();
+
+        $userId = $user->getId();
+
+        $profil = "";
+
+        if ($userType == "consumer") {
+
+            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+
+            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
+        return $this->render("ficheUtilisationLogged.html.twig",[
+            "userConnected" => $userConnected,
+
+            "profil" => $profil,
+        ]);
     }
     #[Route("/pdf/{nom}", name:"app_guide")]
     public function pdfGuide($nom){
@@ -233,6 +262,7 @@ class HomeController extends AbstractController
         AvisGolfRepository $avisGolfRepository,
         GolfFranceService $golfFranceService,
         TabacRepository $tabacRepository,
+        MarcheRepository $marcheRepository,
         RestaurantController $restaurantController,
         AvisRestaurantRepository $avisRestaurantRepository,
         Filesystem $filesyst,
@@ -264,7 +294,7 @@ class HomeController extends AbstractController
         $cles1 = $request->query->get("cles1") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles1"))) : "";
         $page = $request->query->get("page") ? intval($request->query->get("page")) : 1 ;
 
-        $condition = ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" || $cles0 === "resto" || $cles0 === "tabac" || $cles0 === "golf" || $cles0 === "tous"  );
+        $condition = ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" || $cles0 === "resto" || $cles0 === "tabac" || $cles0 === "golf" || $cles0 === "marche" || $cles0 === "tous"  );
         $type= $condition ? $cles0: $type;
         $cles0= $condition ? "": $cles0;
 
@@ -313,6 +343,26 @@ class HomeController extends AbstractController
 
                 $results = $resto;
 
+                break;
+            case "marche":
+                $cles1= intval($cles1) === 0 ? $cles1 : intval($cles1);
+
+                $marche = $marcheRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                if(!count($marche[0])>0){
+
+                    $marche = $marcheRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+
+                    $marche0 = $sortResultService->getDataByCommune($marche, $cles1, "marche", $cles0);
+                        
+                    if(count($marche0["data"])>0){
+                        $marche[0] = $marche0["data"];
+                        $marche[1] = $marche0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
+                
+                }
+                $results = $marche;
                 break;
             case "golf":
                 $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
@@ -477,7 +527,7 @@ class HomeController extends AbstractController
 
                     $results[0] = array_merge($ferme[0]);
                     $results[1] = $ferme[1];
-                }elseif ($cles0 == "STATION" || $cles0 == "STATIONS" || $cles0 == "STATION SERVICE" || $cles0 == "STATIONS SERVICES") {
+                }elseif($cles0 == "STATION" || $cles0 == "STATIONS" || $cles0 == "STATION SERVICE" || $cles0 == "STATIONS SERVICES") {
                     $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                     if(!count($station[0])>0){
                         $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
@@ -496,6 +546,28 @@ class HomeController extends AbstractController
                     }
                     $results[0] = array_merge($station[0]);
                     $results[1] = $station[1];
+                }elseif($cles0 == "MARCHE" || $cles0 == "MARCHES"){
+                    $cles1= intval($cles1);
+                    $marche = $marcheRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    $otherMarche= false;
+
+                    if(!count($marche[0])>0){
+                        $marche = $marcheRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $marche0 = $sortResultService->getDataByCommune($marche, $cles1, "marche", $cles0);
+                        if(count($marche0["data"])>0){
+                            $marche[0] = $marche0["data"];
+                            $marche[1] = $marche0["nombre"];
+                        }else{
+                            $otherMarche = true;
+                        }
+                    }
+
+                    if($otherMarche){
+                        $otherResult = true;
+                    }
+
+                    $results[0] = array_merge($marche[0]);
+                    $results[1] = $marche[1];
                 }else{
 
                     $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
@@ -580,11 +652,25 @@ class HomeController extends AbstractController
                         }
                     }
 
+                    $temp_cles1=intval($cles1) === 0 ? $cles1 : intval($cles1);
+                    $marche = $marcheRepository->getBySpecificClef($cles0, $temp_cles1, $page, $size);
+                    $otherMarche= false;
+                    if(!count($marche[0])>0){
+                        $marche = $marcheRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $marche0 = $sortResultService->getDataByCommune($marche, $cles1, "marche", $cles0);
+                        if(count($marche0["data"])>0){
+                            $marche[0] = $marche0["data"];
+                            $marche[1] = $marche0["nombre"];
+                        }else{
+                            $otherMarche = true;
+                        }
+                    }
+
                     $results[0] = [];
 
                     $results[1] = 0;
 
-                    if(!$otherFerme || !$otherResto || !$otherStation || !$otherGolf || !$otherTabac){
+                    if(!$otherFerme || !$otherResto || !$otherStation || !$otherGolf || !$otherTabac || !$otherMarche){
                         if(!$otherFerme){
                             $results[0] = array_merge($ferme[0]);
                             $results[1] = $ferme[1];
@@ -611,12 +697,16 @@ class HomeController extends AbstractController
                             $results[1] += $tabac[1];
                         }
 
+                        if(!$otherMarche){
+                            $results[0] = array_merge($marche[0], $results[0]);
+                            $results[1] += $marche[1];
+                        }
+
                     }else{
-                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0], $golf[0], $tabac[0]);
-                        $results[1] = $station[1] + $ferme[1] + $resto[1] + $golf[1] + $tabac[1];
+                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0], $golf[0], $tabac[0], $marche[0]);
+                        $results[1] = $station[1] + $ferme[1] + $resto[1] + $golf[1] + $tabac[1] + $marche[1];
                         $otherResult = true;
                     }
-
                 }
 
                 $results[2] = "tous";
@@ -778,6 +868,7 @@ class HomeController extends AbstractController
         StationServiceFrGeomRepository $stationServiceFrGeomRepository,
         GolfFranceRepository $golfFranceRepository,
         TabacRepository $tabacRepository,
+        MarcheRepository $marcheRepository
     ){
         $dep_specifique= intval($dep) === 0 ? null : ( strlen($dep) === 1 ?  "0" . intval($dep) : $dep);
         if( $type === "resto" || $type === "restaurant"){
@@ -790,6 +881,9 @@ class HomeController extends AbstractController
             $nbr_etablisement_per_dep = $golfFranceRepository->getAccountAllPerDep($dep_specifique);
         }else if( $type === "tabac"){
             $nbr_etablisement_per_dep = $tabacRepository->getAccountAllPerDep($dep_specifique);
+        }else if( $type === "marche"){
+            $dep_specifique= intval($dep_specifique);
+            $nbr_etablisement_per_dep = $marcheRepository->getAccountAllPerDep($dep_specifique);
         }else if ($type === "tous"){
             
             $resto = $bddRestoRepository->getAccountAllPerDep($dep_specifique);
@@ -797,13 +891,16 @@ class HomeController extends AbstractController
             $station = $stationServiceFrGeomRepository->getAccountAllPerDep($dep_specifique);
             $golf = $golfFranceRepository->getAccountAllPerDep($dep_specifique);
             $tabac = $tabacRepository->getAccountAllPerDep($dep_specifique);
+            $marche = $marcheRepository->getAccountAllPerDep($dep_specifique);
+
 
             $nbr_etablisement_per_dep= SortResultService::mergeByCalculateData([
                 "resto" => $resto, 
                 "ferme" => $ferme, 
                 "station" => $station, 
                 "golf" => $golf, 
-                "tabac" => $tabac
+                "tabac" => $tabac,
+                "marche" => $marche
             ]);
 
         }

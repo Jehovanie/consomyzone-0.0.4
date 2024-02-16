@@ -1113,15 +1113,15 @@ function updateViewState(new_state, idItem) {
 
 /** Avis audio & avis vidéo*/
 
-var mediaRecorder;
-let recordAudio = document.querySelector("#start_audio_avis_elie_js");
-let stopAudio = document.querySelector("#stop_audio_avis_elie_js");
-let recordCam = document.querySelector("#start_camera_avis_elie_js");
-let stopCam = document.querySelector("#stop_camera_avis_elie_js");
-let soundClips = document.querySelector(".vocal_display_elie_js");
+// var mediaRecorder;
+let recordAudio = document.querySelector("#star_faniry_audio_record_js");
+// let stopAudio = document.querySelector("#stop_audio_avis_elie_js");
+// let recordCam = document.querySelector("#start_camera_avis_elie_js");
+// let stopCam = document.querySelector("#stop_camera_avis_elie_js");
+// let soundClips = document.querySelector(".vocal_display_elie_js");
 let msgTxt = document.querySelector("#message-text");
-let cameraOptions = document.querySelector("#cameraOption");
-let microOptions = document.querySelector("#microOption");
+// let cameraOptions = document.querySelector("#cameraOption");
+// let microOptions = document.querySelector("#microOption");
 
 let timeOutVideo = null;
 let timeOutAudio = null;
@@ -1242,49 +1242,51 @@ if (String(month).length < 2) {
 let dateString = dateForName.getDate() + "_" + month + "_" + dateForName.getFullYear();
 
 /**
- * @author Elie
- * @utilisation : evenement de capture audio pour un avis rubrique
- */
-if(recordAudio) {
-recordAudio.addEventListener("click", (event) => {
-	if (soundClips.querySelector("audio") || soundClips.querySelector("video") || soundClips.querySelector("img")) {
-		swal({
-			title: "Modification",
-			text: "Voulez-vous modifier le média déjà enregistré?",
-			icon: "warning",
-			buttons: ["Pas maintenant", "Ok, je vais modifier"],
-		}).then((willDelete) => {
-			if (willDelete) {
-				initializeMediaTools();
-			}
-		});
-	} else {
-		$("#modalMicroOption").modal("show");
-		$("#modalAvis").modal("hide");
+ //  * @author Elie
+ //  * @utilisation : evenement de capture audio pour un avis rubrique
+ //  */
+// if(recordAudio) {
+// 	recordAudio.addEventListener("click", (event) => {
+	// 		$("#modalMicroOption").modal("show");
+// 			$("#modalAvis").modal("hide");
+// 		// if (soundClips.querySelector("audio") || soundClips.querySelector("video") || soundClips.querySelector("img")) {
+		// 		// 	swal({
+			// 		// 		title: "Modification",
+			// 		// 		text: "Voulez-vous modifier le média déjà enregistré?",
+			// 		// 		icon: "warning",
+			// 		// 		buttons: ["Pas maintenant", "Ok, je vais modifier"],
+		// 		// 	}).then((willDelete) => {
+			// 		// 		if (willDelete) {
+				// 		// 			initializeMediaTools();
+			// 		// 		}
+// 		// 	});
+	// 		// } else {
+		// 		// 	$("#modalMicroOption").modal("show");
+		// 		// 	$("#modalAvis").modal("hide");
 
-		// startRecordingAudio(true)
-	}
-});
-}
+		// 		// 	// startRecordingAudio(true)
+	// 		// }
+// 	});
+// }
 /**
  * @author Elie
  * @utilization : evenement de stop audio
  */
-if(stopAudio)
-stopAudio.addEventListener("click", (event) => {
-	mediaRecorder.stop();
-	//console.log(mediaRecorder.state);
-	console.log("recorder stopped");
-	stopAudio.classList.add("d-none");
-	// stop.classList.add("d-none")
-	document.querySelector(".record").classList.add("d-none");
-	// document.querySelectorAll(".stop_audio_avis_elie_js").forEach(e=>{
-	// 	e.classList.add("d-none")
-	// })
-	if (mediaRecorder) {
-		mediaRecorder.stream.getTracks().forEach((track) => track.stop());
-	}
-});
+// if(stopAudio)
+// 	stopAudio.addEventListener("click", (event) => {
+	// 		mediaRecorder.stop();
+	// 		//console.log(mediaRecorder.state);
+	// 		console.log("recorder stopped");
+	// 		stopAudio.classList.add("d-none");
+	// 		// stop.classList.add("d-none")
+	// 		document.querySelector(".record").classList.add("d-none");
+	// 		// document.querySelectorAll(".stop_audio_avis_elie_js").forEach(e=>{
+	// 		// 	e.classList.add("d-none")
+	// 		// })
+	// 		if (mediaRecorder) {
+		// 			mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+	// 		}
+// 	});
 
 /**
  * @author ELie
@@ -1304,10 +1306,10 @@ msgTxt.addEventListener("keyup", (event) => {
  * @author Elie
  * @utilisation Recorder par un camera pour un avis rubrique
  */
-if(recordCam)
-recordCam.addEventListener("click", (event) => {
-	setMediaStream(constraints);
-});
+// if(recordCam)
+// 	recordCam.addEventListener("click", (event) => {
+	// 		setMediaStream(constraints);
+// 	});
 
 /**
  * @constructor Prendre une photo pour envoyer dans un avis
@@ -1386,6 +1388,7 @@ function initializeMediaTools() {
 	document.querySelector(".vocal_display_elie_js").innerHTML = "";
 	document.querySelector("#message-text").disabled = false;
 
+if(document.querySelector(".stop_audio_avis_elie_js"))
 	document.querySelector(".stop_audio_avis_elie_js").classList.add("d-none");
 
 	document.querySelector(
@@ -1394,17 +1397,17 @@ function initializeMediaTools() {
 
 	document.querySelector(".all_avis_jheo_js").innerHTML = "";
 
-	if (mediaRecorder) {
-		mediaRecorder.stream.getTracks().forEach((track) => track.stop());
-	}
+	// if (mediaRecorder) {
+		// 	mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+	// }
 
-	if (timeOutAudio) {
-		clearTimeout(timeOutAudio);
-	}
+	// if (timeOutAudio) {
+		// 	clearTimeout(timeOutAudio);
+	// }
 
-	if (timeOutVideo) {
-		clearTimeout(timeOutVideo);
-	}
+	// if (timeOutVideo) {
+		// 	clearTimeout(timeOutVideo);
+	// }
 }
 
 /**
@@ -1527,602 +1530,602 @@ function addAvisInTribuG(idItem, rubrique_type) {
 		});
 }
 
-/**
- * @author Elie
- * @constructor affichage des cameras disponibles
- */
-const getCameraSelection = async () => {
-	const devices = await navigator.mediaDevices.enumerateDevices();
-	const videoDevices = devices.filter((device) => device.kind === "videoinput");
-	const options = videoDevices.map((videoDevice, i) => {
-		// return `<option value="${videoDevice.deviceId}" >${videoDevice.label}</option>`;
-		let checked = i == 0 ? "checked" : "";
-		// console.log(videoDevice.deviceId);
-		/* return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`; */
-		return `<div class="form-check form-switch" onclick="chooseCamera(this)"><input class="form-check-input" type="checkbox" role="switch" id="check-${i}" ${checked} deviceId="${videoDevice.deviceId}">
-		<label class="form-check-label" for="check-${i}">${videoDevice.label}</label></div>`;
-		i++;
-	});
-if(cameraOptions)
-	cameraOptions.innerHTML = options.join("");
-};
-
-/**
- * @author Elie
- * @constructor affichage des micros disponibles dans l'avis audio
- */
-const getMicroSelectionAudio = async () => {
-	const devices = await navigator.mediaDevices.enumerateDevices();
-	const audioDevices = devices.filter((device) => device.kind === "audioinput");
-
-	const options = audioDevices.map((videoDevice, i) => {
-		let checked = videoDevice.deviceId == "default" ? "checked" : "";
-		// console.log(videoDevice.deviceId);
-		/* return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`; */
-		return `<div class="form-check form-switch" onclick="chooseMicro(this, false)"><input class="form-check-input" type="checkbox" role="switch" id="check-${i}" ${checked} deviceId="${videoDevice.deviceId}">
-		<label class="form-check-label" style="display: inline;" for="check-${i}">${videoDevice.label}</label></div>`;
-		i++;
-	});
-	// microOptions.innerHTML = options.join('');
-if(document.querySelector("#selectMicroOption"))
-	document.querySelector("#selectMicroOption").innerHTML = options.join("");
-};
-
-/**
- * @author Elie
- * @constructor affichage des micros disponibles dans l'avis video
- */
-
-const getMicroSelectionCamera = async () => {
-	const devices = await navigator.mediaDevices.enumerateDevices();
-	const audioDevices = devices.filter((device) => device.kind === "audioinput");
-
-	const options = audioDevices.map((videoDevice, i) => {
-		let checked = videoDevice.deviceId == "default" ? "checked" : "";
-		// console.log(videoDevice.deviceId);
-		/* return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`; */
-		return `<div class="form-check form-switch" onclick="chooseMicro(this, true)"><input class="form-check-input" type="checkbox" role="switch" id="check-${i}" ${checked} deviceId="${videoDevice.deviceId}">
-		<label class="form-check-label" style="display: inline;" for="check-${i}">${videoDevice.label}</label></div>`;
-		i++;
-	});
-if(microOptions)
-	microOptions.innerHTML = options.join("");
-	// document.querySelector("#selectMicroOption").innerHTML = options.join('');
-};
-
-getCameraSelection();
-getMicroSelectionAudio();
-getMicroSelectionCamera();
-
-/**
- * @author Elie
- * @constructor Lancement d'enregistrement media audio ou video
- */
-function setMediaStream(contraint, micro = true, camera = true) {
-	let class_mute_mic = micro ? "fa-microphone" : "fa-microphone-slash";
-	let class_mute_cam = camera ? "fa-video" : "fa-video-slash";
-
-	$("#modalCameraAvis").modal("show");
-
-	document.querySelector("#containerCameraAvis").innerHTML = "";
-
-	let video = document.createElement("video");
-	video.setAttribute("id", "playerCam");
-	video.setAttribute("autoplay", true);
-	let canvas = document.createElement("canvas");
-	canvas.setAttribute("id", "outputCam");
-	canvas.setAttribute("class", "d-none");
-
-	let captureButton = document.createElement("button");
-	captureButton.classList = "btn_capture_avis";
-	captureButton.setAttribute("onclick", "takePictureAvis()");
-	captureButton.setAttribute("title", "Prendre une photo");
-	captureButton.innerHTML = `<i class="text-primary fs-3 fa-solid fa-camera-retro"></i>`;
-
-	let videoButton = document.createElement("button");
-	videoButton.classList = "btn_video_avis";
-	// videoButton.setAttribute("onclick", "takeVideoAvis()");
-	videoButton.setAttribute("title", "Prendre une vidéo");
-	videoButton.innerHTML = ico_svg; //<i class="bi bi-record-btn"></i>
-
-	let videoButtonStop = document.createElement("button");
-	videoButtonStop.classList = "btn_video_stop_avis red d-none";
-	// videoButtonStop.setAttribute("onclick", "stopVideoAvis()");
-	videoButtonStop.setAttribute("title", "Enregistrer une vidéo");
-	videoButtonStop.innerHTML = `<i class="fa-solid fa-stop fs-3"></i>`;
-
-	let divCam = document.createElement("div");
-	divCam.classList = "d-flex justify-content-center div-cam";
-
-	let micButton = document.createElement("button");
-	micButton.classList = "btn_change_micro_avis";
-	micButton.setAttribute("onclick", "");
-	micButton.setAttribute("title", "Paramètre microphone");
-	micButton.innerHTML = `<i class="text-primary fs-3 fa-solid ${class_mute_mic}" onclick="muteMicro(this)"></i> <i class="fa-solid fa-chevron-up chevron-options" onclick="showMicro(this)"></i>`;
-
-	let vidButton = document.createElement("button");
-	vidButton.classList = "btn_change_cam_avis";
-	vidButton.setAttribute("onclick", "");
-	vidButton.setAttribute("title", "Paramètre caméra");
-	// vidButton.innerHTML = `<i class="text-primary fs-3 fa-solid ${class_mute_cam}" onclick="muteCamera(this)"></i> <i class="fa-solid fa-chevron-up chevron-options" onclick="showCamera(this)"></i>`
-	vidButton.innerHTML = ico_svg_2;
-	vidButton.innerHTML += `</i> <i class="fa-solid fa-chevron-up chevron-options" onclick="showCamera(this)"></i>`;
+// /**
+ //  * @author Elie
+ //  * @constructor affichage des cameras disponibles
+ //  */
+// const getCameraSelection = async () => {
+	// 	const devices = await navigator.mediaDevices.enumerateDevices();
+	// 	const videoDevices = devices.filter((device) => device.kind === "videoinput");
+	// 	const options = videoDevices.map((videoDevice, i) => {
+		// 		// return `<option value="${videoDevice.deviceId}" >${videoDevice.label}</option>`;
+		// 		let checked = i == 0 ? "checked" : "";
+		// 		// console.log(videoDevice.deviceId);
+		// 		/* return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`; */
+		// 		return `<div class="form-check form-switch" onclick="chooseCamera(this)"><input class="form-check-input" type="checkbox" role="switch" id="check-${i}" ${checked} deviceId="${videoDevice.deviceId}">
+		// 		<label class="form-check-label" for="check-${i}">${videoDevice.label}</label></div>`;
+		// 		i++;
+	// 	});
+// 	if(cameraOptions)
+	// 		cameraOptions.innerHTML = options.join("");
+// };
+
+// /**
+ //  * @author Elie
+ //  * @constructor affichage des micros disponibles dans l'avis audio
+ //  */
+// const getMicroSelectionAudio = async () => {
+	// 	const devices = await navigator.mediaDevices.enumerateDevices();
+	// 	const audioDevices = devices.filter((device) => device.kind === "audioinput");
+
+	// 	const options = audioDevices.map((videoDevice, i) => {
+		// 		let checked = videoDevice.deviceId == "default" ? "checked" : "";
+		// 		// console.log(videoDevice.deviceId);
+		// 		/* return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`; */
+		// 		return `<div class="form-check form-switch" onclick="chooseMicro(this, false)"><input class="form-check-input" type="checkbox" role="switch" id="check-${i}" ${checked} deviceId="${videoDevice.deviceId}">
+		// 		<label class="form-check-label" style="display: inline;" for="check-${i}">${videoDevice.label}</label></div>`;
+		// 		i++;
+	// 	});
+	// 	// microOptions.innerHTML = options.join('');
+// 	if(document.querySelector("#selectMicroOption"))
+	// 		document.querySelector("#selectMicroOption").innerHTML = options.join("");
+// };
+
+// /**
+ //  * @author Elie
+ //  * @constructor affichage des micros disponibles dans l'avis video
+ //  */
+
+// const getMicroSelectionCamera = async () => {
+	// 	const devices = await navigator.mediaDevices.enumerateDevices();
+	// 	const audioDevices = devices.filter((device) => device.kind === "audioinput");
+
+	// 	const options = audioDevices.map((videoDevice, i) => {
+		// 		let checked = videoDevice.deviceId == "default" ? "checked" : "";
+		// 		// console.log(videoDevice.deviceId);
+		// 		/* return `<option value="${videoDevice.deviceId}">${videoDevice.label}</option>`; */
+		// 		return `<div class="form-check form-switch" onclick="chooseMicro(this, true)"><input class="form-check-input" type="checkbox" role="switch" id="check-${i}" ${checked} deviceId="${videoDevice.deviceId}">
+		// 		<label class="form-check-label" style="display: inline;" for="check-${i}">${videoDevice.label}</label></div>`;
+		// 		i++;
+	// 	});
+// 	if(microOptions)
+	// 		microOptions.innerHTML = options.join("");
+	// 	// document.querySelector("#selectMicroOption").innerHTML = options.join('');
+// };
+
+// getCameraSelection();
+// getMicroSelectionAudio();
+// getMicroSelectionCamera();
+
+// /**
+ //  * @author Elie
+ //  * @constructor Lancement d'enregistrement media audio ou video
+ //  */
+// function setMediaStream(contraint, micro = true, camera = true) {
+	// 	let class_mute_mic = micro ? "fa-microphone" : "fa-microphone-slash";
+	// 	let class_mute_cam = camera ? "fa-video" : "fa-video-slash";
+
+	// 	$("#modalCameraAvis").modal("show");
+
+	// 	document.querySelector("#containerCameraAvis").innerHTML = "";
+
+	// 	let video = document.createElement("video");
+	// 	video.setAttribute("id", "playerCam");
+	// 	video.setAttribute("autoplay", true);
+	// 	let canvas = document.createElement("canvas");
+	// 	canvas.setAttribute("id", "outputCam");
+	// 	canvas.setAttribute("class", "d-none");
+
+	// 	let captureButton = document.createElement("button");
+	// 	captureButton.classList = "btn_capture_avis";
+	// 	captureButton.setAttribute("onclick", "takePictureAvis()");
+	// 	captureButton.setAttribute("title", "Prendre une photo");
+	// 	captureButton.innerHTML = `<i class="text-primary fs-3 fa-solid fa-camera-retro"></i>`;
+
+	// 	let videoButton = document.createElement("button");
+	// 	videoButton.classList = "btn_video_avis";
+	// 	// videoButton.setAttribute("onclick", "takeVideoAvis()");
+	// 	videoButton.setAttribute("title", "Prendre une vidéo");
+	// 	videoButton.innerHTML = ico_svg; //<i class="bi bi-record-btn"></i>
+
+	// 	let videoButtonStop = document.createElement("button");
+	// 	videoButtonStop.classList = "btn_video_stop_avis red d-none";
+	// 	// videoButtonStop.setAttribute("onclick", "stopVideoAvis()");
+	// 	videoButtonStop.setAttribute("title", "Enregistrer une vidéo");
+	// 	videoButtonStop.innerHTML = `<i class="fa-solid fa-stop fs-3"></i>`;
+
+	// 	let divCam = document.createElement("div");
+	// 	divCam.classList = "d-flex justify-content-center div-cam";
+
+	// 	let micButton = document.createElement("button");
+	// 	micButton.classList = "btn_change_micro_avis";
+	// 	micButton.setAttribute("onclick", "");
+	// 	micButton.setAttribute("title", "Paramètre microphone");
+	// 	micButton.innerHTML = `<i class="text-primary fs-3 fa-solid ${class_mute_mic}" onclick="muteMicro(this)"></i> <i class="fa-solid fa-chevron-up chevron-options" onclick="showMicro(this)"></i>`;
+
+	// 	let vidButton = document.createElement("button");
+	// 	vidButton.classList = "btn_change_cam_avis";
+	// 	vidButton.setAttribute("onclick", "");
+	// 	vidButton.setAttribute("title", "Paramètre caméra");
+	// 	// vidButton.innerHTML = `<i class="text-primary fs-3 fa-solid ${class_mute_cam}" onclick="muteCamera(this)"></i> <i class="fa-solid fa-chevron-up chevron-options" onclick="showCamera(this)"></i>`
+	// 	vidButton.innerHTML = ico_svg_2;
+	// 	vidButton.innerHTML += `</i> <i class="fa-solid fa-chevron-up chevron-options" onclick="showCamera(this)"></i>`;
 
-	let chrono = document.createElement("span");
-	chrono.id = "chrono_avis";
-	chrono.classList = "chrono_avis text-white border rounded-4 p-1";
-	// chrono.innerHTML = `<span class="chrono-h">`
+	// 	let chrono = document.createElement("span");
+	// 	chrono.id = "chrono_avis";
+	// 	chrono.classList = "chrono_avis text-white border rounded-4 p-1";
+	// 	// chrono.innerHTML = `<span class="chrono-h">`
 
-	divCam.appendChild(captureButton);
-	divCam.appendChild(videoButton);
-	divCam.appendChild(videoButtonStop);
-
-	divCam.appendChild(micButton);
-	divCam.appendChild(vidButton);
-
-	mediaRecorder = startStream(contraint, video);
-
-	videoButton.addEventListener("click", (e) => {
-		mediaRecorder.start(200);
-
-		// e.target.parentElement.classList.add("d-none")
-		videoButtonStop.classList.remove("d-none");
-
-		divCam.appendChild(chrono);
-
-		let maxTimeSeconds = 60;
-
-		startChrono(chrono, maxTimeSeconds);
-
-		timeOutVideo = setTimeout(() => {
-			videoButtonStop.click();
-		}, maxTimeSeconds * 1000);
-
-		writeFooterModal();
-
-		micButton.classList.add("disabled");
-		micButton.querySelector("i").classList.add("text-secondary");
-		vidButton.classList.add("disabled");
-		vidButton.querySelector("svg > g").setAttribute("fill", "#868e96");
-		captureButton.classList.add("disabled");
-		captureButton.setAttribute("onclick", "");
-		captureButton.querySelector("i").classList.add("text-secondary");
-	});
-
-	videoButtonStop.addEventListener("click", (e) => {
-		mediaRecorder.stop();
-
-		mediaRecorder.stream.getTracks().forEach((track) => track.stop());
-
-		if (timeOutVideo) {
-			clearTimeout(timeOutVideo);
-		}
-
-		videoButtonStop.parentElement.classList.add("d-none");
-		videoButton.classList.remove("d-none");
-		document.querySelector(".note_avis_jheo_js").disabled = true;
-
-		document.querySelector(
-			"#spinCameraAvis"
-		).innerHTML = `<button type="button" class="btn btn-secondary btn-sm close_mediarecorder" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Annuler</button>`;
-
-		$("#modalCameraAvis").modal("hide");
-		$("#modalAvis").modal("show");
-	});
-
-	document.querySelector("#containerCameraAvis").appendChild(video);
-	document.querySelector("#containerCameraAvis").appendChild(divCam);
-	document.querySelector("#containerCameraAvis").appendChild(canvas);
-}
-
-/**
- * @author Elie
- * @constructor demarage d'enregistrement media audio ou video
- */
-const startStream = async (constraints, video) => {
-	const stream = await navigator.mediaDevices.getUserMedia(constraints);
-	return handleStream(stream, video);
-};
-
-var recorder;
-
-/**
- * @author Elie
- * @param {*} stream
- * @param {*} video
- * @constructor handle evenement apres demarrage de l'enregistrement
- * @returns
- */
-const handleStream = (stream, video) => {
-	$("#modalAvis").modal("hide");
-
-	video.srcObject = stream;
-
-	video.captureStream = video.captureStream || video.mozCaptureStream;
-
-	let chunks = [];
-
-	let options = {
-		bitsPerSecond: 128000,
-	};
-
-	mediaRecorder = new MediaRecorder(video.captureStream(), options);
-
-	mediaRecorder.ondataavailable = (e) => {
-		chunks.push(e.data);
-	};
-
-	mediaRecorder.onstop = (e) => {
-		const clipName = dateString + ".mp4";
-		const clipContainer = document.createElement("div");
-		const iconContainer = document.createElement("div");
-		clipContainer.classList = "d-flex justify-content-center align-items-center";
-		const audio = document.createElement("video");
-		audio.id = "video_" + i;
-		audio.classList = "create video-cam-avis";
-		const deleteSpan = document.createElement("span");
-		const deleteButton = document.createElement("i");
-		const deleteLabel = document.createElement("label");
-		deleteLabel.textContent = " Supprimer.";
-		deleteLabel.style.marginLeft = "3px";
-		deleteLabel.style.cursor = "pointer";
-
-		clipContainer.classList.add("clip");
-		iconContainer.classList.add("iconeDelete");
-		audio.setAttribute("controls", "controls");
-		audio.classList.add("me-2");
-		deleteButton.classList = "fa-solid fa-trash";
-		deleteSpan.style.color = "red";
-		deleteSpan.style.marginLeft = "5px";
-		deleteSpan.style.cursor = "pointer";
-		deleteSpan.style.fontSize = "16px";
-		deleteSpan.appendChild(deleteButton);
-		deleteSpan.appendChild(deleteLabel);
-		clipContainer.appendChild(audio);
-		clipContainer.appendChild(deleteSpan);
-		soundClips.appendChild(clipContainer);
-
-		document.querySelector(".vocal_display_elie_js").classList.remove("d-none");
-		document.querySelector(".record").classList.add("d-none");
-
-		audio.controls = true;
-		audio.autoplay = true;
-
-		const blobVideo = new Blob(chunks, { type: "video/webm" });
-
-		let blob_url = URL.createObjectURL(blobVideo);
-
-		audio.src = blob_url;
-
-		chunks = [];
-
-		let reader = new FileReader();
-
-		reader.readAsDataURL(blobVideo);
-		reader.onloadend = function () {
-			let base64String = reader.result;
-			// audio.src = base64String
-			// console.log(base64String);
-		};
-
-		deleteSpan.onclick = (e) => {
-			const evtTgt = e.target;
-			evtTgt.parentNode.parentNode.remove();
-
-			initializeMediaTools();
-		};
-
-		mediaRecorder.stream.getTracks().forEach((track) => track.stop());
-	};
-
-	return mediaRecorder;
-};
-
-/**
- * @author Elie
- * @constructor rendre mute le microphone de navigateur
- * @param {*} elem
- */
-function muteMicro(elem) {
-	let cams = document.querySelectorAll("#cameraOption > div > input[type=checkbox]");
-
-	cams.forEach((e) => {
-		if (e.checked) {
-			elem.setAttribute("deviceId", e.getAttribute("deviceId"));
-		}
-	});
-
-	let deviceId = elem.getAttribute("deviceId");
-
-	let mics = document.querySelectorAll("#microOption > div > input[type=checkbox]");
-
-	mics.forEach((e) => {
-		if (e.checked) {
-			elem.setAttribute("microId", e.getAttribute("deviceId"));
-		}
-	});
-
-	let microId = elem.getAttribute("microId");
-
-	let updatedConstraints = {};
-
-	if (elem.classList == "text-primary fs-3 fa-solid fa-microphone-slash") {
-		elem.classList = "text-primary fs-3 fa-solid fa-microphone";
-		updatedConstraints = {
-			video: {
-				deviceId: {
-					exact: deviceId,
-				},
-			},
-			audio: {
-				deviceId: {
-					exact: microId,
-				},
-			},
-		};
-
-		setMediaStream(updatedConstraints);
-	} else {
-		elem.classList = "text-primary fs-3 fa-solid fa-microphone-slash";
-
-		setMediaStream(constraints, false, true);
-	}
-}
-
-/**
- * @author Elie
- * @constructor Rendre mute le camrera utilisé
- * @param {*} elem
- */
-function muteCamera(elem) {
-	let updatedConstraints = {};
-
-	if (elem.classList == "fa-solid fa-video-slash") {
-		elem.classList = "fa-solid fa-video";
-
-		updatedConstraints = {
-			video: {
-				deviceId: {
-					exact: cameraOptions.value,
-				},
-			},
-			audio: {
-				deviceId: {
-					exact: microOptions.value,
-				},
-			},
-		};
-
-		setMediaStream(updatedConstraints);
-	} else {
-		elem.classList = "fa-solid fa-video-slash";
-
-		updatedConstraints = {
-			video: false,
-			audio: {
-				deviceId: {
-					exact: microOptions.value,
-				},
-			},
-		};
-
-		setMediaStream(updatedConstraints, true, false);
-	}
-}
-
-/**
- * @author Elie
- * @constructor Affichage des listes des micro disponibles
- * @param {*} elem
- */
-function showMicro(elem) {
-	if (document.querySelector("#optionMedia").classList.contains("d-none")) {
-		document.querySelector("#optionMedia").classList.remove("d-none");
-		document.querySelector("#microOption").classList.remove("d-none");
-		document.querySelector("#cameraOption").classList.add("d-none");
-	} else {
-		document.querySelector("#optionMedia").classList.add("d-none");
-		document.querySelector("#microOption").classList.add("d-none");
-		document.querySelector("#cameraOption").classList.remove("d-none");
-	}
-
-	document.querySelector("#optionMedia").classList.add("bg-white");
-}
-
-/**
- * @author Elie
- * @constructor Affichage des cameras detectés disponibles
- * @param {*} elem
- */
-function showCamera(elem) {
-	if (document.querySelector("#optionMedia").classList.contains("d-none")) {
-		document.querySelector("#optionMedia").classList.remove("d-none");
-		document.querySelector("#microOption").classList.add("d-none");
-		document.querySelector("#cameraOption").classList.remove("d-none");
-	} else {
-		document.querySelector("#optionMedia").classList.add("d-none");
-		document.querySelector("#microOption").classList.remove("d-none");
-		document.querySelector("#cameraOption").classList.add("d-none");
-	}
-
-	document.querySelector("#optionMedia").classList.add("bg-white");
-}
-
-/**
- * @author Elie
- * @constructor Demarrage de l'enregistrement audio
- * @param {*} defaultValue
- */
-function startRecordingAudio(defaultValue) {
-	let deviceId = document.querySelector("#selectMicroOption").getAttribute("deviceId");
-
-	let constraints = {};
-
-	$("#modalMicroOption").modal("hide");
-	$("#modalAvis").modal("show");
-
-	if (navigator.mediaDevices) {
-		if (defaultValue == false) {
-			constraints = {
-				audio: {
-					deviceId: {
-						exact: deviceId,
-					},
-				},
-			};
-		} else {
-			constraints = { audio: true };
-		}
-
-		let chunks = [];
-
-		navigator.mediaDevices
-			.getUserMedia(constraints)
-			.then((stream) => {
-				mediaRecorder = new MediaRecorder(stream);
-
-				mediaRecorder.start();
-				// console.log("recorder started");
-				recordAudio.classList.add("d-none");
-
-				let timaMaxSec = 60;
-
-				timeOutAudio = setTimeout(function () {
-					stopAudio.click();
-				}, timaMaxSec * 1000);
-
-				document.querySelectorAll(".stop_audio_avis_elie_js").forEach((e) => {
-					e.classList.remove("d-none");
-					// e.querySelector("i").classList.add("disabled")
-				});
-
-				document.querySelector(".camera-record").classList.add("disabled");
-
-				document.querySelector("#message-text").disabled = true;
-
-				let recor_audio_animated = document.createElement("div");
-				recor_audio_animated.id = "bars";
-
-				for (let i = 0; i < 90; i++) {
-					const left = i * 2 + 1;
-					const anim = Math.floor(Math.random() * 75 + 400);
-					const height = Math.floor(Math.random() * 25 + 3);
-
-					recor_audio_animated.innerHTML += `<div class="bar" style="left:${left}px;animation-duration:${anim}ms;height:${height}px"></div>`; //`<div class="bar" style="left:${left}px">Hello</div>`;
-				}
-
-				document.querySelector(".vocal_display_elie_js").appendChild(recor_audio_animated);
-
-				document.querySelector(".vocal_display_elie_js").innerHTML += `
-				<div class="d-flex mt-5 justify-content-around spinner-recording">
-					<button class="btn btn-primary btn-sm" type="button" disabled>
-						<span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
-						<span role="status">Enregistrement en cours...</span>
-					</button>
-					<button class="btn btn-danger btn-sm" type="button" onclick="stopAudio.click();"><i class="fa-solid fa-stop"></i> Arrêter l'enregistrement</button>
-				</div>
-			  `;
-
-				document.querySelector(".vocal_display_elie_js").classList.remove("d-none");
-
-				mediaRecorder.onstop = (e) => {
-					// console.log("data available after MediaRecorder.stop() called.");
-
-					const clipName = dateString + ".oga";
-					const clipContainer = document.createElement("div");
-					const iconContainer = document.createElement("div");
-					clipContainer.classList = "d-flex align-items-center";
-					const audio = document.createElement("audio");
-					audio.id = "audio_" + i;
-					audio.classList.add("create");
-					const deleteSpan = document.createElement("span");
-					const deleteButton = document.createElement("i");
-					const deleteLabel = document.createElement("label");
-					deleteLabel.textContent = " Supprimer.";
-					deleteLabel.style.marginLeft = "3px";
-					deleteLabel.style.cursor = "pointer";
-
-					clipContainer.classList.add("clip");
-					iconContainer.classList.add("iconeDelete");
-					audio.setAttribute("controls", "controls");
-					audio.classList.add("ml-5");
-					deleteButton.classList = "fa-solid fa-trash";
-					deleteSpan.style.color = "red";
-					deleteSpan.style.marginLeft = "5px";
-					deleteSpan.style.cursor = "pointer";
-					deleteSpan.style.fontSize = "16px";
-					deleteSpan.appendChild(deleteButton);
-					deleteSpan.appendChild(deleteLabel);
-					clipContainer.appendChild(audio);
-					clipContainer.appendChild(deleteSpan);
-					soundClips.appendChild(clipContainer);
-
-					document.querySelector(".vocal_display_elie_js").classList.remove("d-none");
-
-					document.querySelector(".vocal_display_elie_js > div#bars").remove();
-					document.querySelector(".spinner-recording")
-						? document.querySelector(".spinner-recording").remove()
-						: "";
-
-					audio.controls = true;
-					const blob = new Blob(chunks, { type: "audio/mp3; codecs=opus" });
-					chunks = [];
-
-					let reader = new FileReader();
-					reader.readAsDataURL(blob);
-					reader.onloadend = function () {
-						let base64String = reader.result;
-						audio.src = base64String;
-					};
-
-					deleteSpan.onclick = (e) => {
-						const evtTgt = e.target;
-						evtTgt.parentNode.parentNode.remove();
-
-						initializeMediaTools();
-					};
-
-					mediaRecorder.stream.getTracks().forEach((track) => track.stop());
-
-					if (timeOutAudio) {
-						clearTimeout(timeOutAudio);
-					}
-				};
-
-				mediaRecorder.ondataavailable = (e) => {
-					chunks.push(e.data);
-				};
-			})
-			.catch((err) => {
-				console.log(err);
-				alert("Veuillez vérifier votre micro svp!");
-				// console.error(`The following error occurred: ${err}`);
-			});
-	}
-}
-
-/**
- * @author Elie
- * @constructor Choix des microphones utilisés
- * @param {*} elem
- * @param {*} isCamera
- */
-function chooseMicro(elem, isCamera) {
-	let checkboxs = elem.parentElement.querySelectorAll("input[type=checkbox]");
-	checkboxs.forEach((e) => (e.checked = false));
-
-	elem.querySelector("input[type=checkbox]").checked = true;
-
-	if (isCamera == false) {
-		let deviceId = elem.querySelector("input[type=checkbox]").getAttribute("deviceId");
-
-		document.querySelector("#selectMicroOption").setAttribute("deviceId", deviceId);
-
-		// use for camera
-	}
-	// else {
-
-	// 	let micId = elem.querySelector("input[type=checkbox]").getAttribute("deviceId")
+	// 	divCam.appendChild(captureButton);
+	// 	divCam.appendChild(videoButton);
+	// 	divCam.appendChild(videoButtonStop);
+
+	// 	divCam.appendChild(micButton);
+	// 	divCam.appendChild(vidButton);
+
+	// 	mediaRecorder = startStream(contraint, video);
+
+	// 	videoButton.addEventListener("click", (e) => {
+		// 		mediaRecorder.start(200);
+
+		// 		// e.target.parentElement.classList.add("d-none")
+		// 		videoButtonStop.classList.remove("d-none");
+
+		// 		divCam.appendChild(chrono);
+
+		// 		let maxTimeSeconds = 60;
+
+		// 		startChrono(chrono, maxTimeSeconds);
+
+		// 		timeOutVideo = setTimeout(() => {
+			// 			videoButtonStop.click();
+		// 		}, maxTimeSeconds * 1000);
+
+		// 		writeFooterModal();
+
+		// 		micButton.classList.add("disabled");
+		// 		micButton.querySelector("i").classList.add("text-secondary");
+		// 		vidButton.classList.add("disabled");
+		// 		vidButton.querySelector("svg > g").setAttribute("fill", "#868e96");
+		// 		captureButton.classList.add("disabled");
+		// 		captureButton.setAttribute("onclick", "");
+		// 		captureButton.querySelector("i").classList.add("text-secondary");
+	// 	});
+
+	// 	videoButtonStop.addEventListener("click", (e) => {
+		// 		mediaRecorder.stop();
+
+		// 		mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+
+		// 		if (timeOutVideo) {
+			// 			clearTimeout(timeOutVideo);
+		// 		}
+
+		// 		videoButtonStop.parentElement.classList.add("d-none");
+		// 		videoButton.classList.remove("d-none");
+		// 		document.querySelector(".note_avis_jheo_js").disabled = true;
+
+		// 		document.querySelector(
+			// 			"#spinCameraAvis"
+		// 		).innerHTML = `<button type="button" class="btn btn-secondary btn-sm close_mediarecorder" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis">Annuler</button>`;
+
+		// 		$("#modalCameraAvis").modal("hide");
+		// 		$("#modalAvis").modal("show");
+	// 	});
+
+	// 	document.querySelector("#containerCameraAvis").appendChild(video);
+	// 	document.querySelector("#containerCameraAvis").appendChild(divCam);
+	// 	document.querySelector("#containerCameraAvis").appendChild(canvas);
+// }
+
+// /**
+ //  * @author Elie
+ //  * @constructor demarage d'enregistrement media audio ou video
+ //  */
+// const startStream = async (constraints, video) => {
+	// 	const stream = await navigator.mediaDevices.getUserMedia(constraints);
+	// 	return handleStream(stream, video);
+// };
+
+// var recorder;
+
+// /**
+ //  * @author Elie
+ //  * @param {*} stream
+ //  * @param {*} video
+ //  * @constructor handle evenement apres demarrage de l'enregistrement
+ //  * @returns
+ //  */
+// const handleStream = (stream, video) => {
+	// 	$("#modalAvis").modal("hide");
+
+	// 	video.srcObject = stream;
+
+	// 	video.captureStream = video.captureStream || video.mozCaptureStream;
+
+	// 	let chunks = [];
+
+	// 	let options = {
+		// 		bitsPerSecond: 128000,
+	// 	};
+
+	// 	mediaRecorder = new MediaRecorder(video.captureStream(), options);
+
+	// 	mediaRecorder.ondataavailable = (e) => {
+		// 		chunks.push(e.data);
+	// 	};
+
+	// 	mediaRecorder.onstop = (e) => {
+		// 		const clipName = dateString + ".mp4";
+		// 		const clipContainer = document.createElement("div");
+		// 		const iconContainer = document.createElement("div");
+		// 		clipContainer.classList = "d-flex justify-content-center align-items-center";
+		// 		const audio = document.createElement("video");
+		// 		audio.id = "video_" + i;
+		// 		audio.classList = "create video-cam-avis";
+		// 		const deleteSpan = document.createElement("span");
+		// 		const deleteButton = document.createElement("i");
+		// 		const deleteLabel = document.createElement("label");
+		// 		deleteLabel.textContent = " Supprimer.";
+		// 		deleteLabel.style.marginLeft = "3px";
+		// 		deleteLabel.style.cursor = "pointer";
+
+		// 		clipContainer.classList.add("clip");
+		// 		iconContainer.classList.add("iconeDelete");
+		// 		audio.setAttribute("controls", "controls");
+		// 		audio.classList.add("me-2");
+		// 		deleteButton.classList = "fa-solid fa-trash";
+		// 		deleteSpan.style.color = "red";
+		// 		deleteSpan.style.marginLeft = "5px";
+		// 		deleteSpan.style.cursor = "pointer";
+		// 		deleteSpan.style.fontSize = "16px";
+		// 		deleteSpan.appendChild(deleteButton);
+		// 		deleteSpan.appendChild(deleteLabel);
+		// 		clipContainer.appendChild(audio);
+		// 		clipContainer.appendChild(deleteSpan);
+		// 		soundClips.appendChild(clipContainer);
+
+		// 		document.querySelector(".vocal_display_elie_js").classList.remove("d-none");
+		// 		document.querySelector(".record").classList.add("d-none");
+
+		// 		audio.controls = true;
+		// 		audio.autoplay = true;
+
+		// 		const blobVideo = new Blob(chunks, { type: "video/webm" });
+
+		// 		let blob_url = URL.createObjectURL(blobVideo);
+
+		// 		audio.src = blob_url;
+
+		// 		chunks = [];
+
+		// 		let reader = new FileReader();
+
+		// 		reader.readAsDataURL(blobVideo);
+		// 		reader.onloadend = function () {
+			// 			let base64String = reader.result;
+			// 			// audio.src = base64String
+			// 			// console.log(base64String);
+		// 		};
+
+		// 		deleteSpan.onclick = (e) => {
+			// 			const evtTgt = e.target;
+			// 			evtTgt.parentNode.parentNode.remove();
+
+			// 			initializeMediaTools();
+		// 		};
+
+		// 		mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+	// 	};
+
+	// 	return mediaRecorder;
+// };
+
+// /**
+ //  * @author Elie
+ //  * @constructor rendre mute le microphone de navigateur
+ //  * @param {*} elem
+ //  */
+// function muteMicro(elem) {
+	// 	let cams = document.querySelectorAll("#cameraOption > div > input[type=checkbox]");
+
+	// 	cams.forEach((e) => {
+		// 		if (e.checked) {
+			// 			elem.setAttribute("deviceId", e.getAttribute("deviceId"));
+		// 		}
+// 	});
+
+	// 	let deviceId = elem.getAttribute("deviceId");
+
+	// 	let mics = document.querySelectorAll("#microOption > div > input[type=checkbox]");
+
+	// 	mics.forEach((e) => {
+		// 		if (e.checked) {
+			// 			elem.setAttribute("microId", e.getAttribute("deviceId"));
+		// 		}
+// 	});
+
+	// 	let microId = elem.getAttribute("microId");
+
+	// 	let updatedConstraints = {};
+
+	// 	if (elem.classList == "text-primary fs-3 fa-solid fa-microphone-slash") {
+		// 		elem.classList = "text-primary fs-3 fa-solid fa-microphone";
+		// 		updatedConstraints = {
+			// 			video: {
+				// 				deviceId: {
+					// 					exact: deviceId,
+				// 				},
+			// 			},
+			// 			audio: {
+				// 				deviceId: {
+					// 					exact: microId,
+				// 				},
+			// 			},
+		// 		};
+
+		// 		setMediaStream(updatedConstraints);
+	// 	} else {
+		// 		elem.classList = "text-primary fs-3 fa-solid fa-microphone-slash";
+
+		// 		setMediaStream(constraints, false, true);
+	// 	}
+// }
+
+// /**
+ //  * @author Elie
+ //  * @constructor Rendre mute le camrera utilisé
+ //  * @param {*} elem
+ //  */
+// function muteCamera(elem) {
+	// 	let updatedConstraints = {};
+
+	// 	if (elem.classList == "fa-solid fa-video-slash") {
+		// 		elem.classList = "fa-solid fa-video";
+
+		// 		updatedConstraints = {
+			// 			video: {
+				// 				deviceId: {
+					// 					exact: cameraOptions.value,
+				// 				},
+			// 			},
+			// 			audio: {
+				// 				deviceId: {
+					// 					exact: microOptions.value,
+				// 				},
+			// 			},
+		// 		};
+
+		// 		setMediaStream(updatedConstraints);
+	// 	} else {
+		// 		elem.classList = "fa-solid fa-video-slash";
+
+		// 		updatedConstraints = {
+			// 			video: false,
+			// 			audio: {
+				// 				deviceId: {
+					// 					exact: microOptions.value,
+				// 				},
+			// 			},
+		// 		};
+
+		// 		setMediaStream(updatedConstraints, true, false);
+	// 	}
+// }
+
+// /**
+ //  * @author Elie
+ //  * @constructor Affichage des listes des micro disponibles
+ //  * @param {*} elem
+ //  */
+// function showMicro(elem) {
+	// 	if (document.querySelector("#optionMedia").classList.contains("d-none")) {
+		// 		document.querySelector("#optionMedia").classList.remove("d-none");
+		// 		document.querySelector("#microOption").classList.remove("d-none");
+		// 		document.querySelector("#cameraOption").classList.add("d-none");
+	// 	} else {
+		// 		document.querySelector("#optionMedia").classList.add("d-none");
+		// 		document.querySelector("#microOption").classList.add("d-none");
+		// 		document.querySelector("#cameraOption").classList.remove("d-none");
+	// 	}
+
+	// 	document.querySelector("#optionMedia").classList.add("bg-white");
+// }
+
+// /**
+ //  * @author Elie
+ //  * @constructor Affichage des cameras detectés disponibles
+ //  * @param {*} elem
+ //  */
+// function showCamera(elem) {
+	// 	if (document.querySelector("#optionMedia").classList.contains("d-none")) {
+		// 		document.querySelector("#optionMedia").classList.remove("d-none");
+		// 		document.querySelector("#microOption").classList.add("d-none");
+		// 		document.querySelector("#cameraOption").classList.remove("d-none");
+	// 	} else {
+		// 		document.querySelector("#optionMedia").classList.add("d-none");
+		// 		document.querySelector("#microOption").classList.remove("d-none");
+		// 		document.querySelector("#cameraOption").classList.add("d-none");
+	// 	}
+
+	// 	document.querySelector("#optionMedia").classList.add("bg-white");
+// }
+
+// /**
+ //  * @author Elie
+ //  * @constructor Demarrage de l'enregistrement audio
+ //  * @param {*} defaultValue
+ //  */
+// function startRecordingAudio(defaultValue) {
+	// 	let deviceId = document.querySelector("#selectMicroOption").getAttribute("deviceId");
+
+	// 	let constraints = {};
+
+	// 	$("#modalMicroOption").modal("hide");
+	// 	$("#modalAvis").modal("show");
+
+	// 	if (navigator.mediaDevices) {
+		// 		if (defaultValue == false) {
+			// 			constraints = {
+				// 				audio: {
+					// 					deviceId: {
+						// 						exact: deviceId,
+					// 					},
+				// 				},
+			// 			};
+		// 		} else {
+			// 			constraints = { audio: true };
+		// 		}
+
+		// 		let chunks = [];
+
+		// 		navigator.mediaDevices
+			// 			.getUserMedia(constraints)
+			// 			.then((stream) => {
+				// 				mediaRecorder = new MediaRecorder(stream);
+
+				// 				mediaRecorder.start();
+				// 				// console.log("recorder started");
+				// 				recordAudio.classList.add("d-none");
+
+				// 				let timaMaxSec = 60;
+
+				// 				timeOutAudio = setTimeout(function () {
+					// 					stopAudio.click();
+				// 				}, timaMaxSec * 1000);
+
+				// 				document.querySelectorAll(".stop_audio_avis_elie_js").forEach((e) => {
+					// 					e.classList.remove("d-none");
+					// 					// e.querySelector("i").classList.add("disabled")
+				// 				});
+
+				// 				document.querySelector(".camera-record").classList.add("disabled");
+
+				// 				document.querySelector("#message-text").disabled = true;
+
+				// 				let recor_audio_animated = document.createElement("div");
+				// 				recor_audio_animated.id = "bars";
+
+				// 				for (let i = 0; i < 90; i++) {
+					// 					const left = i * 2 + 1;
+					// 					const anim = Math.floor(Math.random() * 75 + 400);
+					// 					const height = Math.floor(Math.random() * 25 + 3);
+
+					// 					recor_audio_animated.innerHTML += `<div class="bar" style="left:${left}px;animation-duration:${anim}ms;height:${height}px"></div>`; //`<div class="bar" style="left:${left}px">Hello</div>`;
+				// 				}
+
+				// 				document.querySelector(".vocal_display_elie_js").appendChild(recor_audio_animated);
+
+				// 				document.querySelector(".vocal_display_elie_js").innerHTML += `
+				// 				<div class="d-flex mt-5 justify-content-around spinner-recording">
+					// 					<button class="btn btn-primary btn-sm" type="button" disabled>
+						// 						<span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
+						// 						<span role="status">Enregistrement en cours...</span>
+					// 					</button>
+					// 					<button class="btn btn-danger btn-sm" type="button" onclick="stopAudio.click();"><i class="fa-solid fa-stop"></i> Arrêter l'enregistrement</button>
+				// 				</div>
+			  // 			  `;
+
+				// 				document.querySelector(".vocal_display_elie_js").classList.remove("d-none");
+
+				// 				mediaRecorder.onstop = (e) => {
+					// 					// console.log("data available after MediaRecorder.stop() called.");
+
+					// 					const clipName = dateString + ".oga";
+					// 					const clipContainer = document.createElement("div");
+					// 					const iconContainer = document.createElement("div");
+					// 					clipContainer.classList = "d-flex align-items-center";
+					// 					const audio = document.createElement("audio");
+					// 					audio.id = "audio_" + i;
+					// 					audio.classList.add("create");
+					// 					const deleteSpan = document.createElement("span");
+					// 					const deleteButton = document.createElement("i");
+					// 					const deleteLabel = document.createElement("label");
+					// 					deleteLabel.textContent = " Supprimer.";
+					// 					deleteLabel.style.marginLeft = "3px";
+					// 					deleteLabel.style.cursor = "pointer";
+
+					// 					clipContainer.classList.add("clip");
+					// 					iconContainer.classList.add("iconeDelete");
+					// 					audio.setAttribute("controls", "controls");
+					// 					audio.classList.add("ml-5");
+					// 					deleteButton.classList = "fa-solid fa-trash";
+					// 					deleteSpan.style.color = "red";
+					// 					deleteSpan.style.marginLeft = "5px";
+					// 					deleteSpan.style.cursor = "pointer";
+					// 					deleteSpan.style.fontSize = "16px";
+					// 					deleteSpan.appendChild(deleteButton);
+					// 					deleteSpan.appendChild(deleteLabel);
+					// 					clipContainer.appendChild(audio);
+					// 					clipContainer.appendChild(deleteSpan);
+					// 					soundClips.appendChild(clipContainer);
+
+					// 					document.querySelector(".vocal_display_elie_js").classList.remove("d-none");
+
+					// 					document.querySelector(".vocal_display_elie_js > div#bars").remove();
+					// 					document.querySelector(".spinner-recording")
+						// 						? document.querySelector(".spinner-recording").remove()
+						// 						: "";
+
+					// 					audio.controls = true;
+					// 					const blob = new Blob(chunks, { type: "audio/mp3; codecs=opus" });
+					// 					chunks = [];
+
+					// 					let reader = new FileReader();
+					// 					reader.readAsDataURL(blob);
+					// 					reader.onloadend = function () {
+						// 						let base64String = reader.result;
+						// 						audio.src = base64String;
+					// 					};
+
+					// 					deleteSpan.onclick = (e) => {
+						// 						const evtTgt = e.target;
+						// 						evtTgt.parentNode.parentNode.remove();
+
+						// 						initializeMediaTools();
+					// 					};
+
+					// 					mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+
+					// 					if (timeOutAudio) {
+						// 						clearTimeout(timeOutAudio);
+					// 					}
+// 				};
+
+				// 				mediaRecorder.ondataavailable = (e) => {
+					// 					chunks.push(e.data);
+				// 				};
+			// 			})
+			// 			.catch((err) => {
+				// 				console.log(err);
+				// 				alert("Veuillez vérifier votre micro svp!");
+				// 				// console.error(`The following error occurred: ${err}`);
+			// 			});
+	// 	}
+// }
+
+// /**
+ //  * @author Elie
+ //  * @constructor Choix des microphones utilisés
+ //  * @param {*} elem
+ //  * @param {*} isCamera
+ //  */
+// function chooseMicro(elem, isCamera) {
+	// 	let checkboxs = elem.parentElement.querySelectorAll("input[type=checkbox]");
+	// 	checkboxs.forEach((e) => (e.checked = false));
+
+	// 	elem.querySelector("input[type=checkbox]").checked = true;
+
+	// 	if (isCamera == false) {
+		// 		let deviceId = elem.querySelector("input[type=checkbox]").getAttribute("deviceId");
+
+		// 		document.querySelector("#selectMicroOption").setAttribute("deviceId", deviceId);
+
+		// 		// use for camera
+	// 	}
+// 	// else {
+
+	// 	// 	let micId = elem.querySelector("input[type=checkbox]").getAttribute("deviceId")
 
 	// 	let cams = document.querySelectorAll("#cameraOption > div > input[type=checkbox]")
 
@@ -2154,83 +2157,181 @@ function chooseMicro(elem, isCamera) {
 	// 	document.querySelector("#optionMedia").classList.add("d-none");
 
 	// }
-}
+//}
 
 /**
  * @author Elie
  * @constructor Choix des cameras utilisés
  * @param {*} elem
  */
-function chooseCamera(elem) {
-	let checkboxs = elem.parentElement.querySelectorAll("input[type=checkbox]");
-	checkboxs.forEach((e) => (e.checked = false));
+// function chooseCamera(elem) {
+	// 	let checkboxs = elem.parentElement.querySelectorAll("input[type=checkbox]");
+	// 	checkboxs.forEach((e) => (e.checked = false));
 
-	let deviceId = elem.querySelector("input[type=checkbox]").getAttribute("deviceId");
+	// 	let deviceId = elem.querySelector("input[type=checkbox]").getAttribute("deviceId");
 
-	let mics = document.querySelectorAll("#microOption > div > input[type=checkbox]");
+	// 	let mics = document.querySelectorAll("#microOption > div > input[type=checkbox]");
 
-	elem.querySelector("input[type=checkbox]").checked = true;
+	// 	elem.querySelector("input[type=checkbox]").checked = true;
 
-	mics.forEach((e) => {
-		if (e.checked) {
-			elem.setAttribute("microId", e.getAttribute("deviceId"));
-		}
-	});
+	// 	mics.forEach((e) => {
+		// 		if (e.checked) {
+			// 			elem.setAttribute("microId", e.getAttribute("deviceId"));
+		// 		}
+// 	});
 
-	let microId = elem.getAttribute("microId");
+	// 	let microId = elem.getAttribute("microId");
 
-	const updatedConstraints = {
-		...constraints,
-		video: {
-			deviceId: {
-				exact: deviceId,
-			},
-		},
-		audio: {
-			deviceId: {
-				exact: microId,
-			},
-		},
-	};
-	setMediaStream(updatedConstraints);
+	// 	const updatedConstraints = {
+		// 		...constraints,
+		// 		video: {
+			// 			deviceId: {
+				// 				exact: deviceId,
+			// 			},
+		// 		},
+		// 		audio: {
+			// 			deviceId: {
+				// 				exact: microId,
+			// 			},
+		// 		},
+	// 	};
+	// 	setMediaStream(updatedConstraints);
 
-	cameraOptions.classList.add("d-none");
+	// 	cameraOptions.classList.add("d-none");
 
-	document.querySelector("#optionMedia").classList.add("d-none");
-}
+	// 	document.querySelector("#optionMedia").classList.add("d-none");
+// }
 
-/** Chrono video
- * @author Elie
- * @constructor Demarrage de chrono de la video
- */
+// /** Chrono video
+//  * @author Elie
+//  * @constructor Demarrage de chrono de la video
+//  */
 
-function startChrono(elem, max = 60) {
-	let count = 0;
-	myInterval = setInterval(function () {
-		let h = 0;
-		let min = 0;
+// function startChrono(elem, max = 60) {
+// 	let count = 0;
+// 	myInterval = setInterval(function () {
+// 		let h = 0;
+// 		let min = 0;
 
-		if (count < max) {
-			if (count >= 60) {
-				h = Math.trunc(count / 60);
-				min = count - 60;
-				elem.innerHTML = h.toString().padStart(2, "0") + ":" + min.toString().padStart(2, "0");
-			} else {
-				elem.innerHTML = "00:" + count.toString().padStart(2, "0");
-			}
-			count++;
-		}
-	}, 1000);
-}
+// 		if (count < max) {
+// 			if (count >= 60) {
+// 				h = Math.trunc(count / 60);
+// 				min = count - 60;
+// 				elem.innerHTML = h.toString().padStart(2, "0") + ":" + min.toString().padStart(2, "0");
+// 			} else {
+// 				elem.innerHTML = "00:" + count.toString().padStart(2, "0");
+// 			}
+// 			count++;
+// 		}
+// 	}, 1000);
+// }
+
+// /**
+//  * @author Elie
+//  * @constructor affichage des boutons actions en bas de modal
+//  */
+// function writeFooterModal() {
+// 	let elem = `
+// 		<button class="btn btn-primary btn-sm" disabled=""><span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
+// 		<span role="status"> Enregistrement en cours...</span></button><button class="btn btn-danger btn-sm" onclick="document.querySelector(&quot;.btn_video_stop_avis&quot;).click()"><i class="fa-solid fa-stop"></i> Arrêter</button><button class="btn btn-secondary btn-sm close_mediarecorder" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis"> Annuler</button>
+// 	`;
+// 	document.querySelector("#spinCameraAvis").innerHTML = elem;
+// }
 
 /**
- * @author Elie
- * @constructor affichage des boutons actions en bas de modal
+ * @author faniry 
+ * nouveau avis audio
  */
-function writeFooterModal() {
-	let elem = `
-		<button class="btn btn-primary btn-sm" disabled=""><span class="spinner-grow spinner-grow-sm" aria-hidden="true"></span>
-		<span role="status"> Enregistrement en cours...</span></button><button class="btn btn-danger btn-sm" onclick="document.querySelector(&quot;.btn_video_stop_avis&quot;).click()"><i class="fa-solid fa-stop"></i> Arrêter</button><button class="btn btn-secondary btn-sm close_mediarecorder" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis"> Annuler</button>
-	`;
-	document.querySelector("#spinCameraAvis").innerHTML = elem;
+if(document.getElementById("star_faniry_audio_record_js")){
+	document.getElementById("star_faniry_audio_record_js").onclick=()=>{
+		const isUpdate= document.querySelector("#modalAvisLabel").textContent.includes("Modifier votre avis") ? true : false;
+		if (document.querySelector("#text-note").value === "") {
+			msgErrorAlertAvis({ message: "no content" });
+			return 0;
+		}else{
+			const url = new URL(window.location.href.toString());
+			let avisId=0;
+			if(isUpdate){
+				let bntSendAvis=document.querySelector(".send_avis_jheo_js")
+				avisId=parseInt(((bntSendAvis.getAttribute("onclick").replace(/[^0-9,]/g,""))
+						.split(",")[0]),10);
+				
+			}
+			
+			let note = document.querySelector("#text-note").value;
+			note = note.replace(/,/g, ".");
+			try {
+				mustBeInferior4(note, document.querySelector("#text-note"), true);
+			} catch (e) {
+				msgErrorAlertAvis(e);
+			}
+			$("#modalMicroOption").modal("show");
+			$("#modalAvis").modal("hide");
+			let canvas=document.querySelector(".visualizer_frequency");
+			let btnReocrderStar=document.querySelector('.record_faniry');
+			let btnReocrderStop=document.querySelector('.stop_faniry');
+			let soundClips=document.querySelector(".main-controls-dictaphone");
+			let detailsCoord=document.getElementById("details-coord")
+			if(document.querySelector(".clips_faniry_js"))
+				document.querySelector(".clips_faniry_js").innerHTML="";
+			//verfier si on est dans les tribu G;
+			if(url.pathname.includes("/user/account") ){
+				detailsCoord=document.querySelector(".send_avis_jheo_js")
+				
+				const audioRecorderInTribuG=new RecorderAudioTribug(
+					btnReocrderStar,
+					canvas,
+					btnReocrderStop,
+					soundClips,
+					detailsCoord,
+					note,
+					isUpdate,
+					avisId,
+					showListInTribuT,
+					openAvisRestoG,
+					openAvisGolfG,
+					fetchListAvisInTribuT,
+					updateViewState
+				)
+				audioRecorderInTribuG.initialize();
+				audioRecorderInTribuG.play();
+			}else if(url.pathname.includes("/user/tribu/my-tribu-t")){
+				detailsCoord=document.querySelector(".send_avis_jheo_js")
+				
+				const audioRecorderInTribuT=new RecorderAudioTrubuT(
+					btnReocrderStar,
+					canvas,
+					btnReocrderStop,
+					soundClips,
+					detailsCoord,
+					note,
+					isUpdate,
+					avisId,
+					showListInTribuT,
+					updateViewState,
+					fetchListAvisInTribuT
+				)
+				audioRecorderInTribuT.initialize();
+				audioRecorderInTribuT.play();
+			}else{
+				//si on est sur la carte
+				const showNoteGlobaleOnMarkerD =typeof showNoteGlobaleOnMarker== "function" ? showNoteGlobaleOnMarker : null;
+				let audioRecorder=new RecorderAudio(
+					btnReocrderStar,
+					canvas,
+					btnReocrderStop,
+					soundClips,
+					detailsCoord,
+					note,
+					isUpdate,
+					avisId,
+					showNoteGlobaleOnMarkerD,
+					createShowAvisAreas);
+				
+				audioRecorder.initialize();
+				audioRecorder.play();
+			}
+			//verifier si on est dans les tribuT
+		}
+	}
 }

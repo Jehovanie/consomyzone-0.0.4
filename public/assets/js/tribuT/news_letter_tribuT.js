@@ -38,97 +38,116 @@ function bindActionNewsLetterTribuT(tribuTName) {
 
 			///fetch details user and tribuT
 			fetch(`/tributT/new_letter_fans/${tribuTName}`)
-				.then((response) => response.json())
-				.then((response) => {
-					const { apropos_tribuT, user_profil } = response;
-					let logo_tribu = apropos_tribuT["avatar"]
-						? apropos_tribuT["avatar"]
-						: "/uploads/tribu_t/photo/avatar_tribu.jpg";
-
-					logo_tribu = IS_DEV_MODE ? logo_tribu : "/public" + logo_tribu;
-
-					let text = `
-			            <div class="bg-white rounded-3 px-3 2xl:ud-max-w-230 uf content_news_letter content_news_letter_partisans_tomm_js" data-new-letter="lettre-partisans">
-			                <div id="blockSendEmailInvitation" class="mt-4 px-3">
-			                    <form class="content_form_send_invitation_email_js_jheo">
-			                        <div class="form-group content_cc_css_jheo mt-3">
-			                            <div class="news_letter_entete">
-			                                <div class="new_letter_tribu_logo">
-			                                        <img src="${logo_tribu}" class="card-img-top" alt="tribu">
-			                                </div>
-			                                <h5 class="card-title">${apropos_tribuT.name}</h5>
-			                                <p class="card-text">${apropos_tribuT.description ? apropos_tribuT.description :""}</p>
-			                            </div>
-			                        </div>
-
-<div class="form-group content_cc_css_jheo mt-3">
-										<label for="exampleFormControlInput1">Destinataires<span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs destinataires.)</span><i class="fa-solid fa-plus ms-5 new-letter-select new-letter-select-tomm-js"  data-bs-toggle="modal" data-bs-target="#listUserModalLetter"><span class="tooltip-new-letter">Selectionner l'email dans un autre tribu</span></i></label>
-										<input type="text" class="form-control single_destination_js_jheo single-destination-tomm-js" id="exampleFormControlInput1" placeholder="Saisir les ou l'adresse(s) e-mail du destinataire">
+				.then((responses) =>{
+					if(responses.status=== 200 && responses.ok){
+						responses.json().then((response) => {
+							const { apropos_tribuT, user_profil } = response;
+							let logo_tribu = apropos_tribuT["avatar"]
+								? apropos_tribuT["avatar"]
+								: "/uploads/tribu_t/photo/avatar_tribu.jpg";
+		
+							logo_tribu = IS_DEV_MODE ? logo_tribu : "/public" + logo_tribu;
+		
+							let text = `
+								<div class="bg-white rounded-3 px-3 2xl:ud-max-w-230 uf content_news_letter content_news_letter_partisans_tomm_js" data-new-letter="lettre-partisans">
+									<div id="blockSendEmailInvitation" class="mt-4 px-3">
+										<form class="content_form_send_invitation_email_js_jheo">
+											<div class="form-group content_cc_css_jheo mt-3">
+												<div class="news_letter_entete">
+													<div class="new_letter_tribu_logo">
+															<img src="${logo_tribu}" class="card-img-top" alt="tribu">
+													</div>
+													<h5 class="card-title">${apropos_tribuT.name}</h5>
+													<p class="card-text">${apropos_tribuT.description ? apropos_tribuT.description :""}</p>
+												</div>
+											</div>
+		
+											<div class="form-group content_cc_css_jheo mt-3">
+												<label for="exampleFormControlInput1">Destinataires<span class="info_multiple_mail">(*Séparez par un espace ou une virgule si vous avez plusieurs destinataires.)</span><i class="fa-solid fa-plus ms-5 new-letter-select new-letter-select-tomm-js"  data-bs-toggle="modal" data-bs-target="#listUserModalLetter"><span class="tooltip-new-letter">Selectionner l'email dans un autre tribu</span></i></label>
+												<input type="text" class="form-control single_destination_js_jheo single-destination-tomm-js" id="exampleFormControlInput1" placeholder="Saisir les ou l'adresse(s) e-mail du destinataire">
+											</div>
+		
+											<div class="form-group content_cc_css_jheo mt-3 content-csv-letter">
+												<label class="label-csv-letter" for="exampleFormControlInput1">Destinataires<span class="info_multiple_mail">(*Par une fichier CSV.)</span> <i class="fa-regular fa-circle-question qestion-csv-letter" data-bs-toggle="modal" data-bs-target="#infoCsvModalLetter"></i></label>
+												<div class="drop_zone drop-zone-tomm-js">
+													<span class="drop-zone-prompt-tomm-js">Cliquez sur la bannière 
+																ou glissez le fichier ici directement.<br>
+																Le fichier doit avoir les colonnes Email - Nom - Prenom</span>
+													<input type="file" name="fileNewLetterShare" id="fileNewLetterShare" class="drop-zone-input drop-zone-input-tomm-js" accept='text/csv'>
+												</div>
+											</div>
+		
+											<div class="form-group content_objet_css_jheo mt-3">
+												<label for="newLetter_object_input">Objet</label>
+												<input type="text" class="form-control newLetter_object_jheo_js" id="newLetter_object_input" placeholder="Lettre d'information" value="Lettre d'information">
+											</div>
+		
+											<div class="form-group mt-3">
+												<label for="textContentInformationTribu_jheo_js">Description<span class="info_multiple_mail">(*Vous pouvez changer tout le corps de cette lettre.)</span></label>
+												<div>
+													<textarea cols="100" id="textContentInformationTribu_jheo_js">
+		
+													</textarea>
+												</div>
+											</div>
+		
+											<ul class="list-group content_list_piece_joint content_list_piece_joint_jheo_js d-none"></ul>
+		
+											<div class="d-flex justify-content-start align-items-center">
+												<div class="p-2 bd-highlight">
+													<button type="button" class="btn btn-primary btn_submit_sendNewsLetter_jheo_js my-3">Envoyer</button>
+												</div>
+												<div class="p-2 bd-highlight content_input_piece_joint content_input_piece_joint_jheo_js">
+													<div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajouter des pièce jointe.</div>
+													<label class="label_piece_joint_jheo_js" for="piece_joint_new_letter"><i class="label_piece_joint_jheo_js fa-solid fa-paperclip"></i></label>
+													<input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_new_letter" name="piece_joint_new_letter" onchange="addPieceJointNewsLetter(this)" />
+												</div>
+												<div class="p-2 bd-highlight content_input_piece_joint content_add_image_js">
+													<div class="pointer_cursor message_tooltip_piece_joint d-none add_image_jheo_js">Ajouter des images.</div>
+													<label class="pointer_cursor label_add_image_jheo_js" for="piece_joint_image_new_letter"><i class="fa-solid fa-image"></i></label>
+													<input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_image_new_letter" name="piece_joint_image_new_letter" accept="image/png, image/jpeg, image/jpg" onchange="addPieceJointImageNewsLetter(this)"/>
+												</div>
+											</div>
+										</form>
 									</div>
-
-									<div class="form-group content_cc_css_jheo mt-3 content-csv-letter">
-										<label class="label-csv-letter" for="exampleFormControlInput1">Destinataires<span class="info_multiple_mail">(*Par une fichier CSV.)</span> <i class="fa-regular fa-circle-question qestion-csv-letter" data-bs-toggle="modal" data-bs-target="#infoCsvModalLetter"></i></label>
-										<div class="drop_zone drop-zone-tomm-js">
-											<span class="drop-zone-prompt-tomm-js">Cliquez sur la bannière 
-														ou glissez le fichier ici directement.<br>
-														Le fichier doit avoir les colonnes Email - Nom - Prenom</span>
-											<input type="file" name="fileNewLetterShare" id="fileNewLetterShare" class="drop-zone-input drop-zone-input-tomm-js" accept='text/csv'>
-			                            </div>
-			                        </div>
-
-			                        <div class="form-group content_objet_css_jheo mt-3">
-			                            <label for="newLetter_object_input">Objet</label>
-			                            <input type="text" class="form-control newLetter_object_jheo_js" id="newLetter_object_input" placeholder="Lettre d'information" value="Lettre d'information">
-			                        </div>
-
-			                        <div class="form-group mt-3">
-			                            <label for="textContentInformationTribu_jheo_js">Description<span class="info_multiple_mail">(*Vous pouvez changer tout le corps de cette lettre.)</span></label>
-			                            <div>
-			                                <textarea cols="100" id="textContentInformationTribu_jheo_js">
-
-			                                </textarea>
-			                            </div>
-			                        </div>
-
-			                        <ul class="list-group content_list_piece_joint content_list_piece_joint_jheo_js d-none"></ul>
-
-			                        <div class="d-flex justify-content-start align-items-center">
-			                            <div class="p-2 bd-highlight">
-			                                <button type="button" class="btn btn-primary btn_submit_sendNewsLetter_jheo_js my-3">Envoyer</button>
-			                            </div>
-			                            <div class="p-2 bd-highlight content_input_piece_joint content_input_piece_joint_jheo_js">
-			                                <div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajout des pièce jointe.</div>
-			                                <label class="label_piece_joint_jheo_js" for="piece_joint_new_letter"><i class="label_piece_joint_jheo_js fa-solid fa-paperclip"></i></label>
-			                                <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_new_letter" name="piece_joint_new_letter" onchange="addPieceJointNewsLetter(this)" />
-			                            </div>
-			                            <div class="p-2 bd-highlight content_input_piece_joint content_add_image_js">
-			                                <div class="pointer_cursor message_tooltip_piece_joint d-none add_image_jheo_js">Ajout des images.</div>
-			                                <label class="pointer_cursor label_add_image_jheo_js" for="piece_joint_image_new_letter"><i class="fa-solid fa-image"></i></label>
-			                                <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_image_new_letter" name="piece_joint_image_new_letter" accept="image/png, image/jpeg, image/jpg" onchange="addPieceJointImageNewsLetter(this)"/>
-			                            </div>
-			                        </div>
-			                    </form>
-			                </div>
-			            </div>
-			    	`;
-
-					tribuTContainer.innerHTML = text;
-					initCKEditor("textContentInformationTribu_jheo_js", showTextInformationFans, {
-						data: { user_profil, apropos_tribuT },
-					});
-
-					///hover tooltip piece joint, ...
-					displayTooltipHelpMsg();
-
-					///send action
-					handleSubmitSendNewsLetter(tribuTName);
-selectDestinationLetter()
-					const form_parent = document.querySelector(".content_form_send_invitation_email_js_jheo");
-					const input_principal = form_parent.querySelector(".single_destination_js_jheo");
-					controlInputEmailToMultiple([input_principal]);
-					clickInputCsvLetter()
-					
-				});
+								</div>
+							`;
+		
+							tribuTContainer.innerHTML = text;
+							initCKEditor("textContentInformationTribu_jheo_js", showTextInformationFans, {
+								data: { user_profil, apropos_tribuT },
+							});
+		
+							///hover tooltip piece joint, ...
+							displayTooltipHelpMsg();
+		
+							///send action
+							handleSubmitSendNewsLetter(tribuTName);
+								selectDestinationLetter()
+							const form_parent = document.querySelector(".content_form_send_invitation_email_js_jheo");
+							const input_principal = form_parent.querySelector(".single_destination_js_jheo");
+							controlInputEmailToMultiple([input_principal]);
+							clickInputCsvLetter()
+							
+						});
+					}else{
+						new swal({
+							title:"Erreur 401",
+							text:"Vous n'êtes pas autorisé à accéder à cette option.",
+							icon:"error"
+						})
+					}
+				}).catch((error) => {
+					new swal({
+						title:"Erreur 500",
+						text:"Veuillez contacter l'administrateur du site.",
+						icon:"error"
+					})
+				}); 
+				                   
+				
+				
+				
 		});
 	}
 }
@@ -217,7 +236,7 @@ function showTextInformationFans(showTextOption) {
 
 	// let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
 	return (html = `
-                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chers tous,</span> </br>
+                <span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cher tous,</span> </br>
                 <p>
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Un nouveau membre vient de rejoindre notre tribu.
 					C'est une histoire, une expérience qui renforcent l'enthousiasme de notre communauté.

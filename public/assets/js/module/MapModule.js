@@ -184,10 +184,10 @@ class MapModule {
 			zoom: this.id_dep
 				? this.defaultZoom
 				: lat && long && zoom
-				? zoom
-				: memoryCenter
-				? memoryCenter.zoom
-				: this.defaultZoom,
+					? zoom
+					: memoryCenter
+						? memoryCenter.zoom
+						: this.defaultZoom,
 			// zoom: memoryCenter ?  memoryCenter.zoom : this.defaultZoom,
 			layers: [this.tiles],
 		});
@@ -260,9 +260,11 @@ class MapModule {
 
 	async settingGeos() {
 		let number_etablisement = null;
+
 		const current_url = new URL(window.location.href);
 		if (current_url.href.includes("search")) {
 			const data = this.data.results[0];
+
 			number_etablisement = {
 				type: "search",
 				departement: "0",
@@ -391,7 +393,7 @@ class MapModule {
 				fillOpacity: 0,
 			},
 			onEachFeature: (feature, layer) => {
-			const details_html =
+				const details_html =
 					feature.properties.hasOwnProperty("details") && feature.properties.details != null
 						? `
 						<span class="badge rounded-pill bg-secondary">R:${feature.properties.details.resto}</span>
@@ -399,6 +401,7 @@ class MapModule {
 						<span class="badge rounded-pill bg-danger">S:${feature.properties.details.station}</span>
 						<span class="badge rounded-pill bg-light text-black">G:${feature.properties.details.golf}</span>
 						<span class="badge rounded-pill bg-dark">T:${feature.properties.details.tabac}</span>
+<span class="badge rounded-pill bg-dark">M:${feature.properties.details.marche}</span>
 					`
 						: "";
 
@@ -647,9 +650,9 @@ class MapModule {
 				el.setAttribute("draggable", "true");
 				return el;
 			},
-			onRemove: function (map) {},
-			onClick: () => {},
-			onDragend: () => {},
+			onRemove: function (map) { },
+			onClick: () => { },
+			onDragend: () => { },
 		});
 
 		L.control.myControl = function (opts) {
@@ -953,9 +956,9 @@ class MapModule {
 
 				return el;
 			},
-			onRemove: function (map) {},
-			onClick: () => {},
-			onDragend: () => {},
+			onRemove: function (map) { },
+			onClick: () => { },
+			onDragend: () => { },
 		});
 
 		L.control.myControl2 = function (opt2) {
@@ -996,11 +999,11 @@ class MapModule {
 
 				return el;
 			},
-			onRemove: function (map) {},
+			onRemove: function (map) { },
 			onClick: () => {
 				console.log("toto");
 			},
-			onDragend: () => {},
+			onDragend: () => { },
 		});
 
 		L.control.myControl3 = function (opt3) {
@@ -1092,37 +1095,37 @@ class MapModule {
 		if (this.mapForType === "resto" || this.mapForType === "tous") {
 			favory_rubrique = `
 				${this.createBtnControl(
-					"favoris_elie_js",
-					"fa-regular fa-bookmark",
-					"btn btn-dark p-3 pt-1 pb-1",
-					"Mes favoris géographiques."
-				)}
+				"favoris_elie_js",
+				"fa-regular fa-bookmark",
+				"btn btn-dark p-3 pt-1 pb-1",
+				"Mes favoris géographiques."
+			)}
 			`;
 		}
 
 		let htmlControl = `
             ${favory_rubrique}
             ${this.createBtnControl(
-				"tiles_type_jheo_js",
-				"fa-solid fa-layer-group",
-				"btn btn-warning",
-				"Sélectionner un type de carte."
-			)}
+			"tiles_type_jheo_js",
+			"fa-solid fa-layer-group",
+			"btn btn-warning",
+			"Sélectionner un type de carte."
+		)}
             ${this.createBtnControl(
-				"couche_tabac_jheo_js",
-				"fa-brands fa-connectdevelop",
-				"btn btn-primary",
-				"Listes des contours géographiques."
-			)}
+			"couche_tabac_jheo_js",
+			"fa-brands fa-connectdevelop",
+			"btn btn-primary",
+			"Listes des contours géographiques."
+		)}
         `;
 		if (this.mapForType === "golf") {
 			htmlControl += `
                 ${this.createBtnControl(
-					"info_golf_jheo_js",
-					"fa-solid fa-circle-question",
-					"btn btn-info",
-					"Légende des icônes sur la carte."
-				)}
+				"info_golf_jheo_js",
+				"fa-solid fa-circle-question",
+				"btn btn-info",
+				"Légende des icônes sur la carte."
+			)}
             `;
 			//     <button class="btn btn-info" data-type="info_golf_jheo_js" style="font-size: 1.1rem;">
 			//         <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
@@ -1130,17 +1133,17 @@ class MapModule {
 		} else if (this.mapForType === "resto") {
 			htmlControl += `
                 ${this.createBtnControl(
-					"info_resto_jheo_js",
-					"fa-solid fa-circle-question",
-					"btn btn-info",
-					"Légende des icônes sur la carte."
-				)}
+				"info_resto_jheo_js",
+				"fa-solid fa-circle-question",
+				"btn btn-info",
+				"Légende des icônes sur la carte."
+			)}
                 ${this.createBtnControl(
-					"resto_pastille_jheo_js",
-					"fa-solid fa-location-dot fa-flip text-danger",
-					"btn btn-light",
-					"Liste des restaurants pastilles."
-				)}
+				"resto_pastille_jheo_js",
+				"fa-solid fa-location-dot fa-flip text-danger",
+				"btn btn-light",
+				"Liste des restaurants pastilles."
+			)}
             `;
 			// <button class="btn btn-info" data-type="info_resto_jheo_js" style="font-size: 1.1rem;">
 			//     <i class="fa-solid fa-circle-question" data-type="info_resto_jheo_js"></i>
@@ -1151,17 +1154,17 @@ class MapModule {
 		} else if (this.mapForType === "tous") {
 			htmlControl += `
                 ${this.createBtnControl(
-					"info_tous_jheo_js",
-					"fa-solid fa-circle-question",
-					"btn btn-info",
-					"Légende des icônes sur la carte."
-				)}
+				"info_tous_jheo_js",
+				"fa-solid fa-circle-question",
+				"btn btn-info",
+				"Légende des icônes sur la carte."
+			)}
                 ${this.createBtnControl(
-					"resto_pastille_jheo_js",
-					"fa-solid fa-location-dot fa-flip text-danger",
-					"btn btn-light",
-					"Liste des restaurants pastilles."
-				)}
+				"resto_pastille_jheo_js",
+				"fa-solid fa-location-dot fa-flip text-danger",
+				"btn btn-light",
+				"Liste des restaurants pastilles."
+			)}
             `;
 			// <button class="btn btn-info" data-type="info_tous_jheo_js" style="font-size: 1.1rem;">
 			//     <i class="fa-solid fa-circle-question" data-type="info_tous_jheo_js"></i>
@@ -1172,11 +1175,11 @@ class MapModule {
 		} else if (this.mapForType === "station") {
 			htmlControl += `
                 ${this.createBtnControl(
-					"info_station_jheo_js",
-					"fa-solid fa-circle-question",
-					"btn btn-info",
-					"Légende des icônes sur la carte."
-				)}
+				"info_station_jheo_js",
+				"fa-solid fa-circle-question",
+				"btn btn-info",
+				"Légende des icônes sur la carte."
+			)}
             `;
 			// <button class="btn btn-info" data-type="info_station_jheo_js" style="font-size: 1.1rem;">
 			//     <i class="fa-solid fa-circle-question" data-type="info_station_jheo_js"></i>
@@ -1184,11 +1187,11 @@ class MapModule {
 		} else if (this.mapForType === "ferme") {
 			htmlControl += `
                 ${this.createBtnControl(
-					"info_ferme_jheo_js",
-					"fa-solid fa-circle-question",
-					"btn btn-info",
-					"Légende des icônes sur la carte."
-				)}
+				"info_ferme_jheo_js",
+				"fa-solid fa-circle-question",
+				"btn btn-info",
+				"Légende des icônes sur la carte."
+			)}
             `;
 			// <button class="btn btn-info" data-type="info_ferme_jheo_js" style="font-size: 1.1rem;">
 			//     <i class="fa-solid fa-circle-question" data-type="info_ferme_jheo_js"></i>
@@ -1196,11 +1199,11 @@ class MapModule {
 		} else if (this.mapForType === "tabac") {
 			htmlControl += `
                 ${this.createBtnControl(
-					"info_tabac_jheo_js",
-					"fa-solid fa-circle-question",
-					"btn btn-info",
-					"Légende des icônes sur la carte."
-				)}
+				"info_tabac_jheo_js",
+				"fa-solid fa-circle-question",
+				"btn btn-info",
+				"Légende des icônes sur la carte."
+			)}
             `;
 			// <button class="btn btn-info" data-type="info_tabac_jheo_js" style="font-size: 1.1rem;">
 			//     <i class="fa-solid fa-circle-question" data-type="info_tabac_jheo_js"></i>
@@ -1209,23 +1212,23 @@ class MapModule {
 
 		htmlControl += `
             ${this.createBtnControl(
-				"reset_zoom_jheo_js",
-				"fa-solid fa-arrows-rotate",
-				"btn btn-dark",
-				"Réstaure le niveau de zoom en position initiale."
-			)}
+			"reset_zoom_jheo_js",
+			"fa-solid fa-arrows-rotate",
+			"btn btn-dark",
+			"Réstaure le niveau de zoom en position initiale."
+		)}
             ${this.createBtnControl(
-				"cart_before_jheo_js",
-				"fa-solid fa-backward fa-fade cart_before_jheo_js",
-				"btn btn-outline-danger",
-				"Voir la carte en position précedente."
-			)}
+			"cart_before_jheo_js",
+			"fa-solid fa-backward fa-fade cart_before_jheo_js",
+			"btn btn-outline-danger",
+			"Voir la carte en position précedente."
+		)}
             ${this.createBtnControl(
-				"cart_after_jheo_js",
-				"fa-solid fa-forward fa-fade cart_after_jheo_js",
-				"btn btn-outline-danger",
-				"Voir la carte en position avant."
-			)}
+			"cart_after_jheo_js",
+			"fa-solid fa-forward fa-fade cart_after_jheo_js",
+			"btn btn-outline-danger",
+			"Voir la carte en position avant."
+		)}
             `;
 		L.control
 			.custom({
@@ -1472,7 +1475,7 @@ class MapModule {
 					document.querySelector(".title_right_side_jheo_js").innerText =
 						"Listes des contours géographiques.";
 					this.injectChooseCouche();
-                } // Edited by Elie 24/01/2024
+				} // Edited by Elie 24/01/2024
 				else if (rightSideContentType === "favoris_elie_js") {
 					document.querySelector(".title_right_side_jheo_js").innerText =
 						"Liste de mes favoris géographiques.";
@@ -1595,9 +1598,8 @@ class MapModule {
 			tilesSelectHTML += `
                 <div class="form-check">
                     <span class="leaflet-minimap-label">
-                        <input type="radio" id="${item.id}" class="leaflet-control-layers-selector ID_${
-				item.id
-			}" name="leaflet-base-layers" ${item.isCurrent ? "checked" : ""}>
+                        <input type="radio" id="${item.id}" class="leaflet-control-layers-selector ID_${item.id
+				}" name="leaflet-base-layers" ${item.isCurrent ? "checked" : ""}>
                         <label class="" for="${item.id}">${item.name.toUpperCase()}</label>
                     </span>
                 </div>
@@ -1947,9 +1949,8 @@ class MapModule {
 				className: "my-div-icon",
 				html: ` 
                             <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
-                            background-color:${
-								noteMoyenne < 2 ? "red" : noteMoyenne == 2 ? "orange" : "green"
-							};color:white;
+                            background-color:${noteMoyenne < 2 ? "red" : noteMoyenne == 2 ? "orange" : "green"
+					};color:white;
                             border-radius: 50%;">${noteMoyenne}</span>
                         <img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
                         `,
@@ -1984,13 +1985,11 @@ class MapModule {
                     <span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
                     background-color:${noteMoyenne < 2 ? "red" : noteMoyenne == 2 ? "orange" : "green"};color:white;
                     border-radius: 50%;">${noteMoyenne}</span>
-                  <img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${
-							isSelected ? poi_icon_Selected : poi_icon
-					  }"/>
+                  <img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon
+					}"/>
                    `
-					: `<img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${
-							isSelected ? poi_icon_Selected : poi_icon
-					  }"/>
+					: `<img class="my-div-image" style="width:${w}px ; height:${h}px" src="/public/${isSelected ? poi_icon_Selected : poi_icon
+					}"/>
                    `,
 			//iconSize:(taille === 0 ) ?  [30,45] : ( taille === 1) ? [35, 55] : [45, 60],
 			iconAnchor: [11, 30],
@@ -2280,7 +2279,7 @@ class MapModule {
 					}
 				}
 			});
-					}
+		}
 		// else {
 		// 	/** CONSTRUCTION DE LA LISTE DE DONNEE QUI DOIT AFFICHER DANS LA CARTE */
 		// 	/** en utilisant le ratio et le dataMax obtenu dans le var objectRatioAndDataMax */
@@ -2400,11 +2399,12 @@ class MapModule {
 		if (Array.isArray(this.default_data)) {
 			default_data = this.default_data;
 		} else if (this.default_data.hasOwnProperty("ferme") && this.default_data.hasOwnProperty("resto")) {
-			default_data = default_data.concat(this.default_data.ferme);
-			default_data = default_data.concat(this.default_data.station);
+			default_data = default_data.concat(this.default_data.marche);
 			default_data = default_data.concat(this.default_data.resto);
 			default_data = default_data.concat(this.default_data.golf);
+            default_data = default_data.concat(this.default_data.ferme);
 			default_data = default_data.concat(this.default_data.tabac);
+            default_data = default_data.concat(this.default_data.station);
 		} else if (
 			this.default_data.hasOwnProperty("results") &&
 			this.default_data.hasOwnProperty("cles0") &&
@@ -2925,6 +2925,63 @@ class MapModule {
 			user_status = { ...user_status, mon_golf: true };
 		}
 		return user_status;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 * @deplaced from MarkerClusterResto
+	 *
+	 * Goal: Create special markerClusterGroup for the count etablisement per dep.
+	 *
+	 * I call this on onInit function inside child
+	 */
+	createMarkersCluster() {
+		this.markers = L.markerClusterGroup({
+			chunkedLoading: true,
+			chunkInterval: 500,
+			chunkDelay: 100,
+			maxClusterRadius: 80, //A cluster will cover at most this many pixels from its center
+			clusterPane: L.Marker.prototype.options.pane,
+			spiderfyOnMaxZoom: true,
+			disableClusteringAtZoom: true,
+		});
+
+		// const that = this;
+		// this.markers = L.markerClusterGroup({
+		// 	chunkedLoading: true,
+		// 	disableClusteringAtZoom: 7,
+		// 	iconCreateFunction: function (cluster) {
+		// 		console.log(cluster);
+		// 		if (that.marker_last_selected) {
+		// 			let sepcMarmerIsExist = false;
+		// 			for (let g of cluster.getAllChildMarkers()) {
+		// 				if (parseInt(that.marker_last_selected.options.id) === parseInt(g.options.id)) {
+		// 					sepcMarmerIsExist = true;
+		// 					break;
+		// 				}
+		// 			}
+		// 			if (sepcMarmerIsExist) {
+		// 				return L.divIcon({
+		// 					html: '<div class="markers-spec" id="c">' + cluster.getChildCount() + "</div>",
+		// 					className: "spec_cluster",
+		// 					iconSize: L.point(35, 35),
+		// 				});
+		// 			} else {
+		// 				return L.divIcon({
+		// 					html: '<div class="markers_tommy_js">' + cluster.getChildCount() + "</div>",
+		// 					className: "mycluster",
+		// 					iconSize: L.point(35, 35),
+		// 				});
+		// 			}
+		// 		} else {
+		// 			return L.divIcon({
+		// 				html: '<div class="markers_tommy_js">' + cluster.getChildCount() + "</div>",
+		// 				className: "mycluster",
+		// 				iconSize: L.point(35, 35),
+		// 			});
+		// 		}
+		// 	},
+		// });
 	}
 
 	/**

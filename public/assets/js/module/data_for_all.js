@@ -6,6 +6,7 @@ const all_instances = [
 	{ name: "search", value: typeof OBJECT_MARKERS_SEARCH !== "undefined" ? OBJECT_MARKERS_SEARCH : null },
 	{ name: "station", value: typeof OBJECT_MARKERS_STATION !== "undefined" ? OBJECT_MARKERS_STATION : null },
 	{ name: "resto", value: typeof OBJECT_MARKERS_RESTO !== "undefined" ? OBJECT_MARKERS_RESTO : null },
+	{ name: "marche", value: typeof OBJECT_MARKERS_MARCHE !== "undefined" ? OBJECT_MARKERS_MARCHE : null },
 ];
 
 const data = all_instances.find((item) => item.value !== null);
@@ -39,14 +40,13 @@ function generateSelectContoursGeographie(couche, data, itemsSelected = []) {
 
 		all_select_HTML += `
             <div class="form-check">
-                <input class="form-check-input" type="checkbox" id="${
-					couche + "_" + nom_reg + "_" + index
-				}" onchange="updateGeoJson('${couche}', '${index}', this)" ${isSelected ? "checked" : ""}>
+                <input class="form-check-input" type="checkbox" id="${couche + "_" + nom_reg + "_" + index
+			}" onchange="updateGeoJson('${couche}', '${index}', this)" ${isSelected ? "checked" : ""}>
                 <label class="form-check-label text-black" for="${couche + "_" + nom_reg + "_" + index}">
                     ${nom_reg
-						.split(" ")
-						.map((item) => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase())
-						.join(" ")} 
+				.split(" ")
+				.map((item) => item.charAt(0).toUpperCase() + item.slice(1).toLowerCase())
+				.join(" ")} 
                 </label>
             </div>
         `;
@@ -442,32 +442,32 @@ function itemRestoPastielle(numeroIndices, depName, dep, name, id, icon) {
  */
 function itemRestoPastielleV2(name, tribu) {
 	let item;
-	let tribu_htm = ''
+	let tribu_htm = "";
 
-	let nb_tribu = tribu.length
+	let nb_tribu = tribu.length;
 
-	item = tribu[0]
+	item = tribu[0];
 
 	let logo_path = item.logo_path ? item.logo_path : "/uploads/tribu_t/photo/avatar_tribu.jpg";
 	logo_path = IS_DEV_MODE ? logo_path : "/public" + logo_path;
 
-	let default_name_muable = !item.name_tribu_t_muable ? item.tableName.replace('tribu_t_','').replace('tribug_','').replace('_restaurant','').replace(/[0-9]_/g, '').replace('_',' ') : item.name_tribu_t_muable
+	let default_name_muable = !item.name_tribu_t_muable ? item.tableName.replace('tribu_t_', '').replace('tribug_', '').replace('_restaurant', '').replace(/[0-9]_/g, '').replace('_', ' ') : item.name_tribu_t_muable
 
-	let default_name = `Tribu ${item.tableName.includes("tribu_t")?"T":"G"} ${default_name_muable}` + (nb_tribu > 1?` et ${nb_tribu-1} autre(s) tribu(s)`:"")
-	
-	for(let t of tribu){
+	let default_name = `Tribu ${item.tableName.includes("tribu_t") ? "T" : "G"} ${default_name_muable}` + (nb_tribu > 1 ? ` et ${nb_tribu - 1} autre(s) tribu(s)` : "")
 
-		let type = t.tableName.includes("tribu_t")?"T":"G"
+	for (let t of tribu) {
 
-		let name_muable = (!t.name_tribu_t_muable) ? t.tableName.replace('tribu_t_','').replace('tribug_','').replace('_restaurant','').replace(/[0-9]_/g, '').replace('_',' ').replace('0','')  : t.name_tribu_t_muable
-		
-		name_muable = name_muable.replace('undefined','').replace('_restaurant','')
+		let type = t.tableName.includes("tribu_t") ? "T" : "G"
+
+		let name_muable = (!t.name_tribu_t_muable) ? t.tableName.replace('tribu_t_', '').replace('tribug_', '').replace('_restaurant', '').replace(/[0-9]_/g, '').replace('_', ' ').replace('0', '') : t.name_tribu_t_muable
+
+		name_muable = name_muable.replace('undefined', '').replace('_restaurant', '')
 
 		let name_tribu = `Tribu ${type} ${name_muable}`
 
-		let log = t.logo_path?t.logo_path:"/uploads/tribu_t/photo/avatar_tribu.jpg"
+		let log = t.logo_path ? t.logo_path : "/uploads/tribu_t/photo/avatar_tribu.jpg"
 
-		tribu_htm +=`<a href="#" data-name="${name_tribu}" onclick="openModalDetailPastille(this)" class="list-group-item list-group-item-action d-flex align-items-center tribu_${type}" data-bs-toggle="modal" data-bs-target="#modalCreatePopUp">
+		tribu_htm += `<a href="#" data-name="${name_tribu}" onclick="openModalDetailPastille(this)" class="list-group-item list-group-item-action d-flex align-items-center tribu_${type}" data-bs-toggle="modal" data-bs-target="#modalCreatePopUp">
 			<img class="icon_resto_legend" data-name="${name_tribu}" style="clip-path:circle()" src="/public${log}" alt="Icon Resto">
 			<label class="ms-2">${name_tribu}</label>
 		</a>`
@@ -477,19 +477,15 @@ function itemRestoPastielleV2(name, tribu) {
         <tr>
 			<td class="td_pastille d-flex flex-column">
                 <div class="d-flex position-relative align-items-center">
-					<img class="icon_resto_legend cursor-pointer" data-bs-placement="top" title="${default_name}"style="clip-path:circle()" src="${logo_path}" alt="Icon Resto" data-bs-toggle="collapse" data-bs-target="#collapseExample${
-		item.id
-	}">
-					${
-						nb_tribu > 1
-							? `<span class="other_nb_tribu" data-bs-toggle="collapse" data-bs-target="#collapseExample${
-									item.id
-							  }">+${nb_tribu - 1}</span>`
-							: ""
-					}
-					<a href="#" class="link-primary ms-4" onclick="getDetailFromListRight('${item.depName}', '${item.dep}', '${
-		item.id
-	}')">${name}</a>
+					<img class="icon_resto_legend cursor-pointer" data-bs-placement="top" title="${default_name}"style="clip-path:circle()" src="${logo_path}" alt="Icon Resto" data-bs-toggle="collapse" data-bs-target="#collapseExample${item.id
+		}">
+					${nb_tribu > 1
+			? `<span class="other_nb_tribu" data-bs-toggle="collapse" data-bs-target="#collapseExample${item.id
+			}">+${nb_tribu - 1}</span>`
+			: ""
+		}
+					<a href="#" class="link-primary ms-4" onclick="getDetailFromListRight('${item.depName}', '${item.dep}', '${item.id
+		}')">${name}</a>
 				</div>
 				<div class="collapse list-group" id="collapseExample${item.id}">${tribu_htm}</div>
             </td>
@@ -500,10 +496,10 @@ function itemRestoPastielleV2(name, tribu) {
 }
 
 function dataListMarker(data) {
-const result = Object.groupBy(data, ({ id }) => id);
+	const result = Object.groupBy(data, ({ id }) => id);
 	let dataTable = "";
 	// data.forEach((item, index) => {
-		// 	dataTable += itemRestoPastielle(index, item.depName, item.dep, item.name, item.id, item.logo_path, item.name_tribu_t_muable);
+	// 	dataTable += itemRestoPastielle(index, item.depName, item.dep, item.name, item.id, item.logo_path, item.name_tribu_t_muable);
 	// });
 
 	/** Edited by Elie */
@@ -527,7 +523,7 @@ function injectListMarker(data, isInSearch = false) {
 		data.length > 0
 			? dataListMarker(data)
 			: document.querySelector(".cta_to_actualite_jheo_js")
-			? `
+				? `
         <tr>
             <td colspan="3">
                 <div class="alert alert-info text-center" role="alert">
@@ -536,7 +532,7 @@ function injectListMarker(data, isInSearch = false) {
             </td>
         </tr>
     `
-			: `
+				: `
         <tr>
             <td colspan="3">
                 <div class="alert alert-danger text-center" role="alert">
@@ -570,7 +566,7 @@ function getDetailFromListRight(nom_dep, id_dep, id_resto) {
 	id_resto = parseFloat(id_resto);
 	if (CURRENT_MAP_INSTANCE.checkIsExist(id_resto)) {
 		CURRENT_MAP_INSTANCE.clickOnMarker(id_resto);
-    } else {
+	} else {
 		CURRENT_MAP_INSTANCE.fetchOneData(id_resto);
 	}
 }
@@ -688,8 +684,8 @@ function makeUserModifResto(e) {
 		if (response.status === 201) {
 			swal(
 				"Votre modification a été prise en compte. " +
-					"Nous procédons à des vérifications et vous recontacterons prochainement. " +
-					"Merci."
+				"Nous procédons à des vérifications et vous recontacterons prochainement. " +
+				"Merci."
 			).then(() => {
 				e.target.textContent = "Modifier";
 				e.target.disabled = false;
@@ -712,52 +708,56 @@ function makeUserModifResto(e) {
 	});
 }
 
-function updataMarkerIntCarte(idItem) {}
+function updataMarkerIntCarte(idItem) { }
 
-function dockFicheRubrique(nombre=10){
-	let closeDetailElement = document.querySelector(".close_details_jheo_js")
-	let markerInfo = CURRENT_MAP_INSTANCE.marker_last_selected.options
-	let idRubrique = markerInfo.id
-	let typeRubrique = markerInfo.type ? markerInfo.type : "none"
-	closeDetailElement.click()
-let divParent = document.createElement("div")
-let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim()
-	if(nombre > 1){
-		let containerIcones = document.querySelector(".container-icones")
+function dockFicheRubrique(nombre = 10) {
+	let markerInfo = CURRENT_MAP_INSTANCE.marker_last_selected.options;
+	let idRubrique = markerInfo.id;
+	let typeRubrique = markerInfo.type ? markerInfo.type : "none";
 
-		if(containerIcones){
+	let closeDetailElement = document.querySelector(".close_details_jheo_js");
+	closeDetailElement.click();
 
-			let listeIcones = document.querySelectorAll(".liste-icones-dock")
+	let divParent = document.createElement("div");
+	let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim();
+	if (nombre > 1) {
+		let containerIcones = document.querySelector(".container-icones");
+
+		if (containerIcones) {
+let listeIcones = document.querySelectorAll(".liste-icones-dock");
 			let listeIconesLength = listeIcones.length;
-			createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, listeIconesLength,containerIcones)
-		}else{
-			let newDivContainer = document.createElement("div")
-			newDivContainer.setAttribute("class", "leaflet-control container-icones d-none")
+			createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, listeIconesLength, containerIcones);
+		} else {
+			let newDivContainer = document.createElement("div");
+			newDivContainer.setAttribute("class", "leaflet-control container-icones d-none");
 
-		let btnId = ""
-			if(typeRubrique != "none"){
-		
-		btnId = "dockableBtn_" + typeRubrique + "_" + idRubrique
-				if(document.querySelector("#"+btnId) === null){
-					newDivContainer.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
-			<i class="fa-solid fa-file"></i>
-			</button>`
+			let btnId = "";
+			if (typeRubrique != "none") {
+btnId = "dockableBtn_" + typeRubrique + "_" + idRubrique;
+				if (document.querySelector("#" + btnId) === null) {
+					newDivContainer.innerHTML += `
+						<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+							<i class="fa-solid fa-file"></i>
+						</button>
+				`;
 				}
-			}else{
-				btnId = "dockableBtn_" + idRubrique
-				if(document.querySelector("#"+btnId) === null){
-					newDivContainer.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
-										<i class="fa-solid fa-file"></i>
-		</button>`
-}
+			} else {
+				btnId = "dockableBtn_" + idRubrique;
+				if (document.querySelector("#" + btnId) === null) {
+					newDivContainer.innerHTML += `
+						<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+							<i class="fa-solid fa-file"></i>
+						</button>
+					`;
+				}
 			}
 
-		document.querySelector(".leaflet-top.leaflet-right").appendChild(newDivContainer)
+			document.querySelector(".leaflet-top.leaflet-right").appendChild(newDivContainer);
 
-		createDockableIcon(divParent, idRubrique, typeRubrique)
+			createDockableIcon(divParent, idRubrique, typeRubrique);
 		}
 
-}else{
+	} else {
 
 		createDockableIcon(divParent, idRubrique, typeRubrique)
 
@@ -765,31 +765,31 @@ let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim()
 	}
 
 	CURRENT_MAP_INSTANCE.bindTooltipsDockOnHover()
-	
+
 }
 
-function reAfficherFiche(element, idRubrique, typeRubrique){
-let iconeId = ""
-	if(typeRubrique != "none"){
+function reAfficherFiche(element, idRubrique, typeRubrique) {
+	let iconeId = ""
+	if (typeRubrique != "none") {
 		iconeId = "dockableBtn_" + typeRubrique + "_" + idRubrique
-		if(document.querySelector("#"+iconeId))
-			document.querySelector("#"+iconeId).remove()
-	}else{
-		
+		if (document.querySelector("#" + iconeId))
+			document.querySelector("#" + iconeId).remove()
+	} else {
+
 		iconeId = "dockableBtn_" + idRubrique
-		if(document.querySelector("#"+iconeId))
-			document.querySelector("#"+iconeId).remove()
+		if (document.querySelector("#" + iconeId))
+			document.querySelector("#" + iconeId).remove()
 	}
 
 	element.remove()
-	
+
 	removeOrEditSpecificElement()
 
-	if(typeRubrique != "none"){
+	if (typeRubrique != "none") {
 		if (CURRENT_MAP_INSTANCE.checkIsExist(idRubrique, typeRubrique)) {
 			CURRENT_MAP_INSTANCE.clickOnMarker(idRubrique, typeRubrique);
-		}	
-	}else{
+		}
+	} else {
 
 		if (CURRENT_MAP_INSTANCE.checkIsExist(idRubrique)) {
 			CURRENT_MAP_INSTANCE.clickOnMarker(idRubrique);
@@ -797,84 +797,83 @@ let iconeId = ""
 	}
 }
 
-function removeOrEditSpecificElement(){
-	if(document.querySelector(".container-icones")){
-		if(document.querySelector(".container-icones").children.length == 0)
+function removeOrEditSpecificElement() {
+	if (document.querySelector(".container-icones")) {
+		if (document.querySelector(".container-icones").children.length == 0)
 			document.querySelector(".container-icones").remove()
 	}
 	let dockDetail = document.querySelector(".dockableDetail")
-	if(dockDetail){
+	if (dockDetail) {
 		let iconesNumber = document.querySelector(".dockableDetail > button").textContent.replace(/\D/g, "")
 		iconesNumber != "" ? parseInt(iconesNumber) : 0
-		if(iconesNumber > 0){
+		if (iconesNumber > 0) {
 			iconesNumber = document.querySelectorAll('[id^="dockableBtn_"]').length;
-			if(iconesNumber >= 1){
-				if(iconesNumber > 1){
+			if (iconesNumber >= 1) {
+				if (iconesNumber > 1) {
 					document.querySelector(".dockableDetail > button").textContent = "+" + iconesNumber
-				}else{
+				} else {
 					let iconeToGet = document.querySelector('[id^="dockableBtn_"]')
 					iconeToGetId = iconeToGet.id
 					iconeToGetOnClick = iconeToGet.getAttribute("onclick")
 					dockDetail.setAttribute("onclick", iconeToGetOnClick)
-					dockDetail.id = iconeToGetId.replace("dockableBtn","dockableIcone")
+					dockDetail.id = iconeToGetId.replace("dockableBtn", "dockableIcone")
 					dockDetail.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Cliquer ici pour réafficher la fiche</div>
 											<button style="font-size: 1.1rem;">
 												<i class="fa-solid fa-file"></i>
 											</button>`
 				}
-				if(!document.querySelector(".container-icones").classList.contains("d-none")){
+				if (!document.querySelector(".container-icones").classList.contains("d-none")) {
 					document.querySelector(".container-icones").classList.add("d-none")
 				}
-			}else{
+			} else {
 				dockDetail.remove()
 			}
 		}
 	}
 }
 
-function createDockableIcon(divParent, idRubrique, typeRubrique){
-	divParent.setAttribute("onclick",`reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')`)
-	divParent.setAttribute("style","margin-left:30px;")
-	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer"
+function createDockableIcon(divParent, idRubrique, typeRubrique) {
+	divParent.setAttribute("onclick", `reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')`);
+	divParent.setAttribute("style", "margin-left:30px;");
+	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer";
 
-	if(typeRubrique != "none"){
-		divParent.id = "dockableIcone_" + typeRubrique + "_" + idRubrique
-	}else{
-		divParent.id = "dockableIcone_" + idRubrique
+	if (typeRubrique != "none") {
+		divParent.id = "dockableIcone_" + typeRubrique + "_" + idRubrique;
+	} else {
+		divParent.id = "dockableIcone_" + idRubrique;
 	}
 
 	divParent.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Cliquer ici pour réafficher la fiche</div>
 							<button style="font-size: 1.1rem;">
 								<i class="fa-solid fa-file"></i>
-							</button>`
+							</button>`;
 
-	let dockableIconeElement = document.querySelector(".dockableDetail")
+	let dockableIconeElement = document.querySelector(".dockableDetail");
 
-	if(dockableIconeElement)
-		dockableIconeElement.remove()
+	if (dockableIconeElement) dockableIconeElement.remove();
 
 	document.querySelector("#openFlottant").appendChild(divParent)
 }
 
-function createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, nombreIcone, containerIcones){
-	divParent.setAttribute("onclick","afficherListeIcones()")
-	divParent.setAttribute("style","margin-left:30px;")
+function createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, nombreIcone, containerIcones) {
+	divParent.setAttribute("onclick", "afficherListeIcones()")
+	divParent.setAttribute("style", "margin-left:30px;")
 	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer"
 	let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim()
 	let iconeId = ""
 	let canAdd = false
-	if(typeRubrique != "none"){
+	if (typeRubrique != "none") {
 
 		iconeId = "dockableBtn_" + typeRubrique + "_" + idRubrique
-		if(document.querySelector("#"+iconeId) === null){
+		if (document.querySelector("#" + iconeId) === null) {
 			containerIcones.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock ms-1" id=${iconeId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
 								<i class="fa-solid fa-file"></i>
 							</button>`
 			canAdd = true
 		}
-	}else{
+	} else {
 		iconeId = "dockableBtn_" + idRubrique
-		if(document.querySelector("#"+iconeId) === null){
+		if (document.querySelector("#" + iconeId) === null) {
 			containerIcones.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock ms-1" id=${iconeId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
 								<i class="fa-solid fa-file"></i>
 							</button>`
@@ -882,11 +881,11 @@ function createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, 
 		}
 	}
 
-	if(nombreIcone >= nombre){
+	if (nombreIcone >= nombre) {
 		nombreIcone = nombre
 		document.querySelectorAll(".liste-icones-dock")[0].remove()
-	}else{
-		if(canAdd)
+	} else {
+		if (canAdd)
 			nombreIcone = nombreIcone + 1
 	}
 
@@ -897,17 +896,17 @@ function createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, 
 
 	let dockableIconeElement = document.querySelector(".dockableDetail")
 
-	if(dockableIconeElement)
+	if (dockableIconeElement)
 		dockableIconeElement.remove()
 
 	document.querySelector("#openFlottant").appendChild(divParent)
 }
 
-function afficherListeIcones(){
+function afficherListeIcones() {
 	let containerIcones = document.querySelector(".container-icones")
-	if(containerIcones.classList.contains("d-none")){
+	if (containerIcones.classList.contains("d-none")) {
 		containerIcones.classList.remove("d-none")
-	}else{
+	} else {
 		containerIcones.classList.add("d-none")
 	}
 }
@@ -1005,10 +1004,17 @@ function createItemFavoryElement(object) {
 	let icon_path = "/assets/icon/NewIcons/icon-resto-new-B.png";
 	icon_path = IS_DEV_MODE ? icon_path : `/public${icon_path}`;
 
+	const id_favory_etablisment = object.id_favory_etablisment;
+
 	return `
-		<li class="list-group-item d-flex justify-content-start align-items-center">
-			<img class="icon_favory_rubrique" src="${icon_path}" alt="${object.name}">
-			<span class="ms-2 favory_etablisment" onclick="getDetailFromListRight('${object.nom_dep}', '${object.dep}', '${object.id}')">${object.name}</span>
+		<li class="favory_etablisment_${id_favory_etablisment}_jheo_js list-group-item d-flex justify-content-between align-items-center">
+			<div class="d-flex justify-content-start align-items-center">
+				<img class="icon_favory_rubrique" src="${icon_path}" alt="${object.name}">
+				<span class="ms-2 favory_etablisment" onclick="getDetailFromListRight('${object.nom_dep}', '${object.dep}', '${object.id}')">${object.name}</span>
+            </div>
+			<span class="remove_etablisment_${id_favory_etablisment}_jheo_js text-danger float-end" style="cursor:pointer" onclick="removeFavoryEtablisment('${id_favory_etablisment}')">
+				<i class="fas fa-trash" aria-hidden="true"></i>
+			</span>
 		</li>
 	`;
 }
@@ -1118,10 +1124,10 @@ function pushItemFavory(modal_content_favory, etablisment_id) {
 				alert_message = "";
 			if (response.code === 201) {
 				class_alert = "alert-info";
-				alert_message = "Cette restaurant est enregister dans";
+				alert_message = "Ce restaurant est enregistré dans";
 			} else if (response.code === 200) {
 				class_alert = "alert-warning";
-				alert_message = "Cette restaurant est déja enregister dans";
+				alert_message = "Ce restaurant est déja enregistré dans";
 			}
 
 			btn_alert = `
@@ -1149,9 +1155,14 @@ function handleChangeDirectory(modal_content_favory, etablisment_id) {
 		<form>
 			<div class="content_change_directory_favory">
 				<div class="d-flex justify-content-start align-items-center">
-					<p class="font_size_09 text-decoration-underline text-primary">
+					<button class="font_size_09 text-decoration-underline text-primary"
+						type="button"
+						data-bs-dismiss="modal"
+						data-bs-toggle="collapse" href="#parentdossier"
+						onclick="handleMoveDirectory('${etablisment_id}')"
+					>
 						Voulez-vous changer l'emplacement?
-					</p>
+					</button>
 				</div>
 			</div>
 
@@ -1349,7 +1360,7 @@ function fetchFolderFavory() {
  */
 function createSingleElementFolder(folder_object) {
 	const folder_name = folder_object.name;
-    const livel_parent = folder_object.hasOwnProperty("livel_parent") ? folder_object.livel_parent : 0;
+	const livel_parent = folder_object.hasOwnProperty("livel_parent") ? folder_object.livel_parent : 0;
 
 	let font_size = parseFloat(livel_parent) / 10;
 	font_size = `${1 - font_size}rem`;
@@ -1514,7 +1525,7 @@ function handleCreateFolderFavory(data_folder) {
 				const new_folder_html = createSingleElementFolder({
 					id: folder.unique_id,
 					name: folder.name,
-                    livel_parent: folder.livel_parent,
+					livel_parent: folder.livel_parent,
 				});
 
 				if (folder.id_folder_parent == null || folder.id_folder_parent == "0") {
@@ -1636,3 +1647,40 @@ function pushMoveFavoryEtablisment(data_folder, modal_content_favory) {
 		.catch((error) => console.log(error));
 }
 
+/**
+ * @author Jehovanie RAMANDIRJOEL <jehovanieram@gmail.com>
+ *
+ * Goal: delete favori etablisment
+ * @param {integer} id_favory_etablisment : id favori etablisment
+ */
+function removeFavoryEtablisment(id_favory_etablisment) {
+	let link = "/user/favori_etablisment/remove";
+
+	if (document.querySelector(`.remove_etablisment_${id_favory_etablisment}_jheo_js`)) {
+		const remove_etab = document.querySelector(`.remove_etablisment_${id_favory_etablisment}_jheo_js`);
+		remove_etab.innerHTML = `
+			<i class="fa-solid fa-spinner fa-spin"></i>
+		`;
+	}
+
+	const request = new Request(link, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			etablisment_id: id_favory_etablisment,
+		}),
+	});
+
+	fetch(request)
+		.then((response) => response.json())
+		.then((data) => {
+			console.log(data);
+			if (document.querySelector(`.favory_etablisment_${id_favory_etablisment}_jheo_js`)) {
+				document.querySelector(`.favory_etablisment_${id_favory_etablisment}_jheo_js`).remove();
+			}
+		})
+		.catch((error) => console.log(error));
+}

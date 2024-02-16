@@ -1320,9 +1320,18 @@ class BddRestoRepository extends ServiceEntityRepository
                 ->setParameter("id",intval($item["idRubrique"]))
                 ->getQuery()
                 ->getOneOrNullResult();
+            if( $resto ){
+                array_push($tab, [
+                    "id" => $resto["id"],
+                    "name" => $resto["name"],
+                    "dep" => $resto["dep"],
+                    "nom_dep" => $resto["nom_dep"],
+                    "address" => $resto["address"],
+                    "id_favory_etablisment" => $item["id"]
+                ]);
+            }
+}
 
-            array_push($tab, $resto);
-        }
         return $tab;
     }
 

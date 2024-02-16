@@ -2634,9 +2634,11 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
       if (badge_msg.classList.contains("d-none")) {
         badge_msg.classList.remove("d-none");
       }
-      document.querySelector(".badge_message_jheo_js").innerText = `${parseInt(
-        new_nbr_message
-      )}`;
+      if(!document.querySelector("#openMessage")){
+        document.querySelector(".badge_message_jheo_js").innerText = `${parseInt(
+          new_nbr_message
+        )}`;
+      }
       notificationSong();
     } else if (parseInt(new_nbr_message) === 0) {
       if (!badge_msg.classList.contains("d-none")) {
@@ -2645,5 +2647,104 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
       }
     }
   };
+
+  if(document.querySelector("#openMessage")){
+    const event_source_show_message = new EventSource("/user/get/not/show/message");
+    event_source_show_message.onmessage = function (event) {
+      /// last message for each user
+      const new_message = JSON.parse(event.data);
+      console.log(JSON.parse(event.data));
+      ////check number message not show
+      const message_not_show = new_message.filter(
+        (item) => {
+          if(parseInt(item.message.isForMe) === 1){
+            return parseInt(item.message.isShow) === 0
+          }
+        }
+      );
+      let span = ""
+      let spanVisio = ""
+      let tooltipMessage = document.querySelector("#openMessage > .tooltips-chathome")
+      let tooltipVisio = document.querySelector("#openVisio > .tooltips-chathome")
+      let countVisio = 0
+      let height = 60;
+      let heightVisio = 60;
+      if(message_not_show.length > 0){
+        let prefixPath = IS_DEV_MODE == true ? "" : "/public";
+        let i = 0
+        for (const item of message_not_show) {
+          i++
+          let contentMessage = JSON.parse(item.message.content)
+          let messageText = ""
+          let pdprofil = item.profil?item.profil : "/uploads/users/photos/default_pdp.png"
+          pdprofil = prefixPath + pdprofil
+          if(contentMessage.text != ""){
+            if(contentMessage.text.includes("joinMeet(")){
+              messageText = `Visioconférence entrant <i class="fa-solid fa-phone-volume" style="color: #1bff0a;"></i>`
+              spanVisio += `<span style="display:flex;"><img src="${pdprofil}" style="width:40px;clip-path: circle(40%);"><span class="ms-2">${item.lastname + " " + item.firstname}<br><span style="color:#FFC107;">${messageText}</span></span></span>`
+              countVisio++;
+            }else{
+              messageText = contentMessage.text
+            }
+            span += `<span style="display:flex;"><img src="${pdprofil}" style="width:40px;clip-path: circle(40%);"><span class="ms-2">${item.lastname + " " + item.firstname}<br><span style="color:#FFC107;">${messageText}</span></span></span>`
+          }else{
+            span += `<span style="display:flex;"><img src="${pdprofil}" style="width:40px;clip-path: circle(40%);"><span class="ms-2">${item.lastname + " " + item.firstname}<br><span style="color:#FFC107;">Le message contient de(s) fichiers</span></span></span>`
+          }
+        }
+        height = height * i + 40
+        tooltipMessage.innerHTML = span
+        // tooltipMessage.style.visibility = "visible"
+        // if(message_not_show.length >= 2){
+        //   tooltipMessage.style.top = "-160%"
+        // }else if(message_not_show.length >= 3){
+        //   tooltipMessage.style.top = "-160%"
+        // }
+        tooltipMessage.style.top = "-"+height+"%"
+        
+      }else{
+        tooltipMessage.innerHTML = "Aucun message non lu"
+        tooltipMessage.style.top = "-60%"
+        document.querySelector(".content_badge_visio_nanta_js").classList.add("d-none")
+      }
+      if(message_not_show.length > 0){
+        if(document.querySelector(".content_badge_message_jheo_js").classList.contains("d-none"))
+          document.querySelector(".content_badge_message_jheo_js").classList.remove("d-none")
+        document.querySelector(".badge_message_jheo_js").innerText = message_not_show.length;
+      }else{
+        if(!document.querySelector(".content_badge_message_jheo_js").classList.contains("d-none"))
+          document.querySelector(".content_badge_message_jheo_js").classList.add("d-none")
+      }
+      if(countVisio > 0){
+        document.querySelector(".content_badge_visio_nanta_js").classList.remove("d-none")
+        tooltipVisio.innerHTML = spanVisio
+        heightVisio = heightVisio * countVisio + 40
+        tooltipVisio.style.top = "-"+heightVisio+"%"
+      }else{
+        document.querySelector(".content_badge_visio_nanta_js").classList.add("d-none")
+        tooltipVisio.innerHTML = "Cliquez pour lancer une visioconférence."
+        tooltipVisio.style.top = "-"+heightVisio+"%"
+      }
+    }
+  }
 }
+
+function createIframeOnClickHoverMessage(user_post){
+  let body = document.querySelector("#messageIframeBody")
+  body.remove()
+  let modalBody = document.createElement("div")
+  modalBody.setAttribute("class", "modal-body p-0")
+  modalBody.setAttribute("style", "height:100vh;")
+  modalBody.setAttribute("id", "messageIframeBody")
+  // let iframeNanta = window.parent.document.documentElement.querySelector("#message-iframe")
+  // if(iframeNanta)
+  //   iframeNanta.remove()
+  let url = `/api/message/perso_iframe?user_id=${user_post}`;
+  let iframeMsgNanta = document.createElement("iframe");
+  iframeMsgNanta.src = url;
+  modalBody.appendChild(iframeMsgNanta);
+  const modalContent = document.querySelector("#messageIframe .modal-content");
+  modalContent.insertBefore(modalBody, modalContent.children[1]);
+  $("#messageIframe").modal("show")
+}
+
 /** Fin Elie */

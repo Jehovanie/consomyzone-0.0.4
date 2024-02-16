@@ -80,7 +80,8 @@
 
 #openVisio:hover .tooltips-chathome, 
 #openMessage:hover .tooltips-chathome, 
-#openChat:hover .tooltips-chathome{
+#openChat:hover .tooltips-chathome,
+#first_take:hover .tooltips-chathome{
     visibility: visible;
     opacity: 1;
 }

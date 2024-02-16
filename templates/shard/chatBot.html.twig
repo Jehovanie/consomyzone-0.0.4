@@ -17,6 +17,12 @@
 <div class="navleft-chat vc-chat tv-chat nj-chat xr-chat" style="height:70px; position: fixed;bottom: 0; right: -320px; z-index:1003;background-color:transparent;" id="chat_container" data-type="">
 
 	<div id="openFlottant" style="display:flex;">
+		<a href="{{path('app_guide_cmz')}}" target="_blank" class="text-center me-3" id="first_take" style="background-color:blue;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;">
+			{# <i class="fas fa-quote-left" style="margin-top: 13%;font-size:28px;"></i> #}
+			<i class="fa-solid fa-question"></i>
+			<span class="tooltips-chathome" >Prise en main de ConsoMyZone</span>
+
+		</a>
 		<div class="text-center" id="openChat" style="background-color: #69BC45;width:40px; height:40px;color:white;border-radius:8px;cursor:pointer;">
 			{# <i class="fas fa-quote-left" style="margin-top: 13%;font-size:28px;"></i> #}
 			<img src="/public/assets/icon/icon_cmz.jpg" alt="CMZ" class="vc-chat yd-chat qk-chat rk-chat" style="margin-top: 5%;width: 36px;height: 36px;margin-left: 5%;border-radius: 20%;" />
@@ -35,13 +41,19 @@
 						0
 					</span> 
 				</span>
-				<span class="tooltips-chathome">Cliquez pour voir plus des messages.</span>
+				{# <span class="tooltips-chathome">Cliquez pour voir plus des messages.</span> #}
+				<span class="tooltips-chathome">Aucun message non lu</span>
 
 			</div>
 
 			<div class="text-center ms-2" id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #0d6efd;cursor:pointer;">
 			{# <div class="text-center ms-2 non_active " id="openVisio" style="background-color: #fff;width:40px; height:40px;color:white;border-radius:8px;border:2px solid #808080;cursor:pointer;"> #}
 				<i class="fas fa-video-camera" style="margin-top: 13%;font-size:28px;color:#0d6efd;"></i>
+				<span class="content_badge_visio_nanta_js d-none">
+					<span class="top-0 badge rounded-pill bg-danger badge_visio_nanta_js" style="transform: translate(60%,-250%)!important;">
+						<i class="fa-solid fa-phone-volume" style="color: #1bff0a;"></i>
+					</span> 
+				</span>
 				<span class="tooltips-chathome">Cliquez pour lancer une visioconférence.</span>
 
 			</div>

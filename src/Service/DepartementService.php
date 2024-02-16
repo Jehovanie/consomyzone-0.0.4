@@ -8,7 +8,7 @@ class DepartementService{
      * @author Jean Gilbert RANDRIANANTENAINASOA <nantenainasoa39@gmail.com>
      * 
      * 
-     * @return array $allDep
+     * @return array $allDep 
      */
     public function getDepWithKeyIdDep(){
         $allDep =  [

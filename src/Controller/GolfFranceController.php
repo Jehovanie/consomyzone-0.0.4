@@ -762,7 +762,12 @@ class GolfFranceController extends AbstractController
         $avis = $rJson["avis"];
         $type = $rJson["type"];
 
-        if($rJson["type"] == "audio"){
+        if($rJson["type"] == "audio_up"){
+            $type = "audio";
+        }
+
+
+        if( $type == "audio"){
 
             $path_file = '/public/uploads/avis-golf/audio/';
 
@@ -791,10 +796,7 @@ class GolfFranceController extends AbstractController
 
         }
 
-        if($rJson["type"] == "audio_up"){
-            $type = "audio";
-        }
-
+        
         $response = $avisGolfRepository->updateAvis(
             $idGolf,
             $userId,

@@ -29,6 +29,8 @@
 
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer=""></script>
+
+	<script src="{{asset('assets/js/account/RecorderAudioTribuG.js')}}" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -87,13 +89,9 @@
 									<a style="cursor:pointer;" href="#" id="fetch_golf_tribug_jheo_js">Golfs</a>
 								</li>
 
-								{% if tributG.profil.roles is same as("fondateur") %}
-                                    <li class="listNavBarTribu">
-                                        <a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Communiquer</a>
-                                    </li>
-                                {% endif %}
+								
 									<li class="listNavBarTribu">
-										<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_member_tribug_jheo_js">Fans</a>
+										<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_member_tribug_jheo_js">Partisans</a>
 									</li>
 									<li class="listNavBarTribu">
 										<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_photo_tribug_jheo_js">Photos</a>
@@ -101,6 +99,11 @@
 									<li class="listNavBarTribu">
 										<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_invitation_tribug_nanta_js" onclick="showInvitationsG()">Invitations</a>
 									</li>
+									{% if tributG.profil.roles is same as("fondateur") %}
+										<li class="listNavBarTribu">
+											<a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Communiquer</a>
+										</li>
+									{% endif %}
 								</ul>
 {# <div class="dropdown setting-nav-tribu-g">
 									<a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">

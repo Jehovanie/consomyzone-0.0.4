@@ -2,14 +2,16 @@
     .avatar-account img {
         transform: translate(-8px, 1px);
     }
+
     /* .leaflet-control-container{
         display: none ;
     } */
 
-    .content_photos{
+    .content_photos {
         width: 71%;
     }
-    .leaflet-control-zoom{
+
+    .leaflet-control-zoom {
         display: block !important;
     }
 
@@ -45,8 +47,8 @@
         border: none !important;
         /* height: 350px !important; */
     }
-    
-    #profilTribu{
+
+    #profilTribu {
         height: 100px;
         border-radius: 10px;
     }
@@ -72,7 +74,7 @@
         margin-left: 15% !important;
     }
 
-    .change_photo_tribuG_js_jheo{
+    .change_photo_tribuG_js_jheo {
         font-size: 18pt;
         margin-top: 5px;
         cursor: pointer;
@@ -95,7 +97,7 @@
         margin: 0;
         padding: 0;
         box-sizing: border-box;
-    
+
     }
 
 
@@ -104,12 +106,12 @@
         margin-left: 0rem !important;
     }
 
-    .close-resto-specific{
+    .close-resto-specific {
         margin-top: -25px;
         margin-left: 84vw;
     }
 
-    .scroll-mobile{
+    .scroll-mobile {
         overflow-x: scroll;
         overflow-y: hidden;
     }
@@ -119,7 +121,7 @@
         left: 119px !important;
     }
 
-    .liste-depart-tomm{
+    .liste-depart-tomm {
         z-index: 401;
         position: absolute;
         top: 170px;
@@ -134,7 +136,7 @@
         border-radius: 10px;
     }
 
-    .btn-spec{
+    .btn-spec {
         position: absolute;
         top: 170px;
         left: 140px;
@@ -143,39 +145,39 @@
         width: 150px;
     }
 
-    .marge-top-mobile-logo{
+    .marge-top-mobile-logo {
         margin-top: 200px;
     }
 
-    .modal-content-mobile{
+    .modal-content-mobile {
         height: 98vh;
 
     }
 
-    .modal-body-mobile{
+    .modal-body-mobile {
         height: 75vh;
         overflow-y: scroll;
     }
 
-    .content-type-mobile{
+    .content-type-mobile {
         width: 100%;
         height: 75vh !important;
         z-index: 10401;
         margin-top: 160px;
     }
 
-    .navbar-brand-setting-inscript-mobile  svg {
+    .navbar-brand-setting-inscript-mobile svg {
         position: absolute;
         top: 19px;
         left: 27px;
         z-index: 401;
     }
 
-    .content_header_right_side{
+    .content_header_right_side {
         margin-top: 0 !important;
     }
 
-    .content_legende{
+    .content_legende {
         height: 80vh;
         margin-top: 151px;
         z-index: 10401;
@@ -188,30 +190,30 @@
         top: 3px !important;
     }
 
-    .title_right_side{
+    .title_right_side {
         font-size: 9pt !important;
     }
 
-    .right_side_body .table thead{
+    .right_side_body .table thead {
         font-size: 9pt !important;
     }
 
-    .content_start i{
+    .content_start i {
         font-size: 9pt;
     }
 
-    .font-point-6{
+    .font-point-6 {
         font-size: 6pt !important;
     }
 
-   
 
-    .content_profil_image .profil_image{
+
+    .content_profil_image .profil_image {
         width: 30px !important;
         height: 30px !important;
     }
 
-    .right_side_body .table tbody{
+    .right_side_body .table tbody {
         font-size: 6pt !important;
     }
 
@@ -222,12 +224,13 @@
         padding: 3px;
         margin-left: 243px;
     }
+
     .icon_golf_legend {
         width: 20px !important;
         height: 0 !important;
     }
 
-    .text-point-7{
+    .text-point-7 {
         font-size: 7pt !important;
     }
 
@@ -243,7 +246,7 @@
         margin-top: 30px !important;
     }
 
-    .right_side_body .form-check-input{
+    .right_side_body .form-check-input {
         margin-top: 8px;
     }
 
@@ -258,30 +261,30 @@
         font-size: 9pt;
     }
 
-    .swal2-popup{
+    .swal2-popup {
         margin-top: -160px;
     }
 
-    .navleft-mobile{
+    .navleft-mobile {
         background-color: #fff;
         width: 100vw;
         border-radius: 5px;
         height: 100vh;
         margin-top: 155px;
-        box-shadow: 1px 1px 3px rgba(0, 0 ,0 , 0.2) !important;
+        box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2) !important;
         position: fixed;
         z-index: 10402;
     }
 
-    #restoPastilleModal{
+    #restoPastilleModal {
         z-index: 10401;
     }
 
-    #staticBackdrop{
+    #staticBackdrop {
         z-index: 10405;
     }
 
-    .scroll-mobile .navbar-nav .nav-item .nav-link{
+    .scroll-mobile .navbar-nav .nav-item .nav-link {
         font-size: 9pt;
     }
 
@@ -293,10 +296,10 @@
     }
 
     .cmz-left-container {
-        margin-top: 0 !important; 
+        margin-top: 0 !important;
         margin-left: 0 !important;
     }
-        
+
     /* .card-pub-actu img {
         width: 62vw;
     } */
@@ -306,8 +309,8 @@
         width: 20%;
     }
 
-    .content-nav-left{
-        margin-top: 15px ;
+    .content-nav-left {
+        margin-top: 15px;
         z-index: 1031 !important;
     }
 
@@ -506,18 +509,21 @@
     .close-ferme {
         margin-top: -40px;
         margin-left: 90vw;
-        
+
     }
-    
-    .text-point-9{
+
+    .text-point-9 {
         font-size: 9pt !important;
     }
-    .text-point-10{
+
+    .text-point-10 {
         font-size: 10pt !important;
     }
-    .text-point-12{
+
+    .text-point-12 {
         font-size: 12pt !important;
     }
+
     .swipe-me-reverse {
 
         transform: translateX(-50vh);
@@ -586,12 +592,13 @@
         fill: #000;
         transform: scale(1.2);
     }
+
     .form-select-detail.select_action_golf_nanta_js {
         font-size: 12pt !important;
         width: 100% !important;
         margin-top: 0 !important;
         padding: 3px;
-        margin-left: 0!important;
+        margin-left: 0 !important;
         border: #000 1px solid;
         border-radius: 3px;
     }
@@ -612,17 +619,17 @@
         animation: 1s linear 1s infinite alternate slidein;
     }
 
-        @keyframes slidein {
-            from {
-                transform: scale(100%);
-            }
-    
-            to {
-                transform: scale(80%);
-            }
+    @keyframes slidein {
+        from {
+            transform: scale(100%);
         }
 
-    .open-search-mobil  i {
+        to {
+            transform: scale(80%);
+        }
+    }
+
+    .open-search-mobil i {
         position: absolute;
         right: 15px;
         top: 15px;
@@ -635,9 +642,9 @@
         color: #fff;
         padding-top: 12px;
         font-size: 18pt;
-     }
+    }
 
-    .search-resto-mobil{
+    .search-resto-mobil {
         position: absolute;
         top: 10px;
         right: 10px;
@@ -645,31 +652,33 @@
         z-index: 401;
     }
 
-    .content-search-mob{
+    .content-search-mob {
         width: 100%;
     }
 
-    #modalAvisRestaurant{
+    #modalAvisRestaurant {
         z-index: 10404;
     }
 
-    #restoPastilleModal{
+    #restoPastilleModal {
         z-index: 10405;
     }
-    .modal-backdrop{
+
+    .modal-backdrop {
         z-index: 10405;
     }
-    
+
     .navleft-detail-mobile {
         transform: translate(1vw, 1vh) !important;
         width: 355px;
         z-index: 1001 !important;
     }
-    .swal-overlay--show-modal{
+
+    .swal-overlay--show-modal {
         z-index: 10405 !important;
     }
 
-   
+
     .content_description {
         height: 95vh !important;
     }
@@ -679,7 +688,7 @@
         margin-left: 0px !important;
     }
 
-    .search-resto-mobil-none{
+    .search-resto-mobil-none {
         display: none;
     }
 
@@ -825,7 +834,7 @@
         overflow-x: hidden;
     }
 
-    .list-depart-arrand{
+    .list-depart-arrand {
         height: 60vh;
     }
 
@@ -1004,7 +1013,7 @@
         margin-top: -40px;
     }
 
-    
+
 
     .notification_popup,
     .message_popup {
@@ -1035,7 +1044,7 @@
         margin-top: -10%;
     }
 
-    
+
 
     label[for="fileInputTribu"] {
         margin-left: 80px;
@@ -1053,6 +1062,7 @@
         width: 100vw;
         margin-left: 0;
     }
+
     .bgPersonnalisee_menu {
         width: 90vw !important;
     }
@@ -1094,7 +1104,7 @@
         width: 90% !important;
     }
 
-    .btn-navright-tribut{
+    .btn-navright-tribut {
         position: absolute;
         top: 145px;
         left: 0px;
@@ -1197,9 +1207,9 @@
         margin-left: 20px !important;
     }
 
-    .listTribu_t_mobile{
-            margin-left: 0px !important;
-        }
+    .listTribu_t_mobile {
+        margin-left: 0px !important;
+    }
 
     .table-list-membre {
         margin-left: 0px !important;
@@ -1264,15 +1274,15 @@
         margin-right: 0px !important;
     }
 
-   .card-couverture-pub-tribu-t {
-       width: 91vw !important;
+    .card-couverture-pub-tribu-t {
+        width: 91vw !important;
         height: 25vh !important;
-       margin-top: 0px !important;
-   }
+        margin-top: 0px !important;
+    }
 
     .card-couverture-pub-tribu-t .content-couverture {
         width: 100vw !important;
-height: auto !important;
+        height: auto !important;
     }
 
     .card-couverture-pub-tribu-t .content-couverture h1 {
@@ -1308,7 +1318,7 @@ height: auto !important;
         width: 140vw;
     }
 
-    
+
 
     .content_right_actualite {
         width: 95vw !important;
@@ -1324,7 +1334,7 @@ height: auto !important;
         background-image: none !important;
     }
 
-    .change_photo_tribuG_js_jheo{
+    .change_photo_tribuG_js_jheo {
         font-size: 12pt !important;
         margin-left: -30px;
     }
@@ -1344,12 +1354,12 @@ height: auto !important;
         transition: margin-left 1.5s;
     }
 
-    .content_list_menu_tribut_mob .card-my-tribu-t a{
+    .content_list_menu_tribut_mob .card-my-tribu-t a {
         color: #000;
         text-decoration: none;
     }
 
-    .transition-mob{
+    .transition-mob {
         margin-left: 0;
         transition: margin-left 1.5s;
     }
@@ -1358,13 +1368,13 @@ height: auto !important;
         background-color: transparent;
     } */
 
-    .navbar-mobile-all{
+    .navbar-mobile-all {
         position: absolute;
         width: 100% !important;
         z-index: 401;
     }
 
-    .leaflet-control-zoom.leaflet-bar.leaflet-control{
+    .leaflet-control-zoom.leaflet-bar.leaflet-control {
         margin-top: 70px !important;
     }
 
@@ -1372,11 +1382,11 @@ height: auto !important;
         margin-top: 10px !important;
     }
 
-    .modal-avie-resto-mobile-tomm-js{
+    .modal-avie-resto-mobile-tomm-js {
         z-index: 10405 !important;
     }
 
-    .active-mobile{
+    .active-mobile {
         background-color: #1111fe;
         color: #fff !important;
         border-radius: 5px;
@@ -1384,7 +1394,7 @@ height: auto !important;
         height: 55px;
     }
 
-    .active-mobile svg{
+    .active-mobile svg {
         fill: #fff !important;
         border: 2px solid #fff !important;
     }
@@ -1393,21 +1403,21 @@ height: auto !important;
         margin-top: 20px;
     }
 
-    .specific-detail{
+    .specific-detail {
         width: 100%;
         position: absolute;
         bottom: 10px;
-z-index: 1000 !important;
+        z-index: 1000 !important;
     }
 
-    .swal-overlay{
+    .swal-overlay {
         z-index: 10403;
     }
 
-    
 
-    .containt-specific{
-        
+
+    .containt-specific {
+
         background-color: #fff;
         box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.3);
         border-radius: 15px;
@@ -1417,7 +1427,7 @@ z-index: 1000 !important;
         padding: 5px;
     }
 
-    .containt-specific p{
+    .containt-specific p {
         /* margin-bottom: -5px; */
         line-height: 1.4;
         white-space: nowrap;
@@ -1425,7 +1435,7 @@ z-index: 1000 !important;
         text-overflow: ellipsis;
     }
 
-    .containt-specific-detail{
+    .containt-specific-detail {
         background-color: #fff;
         box-shadow: -1px 1px 5px rgba(0, 0, 0, 0.3);
         border-radius: 15px;
@@ -1440,31 +1450,32 @@ z-index: 1000 !important;
         margin-top: 10px !important;
     }
 
-    .swal2-popup{
+    .swal2-popup {
         z-index: 10402 !important;
     }
 
-    .all-z-index{
+    .all-z-index {
         z-index: 1401 !important;
     }
+
     #modalAvisRestaurant {
         margin-top: 0 !important;
     }
 
-    .content_home_detail_mobile{
+    .content_home_detail_mobile {
         margin-top: 10rem !important;
     }
 
-    .list-depart-resto-mobile-tomm-js{
+    .list-depart-resto-mobile-tomm-js {
         position: absolute;
         z-index: 10000;
     }
 
-    .ferme-genre{
+    .ferme-genre {
         font-size: 8pt !important;
         background-color: #b1b1b1;
         padding: 2px;
-        
+
     }
 
     .containt-specific-arrandismant {
@@ -1489,13 +1500,15 @@ z-index: 1000 !important;
         right: 18px !important;
         width: 92vw !important;
     }
+
     .list-amie-message-perso {
         width: 100% !important;
-    } 
-    
-    .nav-message .nav-tabs{
+    }
+
+    .nav-message .nav-tabs {
         font-size: 9pt;
     }
+
     .content-pub {
         margin-top: -13px !important;
     }
@@ -1504,23 +1517,23 @@ z-index: 1000 !important;
         width: 100% !important;
     }
 
-    .content_photos{
+    .content_photos {
         width: 100% !important;
     }
 
-    .img_nantenaina img{
+    .img_nantenaina img {
         width: 25px;
         clip-path: circle();
     }
-    
-    .loading-tomm-js{
+
+    .loading-tomm-js {
         position: absolute;
         top: 35%;
         right: 0;
     }
-    
 
-    .en-lign-mobile{
+
+    .en-lign-mobile {
         position: absolute;
         background: #fff;
         width: 100%;
@@ -1528,7 +1541,7 @@ z-index: 1000 !important;
         z-index: 1;
     }
 
-    .margin-top-280{
+    .margin-top-280 {
         margin-top: 280px !important;
     }
 
@@ -1538,11 +1551,11 @@ z-index: 1000 !important;
         right: 0 !important;
     }
 
-.modal-pastille-golf{
+    .modal-pastille-golf {
         width: 340px !important;
     }
 
-    .toggel-recherche i{
+    .toggel-recherche i {
         position: absolute;
         left: 15px;
         top: 160px;
@@ -1564,7 +1577,7 @@ z-index: 1000 !important;
         /* padding-right: 5px; */
     }
 
-    .container-agenda{
+    .container-agenda {
         margin-top: 50px !important;
     }
 
@@ -1575,34 +1588,34 @@ z-index: 1000 !important;
 
     #calendar .fc-view-container {
         padding: 0 !important;
-        
+
     }
 
-    #createAgenda .form-check-label{
+    #createAgenda .form-check-label {
         font-size: 12pt;
     }
-        
-    #createAgenda .form-check-inline{
+
+    #createAgenda .form-check-inline {
         margin-top: 5px;
         margin-right: 5px !important;
         width: 100%;
     }
 
-    #createAgenda .form-check-input{
+    #createAgenda .form-check-input {
         width: 12px;
         height: 12px;
         margin-right: 2px;
     }
 
-    .card-couverture-pub-tribu-t .text-light{
+    .card-couverture-pub-tribu-t .text-light {
         font-size: 10pt;
     }
 
-    .dataTables_wrapper{
+    .dataTables_wrapper {
         overflow-x: scroll !important;
     }
 
-    .list_resto_or_golf_partage .bg-white.w-75{
+    .list_resto_or_golf_partage .bg-white.w-75 {
         width: 100% !important;
     }
 
@@ -1610,11 +1623,11 @@ z-index: 1000 !important;
         margin-left: 19vw !important;
     }
 
-    #blockHistInvitation{
+    #blockHistInvitation {
         overflow-x: scroll;
     }
 
-    .content_emojy_picker{
+    .content_emojy_picker {
         margin-left: -155px !important;
         margin-top: 280px !important;
     }
@@ -1625,7 +1638,7 @@ z-index: 1000 !important;
 
     .btn_submit {
         background: rgb(0, 111, 255) !important;
-        width: 76vw !important; 
+        width: 76vw !important;
         color: #fff;
     }
 
@@ -1633,7 +1646,7 @@ z-index: 1000 !important;
         margin-top: 0 !important;
     }
 
-    .title-link-inscription{
+    .title-link-inscription {
         text-align: center;
     }
 
@@ -1645,17 +1658,16 @@ z-index: 1000 !important;
         position: absolute !important;
         top: 100% !important;
         right: 3% !important;
-        width: 350px!important;
+        width: 350px !important;
     }
-                
-.image_tommy_home_js_css{
-        width:40px !important;
+
+    .image_tommy_home_js_css {
+        width: 40px !important;
         height: 40px !important;
         max-width: none !important;
     }
-    .cta_actu_navbar{
 
-    }
+    .cta_actu_navbar {}
 
     .content-actualite-connected {
         padding-top: 7.5rem !important;
@@ -1688,11 +1700,11 @@ z-index: 1000 !important;
         align-items: start !important;
     }
 
-    .margin-top-230{
+    .margin-top-230 {
         margin-top: 230px !important;
     }
 
-    .nav-message .nav-tabs .nav-item{
+    .nav-message .nav-tabs .nav-item {
         padding-left: 0rem !important;
     }
 
@@ -1706,11 +1718,11 @@ z-index: 1000 !important;
         z-index: 2 !important;
     }
 
-    .piece-join-tomm-js{
+    .piece-join-tomm-js {
         width: 100%;
     }
 
-    .content_entete_msg_jheo_js{
+    .content_entete_msg_jheo_js {
         margin-left: 15px;
     }
 
@@ -1734,7 +1746,7 @@ z-index: 1000 !important;
         margin-left: 25px;
     }
 
-    .nav-tribu-g{
+    .nav-tribu-g {
         margin-left: -15px;
     }
 
@@ -1775,11 +1787,11 @@ z-index: 1000 !important;
 /* pc */
 
 @media screen and (min-width:1020px) and (max-width: 1136px) {
- .width-content-t {
+    .width-content-t {
         width: 74%;
     }
 
-    .navleft-chat{
+    .navleft-chat {
         right: -205px !important;
     }
 
@@ -1805,7 +1817,7 @@ z-index: 1000 !important;
         font-size: 0.3587em !important;
     }
 
-    .nav-item li{
+    .nav-item li {
         margin-left: 15px !important;
     }
 
@@ -1828,6 +1840,7 @@ z-index: 1000 !important;
     .content_list {
         margin-left: -15px;
     }
+
     .form__input_time {
         width: 145px;
     }
@@ -1880,7 +1893,7 @@ z-index: 1000 !important;
     .listTribu_t_mobile {
         margin-top: 0px !important;
     }
-    
+
 }
 
 @media screen and (min-width:1137px) and (max-width: 1259px) {
@@ -1889,7 +1902,7 @@ z-index: 1000 !important;
         width: 74%;
     }
 
-    .navleft-chat{
+    .navleft-chat {
         right: -205px !important;
     }
 
@@ -1914,7 +1927,7 @@ z-index: 1000 !important;
         font-size: 7pt !important;
     }
 
-    .nav-item li{
+    .nav-item li {
         margin-left: 15px !important;
     }
 
@@ -1937,6 +1950,7 @@ z-index: 1000 !important;
     .content_list {
         margin-left: -15px;
     }
+
     .form__input_time {
         width: 145px;
     }
@@ -1992,19 +2006,22 @@ z-index: 1000 !important;
 }
 
 @media screen and (min-width:1260px) and (max-width: 1315px) {
- header > div > div.vd.sd.qo.f.ho.oo.wf.yf > nav > ul{
-	font-size: 6pt !important;
+    header>div>div.vd.sd.qo.f.ho.oo.wf.yf>nav>ul {
+        font-size: 6pt !important;
     }
+
     .width-content-t {
         width: 74%;
     }
+
     .apropos-tribu-t {
         width: 16.5rem !important;
     }
 
-    .navleft-chat{
+    .navleft-chat {
         right: -300px !important;
     }
+
     .apropos-tribu-g {
         width: 220px !important;
         top: 140px !important;
@@ -2082,7 +2099,7 @@ z-index: 1000 !important;
         margin-left: -15px;
     }
 
-    .account-profils img{
+    .account-profils img {
         min-height: 60px !important;
         min-width: 60px !important;
         max-width: 60px !important;
@@ -2094,8 +2111,9 @@ z-index: 1000 !important;
     .width-content-t {
         width: 74%;
     }
-    header > div > div.vd.sd.qo.f.ho.oo.wf.yf > nav > ul{
-	font-size: 9pt !important;
+
+    header>div>div.vd.sd.qo.f.ho.oo.wf.yf>nav>ul {
+        font-size: 9pt !important;
     }
 
     .apropos-tribu-g {
@@ -2125,6 +2143,7 @@ z-index: 1000 !important;
     .form__input_time {
         width: 145px;
     }
+
     .result_container_resto_spec .navbar-light-left {
         margin-top: 1rem !important;
     }
@@ -2146,7 +2165,7 @@ z-index: 1000 !important;
     }
 
     .content-logo-shearch {
-        width: 530px;
+        width: 370px;
         margin-left: 20px !important;
     }
 
@@ -2154,6 +2173,7 @@ z-index: 1000 !important;
         margin-left: 620px !important;
         width: 33vw !important;
     }
+
     .nav-menu-connexion {
         margin-left: 1180px !important;
         margin-top: -2px;
@@ -2174,7 +2194,7 @@ z-index: 1000 !important;
         margin-top: 0px !important;
     }
 
-    .account-profils img{
+    .account-profils img {
         min-height: 60px !important;
         min-width: 60px !important;
         max-width: 60px !important;
@@ -2186,6 +2206,7 @@ z-index: 1000 !important;
     .width-content-t {
         width: 74%;
     }
+
     .apropos-tribu-g {
         width: 290px !important;
         top: 140px !important;
@@ -2194,6 +2215,7 @@ z-index: 1000 !important;
     .apropos-tribu-t {
         width: 315px !important;
     }
+
     /* .card-pub-actu img {
         width: 52vw;
     } */
@@ -2251,14 +2273,14 @@ z-index: 1000 !important;
     }
 
     .content-logo-shearch {
-        width: 33vw !important;
+        width: 30vw !important;
     }
 
     .head-left {
         padding-top: 10px !important;
     }
 
-   
+
 
     .result_container_resto_spec .head-left {
         padding-top: 0 !important;
@@ -2348,7 +2370,7 @@ z-index: 1000 !important;
         width: 385px !important;
     }
 
-    .navleft-chat{
+    .navleft-chat {
         right: -370px !important;
     }
 
@@ -2480,21 +2502,23 @@ z-index: 1000 !important;
     }
 }
 
-@media screen and (min-width: 1680px) and (max-width: 1799px){
+@media screen and (min-width: 1680px) and (max-width: 1799px) {
     .width-content-t {
         width: 74%;
     }
-    .navleft-chat{
+
+    .navleft-chat {
         right: -400px !important;
     }
 
-    .apropos-tribu-g{
+    .apropos-tribu-g {
         width: 300px !important;
     }
 
     .apropos-tribu-t {
         width: 385px !important;
     }
+
     /* .card-pub-actu img {
         width: 52vw;
     } */
@@ -2510,9 +2534,11 @@ z-index: 1000 !important;
     .to\/4\/2 {
         margin-left: -9.3rem !important;
     }
+
     .head-pub .param-content i {
-            margin-left: 470px !important;
-        }
+        margin-left: 470px !important;
+    }
+
     .container-invitation {
         margin-left: 355px !important;
     }
@@ -2637,15 +2663,18 @@ z-index: 1000 !important;
     .width-content-t {
         width: 77%;
     }
-    .navleft-chat{
+
+    .navleft-chat {
         right: -430px !important;
     }
+
     /* .card-pub-actu img {
         width: 65vw;
     } */
-    .apropos-tribu-g{
+    .apropos-tribu-g {
         width: 260px !important;
     }
+
     .apropos-tribu-t {
         width: 385px !important;
     }
@@ -2669,6 +2698,7 @@ z-index: 1000 !important;
     .head-pub .param-content i {
         margin-left: 830px;
     }
+
     .container-invitation {
         margin-left: 355px !important;
     }
@@ -2777,6 +2807,7 @@ z-index: 1000 !important;
     .content_right_actualite {
         top: 79px !important;
     }
+
     .left_menu {
         height: 929px;
     }
@@ -2784,30 +2815,32 @@ z-index: 1000 !important;
 }
 
 
-@media screen and (min-width: 1900px){
-   
-   .right_full{
-           right: -445px !important;
-   }
+@media screen and (min-width: 1900px) {
 
-    .content-pub{
+    .right_full {
+        right: -445px !important;
+    }
+
+    .content-pub {
         max-width: 73.75rem !important;
-    } 
+    }
+
     .width-content-t {
         width: 77%;
     }
 
-    .navleft-chat{
+    .navleft-chat {
         right: -460px !important;
     }
 
-    .apropos-tribu-g{
+    .apropos-tribu-g {
         width: 270px !important;
     }
+
     .apropos-tribu-t {
         width: 385px !important;
     }
-    
+
 
     ul#navBarTribu li.listNavBarTribu a {
         padding: 5px 5px !important;
@@ -2828,11 +2861,12 @@ z-index: 1000 !important;
     .\32xl\:ud-max-w-230 {
         max-width: 80.5rem !important;
     }
-    .content_right_actualite .exprime-pub{
+
+    .content_right_actualite .exprime-pub {
         margin-top: 0px !important;
     }
 
-    .content_right_actualite .card-couverture-pub-tribu-t{
+    .content_right_actualite .card-couverture-pub-tribu-t {
         margin-top: 0px !important;
     }
 
@@ -2856,6 +2890,7 @@ z-index: 1000 !important;
     .card-tribu-g {
         width: 80.9vw !important;
     }
+
     .container-invitation {
         margin-left: 419px !important;
     }
@@ -2865,8 +2900,8 @@ z-index: 1000 !important;
         margin-left: -25px;
     }
 
-	
-   .flow-content .i-x{
+
+    .flow-content .i-x {
         margin-left: 21vw !important;
     }
 
@@ -2883,24 +2918,24 @@ z-index: 1000 !important;
         margin-top: 3px !important;
     }
 
-    .head-left{
+    .head-left {
         padding-top: 35px !important;
     }
-    
-    .result_container_resto_spec .navbar-light-left{
-	    margin-top: 0px !important;
+
+    .result_container_resto_spec .navbar-light-left {
+        margin-top: 0px !important;
     }
 
     /* .result_container_resto_spec .head-left{
 	    padding-top: 70px !important;
     } */
 
-    .result_container_resto_spec_arrond .navbar-light-left{
-	    margin-top: 35px !important;
+    .result_container_resto_spec_arrond .navbar-light-left {
+        margin-top: 35px !important;
     }
 
-    .result_container_resto_spec_arrond .head-left{
-	    padding-top: 70px !important;
+    .result_container_resto_spec_arrond .head-left {
+        padding-top: 70px !important;
     }
 
     /* .result_container_resto_spec .navbar-light-left{
@@ -2911,18 +2946,19 @@ z-index: 1000 !important;
 	 padding-top: 70px !important;
     } */
 
-    .result_container_ferme_spec .navbar-light-left{
-	    margin-top: 35px !important;
+    .result_container_ferme_spec .navbar-light-left {
+        margin-top: 35px !important;
     }
 
-    .result_container_ferme_spec .head-left{
-	    padding-top: 70px !important;
+    .result_container_ferme_spec .head-left {
+        padding-top: 70px !important;
     }
 
-    .result_container_station_spec .navbar-light-left{
-	    margin-top: 35px !important;
+    .result_container_station_spec .navbar-light-left {
+        margin-top: 35px !important;
     }
-/* 
+
+    /* 
     .result_container_station_spec .head-left{
 	    padding-top: 70px !important;
     } */
@@ -2973,6 +3009,7 @@ z-index: 1000 !important;
     .left_menu {
         height: 930px;
     }
+
     .navbar-light-left .fa-x {
         margin-left: 8px !important;
     }
@@ -2980,7 +3017,7 @@ z-index: 1000 !important;
 
 /* **************respensif height************ */
 
-@media screen and (min-height: 600px)  and (max-height : 799px){
+@media screen and (min-height: 600px) and (max-height : 799px) {
     .content_right_actualite .card-couverture-pub-tribu-t .content-couverture {
         height: 15vh !important;
     }
@@ -2988,7 +3025,7 @@ z-index: 1000 !important;
 
 /*100% Image Width on Smaller Screens*/
 @media only screen and (max-width: 991px) {
-	.content_icon_draggable {
-		display: none;
-	}
+    .content_icon_draggable {
+        display: none;
+    }
 }

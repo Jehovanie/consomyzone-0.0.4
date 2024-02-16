@@ -43,34 +43,34 @@ if (document.querySelector(".form_content_search_navbar_js")) {
 
 			/*if( cles0=== "" && cles1 === "" ){
     
-                //alert("Veuillez renseigner les deux champs!")
-                alert("L'adresse est obligatoire!")
+				//alert("Veuillez renseigner les deux champs!")
+				alert("L'adresse est obligatoire!")
     
-                e.preventDefault();
-                // document.querySelector(".input_search_type_js").classList.add("border_red")
-                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+				e.preventDefault();
+				// document.querySelector(".input_search_type_js").classList.add("border_red")
+				document.querySelector(".input_mots_cle_js").classList.add("border_red")
     
-            }else if( cles0=== "" || cles1 === "" ){
-     
-                document.querySelector(".input_mots_cle_js").classList.add("border_red")
+			}else if( cles0=== "" || cles1 === "" ){
+	 
+				document.querySelector(".input_mots_cle_js").classList.add("border_red")
     
-                if( cles0=== "" ){
-                    if(getDataInLocalStorage("type") != "tous"){
-                        alert("Veuillez renseigner le nom de "+ getDataInLocalStorage("type"))
-                    }else{
-                        alert("Veuillez renseigner de quoi vous avez besoin !")
-                    }
-                    document.querySelector(".input_search_type_js").classList.add("border_red")
-                    e.preventDefault();
-                }
+				if( cles0=== "" ){
+					if(getDataInLocalStorage("type") != "tous"){
+						alert("Veuillez renseigner le nom de "+ getDataInLocalStorage("type"))
+					}else{
+						alert("Veuillez renseigner de quoi vous avez besoin !")
+					}
+					document.querySelector(".input_search_type_js").classList.add("border_red")
+					e.preventDefault();
+				}
     
-                if( cles1=== "" ){
-                    alert("Veuillez renseigner l'addresse!")
-                    document.querySelector(".input_mots_cle_js").classList.add("border_red")
-                    e.preventDefault();
-                }
+				if( cles1=== "" ){
+					alert("Veuillez renseigner l'addresse!")
+					document.querySelector(".input_mots_cle_js").classList.add("border_red")
+					e.preventDefault();
+				}
     
-            }*/
+			}*/
 		}
 	});
 
@@ -515,6 +515,13 @@ if (document.querySelector(".list-nav-bar")) {
 	} else if (activPage.includes("/ferme")) {
 		document.querySelector("#ferme-page").classList.add("active");
 		document.querySelector(".ferme-page-mobile").classList.add("active-mobile");
+    } else if (activPage.includes("/marche")) {
+		if (document.querySelector("#marche-page")) {
+			document.querySelector("#marche-page").classList.add("active");
+		}
+		if (document.querySelector(".marche-page-mobile")) {
+			document.querySelector(".marche-page-mobile").classList.add("active-mobile");
+		}
 	} else if (activPage.includes("/restaurant")) {
 		document.querySelector("#resto-page").classList.add("active");
 		document.querySelector(".resto-page-mobile").classList.add("active-mobile");
@@ -940,16 +947,16 @@ function showModalEditor(isG, isListeInfile = false) {
 	// date limite de confirmation par défaut (3 semaine avant la date de l'événement)
 	let dateOld = new Intl.DateTimeFormat("fr-FR", { dateStyle: "full" }).format(new Date(back));
 
-  if (document.querySelector("#object_share_event") && agenda)
-    document.querySelector("#object_share_event").value =
-      agenda.title + ", " + fullname;
-  // <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité
-  //</span>
-  if (agenda && agenda.isVisioCMZ == 1) {
-    let img = agenda.file_path
-      ? `<img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js"></img>`
-      : "";
-    return (html = ` 
+	if (document.querySelector("#object_share_event") && agenda)
+		document.querySelector("#object_share_event").value =
+			agenda.title + ", " + fullname;
+	// <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité
+	//</span>
+	if (agenda && agenda.isVisioCMZ == 1) {
+		let img = agenda.file_path
+			? `<img src="${location.origin}${agenda.file_path}" alt="${agenda.name}" class="piece-join-tomm-js"></img>`
+			: "";
+		return (html = ` 
         <p>Madame / Monsieur 
         <br>
             Je vous annonce la tenue de la visioconférence
@@ -1142,7 +1149,7 @@ function findInNet(server, denomination_f, adresse) {
 		case "map":
 			window.open("https://www.google.com/maps?q=" + denomination_f + " " + adresse);
 			break;
-				case "tripadvisor":
+		case "tripadvisor":
 			window.open("https://www.tripadvisor.com/Search?q=" + denomination_f);
 			break;
 		case "michelin":
@@ -1151,49 +1158,49 @@ function findInNet(server, denomination_f, adresse) {
 		case "bing":
 			window.open("https://www.bing.com/search?q=" + denomination_f + " " + adresse);
 			break;
-		case "thefork":{
+		case "thefork": {
 			const request = new Request(`/get/link/thefork/${denomination_f.replaceAll(" ", "_")}/${adresse}`, {
 				method: 'GET',
 			});
 			fetch(request)
-			.then((response) => response.text())
-			.then((result) => {
-				const htmlParse = new DOMParser().parseFromString(result, "text/html")
-								let linkTheForkGoogle = htmlParse.querySelector("#main > div > div > div.egMi0 > a")
-				let linkTheForkGoogleHref = linkTheForkGoogle.getAttribute("href")
-				let linkTheFork = linkTheForkGoogleHref.split("/")[3]
-				let theFork = linkTheFork.split(".")[1]
-				
-				if (theFork === 'thefork') {
-					let nameRestoTheForkSplit = linkTheForkGoogleHref.split("/")[5]
+				.then((response) => response.text())
+				.then((result) => {
+					const htmlParse = new DOMParser().parseFromString(result, "text/html")
+					let linkTheForkGoogle = htmlParse.querySelector("#main > div > div > div.egMi0 > a")
+					let linkTheForkGoogleHref = linkTheForkGoogle.getAttribute("href")
+					let linkTheFork = linkTheForkGoogleHref.split("/")[3]
+					let theFork = linkTheFork.split(".")[1]
 
-					let adressRestoTheFork = nameRestoTheForkSplit.split("-")[0]
-					if (adressRestoTheFork == adresse.toLowerCase()) {
+					if (theFork === 'thefork') {
+						let nameRestoTheForkSplit = linkTheForkGoogleHref.split("/")[5]
+
+						let adressRestoTheFork = nameRestoTheForkSplit.split("-")[0]
+						if (adressRestoTheFork == adresse.toLowerCase()) {
+							swal({
+								title: "The fork",
+								text: "On ne trouve pas le lien exacte pour aller au restaurant sur the fork",
+								icon: "error",
+								button: "OK",
+							});
+						} else {
+							let nameRestoTheFork = nameRestoTheForkSplit.split("&")[0]
+							window.open("https://www.thefork.fr/restaurant/" + nameRestoTheFork);
+						}
+
+					} else {
 						swal({
 							title: "The fork",
 							text: "On ne trouve pas le lien exacte pour aller au restaurant sur the fork",
 							icon: "error",
 							button: "OK",
 						});
-					} else {
-						let nameRestoTheFork = nameRestoTheForkSplit.split("&")[0]
-						window.open("https://www.thefork.fr/restaurant/" + nameRestoTheFork);
 					}
-					
-				} else {
-					swal({
-						title: "The fork",
-						text: "On ne trouve pas le lien exacte pour aller au restaurant sur the fork",
-						icon: "error",
-						button: "OK",
-					});
-				}
-			})
+				})
 			break;
 		}
-			// const linkTheFork1 = `https://www.google.com/search?q=the+fork+${denomination_f.replaceAll(" ", "+")}+${adresse}`
-			// console.log(linkTheFork1)
-			
+		// const linkTheFork1 = `https://www.google.com/search?q=the+fork+${denomination_f.replaceAll(" ", "+")}+${adresse}`
+		// console.log(linkTheFork1)
+
 	}
 }
 
@@ -1400,9 +1407,8 @@ function getListeDemandePartenariat(e) {
 					let adrComplet = r[i].numRue + " " + r[i].codePostal + " " + r[i].commune;
 					if (adrComplet != "") {
 						let linkAdresse = document.createElement("a");
-						linkAdresse.href = `https://www.google.com/maps?q=${
-							r[i].numRue + " " + r[i].codePostal + " " + r[i].commune
-						}`;
+						linkAdresse.href = `https://www.google.com/maps?q=${r[i].numRue + " " + r[i].codePostal + " " + r[i].commune
+							}`;
 						linkAdresse.textContent = r[i].numRue + " " + r[i].codePostal + " " + r[i].commune;
 						linkAdresse.setAttribute("class", "linkOndetail");
 						linkAdresse.setAttribute("target", "_blanc");
@@ -1745,7 +1751,7 @@ function acceptPropositionPartenariat(e) {
 						document.querySelector("#user_" + id).remove();
 						/*swal("Merci !", "Demande de partenariat approuvée", "success").then((value)=>{
 
-                            })*/
+							})*/
 
 						swal("Merci !", "Demande de partenariat approuvée", "success").then((value) => {
 							swal({
@@ -1807,7 +1813,7 @@ function acceptPropositionPartenariat(e) {
 				break;
 			}
 			default: {
-				swal("Merci !", "Vous n'avez pas encore decidé, revenez plus tard.", "warning").then((value) => {});
+				swal("Merci !", "Vous n'avez pas encore decidé, revenez plus tard.", "warning").then((value) => { });
 			}
 		}
 	});

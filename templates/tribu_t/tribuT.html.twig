@@ -35,6 +35,7 @@
 	<script  src="{{ asset('assets/js/account/publication_event.js') }}" defer></script>
 
 	<script type="text/javascript" src="{{ asset('assets/js/module/avis_rubrique.js') }}" defer></script>
+	<script src="{{asset('assets/js/account/RecorderAudioTribuT.js')}}" defer></script>
 
 {% endblock %}
 
@@ -64,7 +65,7 @@
 				<div class="account listTribu_t_mobile content_right_actualite" id="container-mobile">
 					<div id="content-pub-js">
 {% if publications is defined%}
-						<h3 class="text-primary">Actualité de mes Tribus T</h3>
+						<h3 class="text-primary">Actualités de tous vos Tribus T</h3>
 						{% if publications|length > 0 %}
 							{% for item in publications %}
 								{# {% include "tribu_t/card/card.twig" with { 'userOwnPub' : item.userOwnPub , 'publication' : item.publication , 'tribu' : item.tribu } %} #}

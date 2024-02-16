@@ -9,8 +9,16 @@ let agendaId = currentURL.split("/")[5]
  * localisation du fichier: dans confirm_agenda.js,
  * je veux: confirmer une invitation
 */
-if(document.querySelector("#accept_from_page_email_Nantenaina_js_css")){
-    document.querySelector("#accept_from_page_email_Nantenaina_js_css").onclick=e=>{
+if (document.querySelector("#accept_from_page_email_Nantenaina_js_css")) {
+    document.querySelector("#accept_from_page_email_Nantenaina_js_css").onclick = (e) => {
+		///show changement ...
+		document.querySelector("#accept_from_page_email_Nantenaina_js_css").innerHTML = `
+            <i class="fa-solid fa-spinner fa-spin"></i>
+        `;
+
+		if (document.querySelector("#decline_from_page_email_Nantenaina_js_css")) {
+			document.querySelector("#decline_from_page_email_Nantenaina_js_css").setAttribute("disabled", "");
+		}
       
         const request = new Request(`/agenda/make/confirmation/${fromId}/${toId}/${agendaId}/1`, {
             method: "POST",
@@ -28,17 +36,17 @@ if(document.querySelector("#accept_from_page_email_Nantenaina_js_css")){
                     document.querySelector("#contentAcceptOrRejectAgenda").style.display = "none"
 if(response.type == "Type"){
                         swal("Message !", "Votre choix a été bien pris en compte.\r\n" +
-                                        " L'événement devrait s'afficher dans votre agenda et"+
+                                        " L'événement devrait s'afficher dans votre agenda et "+
                                         "vous recevrez un email de présence le jour de l'événement.\r\n"+
-                                        "Vous allez être redirigé vers la page d'inscription de CONSOMYZONE pour vous incrire.", "success")
+                                        "Vous allez être redirigés vers la page d'inscription de CONSOMYZONE pour vous incrire.", "success")
                                     .then((value) => {
                                         location.href = "/connexion?registerAgenda=true";
                                     });
                     }else{
                     swal("Message !", "Votre choix a été bien pris en compte.\r\n" +
-                                    " L'événement devrait s'afficher dans votre agenda et"+
+                                    " L'événement devrait s'afficher dans votre agenda et "+
                                     "vous recevrez un email de présence le jour de l'événement.\r\n"+
-                                    "Vous allez être redirigé vers CONSOMYZONE.", "success")
+                                    "Vous allez être redirigés vers CONSOMYZONE.", "success")
                                 .then((value) => {
                                     location.href = "/";
                                 });
@@ -82,7 +90,7 @@ if(document.querySelector("#decline_from_page_email_Nantenaina_js_css")){
             .then(response => response.json())
             .then(response => {
                 console.log(response);
-                swal("Merci !", "Votre choix a été bien pris en compte.\r\nVous allez être redirigé vers CONSOMYZONE.", "success")
+                swal("Merci !", "Votre choix a été bien pris en compte.\r\nVous allez être redirigés vers CONSOMYZONE.", "success")
                             .then((value) => {
                                 location.href = "/";
                             });

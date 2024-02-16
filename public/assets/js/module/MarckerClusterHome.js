@@ -8,12 +8,12 @@ class MarckerClusterHome extends MapModule {
 
 		///override because for each rubric
 		this.objectRatioAndDataMax = [
-			{ zoomMin: 18, dataMax: 25, ratio: 4 },
-			{ zoomMin: 16, dataMax: 20, ratio: 4 },
-			{ zoomMin: 14, dataMax: 17, ratio: 3 },
-			{ zoomMin: 13, dataMax: 15, ratio: 2 },
-			{ zoomMin: 9, dataMax: 10, ratio: 2 },
-			{ zoomMin: 6, dataMax: 8, ratio: 1 },
+			{ zoomMin: 18, dataMax: 22, ratio: 4 },
+			{ zoomMin: 16, dataMax: 17, ratio: 4 },
+			{ zoomMin: 14, dataMax: 14, ratio: 3 },
+			{ zoomMin: 13, dataMax: 12, ratio: 2 },
+			{ zoomMin: 9, dataMax: 8, ratio: 2 },
+			{ zoomMin: 6, dataMax: 6, ratio: 1 },
 			{ zoomMin: 4, dataMax: 1, ratio: 0 },
 			{ zoomMin: 1, dataMax: 1, ratio: 0 },
 		];
@@ -51,9 +51,9 @@ class MarckerClusterHome extends MapModule {
 			const response = await fetch(`${this.api_data}${param}`);
 
 			//// api get all data from server
-			this.default_data = await response.json(); /// { station, ferme, resto, golf, tabac, allIdRestoPasstille}
+			this.default_data = await response.json(); /// { station, ferme, resto, golf, tabac, marche, allIdRestoPasstille}
 
-			this.data = this.default_data; /// { station, ferme, resto, golf, tabac, allIdRestoPasstille}
+			this.data = this.default_data; /// { station, ferme, resto, golf, tabac, marche, allIdRestoPasstille}
 
 			this.listRestoPastille = this.default_data.allIdRestoPastille; /// [  { id_resto : ..., tableName : ..., name_tribu_t_muable : ..., logo_path : ... } , ... ]
 			this.bindAction();
@@ -171,12 +171,17 @@ class MarckerClusterHome extends MapModule {
 	}
 
 	addMarker(newData) {
-		const { station, ferme, resto, golf, tabac } = newData;
+		const { station, ferme, resto, golf, tabac, marche } = newData;
 
-		if (station || ferme || resto || golf || tabac) {
+		if (station || ferme || resto || golf || tabac || marche) {
 			///all resto
 			if (resto.length > 0) {
 				this.addResto(resto);
+			}
+
+			///all resto
+			if (marche.length > 0) {
+				this.addMarche(marche);
 			}
 
 			///all fermes
@@ -412,6 +417,47 @@ class MarckerClusterHome extends MapModule {
 		});
 	}
 
+	addMarche(dataMarche) {
+		const zoom = this.map._zoom;
+		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+		const minx = x.min,
+			miny = y.min,
+			maxx = x.max,
+			maxy = y.max;
+
+		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		const { dataMax, ratio } = current_object_dataMax;
+
+		const ratioMin = parseFloat(parseFloat(y.min).toFixed(ratio));
+		const ratioMax = parseFloat(parseFloat(y.max).toFixed(ratio));
+
+		const dataFiltered = this.generateTableDataFiltered(ratioMin, ratioMax, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
+		dataMarche.forEach((item) => {
+			const isInside =
+				parseFloat(item.lat) > parseFloat(miny) &&
+				parseFloat(item.lat) < parseFloat(maxy) &&
+				parseFloat(item.long) > parseFloat(minx) &&
+				parseFloat(item.long) < parseFloat(maxx);
+
+			const item_with_ratio = parseFloat(parseFloat(item.lat).toFixed(ratio));
+
+			if (
+				dataFiltered.some((jtem) => parseFloat(jtem.lat) === item_with_ratio && jtem.data.length < dataMax) &&
+				isInside
+			) {
+				this.settingSingleMarker(item, false);
+
+				dataFiltered.forEach((ktem) => {
+					if (parseFloat(ktem.lat) === item_with_ratio) {
+						ktem.data.push(item);
+					}
+				});
+			}
+		});
+	}
+
 	getIcon(item, isSelected = false) {
 		let icon_path = "";
 		let icon_size = isSelected ? 2 : 0;
@@ -481,6 +527,10 @@ class MarckerClusterHome extends MapModule {
 			}
 		} else if (item.tabac !== undefined) {
 			icon_path = isSelected ? "assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
+        } else if (item.marche !== undefined) {
+			icon_path = isSelected
+				? "assets/icon/NewIcons/icon_marche_selected.png"
+				: "assets/icon/NewIcons/icon_marche.png";
 		}
 
 		return { path: icon_path, size: icon_size };
@@ -497,6 +547,8 @@ class MarckerClusterHome extends MapModule {
 			this.settingSingleMarkerGolf(item, isSelected);
 		} else if (item.tabac !== undefined) {
 			this.settingSingleMarkerTabac(item, isSelected);
+        } else if (item.marche !== undefined) {
+			this.settingSingleMarkerMarche(item, isSelected);
 		}
 	}
 
@@ -820,6 +872,60 @@ class MarckerClusterHome extends MapModule {
 		});
 	}
 
+	settingSingleMarkerMarche(item, isSelected = false) {
+		const zoom = this.map._zoom;
+		const icon = this.getIcon(item, isSelected);
+
+		let marker = null;
+		marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), {
+			icon: setIconn(icon.path, "", icon.size, zoom),
+			cleNom: item.denominationF,
+			id: item.id,
+			type: "marche",
+			draggable: false,
+		});
+
+		const title = `
+		    <div>
+				<span class='fw-bolder'> Marché: </span>  
+				${item.denominationF}<br>
+				<span class='fw-bolder'>Adresse:</span>
+				${item.adresse}
+			</div>
+		`;
+
+		marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+
+		this.handleClickMarche(marker, item);
+		this.markers.addLayer(marker);
+	}
+
+	handleClickMarche(marcheMarker, dataMarche) {
+		marcheMarker.on("click", (e) => {
+			////close right if this open
+			this.closeRightSide();
+
+			this.updateCenter(parseFloat(dataMarche.lat), parseFloat(dataMarche.long), this.zoomDetails);
+
+			const zoom = this.map._zoom;
+			const icon = this.getIcon(dataMarche, true);
+
+			marcheMarker.setIcon(setIconn(icon.path, "", icon.size, zoom));
+
+			this.updateLastMarkerSelected(marcheMarker, "marche");
+
+			getDetailMarche(dataMarche.dep, dataMarche.depName, dataMarche.id, true);
+
+			if (document.querySelector("#dockableIcone_marche_" + dataMarche.id))
+				document.querySelector("#dockableIcone_marche_" + dataMarche.id).remove();
+
+			if (document.querySelector("#dockableBtn_marche_" + dataMarche.id))
+				document.querySelector("#dockableBtn_marche_" + dataMarche.id).remove();
+
+			removeOrEditSpecificElement();
+		});
+	}
+
 	updateLastMarkerSelected(marker, type) {
 		if (this.marker_last_selected && this.marker_last_selected !== marker) {
 			let last_item = null;
@@ -841,6 +947,10 @@ class MarckerClusterHome extends MapModule {
 				);
 			} else if (this.marker_last_selected_type === "tabac") {
 				last_item = this.default_data.tabac.find(
+                    ({ id }) => parseInt(id) === parseInt(this.marker_last_selected.options.id)
+				);
+            } else if (this.marker_last_selected_type === "marche") {
+				last_item = this.default_data.marche.find(
 					({ id }) => parseInt(id) === parseInt(this.marker_last_selected.options.id)
 				);
 			}
@@ -898,11 +1008,12 @@ class MarckerClusterHome extends MapModule {
 			let new_data = await response.json();
 
 			let all_data = [];
-			all_data = all_data.concat(new_data.ferme);
-			all_data = all_data.concat(new_data.station);
+			all_data = all_data.concat(new_data.marche);
 			all_data = all_data.concat(new_data.resto);
 			all_data = all_data.concat(new_data.golf);
 			all_data = all_data.concat(new_data.tabac);
+            all_data = all_data.concat(new_data.ferme);
+			all_data = all_data.concat(new_data.station);
 
 			this.addMarkerNewPeripherique(all_data, new_size);
 
@@ -913,6 +1024,7 @@ class MarckerClusterHome extends MapModule {
 			new_data.resto = new_data.resto.filter((item) => !this.default_data.resto.some((j) => j.id === item.id));
 			new_data.golf = new_data.golf.filter((item) => !this.default_data.golf.some((j) => j.id === item.id));
 			new_data.tabac = new_data.tabac.filter((item) => !this.default_data.tabac.some((j) => j.id === item.id));
+            new_data.marche = new_data.marche.filter((item) => !this.default_data.marche.some((j) => j.id === item.id));
 
 			// const result= this.checkeFilterType(new_data);
 			// this.addMarker(result);
@@ -924,6 +1036,7 @@ class MarckerClusterHome extends MapModule {
 				resto: this.default_data.resto.concat(new_data.resto),
 				golf: this.default_data.golf.concat(new_data.golf),
 				tabac: this.default_data.tabac.concat(new_data.tabac),
+                marche: this.default_data.marche.concat(new_data.marche),
 			};
 		} catch (e) {
 			console.log(e);
@@ -1390,14 +1503,17 @@ class MarckerClusterHome extends MapModule {
 		});
 	}
 
-	updateListRestoPastille(idResto, tribuName, logo=null) {
-		this.listRestoPastille.push({ id_resto: idResto.toString(), tableName: tribuName, logo_path:logo});
+	updateListRestoPastille(idResto, tribuName, logo = null) {
+		this.listRestoPastille.push({ id_resto: idResto.toString(), tableName: tribuName, logo_path: logo });
 		this.updateStateResto(idResto);
 	}
 
 	updateListRestoDepastille(idResto, tribuName) {
 		this.listRestoPastille = this.listRestoPastille.filter((item) => {
-			return parseInt(item.id_resto) != parseInt(idResto) || item.tableName.replaceAll('_restaurant','') != tribuName.replaceAll('_restaurant','');
+			return (
+				parseInt(item.id_resto) != parseInt(idResto) ||
+				item.tableName.replaceAll("_restaurant", "") != tribuName.replaceAll("_restaurant", "")
+			);
 		});
 		this.updateStateResto(idResto);
 	}

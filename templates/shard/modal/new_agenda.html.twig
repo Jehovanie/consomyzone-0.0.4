@@ -84,7 +84,7 @@
                     <input type="time" class="form-control input_black timeEnd_jheo_js" id="timeEnd" required>
                 </div>
             </div>
-            <div class="mb-3" style="margin:auto;">
+            <div class="mb-3 img_upload_agenda" style="margin:auto;">
                 <div class="preview text-center d-none preview_image_nanta_js">
                     <img id="image-preview" class="image-upload-image">
                     <div class="image-title-wrap">
@@ -99,7 +99,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-secondary cta_cancel_create_agenda_jheo_js" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-secondary cta_cancel_create_agenda_jheo_js" onclick="resetInputData()">Annuler saisie</button>
         <button type="button" class="btn btn-info d-none" id="shareAgendaBtn"  data-bs-target="#confirmPartageAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Partager</button>
         <button type="button" class="btn btn-danger d-none" id="deleteAgendaBtn" onclick="deleteAgenda()">Supprimer</button>
         <button type="button" data-action="create" class="btn btn-primary" onclick="getObjectForNewAgenda(event)" id="createOrEditBtn" data-usi="{{app.user.id}}" >Créer</button>

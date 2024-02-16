@@ -36,7 +36,7 @@ if( document.querySelector("#fetch_member_tribug_jheo_js")){
             })
             .then( response => {
                 if( response ){
-                    document.querySelector(".textIndicationNantaJs").textContent = "Fans"
+                    document.querySelector(".textIndicationNantaJs").textContent = "Partisans"
                     if( document.querySelector(".content_bloc_jheo_js")){
                         document.querySelector(".content_bloc_jheo_js").innerHTML = response;
                     }

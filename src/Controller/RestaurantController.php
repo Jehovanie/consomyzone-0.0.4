@@ -1464,6 +1464,17 @@ TributGService $tributGService,
         $avis = $rJson["avis"];
         $type = $rJson["type"];
 
+        if($rJson["type"] == "audio_up"){
+            $type = "audio";
+        }
+        
+        if($rJson["type"] == "image_up"){
+            $type = "image";
+        }
+        if($rJson["type"] == "video_up"){
+            $type = "video";
+        }
+
         if($type == "audio" || $type == "image" || $type == "video"){
 
             $path_file = '/public/uploads/avis-restaurant/'.$type .'/';
@@ -1493,16 +1504,7 @@ TributGService $tributGService,
 
         }
 
-        if($rJson["type"] == "audio_up"){
-            $type = "audio";
-        }
         
-        if($rJson["type"] == "image_up"){
-            $type = "image";
-        }
-        if($rJson["type"] == "video_up"){
-            $type = "video";
-        }
 
         $response = $avisRestaurantRepository->updateAvis(
             $idRestaurant,
@@ -1987,7 +1989,7 @@ TributGService $tributGService,
 
         $default_folder= [
             "id" => null,
-            "name" => "Mes favori",
+            "name" => "Mes favoris",
             "id_folder_parent" => 0,
             "livel_parent" => 0
         ];

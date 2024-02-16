@@ -281,7 +281,7 @@ $user = $this->userRepository->findOneById($userId);
         if($session->get("demande-partenariat")){
             return new RedirectResponse($this->urlGenerator->generate('inscription_partenaire'));
         }else{
-            return new RedirectResponse($this->urlGenerator->generate('app_actualite'));
+            return new RedirectResponse($this->urlGenerator->generate('app_account'));
         }
         
     }

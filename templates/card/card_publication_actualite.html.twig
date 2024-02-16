@@ -47,14 +47,14 @@
 			<p class="carbon-poweredby" rel="noopener sponsored">
 				<p class="full_description d-none">{{publication.description}}</p>
 					{% if publication.description|length > 60 %}
-						<p class="text-pub mb-2 pub_description_jheo_js pub_decription_normal">{{publication.description|slice(0, 60) ~ "... "}} <span class="voir-plus-publication tooltip-elie" onclick='openDetailPublication("{{tribu.table}}_{{publication.id}}")'>Lire la suite <span class="tooltiptext">Cliquez pour voir plus de description.</span></span> </p>
-						<p class="text-pub mb-2 pub_description_jheo_js pub_decription_mobile">{{publication.description|slice(0, 30) ~ "... "}} <span class="voir-plus-publication tooltip-elie" onclick='openDetailPublication("{{tribu.table}}_{{publication.id}}")'>Lire la suite <span class="tooltiptext">Cliquez pour voir plus de description.</span></span> </p>
+						<p class="text-pub mb-2 pub_description_jheo_js pub_decription_normal">{{publication.description|slice(0, 60) ~ "... "}} <span class="voir-plus-publication tooltip-elie" onclick='openDetailPublication("{{tribu.table}}_{{publication.id}}")'>Lire la suite <span class="tooltiptext">Cliquez pour voir plus de descriptions.</span></span> </p>
+						<p class="text-pub mb-2 pub_description_jheo_js pub_decription_mobile">{{publication.description|slice(0, 30) ~ "... "}} <span class="voir-plus-publication tooltip-elie" onclick='openDetailPublication("{{tribu.table}}_{{publication.id}}")'>Lire la suite <span class="tooltiptext">Cliquez pour voir plus de descriptions.</span></span> </p>
 					{% else %}
 						<p class="text-pub mb-2 pub_description_jheo_js">{{publication.description}}</p>
 					{% endif %}
 			</p>
 
-			<span class="voir-plus-publication tooltip-elie" onclick='openDetailPublication("{{tribu.table}}_{{publication.id}}")' data-src="{{publication.image }}">Voir détail <span class="tooltiptext">Cliquez pour voir plus de détail de cette publication.</span></span>
+			<span class="voir-plus-publication tooltip-elie" onclick='openDetailPublication("{{tribu.table}}_{{publication.id}}")' data-src="{{publication.image }}">Voir détail <span class="tooltiptext">Cliquez pour voir plus de détails.</span></span>
 
 			{% if userOwnPub.id == app.user.id %}
 				<div class="param-content">

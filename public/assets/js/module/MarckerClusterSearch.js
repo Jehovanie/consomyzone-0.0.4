@@ -291,14 +291,14 @@ class MarckerClusterSearch extends MapModule {
 				}
 				// this.settingSingleMarker(item, false);
 			});
-			
+
 			/// check if the zoom related to the marker poi
 			if (zoom >= this.zoom_max_for_count_per_dep) {
 				this.map.addLayer(this.markers);
 			}
 
 			this.removePolylineAndSpyderfyMarker();
-					}
+		}
 	}
 
 	addStation(dataStation) {
@@ -348,14 +348,14 @@ class MarckerClusterSearch extends MapModule {
 				resultRestoPastille.length > 1
 					? "assets/icon/NewIcons/icon-resto-new-B-vert-multi.png"
 					: resultRestoPastille.length === 1
-					? "assets/icon/NewIcons/icon-resto-new-B-org-single.png"
-					: "assets/icon/NewIcons/icon-resto-new-B.png";
+						? "assets/icon/NewIcons/icon-resto-new-B-org-single.png"
+						: "assets/icon/NewIcons/icon-resto-new-B.png";
 			let poi_icon_Selected =
 				resultRestoPastille.length > 1
 					? "assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png"
 					: resultRestoPastille.length === 1
-					? "assets/icon/NewIcons/icon-resto-new-Rr-org-single.png"
-					: "assets/icon/NewIcons/icon-resto-new-Rr.png";
+						? "assets/icon/NewIcons/icon-resto-new-Rr-org-single.png"
+						: "assets/icon/NewIcons/icon-resto-new-Rr.png";
 
 			icon_path = isSelected ? poi_icon_Selected : poi_icon;
 		} else if (item.golf !== undefined) {
@@ -395,6 +395,10 @@ class MarckerClusterSearch extends MapModule {
 			}
 		} else if (item.tabac !== undefined) {
 			icon_path = isSelected ? "assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
+        } else if (item.marche !== undefined) {
+			icon_path = isSelected
+				? "assets/icon/NewIcons/icon_marche_selected.png"
+				: "assets/icon/NewIcons/icon_marche.png";
 		}
 
 		return { path: icon_path, size: icon_size };
@@ -411,6 +415,8 @@ class MarckerClusterSearch extends MapModule {
 			this.settingSingleMarkerGolf(item, isSelected);
 		} else if (item.tabac !== undefined) {
 			this.settingSingleMarkerTabac(item, isSelected);
+        } else if (item.marche !== undefined) {
+			this.settingSingleMarkerMarche(item, isSelected);
 		}
 	}
 
@@ -503,8 +509,10 @@ class MarckerClusterSearch extends MapModule {
 
 			if (document.querySelector("#dockableIcone_" + type + "_" + item.id))
 				document.querySelector("#dockableIcone_" + type + "_" + item.id).remove();
+
 			if (document.querySelector("#dockableBtn_" + type + "_" + item.id))
 				document.querySelector("#dockableBtn_" + type + "_" + item.id).remove();
+
 			removeOrEditSpecificElement();
 		});
 	}
@@ -636,6 +644,8 @@ class MarckerClusterSearch extends MapModule {
 			} else {
 				getDetailTabac(item.dep, item.nom_dep, item.id, true);
 			}
+        } else if (type === "marche") {
+			getDetailMarche(item.dep, item.depName, item.id, true);
 		}
 	}
 
@@ -651,8 +661,8 @@ class MarckerClusterSearch extends MapModule {
 			resultRestoPastille.length > 1
 				? "assets/icon/NewIcons/icon-resto-new-B-vert-multi.png"
 				: resultRestoPastille.length === 1
-				? "assets/icon/NewIcons/icon-resto-new-B-org-single.png"
-				: "assets/icon/NewIcons/icon-resto-new-B.png";
+					? "assets/icon/NewIcons/icon-resto-new-B-org-single.png"
+					: "assets/icon/NewIcons/icon-resto-new-B.png";
 
 		// const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn('assets/icon/NewIcons/icon-resto-new-B.png'),id: item.id, type: "resto" });
 		// const marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), { icon: setIconn(poi_icon, '', isPastille ), id: item.id, type: "resto" });
@@ -763,6 +773,35 @@ class MarckerClusterSearch extends MapModule {
 		this.markers.addLayer(marker);
 	}
 
+	settingSingleMarkerMarche(item, isSelected = false) {
+		const zoom = this.map._zoom;
+		const icon = this.getIcon(item, isSelected);
+
+		let marker = null;
+		marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), {
+			icon: setIconn(icon.path, "", icon.size, zoom),
+			cleNom: item.denominationF,
+			id: item.id,
+			type: "marche",
+			draggable: false,
+		});
+
+		const title = `
+					<div>
+						<span class='fw-bolder'> Marché: </span>  
+						${item.denominationF}<br>
+						<span class='fw-bolder'>Adresse:</span>
+						${item.adresse}
+					</div>
+				`;
+
+		marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+
+		this.bindEventClick(marker, item, "marche");
+
+		this.markers.addLayer(marker);
+	}
+
 	updateLastMarkerSelected(marker, type) {
 		if (this.marker_last_selected && this.marker_last_selected != marker) {
 			const default_data = this.default_data.results[0];
@@ -792,6 +831,11 @@ class MarckerClusterSearch extends MapModule {
 				last_item = default_data.find(
 					(item) =>
 						parseInt(item.id) === parseInt(this.marker_last_selected.options.id) && item.tabac != undefined
+				);
+            } else if (this.marker_last_selected_type === "marche") {
+				last_item = default_data.find(
+					(item) =>
+						parseInt(item.id) === parseInt(this.marker_last_selected.options.id) && item.marche != undefined
 				);
 			}
 
@@ -1027,40 +1071,40 @@ class MarckerClusterSearch extends MapModule {
 				if (type === "filterFerme") {
 					data_ferme = code_dep
 						? data.ferme.filter(({ departement }) => {
-								if (parseInt(code_dep) === 20) {
-									return (
-										departement.trim() === "2A" ||
-										departement.trim() === "2B" ||
-										parseInt(departement) === 20
-									);
-								} else {
-									return parseInt(departement) === parseInt(code_dep);
-								}
-						  })
+							if (parseInt(code_dep) === 20) {
+								return (
+									departement.trim() === "2A" ||
+									departement.trim() === "2B" ||
+									parseInt(departement) === 20
+								);
+							} else {
+								return parseInt(departement) === parseInt(code_dep);
+							}
+						})
 						: data.ferme;
 				} else if (type === "filterStation") {
 					data_station = code_dep
 						? data.station.filter(({ departementCode }) => {
-								if (parseInt(code_dep) === 20) {
-									return (
-										departementCode.trim() === "2A" ||
-										departementCode.trim() === "2B" ||
-										parseInt(departementCode) === 20
-									);
-								} else {
-									return parseInt(departementCode) === parseInt(code_dep);
-								}
-						  })
+							if (parseInt(code_dep) === 20) {
+								return (
+									departementCode.trim() === "2A" ||
+									departementCode.trim() === "2B" ||
+									parseInt(departementCode) === 20
+								);
+							} else {
+								return parseInt(departementCode) === parseInt(code_dep);
+							}
+						})
 						: data.station;
 				} else if (type === "filterResto") {
 					data_resto = code_dep
 						? data.resto.filter(({ dep }) => {
-								if (parseInt(code_dep) === 20) {
-									return dep.trim() === "2A" || dep.trim() === "2B" || parseInt(dep) === 20;
-								} else {
-									return parseInt(dep) === parseInt(code_dep);
-								}
-						  })
+							if (parseInt(code_dep) === 20) {
+								return dep.trim() === "2A" || dep.trim() === "2B" || parseInt(dep) === 20;
+							} else {
+								return parseInt(dep) === parseInt(code_dep);
+							}
+						})
 						: data.resto;
 				}
 			}
@@ -1199,23 +1243,23 @@ class MarckerClusterSearch extends MapModule {
 			resultRestoPastille.length > 1
 				? "assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png"
 				: resultRestoPastille.length === 1
-				? "assets/icon/NewIcons/icon-resto-new-Rr-org-single.png"
-				: "assets/icon/NewIcons/icon-resto-new-Rr.png";
+					? "assets/icon/NewIcons/icon-resto-new-Rr-org-single.png"
+					: "assets/icon/NewIcons/icon-resto-new-Rr.png";
 		let isPastille = resultRestoPastille.length > 0 ? 2 : 0;
 
 		this.markers.eachLayer((marker) => {
 			if (parseInt(marker.options.id) === parseInt(idResto) && marker.options.type === "resto") {
 				/*const icon_R = L.Icon.extend({
-                    options: {
-                        iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/"+  poi_icon_Selected: this.currentUrl.origin + "/public/" + poi_icon_Selected,
-                        iconSize: isPastille === 2 ? [45, 60] : [30,45] ,
-                        iconAnchor: [11, 30],
-                        popupAnchor: [0, -20],
-                        shadowSize: [68, 95],
-                        shadowAnchor: [22, 94]
-                    }
-                })
-                marker.setIcon(new icon_R);*/
+					options: {
+						iconUrl: IS_DEV_MODE ? this.currentUrl.origin + "/"+  poi_icon_Selected: this.currentUrl.origin + "/public/" + poi_icon_Selected,
+						iconSize: isPastille === 2 ? [45, 60] : [30,45] ,
+						iconAnchor: [11, 30],
+						popupAnchor: [0, -20],
+						shadowSize: [68, 95],
+						shadowAnchor: [22, 94]
+					}
+				})
+				marker.setIcon(new icon_R);*/
 				let oneResto = this.default_data.results[0].find(
 					(jtem) => jtem.resto && parseInt(idResto) === parseInt(jtem.id)
 				);
@@ -1273,13 +1317,13 @@ class MarckerClusterSearch extends MapModule {
 	}
 
 	/**
-     *@author Nantenaina a ne pas contacté pendant les congés 
-      où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
-     * localisation du fichier: dans MarkerClusterSearch.js,
-     * je veux: rendre le marker draggable
-     * si un utilisateur veut modifier une ou des informations
-     * @param {} id 
-     */
+	 *@author Nantenaina a ne pas contacté pendant les congés 
+	  où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
+	 * localisation du fichier: dans MarkerClusterSearch.js,
+	 * je veux: rendre le marker draggable
+	 * si un utilisateur veut modifier une ou des informations
+	 * @param {} id 
+	 */
 	makeMarkerDraggable(id) {
 		this.markers.eachLayer((marker) => {
 			if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === "resto") {

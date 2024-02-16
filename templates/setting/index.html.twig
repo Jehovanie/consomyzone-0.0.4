@@ -35,7 +35,7 @@
 
 					<div class="mt-4 collapse" id="info_compte">
 						
-						<p>Modifiez votre profil rapidement</p>
+						<p>Modifiez votre profil.</p>
 
 						<div class="h qa ld yd tf th gb zb mdf-pdp">
 							{# <img src="/assets/image/img_avatar3.png" alt="profile" style="height:90px;"/> #}
@@ -230,8 +230,8 @@
 							</div>
 
 							<div class="db">
-								{{ form_label(form_password.retap_new_password , "Re-taper le nouveau mot de passe", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
-								{{ form_widget(form_password.retap_new_password, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Re-taper le nouveau mot de passe','onpaste':'return false'}}) }}
+								{{ form_label(form_password.retap_new_password , "Confirmer le nouveau mot de passe", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+								{{ form_widget(form_password.retap_new_password, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Confirmer le nouveau mot de passe','onpaste':'return false'}}) }}
 								<i class="fas fa-eye-slash pwd-eye"></i>
 							</div>
 
@@ -266,7 +266,7 @@
 				<div class="yd qh ni bj wr nj xr cl">
 
 					<h3 class="tn jn zn gs ab">
-						Modifier l'adresse email et votre identifiant <i class="fas fa-plus-circle" data-bs-toggle="collapse" href="#mdp_email" role="button" onclick="toggleClass(this)"></i>
+						Modifier l'adresse e-mail et votre identifiant <i class="fas fa-plus-circle" data-bs-toggle="collapse" href="#mdp_email" role="button" onclick="toggleClass(this)"></i>
 					</h3>
 
 					<div class="mt-4 collapse" id="mdp_email">
@@ -274,18 +274,18 @@
 						{{form_start(form_email)}}
 							<input name="reset" type="hidden" value="resetEmail">
 							<div class="db">
-								{{ form_label(form_email.old_email , "Email actuel", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
-								{{ form_widget(form_email.old_email, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Entrer votre email actuel', 'value': app.user.email }}) }}
+								{{ form_label(form_email.old_email , "E-mail actuel", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+								{{ form_widget(form_email.old_email, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Entrer votre e-mail actuel', 'value': app.user.email }}) }}
 							</div>
 
 							<div class="db">
-								{{ form_label(form_email.new_email , "Nouveau email", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
-								{{ form_widget(form_email.new_email, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Entrer le nouveau email'}}) }}
+								{{ form_label(form_email.new_email , "Nouveau e-mail", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+								{{ form_widget(form_email.new_email, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Entrer le nouveau e-mail'}}) }}
 							</div>
 
 							<div class="db">
-								{{ form_label(form_email.confirm_email , "Re-taper le nouveau email", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
-								{{ form_widget(form_email.confirm_email, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Re-taper le nouveau email','onpaste':'return false'}}) }}
+								{{ form_label(form_email.confirm_email , "Confirmer le nouveau e-mail", {'label_attr': {'class': 'jc un zn gs fb'}}) }}
+								{{ form_widget(form_email.confirm_email, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr','placeholder':'Confirmer le nouveau e-mail','onpaste':'return false'}}) }}
 							</div>
 
 							<div class="db">
@@ -332,7 +332,7 @@
 
 						<label for="">Sélectionnez le délai de déconnexion automatique.</label>
 						<select class="yd nj qh ni bj jr fr ps zn gs il cm zr wr" name="" id="change_idle_param_tom_js">
-							<option value="0">Choisez parmis les valeurs suivantes</option>
+							<option value="0">Choisissez parmis les valeurs suivantes</option>
 							<option value="5">5 min</option>
 							<option value="10">10 min</option>
 							<option value="20">20 min</option>
@@ -345,7 +345,7 @@
 					<div class="yd qh ni bj wr nj xr cl">
 
 							<h3 class="tn jn zn gs ab">
-								Organisez les cookies <i class="fas fa-plus-circle" data-bs-toggle="collapse" href="#cookies_faniry_js" role="button" onclick="toggleClass(this)"></i>
+								Organiser les cookies <i class="fas fa-plus-circle" data-bs-toggle="collapse" href="#cookies_faniry_js" role="button" onclick="toggleClass(this)"></i>
 							</h3>
 
 							<div class="mt-4 collapse" id="cookies_faniry_js">
@@ -358,7 +358,7 @@
 								</div>
 								<div class="form-check">
 									<label class="" for="flexCheckChecked">
-										Refusez les cookies.
+										Refuser les cookies.
 									</label>
 									<input class="form-check-input" type="checkbox" value="" id="declineCookies_faniry_js">
 									

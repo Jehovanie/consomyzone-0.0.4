@@ -192,7 +192,7 @@ function selectDestinationLetter() {
 
 		// let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
 		return (html = `
-					<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chers tous,</span> </br>
+					<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cher tous,</span> </br>
 					<p>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Un nouveau membre vient de rejoindre notre tribu.
 						C'est une histoire, une expérience qui renforcent l'enthousiasme de notre communauté.

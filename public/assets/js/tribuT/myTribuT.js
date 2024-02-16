@@ -448,7 +448,7 @@ function showPartisan() {
       response.json().then((jsons) => {
         // console.log(jsons);
 
-        let head_table = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Liste des Fans</h5><table id="table_partisan_elie_js" class="display m-2 p-2" style="width:100%">
+        let head_table = `<h5 class="text-primary ms-1 mt-4 mb-4 float-start">Liste des Partisans</h5><table id="table_partisan_elie_js" class="display m-2 p-2" style="width:100%">
                     <thead>
                         <tr>
                             <th>Profil</th>
@@ -828,16 +828,17 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                               <a style="cursor:pointer;" onclick="showInvitations()" class="dropdown-item">Invitations</a>
                           </li>  
                             <li class="listNavBarTribu partisantT">
-                              <a style="cursor:pointer;" class="dropdown-item">Fans</a>
+                              <a style="cursor:pointer;" class="dropdown-item">Partisans</a>
                           </li>
-                          ${postulantListe}
+                          
                           <li class="listNavBarTribu">
                               <a style="cursor:pointer;" id="see-gallery" class="dropdown-item">Photos</a>
                           </li>
-
+                          ${newsLetterTribuT}
+                          ${postulantListe}
                           ${canUpdateTribuInfoMob}
 
-                          ${newsLetterTribuT}
+                          
                         </ul>
                       </div>
                 </nav>`;
@@ -847,25 +848,22 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                         <li class="listNavBarTribu">
                             <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
                         </li>
-
-
                         ${restExtension}
                         ${golfExtension}
-
-                        <li class="listNavBarTribu invitation">
-                            <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
-                        </li>
                         <li class="listNavBarTribu partisantT">
-                            <a style="cursor:pointer;">Fans</a>
+                            <a style="cursor:pointer;">Partisans</a>
                         </li>
-                        ${postulantListe}
+                        
                         <li class="listNavBarTribu">
                             <a style="cursor:pointer;" id="see-gallery">Photos</a>
                         </li>
-
-                        ${canUpdateTribuInfo}
+                        <li class="listNavBarTribu invitation">
+                            <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
+                        </li>
 
                         ${newsLetterTribuT}
+                        ${postulantListe}
+                        ${canUpdateTribuInfo}
 
                     </ul>
                 </nav>`;
@@ -998,7 +996,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                 <i class="fa-solid fa-earth-oceania"></i>
                                             </span>
                                             <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
+                                                <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Partisans </a>
                                                 <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
                                             </div>
                                         </div>
@@ -1224,7 +1222,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                           data[
                                                                             i
                                                                           ].id
-                                                                        }" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
+                                                                        }" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Partisans </a>
                                                                         <a data-id="${
                                                                           data[
                                                                             i
@@ -1462,7 +1460,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                         <a data-id="${
                                                                           dataG.id
                                                                         }" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)"
-                                                                         href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
+                                                                         href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Partisans </a>
                                                                         <a data-id="${
                                                                           dataG.id
                                                                         }" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
@@ -3600,6 +3598,15 @@ function openPopupAction(
       depastilledBtn.dataset.tbname = document
         .querySelector("#activeTribu")
         .getAttribute("data-table-name");
+      if (document.querySelector(".send_avis_jheo_js")) {
+                //// reset function add avis resto
+                document
+                  .querySelector(".send_avis_jheo_js")
+                  .setAttribute(
+                    "onclick",
+                    `addAvisInTribuT("${id_pastille}","${rubrique_type}")`
+                  );
+      }
       break;
     }
   }

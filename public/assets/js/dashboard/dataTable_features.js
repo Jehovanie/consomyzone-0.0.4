@@ -771,7 +771,7 @@ function getListePhotoTovalidate(e, rubrique) {
   let _table = `<table class="table" id="listeRestoAvaliderTable">
                     <thead>
                         <tr>
-                            <th scope="col">Demandes reçus</th>
+                            <th scope="col">Demandes reçues</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -796,11 +796,14 @@ function getListePhotoTovalidate(e, rubrique) {
                                     </div>
                                     <div class="col-md-8">
                                         <div class="card-body">
-                                        <p class="card-text"><a href="/user/profil/${item.user_id}" class="text-body-primary" style="color:blue !important;">${item.username}</a> a ajouté un photo dans un ${rubrique}</p>
+                                        <p class="card-text"><a href="/user/profil/${item.user_id}" class="text-body-primary" style="color:blue !important;">${item.username}</a> a ajouté une photo dans un ${rubrique}</p>
                                         <h5 class="card-title">${item.denomination_f}</h5>
                                         <p class="card-text"><address style="color : #19a8d8;">Adresse : ${item.adresse}</address></p>
                                         <p class="card-text">Date de demande : <small class="text-body-secondary">${item.date_creation}</small></p>
-                                        <button class="btn btn-success btn-sm m-2" onclick='validatePhoto(${item.id_rubrique}, ${item.id_gallery},\"${item.photo_path}\", \"${rubrique}\")'>Accepter</button> <button class="btn btn-danger btn-sm m-2" onclick='rejectPhoto(${item.id_rubrique}, ${item.id_gallery},\"${item.photo_path}\", \"${rubrique}\")'>Réfuser</button>
+                                        <button class="btn btn-success btn-sm m-2" onclick='validatePhoto(${item.id_rubrique}, ${item.id_gallery},\"${item.photo_path}\", \"${rubrique}\")'>
+                                            Accepter
+                                        </button> 
+                                        <button class="btn btn-danger btn-sm m-2" onclick='rejectPhoto(${item.id_rubrique}, ${item.id_gallery},\"${item.photo_path}\", \"${rubrique}\")'>Refuser</button>
                                         </div>
                                     </div>
                                     </div>
@@ -940,7 +943,7 @@ function showValidationStory() {
                       <th scope="col">Adresse</th>
                       <th scope="col">Demandeur</th>
                       <th scope="col">Validateur</th>
-                      <th scope="col">Status</th>
+                      <th scope="col">Statuts</th>
                       <th scope="col">Date</th>
                     </tr>
                   </thead>

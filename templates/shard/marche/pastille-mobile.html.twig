@@ -1,0 +1,65 @@
+{% if (app.user) %}
+	{% for restaurant in restaurants %}
+		<div class="d-none content_one_cta text-center mt-3 mb-3" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
+			<button class="btn btn-success " id="givs-avis-resto-tom-js" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donné votre avis</button>
+		</div>
+
+		<div class="pastileThisResto p-3 mt-3">
+			{% if tribu_t_resto_pastille|length > 0 %}
+				<div class="containerPastilleResto">
+					{% for item in tribu_t_resto_pastille %}
+						<div class="row">
+							<div class="nomTribuTPastilleResto col-6">
+								<b>Tribu T
+									{{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b>
+							</div>
+							<div class="me-auto col-6">
+								<span class="lioTe non_active">
+									<i class="fa-solid fa-star checked starNote"></i>
+									<b>0</b>/4
+								</span>
+								<a href="#" class="text-secondary avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+
+			{% if tribu_t_resto_joined_pastille|length > 0 %}
+				<div class="containerPastilleResto">
+					{% for item in tribu_t_resto_joined_pastille %}
+						<div class="row">
+							<div class="nomTribuTPastilleResto col-6">
+								<b>Tribu T
+									{{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b>
+							</div>
+							<div class="me-auto col-6">
+								<span class="lioTe non_active">
+									<i class="fa-solid fa-star checked starNote"></i>
+									<b>0</b>/4
+								</span>
+								<a href="#" class="text-secondary avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+
+			{% if tribu_t_can_pastille|length > 0 %}
+				<div class="containerPastilleResto">
+					{% for item in tribu_t_can_pastille %}
+						{# <span><b>{{ item["table_name"] }}</b> Voulez-vous pastiller ce restaurant? <button id="btnPastilleCarte" class="btn btn-primary" onclick="showTribuTForRestoPast(this)" type="button">Oui</button></span> #}
+						<div class="row">
+							<div class="col-12">
+								<b>Tribu T
+									{{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b>
+								Voulez-vous pastiller ce restaurant?
+								<button data-name="{{restaurant.denominationF | raw}}" data-tbname={{item["table_name"]}} data-id="{{restaurant.id}}" id="btnPastilleCarte" class="btn btn-primary" onclick="pastilleRestoForTribuT(this)" type="button" data-velona="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}">Oui</button>
+							</div>
+						</div>
+					{% endfor %}
+				</div>
+			{% endif %}
+		</div>
+	{% endfor %}
+{% endif %}

@@ -12,7 +12,7 @@
 	<div class="lc xf mg og _s qo ml rl hu 2xl:ud-px-11">
 		<div class="pc rs">
 			{% if app.request.attributes.get('_route') == "account_setting" %}
-				<h1 class="tn jn zn gs ab"><i class="fas fa-cog" aria-hidden="true"></i> Parametre compte</h1>
+				<h1 class="tn jn zn gs ab"><i class="fas fa-cog" aria-hidden="true"></i> Paramètre du compte</h1>
 			{% endif %}
 
 			{% if app.request.attributes.get('_route') == "user_profil" %}
@@ -200,7 +200,7 @@
 							{% if userConnected.status_tribuG == 'FONDATEUR' %}
 								<span class="tooltip-text" id="bottom">Fondateur du département {{ userConnected.tableTribuG|replace({'tribug' : '', '_' : ' '}) }}</span>
 							{% elseif userConnected.status_tribuG == 'PARTISAN' %}
-								<span class="tooltip-text" id="bottom">Fan dans le département {{ userConnected.tableTribuG|replace({'tribug' : '', '_' : ' '}) }}</span>
+								<span class="tooltip-text" id="bottom">Partisan dans le département {{ userConnected.tableTribuG|replace({'tribug' : '', '_' : ' '}) }}</span>
 							{% endif %}
 						</span>
 					</span>
