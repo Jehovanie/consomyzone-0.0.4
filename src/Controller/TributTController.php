@@ -2387,6 +2387,9 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
                 'label' => 'Golf',
                 'required' => false
             ])
+            ->add('table_parent', HiddenType::class, [
+                'required' => false
+            ])
             ->getForm();
         //$form = $this->createFormB(FileUplaodType::class);
         $user = $this->getUser();
@@ -2429,6 +2432,19 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
                 $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";
             } else {
                 $message = "Tribu " . $data["tribuTName"] . " existe déjà.";
+            }
+
+
+            if( $data["table_parent"] !== null){
+                $table_name_parent_tribuT= $data["table_parent"];
+                $tribuTNameFinal= 'tribu_t_' . $user->getId() . "_" . $tribuTNameFinal;
+
+                $tribu_T_Service->updateParentTribuT(
+                    $table_name_parent_tribuT,
+                    $tribuTNameFinal
+                );
+
+                $tribu_T_Service->updateTableParentLivelParent($table_name_parent_tribuT, $tribuTNameFinal);
             }
 
 
@@ -3707,5 +3723,12 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             "message" => "column created"
         ]); 
         
+    }
+
+    #[Route("/tributT/mes_sous_tribu", name: "app_mes_sous_tribu", methods: ["GET"])]
+    public function sousTribuT(){
+        return $this->json([
+            "message" => "ok"
+        ], 200);
     }
 }

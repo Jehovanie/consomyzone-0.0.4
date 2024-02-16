@@ -586,6 +586,7 @@ thead > tr{
   ul#navBarTribu li.listNavBarTribu {
     float: left;
     border-radius: 0 0 0 4px;
+    font-size: 0.9rem;
   }
   
   ul#navBarTribu li.listNavBarTribu a{

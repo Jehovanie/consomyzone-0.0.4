@@ -33,6 +33,21 @@ class PDOConnexionService
         return $resultat > 0 ? true : false;
     }
 
+
+    public function isColumnExist($tableName, $columnName){
+        $query= "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :table_name AND column_name = :column_name";
+        
+        $sql = $this->getPDO()->prepare($query);
+
+        $sql->bindParam(':table_name', $tableName);
+        $sql->bindParam(':column_name', $columnName);
+        $sql->execute();
+
+        $resultat = $sql->fetch(PDO::FETCH_ASSOC);
+        return !!$resultat;
+
+    }
+
     public function convertUtf8ToUnicode($str){
         return json_encode($str);
     }

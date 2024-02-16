@@ -59,7 +59,11 @@ class Tribu_T_Service extends PDOConnexionService
 
                 datetime timestamp NOT NULL DEFAULT current_timestamp(),
 
-                email VARCHAR(255) NULL
+                email VARCHAR(255) NULL,
+
+                table_parent VARCHAR(300) NULL DEFAULT 0,
+
+                livel_parent int(11) NOT NULL DEFAULT 0
 				
 				)ENGINE=InnoDB";
 
@@ -2957,5 +2961,120 @@ class Tribu_T_Service extends PDOConnexionService
             }
 
         }
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Create table sub tribu T: eg: tribu_t_1_mon_tribu_t_list_sub 
+     * Use in: TribuTController.php
+     * 
+     * @param {string} $tribu_name: name of the table parent.
+     * 
+     * @return void
+     */
+    public function createTableSousTribu($tribu_name){
+        $table_sub_tribu= $tribu_name . "_list_sub";
+
+         //// create table sub tribu
+        $sql = "CREATE TABLE IF NOT EXISTS " . $table_sub_tribu . " ( 
+                id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+                name VARCHAR(300) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+                datetime timestamp NOT NULL DEFAULT current_timestamp()
+            )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+        $request_sub_tribu = $this->getPDO()->prepare($sql);
+        $request_sub_tribu->execute();
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Save the sub_tribu into their parent.
+     * Use in: TribuTController.php
+     * 
+     * @param {string} $table_parent: name of the table parent.
+     * @param {string} $table_fils: name of the table fils.
+     * 
+     * @return void
+     */
+    public function updateParentTribuT($table_parent, $table_fils){
+        $table_sub_tribu= $table_parent . "_list_sub";
+
+        if (!$this->isTableExist($table_sub_tribu)) {
+            $this->createTableSousTribu($table_parent);
+        }
+
+        $request_sub_tribu = $this->getPDO()->prepare(
+            "INSERT INTO $table_sub_tribu (name, datetime) 
+            VALUES (:name, :datetime)"
+        );
+
+        $name= $table_fils;
+
+        $datetime = new \DateTime();
+        $datetime = $datetime->format('Y-m-d H:i:s');
+
+        $request_sub_tribu->bindParam(':name', $name);
+        $request_sub_tribu->bindParam(':datetime', $datetime);
+
+        $request_sub_tribu->execute();
+    }
+
+
+    public function updateTableTribuAddCullumnTableParent($table_tribu){
+
+        if( $this->isColumnExist($table_tribu, "table_parent")) return;
+
+        $sql= "ALTER TABLE $table_tribu ADD table_parent VARCHAR(300) NULL DEFAULT NULL";
+
+        $request_add_collumn_table_parent = $this->getPDO()->prepare($sql);
+        $request_add_collumn_table_parent->execute();
+    }
+
+    public function updateTableTribuAddCullumnLivelParent($table_tribu){
+
+        if( $this->isColumnExist($table_tribu, "livel_parent")) return;
+        
+        $sql= "ALTER TABLE $table_tribu ADD livel_parent INT(11) NOT NULL DEFAULT 0";
+
+        $request_add_collumn_livel_parent = $this->getPDO()->prepare($sql);
+        $request_add_collumn_livel_parent->execute();
+    }
+
+
+    public function updateTableParentLivelParent($table_parent, $table_fils){
+
+        if( !$this->isColumnExist($table_parent, "table_parent") ){
+            $this->updateTableTribuAddCullumnTableParent($table_parent);
+        }
+
+        if( !$this->isColumnExist($table_parent, "livel_parent") ){
+            $this->updateTableTribuAddCullumnLivelParent($table_parent);
+        }
+
+        if( !$this->isColumnExist($table_fils, "table_parent") ){
+            $this->updateTableTribuAddCullumnTableParent($table_fils);
+        }
+
+        if( !$this->isColumnExist($table_fils, "livel_parent") ){
+            $this->updateTableTribuAddCullumnLivelParent($table_fils);
+        }
+
+        $info_table_parent= $this->getTribuTInfo($table_parent);
+
+        $parent_table_parent= $info_table_parent["table_parent"];
+        $parent_livel_parent= $info_table_parent["livel_parent"];
+
+
+        $request_update_livel_parent = $this->getPDO()->prepare(
+            "UPDATE $table_fils SET table_parent = :table_parent, livel_parent = :livel_parent"
+        );
+        
+        $livel_parent= intval($parent_livel_parent) + 1;
+        $request_update_livel_parent->bindParam(':table_parent', $table_parent);
+        $request_update_livel_parent->bindParam(':livel_parent', $livel_parent);
+        $request_update_livel_parent->execute();
+
     }
 }

@@ -17,6 +17,11 @@
 		.content_news_letter{
 			width: 95% !important;
 		}
+		
+		.content_sous_tribu {
+			min-height: 47vh !important;
+		}
+
 	</style>
 	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/Tribu_T/publication.css')}}">
@@ -29,6 +34,7 @@
 	{# <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="{{asset('assets/js/tribuT/myTribuT.js')}}" defer></script>
 	<script src="{{asset('assets/js/tribuT/news_letter_tribuT.js')}}" defer></script>
+	<script src="{{asset('assets/js/tribuT/sous_tribu.js')}}" defer></script>
 	{# <script src="{{asset('assets/js/golf/avis_golf_depart.js')}}" defer></script> #}
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	{# <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> #}
@@ -129,7 +135,7 @@
 	{% include 'shard/modal/media_modal_tribu.html.twig' %}
 
 	<!-- Modal Créer tribuT -->
-	<div class="modal fade ModalCreationTribuT" id="ModalCreationTribuT" tabindex="-1" aria-labelledby="creerTribuTModal" aria-hidden="true">
+	<div class="modal fade ModalCreationTribuT" id="ModalCreationTribuT" tabindex="-1" aria-labelledby="creerTribuTModal" aria-hidden="true" data-bs-backdrop="static" data-bs-keyboard="false" >
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
