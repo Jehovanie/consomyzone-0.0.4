@@ -7,7 +7,7 @@ if (document.querySelector("#fetch_new_letter_fans_tribug_jheo_js")) {
 	callActionNewLetterFans.addEventListener("click", (e) => {
 		e.preventDefault();
 
-		removeActiveLinkOnG(document.querySelectorAll(".listNavBarTribu > a"), callActionNewLetterFans)
+		removeActiveLinkOnG(document.querySelectorAll(".listNavBarTribu > a"), callActionNewLetterFans);
 
 		///change title
 		document.querySelector(".textIndicationNantaJs").textContent = "Lettre d'information";
@@ -107,84 +107,94 @@ if (document.querySelector("#fetch_new_letter_fans_tribug_jheo_js")) {
 
 					///send action
 					handleSubmitSendNewsLetter();
-                    selectDestinationLetter()
+					selectDestinationLetter();
 					const form_parent = document.querySelector(".content_form_send_invitation_email_js_jheo");
 					const input_principal = form_parent.querySelector(".single_destination_js_jheo");
 					controlInputEmailToMultiple([input_principal]);
-					clickInputCsvLetter()
+					clickInputCsvLetter();
 				}
 			});
 	});
 
-function selectDestinationLetter() {
-	document.querySelector(".btn-close-letter-tomm-js").addEventListener("click", () => {
-		if (document.querySelector(".list-user-letter-tomm-js > label")) {
-			document.querySelectorAll(".list-user-letter-tomm-js > label").forEach((child) => {
-				document.querySelector(".list-user-letter-tomm-js").removeChild(child)
-			})
-		}
-	})
-	document.querySelector(".new-letter-select-tomm-js").addEventListener("click", () => {
-		let inputDestination = document.querySelector(".single-destination-tomm-js")
-		if (inputDestination.value) {
-			inputDestination.removeAttribute("value")
-		}
-		const requete = new Request("/tributG/get/list/user/for_all",{
+	function selectDestinationLetter() {
+		document.querySelector(".btn-close-letter-tomm-js").addEventListener("click", () => {
+			if (document.querySelector(".list-user-letter-tomm-js > label")) {
+				document.querySelectorAll(".list-user-letter-tomm-js > label").forEach((child) => {
+					document.querySelector(".list-user-letter-tomm-js").removeChild(child);
+				});
+			}
+		});
+		document.querySelector(".new-letter-select-tomm-js").addEventListener("click", () => {
+			let inputDestination = document.querySelector(".single-destination-tomm-js");
+			if (inputDestination.value) {
+				inputDestination.removeAttribute("value");
+			}
+			const requete = new Request("/tributG/get/list/user/for_all", {
 				method: "GET",
 				headers: {
 					Accept: "application/json",
 					"Content-Type": "application/json",
 				},
-			}
-  		);
-		fetch(requete)
-			.then((request) => request.json())
-			.then((response) => {
-				
-				response.forEach((item) => { 
-					let elementHeadTribuName = document.querySelector(".tributG_profile_name").getAttribute("data-toggle-tribug-table")
-					let listEmail = item.email
-					let tribu = item.tribu_g_name
-					if (elementHeadTribuName) {
-						if (item.tribu_g_name !== elementHeadTribuName) {
-							let checkboxEmail = `<label><input type="checkbox" class="check-email-tomm-js" name="mail" value="${listEmail}" /> ${listEmail} <span class="text-warning"> ${tribu.replace(/[0-9]/g, "").replaceAll("_", " ")}</span></label>`
-							if (document.querySelector(".list-user-letter-tomm-js")) {
-								if (listEmail !== "") {
-									document.querySelector(".list-user-letter-tomm-js").innerHTML += checkboxEmail
+			});
+			fetch(requete)
+				.then((request) => request.json())
+				.then((response) => {
+					response.forEach((item) => {
+						let elementHeadTribuName = document
+							.querySelector(".tributG_profile_name")
+							.getAttribute("data-toggle-tribug-table");
+						let listEmail = item.email;
+						let tribu = item.tribu_g_name;
+						if (elementHeadTribuName) {
+							if (item.tribu_g_name !== elementHeadTribuName) {
+								let checkboxEmail = `<label><input type="checkbox" class="check-email-tomm-js" name="mail" value="${listEmail}" /> ${listEmail} <span class="text-warning"> ${tribu
+									.replace(/[0-9]/g, "")
+									.replaceAll("_", " ")}</span></label>`;
+								if (document.querySelector(".list-user-letter-tomm-js")) {
+									if (listEmail !== "") {
+										document.querySelector(".list-user-letter-tomm-js").innerHTML += checkboxEmail;
+									}
 								}
-								
-							}
 
-							if (document.querySelector(".check-email-tomm-js")) {
-								let checkbox = document.querySelectorAll(".check-email-tomm-js")
-								checkbox.forEach((event) => {
-									event.addEventListener("change", () => {
-										if (event.checked) {
-											event.parentElement.classList.add("multiselect-on")
-											let emailValue = event.value
-											
-											document.querySelector(".selection-email-tomm-js").addEventListener("click", () => {
-												document.querySelector(".btn-close-letter-tomm-js").click()
-												let inputDestination = document.querySelector(".single-destination-tomm-js")
-												let valueInputDestination = inputDestination.getAttribute("value")? inputDestination.getAttribute("value") + ", ": ""
-												inputDestination.setAttribute("value", `${valueInputDestination}${emailValue}`)
-												event.removeAttribute("checked")
-											})
-										} else {
-											event.parentElement.classList.remove("multiselect-on")
-											let emailValue = event.value
-											console.log(emailValue)
-										}
-									})
-								})
-								
+								if (document.querySelector(".check-email-tomm-js")) {
+									let checkbox = document.querySelectorAll(".check-email-tomm-js");
+									checkbox.forEach((event) => {
+										event.addEventListener("change", () => {
+											if (event.checked) {
+												event.parentElement.classList.add("multiselect-on");
+												let emailValue = event.value;
+
+												document
+													.querySelector(".selection-email-tomm-js")
+													.addEventListener("click", () => {
+														document.querySelector(".btn-close-letter-tomm-js").click();
+														let inputDestination =
+															document.querySelector(".single-destination-tomm-js");
+														let valueInputDestination = inputDestination.getAttribute(
+															"value"
+														)
+															? inputDestination.getAttribute("value") + ", "
+															: "";
+														inputDestination.setAttribute(
+															"value",
+															`${valueInputDestination}${emailValue}`
+														);
+														event.removeAttribute("checked");
+													});
+											} else {
+												event.parentElement.classList.remove("multiselect-on");
+												let emailValue = event.value;
+												console.log(emailValue);
+											}
+										});
+									});
+								}
 							}
 						}
-					}
-				})
-			})
-	})
-}
+					});
+				});
+		});
+	}
 
 	function showTextInformationFans(showTextOption) {
 		const { data } = showTextOption;
@@ -192,7 +202,7 @@ function selectDestinationLetter() {
 
 		// let fullname = document.querySelector(".use-in-agd-nanta_js_css").textContent.trim()
 		return (html = `
-					<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Chers tous,</span> </br>
+					<span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Cher tous,</span> </br>
 					<p>
 						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Un nouveau membre vient de rejoindre notre tribu.
 						C'est une histoire, une expérience qui renforcent l'enthousiasme de notre communauté.
@@ -481,7 +491,7 @@ function selectDestinationLetter() {
 			const btn_submit = document.querySelector(".btn_submit_sendNewsLetter_jheo_js");
 
 			btn_submit.addEventListener("click", () => {
-				const destinationValue = document.querySelector(".single-destination-tomm-js").value
+				const destinationValue = document.querySelector(".single-destination-tomm-js").value;
 				const objectNewsLetter = document.querySelector(".newLetter_object_jheo_js").value;
 				const description = editor.getData();
 
@@ -499,48 +509,47 @@ function selectDestinationLetter() {
 
 					return 0;
 				}
-				let dataInfos = []
-				let contenu = sessionStorage.getItem("csvContent")
-				let headerIndex = JSON.parse(sessionStorage.getItem("headerIndex"))
+				let dataInfos = [];
+				let contenu = sessionStorage.getItem("csvContent");
+				let headerIndex = JSON.parse(sessionStorage.getItem("headerIndex"));
 				if (contenu) {
-					for (let i = 0; i < contenu.trim().split('\r\n').length; i++) {
-						if(i>0){
-							let email = contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexMail]
-							if(validateEmail(email)){
+					for (let i = 0; i < contenu.trim().split("\r\n").length; i++) {
+						if (i > 0) {
+							let email = contenu.trim().split("\r\n")[i].split(";")[headerIndex.indexMail];
+							if (validateEmail(email)) {
 								dataInfos.push({
-									lastname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexName],
-									firstname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexFirstName],
-									email : email
-								})
-							}else{
-								swal("Erreur !","Vérifier l'adresse email dans votre fichier !", "error")
-									.then((value) => {
+									lastname: contenu.trim().split("\r\n")[i].split(";")[headerIndex.indexName],
+									firstname: contenu.trim().split("\r\n")[i].split(";")[headerIndex.indexFirstName],
+									email: email,
 								});
-								resetFilePartage()
-								isValidateEmail = false
+							} else {
+								swal("Erreur !", "Vérifier l'adresse email dans votre fichier !", "error").then(
+									(value) => {}
+								);
+								resetFilePartage();
+								isValidateEmail = false;
 								break;
 							}
 						}
-						
 					}
 				}
-				let destination = destinationValue.split(", ")
-				let emailCsv = []
+				let destination = destinationValue.split(", ");
+				let emailCsv = [];
 				dataInfos.forEach((value) => {
-					emailCsv.push(value.email)
-				})
-				let destinations = ""
+					emailCsv.push(value.email);
+				});
+				let destinations = "";
 				if (destination == "") {
-					destinations = emailCsv
+					destinations = emailCsv;
 				} else {
-					destinations = destination.concat(emailCsv)
+					destinations = destination.concat(emailCsv);
 				}
 
 				let data = {
 					object: objectNewsLetter === "" ? "Lettre d'information" : objectNewsLetter,
 					description: editor.getData(),
 					piece_joint: new_letter_piece_joint_list,
-					destinations: destinations
+					destinations: destinations,
 				};
 
 				if (status) {
@@ -567,7 +576,7 @@ function selectDestinationLetter() {
 					}
 
 					sendNewLetter(data);
-					resetFileLetter()
+					resetFileLetter();
 				}
 			});
 		}
@@ -617,15 +626,14 @@ function selectDestinationLetter() {
 	}
 }
 
-
 /**
  * @author Tomm
  * @click clique l'input pour charge le csv sur le communique tribu G
  */
 function clickInputCsvLetter() {
 	if (document.querySelector(".drop-zone-tomm-js")) {
-		let dropZoneNewLetter = document.querySelector(".drop-zone-tomm-js")
-		let inputZoneNewLetter = document.querySelectorAll(".drop-zone-input-tomm-js")
+		let dropZoneNewLetter = document.querySelector(".drop-zone-tomm-js");
+		let inputZoneNewLetter = document.querySelectorAll(".drop-zone-input-tomm-js");
 		inputZoneNewLetter.forEach((inputElement) => {
 			const dropZoneElement = inputElement.closest(".drop-zone-tomm-js");
 
@@ -643,9 +651,8 @@ function clickInputCsvLetter() {
 					dropZoneElement.classList.remove("drop-zone--over");
 				});
 			});
-			changeElementCsvLetter(inputElement, dropZoneElement)
-		})
-		
+			changeElementCsvLetter(inputElement, dropZoneElement);
+		});
 	}
 }
 
@@ -665,7 +672,7 @@ function updateThumbnailNewLetter(dropZoneElement, file) {
 	if (!thumbnailElement) {
 		thumbnailElement = document.createElement("div");
 		thumbnailElement.classList.add("drop-zone__thumb_letter");
-		
+
 		dropZoneElement.appendChild(thumbnailElement);
 	}
 
@@ -693,154 +700,153 @@ function changeElementCsvLetter(inputElement, dropZoneElement) {
 		if (e.target.files.length) {
 			if (e.target.files[0]) {
 				if (document.querySelector(".drop-zone__thumb_letter")) {
-					document.querySelector(".drop-zone__thumb_letter").remove()
+					document.querySelector(".drop-zone__thumb_letter").remove();
 				}
-				
-				checkFileExtensionLetter(dropZoneElement,e.target.files[0])
+
+				checkFileExtensionLetter(dropZoneElement, e.target.files[0]);
 			} else {
-				checkFileExtensionLetter(dropZoneElement,e.target.files[0])
+				checkFileExtensionLetter(dropZoneElement, e.target.files[0]);
 			}
 		}
 	});
 	dropZoneElement.addEventListener("drop", (e) => {
 		e.preventDefault();
-	
+
 		if (e.dataTransfer.files.length) {
 			if (e.dataTransfer.files[0]) {
 				if (document.querySelector(".drop-zone__thumb_letter")) {
-					document.querySelector(".drop-zone__thumb_letter").remove()
+					document.querySelector(".drop-zone__thumb_letter").remove();
 				}
-				checkFileExtensionLetter(dropZoneElement,e.dataTransfer.files[0])
-			} else { 
-				checkFileExtensionLetter(dropZoneElement,e.dataTransfer.files[0])
+				checkFileExtensionLetter(dropZoneElement, e.dataTransfer.files[0]);
+			} else {
+				checkFileExtensionLetter(dropZoneElement, e.dataTransfer.files[0]);
 			}
 		}
 		dropZoneElement.classList.remove("drop-zone--over");
 	});
 }
 
-function resetFileLetter(){
-	document.querySelector(".drop-zone-tomm-js").innerHTML =
-						`<span class="drop-zone-prompt-tomm-js">Cliquez sur la bannière
+function resetFileLetter() {
+	document.querySelector(
+		".drop-zone-tomm-js"
+	).innerHTML = `<span class="drop-zone-prompt-tomm-js">Cliquez sur la bannière
 						ou glissez le fichier ici directement.<br/>Le fichier doit avoir les colonnes Email</span>
-                        <input type="file" name="fileNewLetterShareG" id="fileNewLetterShareG" class="drop-zone-input drop-zone-input-tomm-js" accept='text/csv'>`
+                        <input type="file" name="fileNewLetterShareG" id="fileNewLetterShareG" class="drop-zone-input drop-zone-input-tomm-js" accept='text/csv'>`;
 
-    sessionStorage.removeItem("csvContent");   
-    sessionStorage.removeItem("headerIndex");
+	sessionStorage.removeItem("csvContent");
+	sessionStorage.removeItem("headerIndex");
 }
 
 /**
  * @author Tomm
  * @verifi verifier si le fichier est une csv
  */
-function checkFileExtensionLetter(dropZoneElement,file){
-   
-    if(file.type ==="text/csv"){
-        findDefColumnLetter(dropZoneElement, file);
-    }else
-        swal("Attention !", "Veuillez choisir un fichier CSV", "error")
-        .then((value) => {
-            // location.reload();
-    });
+function checkFileExtensionLetter(dropZoneElement, file) {
+	if (file.type === "text/csv") {
+		findDefColumnLetter(dropZoneElement, file);
+	} else
+		swal("Attention !", "Veuillez choisir un fichier CSV", "error").then((value) => {
+			// location.reload();
+		});
 }
-
 
 /**
  * @author Tomm
  * @verif verifier si le ficher contient le nom prenom et mail
  */
-function findDefColumnLetter(dropZoneElement, file){
-    let reader=new FileReader
-    reader.onload=()=>{
-        let csvContent
-        try{
-            csvContent= b64DecodeUnicodeLetter(reader.result.split(",")[1])
+function findDefColumnLetter(dropZoneElement, file) {
+	let reader = new FileReader();
+	reader.onload = () => {
+		let csvContent;
+		try {
+			csvContent = b64DecodeUnicodeLetter(reader.result.split(",")[1]);
 
-            let header = csvContent.trim().split('\r\n')[0]
-            
-			header = header.normalize("NFD").replace(/\p{Diacritic}/gu, "").replace(/[^a-zA-Z;]/g, "").toLowerCase()
-			header = header.replace(" ", "")
-            let param={}
-            let hasName=false, hasFirstName=false,hasMail=false
-            for (const [index, value] of header.split(";").entries()) {
+			let header = csvContent.trim().split("\r\n")[0];
 
-                    switch(value){
-                        case "nom":{
-                            param.indexName=index
-                            hasName=true
-                            break;
-                        }
-                        case "noms":{
-                            param.indexName=index
-                            hasName=true
-                            break;
-                        }
-                        case "prenom":{
-                            param.indexFirstName=index
-                            hasFirstName=true
-                            break;
-                        }
-                        case "prenoms":{
-                            param.indexFirstName=index
-                            hasFirstName=true
-                            break;
-                        }
-                        case "email":{
-                            param.indexMail=index
-                            hasMail=true
-                            break;
-                        }
-                        case "emails":{
-                            param.indexMail=index
-                            hasMail=true
-                            break;
-                        }
-                        case "mail":{
-                            param.indexMail=index
-                            hasMail=true
-                            break;
-                        }
-                        case "mails":{
-                            param.indexMail=index
-                            hasMail=true
-                            break;
-                        }
-                    }
-            }
+			header = header
+				.normalize("NFD")
+				.replace(/\p{Diacritic}/gu, "")
+				.replace(/[^a-zA-Z;]/g, "")
+				.toLowerCase();
+			header = header.replace(" ", "");
+			let param = {};
+			let hasName = false,
+				hasFirstName = false,
+				hasMail = false;
+			for (const [index, value] of header.split(";").entries()) {
+				switch (value) {
+					case "nom": {
+						param.indexName = index;
+						hasName = true;
+						break;
+					}
+					case "noms": {
+						param.indexName = index;
+						hasName = true;
+						break;
+					}
+					case "prenom": {
+						param.indexFirstName = index;
+						hasFirstName = true;
+						break;
+					}
+					case "prenoms": {
+						param.indexFirstName = index;
+						hasFirstName = true;
+						break;
+					}
+					case "email": {
+						param.indexMail = index;
+						hasMail = true;
+						break;
+					}
+					case "emails": {
+						param.indexMail = index;
+						hasMail = true;
+						break;
+					}
+					case "mail": {
+						param.indexMail = index;
+						hasMail = true;
+						break;
+					}
+					case "mails": {
+						param.indexMail = index;
+						hasMail = true;
+						break;
+					}
+				}
+			}
 
-            if(hasMail && hasFirstName && hasName){
-                sessionStorage.setItem("csvContent", csvContent)
-                sessionStorage.setItem("headerIndex", JSON.stringify(param))
+			if (hasMail && hasFirstName && hasName) {
+				sessionStorage.setItem("csvContent", csvContent);
+				sessionStorage.setItem("headerIndex", JSON.stringify(param));
 				updateThumbnailNewLetter(dropZoneElement, file);
-            }else{
-                let errorFisrtName="", errorName="", errorMail=""
-                if(!hasFirstName)
-                    errorFisrtName="il manque la colonne prénom"
-                if(!hasName)
-                    errorName="il manque la colonne nom "
+			} else {
+				let errorFisrtName = "",
+					errorName = "",
+					errorMail = "";
+				if (!hasFirstName) errorFisrtName = "il manque la colonne prénom";
+				if (!hasName) errorName = "il manque la colonne nom ";
 
-                if(!hasMail)
-                    errorMail="il manque la colonne email"
+				if (!hasMail) errorMail = "il manque la colonne email";
 
-                
-                let error = errorFisrtName + " " + errorName + " " + errorMail 
-                swal("Attention !", error.trim(), "error")
-                .then((value) => {
-                    // location.reload();
-                });
-            }
-        }catch(exception){
-            if(exception instanceof URIError){
-                swal("Attention !","Votre fichier n'est pas encodé en UTF-8", "error")
-                .then((value) => {
-                    // location.reload();
-                });
-            }else{
-                console.log(exception)
-            }
-        }  
-    }
-    reader.readAsDataURL(file)
+				let error = errorFisrtName + " " + errorName + " " + errorMail;
+				swal("Attention !", error.trim(), "error").then((value) => {
+					// location.reload();
+				});
+			}
+		} catch (exception) {
+			if (exception instanceof URIError) {
+				swal("Attention !", "Votre fichier n'est pas encodé en UTF-8", "error").then((value) => {
+					// location.reload();
+				});
+			} else {
+				console.log(exception);
+			}
+		}
+	};
+	reader.readAsDataURL(file);
 }
 
 /**
@@ -848,11 +854,13 @@ function findDefColumnLetter(dropZoneElement, file){
  * @change change le fichier en base64
  */
 function b64DecodeUnicodeLetter(str) {
-    // Going backwards: from bytestream, to percent-encoding, to original string.
-    return decodeURIComponent(atob(str).split('').map(function(c) {
-        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-    }).join(''));
+	// Going backwards: from bytestream, to percent-encoding, to original string.
+	return decodeURIComponent(
+		atob(str)
+			.split("")
+			.map(function (c) {
+				return "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2);
+			})
+			.join("")
+	);
 }
-
-
- 

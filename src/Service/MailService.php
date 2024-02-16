@@ -605,17 +605,35 @@ return 250;
         $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
         $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
 
+        $event_name= ""; $event_place= ""; $event_date= ""; $event_time_start = ""; $event_time_end= "";
+        if( array_key_exists("event", $context)){
+            $event= $context["event"];
+
+            $event_name= $event["name"];
+            $event_place= $event["place"];
+            $event_date= $event["date"];
+            $event_time_start= $event["time_start"];
+            $event_time_end= $event["time_end"];
+        }
+
+
         //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
-        $email =  $email->html($this->renderView($context["template"],[
+        $email= $email->html($this->renderView($context["template"],[
                 'email' => new WrappedTemplatedEmail($this->twig, $email),
                 'today' => $date_fr,
                 'fullNameTo' => $fullName_to,
                 'user_sender' => [
                     'fullname' => $context['user_sender']['fullname'],
                     'email' => $context['user_sender']['email'],
-                ]
-            ]));
-        
+                ],
+                "event_name" => $event_name,
+                "event_place" => $event_place,
+                "event_date" => $event_date,
+                "event_time_start" => $event_time_start,
+                "event_time_end" => $event_time_end
+            ])
+        );
+            
         // try {
             $customMailer->send($email);
         //     return 200;

@@ -2797,7 +2797,7 @@ function showInvitationsG() {
                                 Invitation envoyée avec succès !
                             </div>
                             <div class="form-group content_cc_css_jheo mt-3">
-                                <label for="exampleFormControlInput1">Destinataires<span class="info_multiple_mail">(*Sépare par un espace ou une virgule si vous avez plusieurs destinataires.)</span></label>
+                                <label for="exampleFormControlInput1">Destinataires<span class="info_multiple_mail">(*séparez par un espace ou une virgule si vous avez plusieurs destinataires.)</span></label>
                                 <input type="text" class="form-control single_destination_js_jheo" id="exampleFormControlInput1" placeholder="Saisir les ou l'adresse(s) e-mail du destinataire">
                                 <!--<a href="#" style="padding-top:5px;" class="nav-link link-dark collapsed cc_css_jheo" data-bs-toggle="collapse" data-bs-target="#tribut-collapse" aria-expanded="false">
                                     <span class="me-2 mt-2">Cc/Cci</span>
@@ -2831,18 +2831,18 @@ function showInvitationsG() {
                                     <button type="button" class="btn btn-primary btn_send_invitation_js_jheo my-3">Envoyer l'invitation</button>
                                 </div>
                                 <div class="p-2 bd-highlight content_input_piece_joint content_input_piece_joint_jheo_js">
-                                    <div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajout des pièce jointe.</div>
+                                    <div class="message_tooltip_piece_joint d-none message_tooltip_piece_joint_jheo_js">Ajouter des pièces jointes.</div>
                                     <label class="pointer_cursor label_piece_joint_jheo_js" for="piece_joint">
                                         <i class="fa-solid fa-paperclip pointer_cursor label_piece_joint_jheo_js"></i>
                                     </label>
                                     <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint" name="piece_joint" onchange="addPieceJointG(this);" />
                                 </div>
                                 <div class="p-2 bd-highlight content_input_piece_joint content_add_link_jheo_js">
-                                    <div class="pointer_cursor message_tooltip_piece_joint d-none add_link_jheo_js">Ajout des liens.</div>
+                                    <div class="pointer_cursor message_tooltip_piece_joint d-none add_link_jheo_js">Ajouter des liens.</div>
                                     <div class="pointer_cursor label_add_link_jheo_js"><i class="fa-solid fa-link"></i></div>
                                 </div>
                                 <div class="p-2 bd-highlight content_input_piece_joint content_add_image_js">
-                                    <div class="pointer_cursor message_tooltip_piece_joint d-none add_image_jheo_js">Ajout des images.</div>
+                                    <div class="pointer_cursor message_tooltip_piece_joint d-none add_image_jheo_js">Ajouter des images.</div>
                                     <label class="pointer_cursor label_add_image_jheo_js" for="piece_joint_image"><i class="fa-solid fa-image"></i></label>
                                     <input type="file" class="input_piece_joint_jheo_js hidden " id="piece_joint_image" name="piece_joint_image" accept="image/png, image/jpeg, image/jpg" onchange="addPieceJointImageG(this);"/>
                                 </div>

@@ -149,16 +149,34 @@ class AgendaController extends AbstractController
         //// ajouter le 06-02-2024
         if($confirm["response"] == "accepted"){
             $user_sender = $userRepository->findOneBy(["id" => $fromId]);
+
+            $table_agenda= "agenda_" . $fromId;
+
+            $agenda= $this->agendaService->getOneAgenda($table_agenda, $agendaId);
+
+            $event_name= $agenda["name"];
+            $event_place= $agenda["adresse"];
+            $event_date=  ( $agenda["dateStart"] == $agenda["dateEnd"] ) ?  $agenda["dateStart"] : $agenda["dateStart"] . " jusqu'au " . $agenda["dateEnd"];
+            $event_time_start= $agenda["heure_debut"];
+            $event_time_end=  $agenda["heure_fin"];
+
             
             $mailService->sendEmailWithTemplatedEmail(
                 $userTo->getEmail(),
                 $userTo->getPseudo(),
                 [
-                    "object" => "Bienvenue dans notre communauté !",
+                    "object" => "Merci pour votre confirmation!",
                     "template" => "emails/mail_remerciement_join_event.html.twig",
                     'user_sender' => [
                         'fullname' => $user_sender->getPseudo(),
                         'email' => $user_sender->getEmail()
+                    ],
+                    'event' => [
+                        "name" => $event_name,
+                        "place" => $event_place,
+                        "time_start" => $event_time_start,
+                        "time_end" => $event_time_end,
+                        "date" => $event_date
                     ]
                 ]
             );
