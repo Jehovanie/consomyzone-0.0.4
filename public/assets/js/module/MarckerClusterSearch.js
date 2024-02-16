@@ -788,7 +788,7 @@ class MarckerClusterSearch extends MapModule {
 
 		const title = `
 					<div>
-						<span class='fw-bolder'> Marche: </span>  
+						<span class='fw-bolder'> Marché: </span>  
 						${item.denominationF}<br>
 						<span class='fw-bolder'>Adresse:</span>
 						${item.adresse}
