@@ -2939,7 +2939,7 @@ class Tribu_T_Service extends PDOConnexionService
      /**
      * @author TOMMY
      */
-   public function createTableAlbumNotExists($list){ 
+    public function createTableAlbumNotExists($list){ 
     
 
         if (isset($list)) {
@@ -3021,7 +3021,15 @@ class Tribu_T_Service extends PDOConnexionService
         $request_sub_tribu->execute();
     }
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Update table tribu_t already exist to add new collumns 'table_parent'
+     * 
+     * @param string $table_tribu: name of table tribu T
+     * 
+     * @return void
+     */
     public function updateTableTribuAddCullumnTableParent($table_tribu){
 
         if( $this->isColumnExist($table_tribu, "table_parent")) return;
@@ -3032,6 +3040,15 @@ class Tribu_T_Service extends PDOConnexionService
         $request_add_collumn_table_parent->execute();
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Update table tribu_t already exist to add new collumns 'livel_parent'
+     * 
+     * @param string $table_tribu: name of table tribu T
+     * 
+     * @return void
+     */
     public function updateTableTribuAddCullumnLivelParent($table_tribu){
 
         if( $this->isColumnExist($table_tribu, "livel_parent")) return;
@@ -3043,8 +3060,19 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Update Livel parent for table fils (livel_parent) : set Parent
+     * 
+     * @param string $table_parent: name of the table parent
+     * @param string $table_fils: name of the table fils
+     * 
+     * @return void
+     */
     public function updateTableParentLivelParent($table_parent, $table_fils){
 
+        /// check column
         if( !$this->isColumnExist($table_parent, "table_parent") ){
             $this->updateTableTribuAddCullumnTableParent($table_parent);
         }
@@ -3061,12 +3089,13 @@ class Tribu_T_Service extends PDOConnexionService
             $this->updateTableTribuAddCullumnLivelParent($table_fils);
         }
 
+        /// get info table parent.
         $info_table_parent= $this->getTribuTInfo($table_parent);
 
         $parent_table_parent= $info_table_parent["table_parent"];
         $parent_livel_parent= $info_table_parent["livel_parent"];
 
-
+        /// update table fils
         $request_update_livel_parent = $this->getPDO()->prepare(
             "UPDATE $table_fils SET table_parent = :table_parent, livel_parent = :livel_parent"
         );
@@ -3076,5 +3105,57 @@ class Tribu_T_Service extends PDOConnexionService
         $request_update_livel_parent->bindParam(':livel_parent', $livel_parent);
         $request_update_livel_parent->execute();
 
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Get list of the tribu fils ( sub_tribu T ) on tribu Tribut t.
+     * 
+     * @param string $tableTribuT: name of the table tribu Parent
+     * 
+     * @return array  [  [ "id" => ..., "name" => ..., "datetime" => ... ], ... ]
+     */
+    public function getListSousTribuT($tableTribuT){
+        if (!$this->isTableExist($tableTribuT)) {
+            return [];
+        }
+
+        $table_sub_tribu= $tableTribuT . "_list_sub";
+        if (!$this->isTableExist($table_sub_tribu)) {
+            $this->createTableSousTribu($tableTribuT); 
+            return [];
+        }
+
+        $request_sub_tribu = $this->getPDO()->prepare(
+            "SELECT id, name, datetime FROM $table_sub_tribu"
+        );
+
+        $request_sub_tribu->execute();
+        $result = $request_sub_tribu->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: check if the table tribu t given with userid given is owned or joined.
+     * 
+     * @param string $tabletribuT: name of the table tribu T
+     * @param int $userid: id of the user to check.
+     * 
+     * @return boolean true: owned, false: joined.
+     */
+    public function checkTributIsOwnedOrJoined($tabletribuT, $userId){
+        if (!$this->isTableExist($tabletribuT)) {
+            return false;
+        }
+
+        $statement = $this->getPDO()->prepare("SELECT user_id FROM $tabletribuT where roles = 'Fondateur'");
+        $statement->execute();
+        $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return intval($userId) === intval($userID_fondateurTribuT);
     }
 }

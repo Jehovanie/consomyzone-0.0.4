@@ -3725,10 +3725,42 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         
     }
 
-    #[Route("/tributT/mes_sous_tribu", name: "app_mes_sous_tribu", methods: ["GET"])]
-    public function sousTribuT(){
+    #[Route("/tributT/mes_sous_tribu/{table_tribuT}", name: "app_mes_sous_tribu", methods: ["GET"])]
+    public function sousTribuT(
+        $table_tribuT,
+        Tribu_T_Service $tribuTService,
+        UserService $userService,
+    ){
+        if( !$this->getUser()){
+            return $this->json(["message" => "Unothorized"], 401);
+        }
+
+        $currentUser = $this->getUser();
+
+        $results= [];
+        $list_sub_tribuT= $tribuTService->getListSousTribuT($table_tribuT); /// [id, name, datetime ]
+
+        if( count($list_sub_tribuT) != 0 ){
+            foreach ($list_sub_tribuT as $sub_tribuT){
+                $data_sub_tribuT= $tribuTService->getApropos($sub_tribuT["name"]);
+                if( $data_sub_tribuT ){
+                    $apropos_sub_tribuT= [
+                        "id_sub_tribu" => $sub_tribuT["id"],
+                        "datetime_create_sub_tribu" => $sub_tribuT["datetime"],
+                        "table_name" => $sub_tribuT["name"],
+                        "name" => $data_sub_tribuT["name"],
+                        "description" => $data_sub_tribuT["description"],
+                        "avatar" => $data_sub_tribuT["avatar"],
+                        "isOwned" => $tribuTService->checkTributIsOwnedOrJoined($sub_tribuT["name"], $currentUser->getId())
+                    ];
+                    array_push($results, $apropos_sub_tribuT);
+                }
+            }
+        }
+
+
         return $this->json([
-            "message" => "ok"
+            "list_sub_tribuT" => $results
         ], 200);
     }
 }

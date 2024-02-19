@@ -22,7 +22,15 @@ class PDOConnexionService
         return $this->pdo;
     }
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Check if this table is already exists.
+     * 
+     * @param string $tableName name of the table to check;
+     * 
+     * @return boolean true: exist, false: not exist.
+     */
     public function isTableExist($tableName){
         $db = $_ENV["DATABASENAME"];
 
@@ -33,7 +41,16 @@ class PDOConnexionService
         return $resultat > 0 ? true : false;
     }
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Check if colum is already exists in specific table.
+     * 
+     * @param string $tableName name of the table to check
+     * @param string $columName name of the column to check
+     * 
+     * @return boolean true: exist, false: not exist.
+     */
     public function isColumnExist($tableName, $columnName){
         $query= "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :table_name AND column_name = :column_name";
         

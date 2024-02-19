@@ -901,3 +901,22 @@ ul#dropdownNavBarTribu > li:nth-child() > a:hover {
 .content_sous_tribu {
 	min-height: 47vh !important;
 }
+
+.content_right_actualite {
+	top: -50px;
+}
+.content_news_letter{
+	width: 95% !important;
+}
+
+.content_sous_tribu {
+	min-height: 47vh !important;
+}
+
+
+.content_list_sub_tribuT{
+	max-height: 53vh;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
