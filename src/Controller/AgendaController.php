@@ -1987,6 +1987,8 @@ class AgendaController extends AbstractController
 
         $fullNameSender = $tributGService->getFullName($userId);
 
+        $is_already_send_mail_copy= false;
+        
         foreach( $principal as $principal_item ){
             
             if($userRepository->findOneBy(["email" => $principal_item])){
@@ -2012,6 +2014,23 @@ class AgendaController extends AbstractController
                 $context["piece_joint"] = $piece_with_path;
                 // $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
                 $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context, $fullNameSender);
+
+                if( $is_already_send_mail_copy === false ){
+                    $current_user= $this->getUser();
+                    $current_user_id= $current_user->getId();
+                    $current_user_email= $current_user->getEmail();
+                    $current_user_fullname= $userService->getFullName($current_user_id);
+
+                    $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+
+                    $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                    
+                    $is_already_send_mail_copy= true;
+
+                    if( $responsecode_mycopy == 550 ){
+                        return $this->json(["result" =>"failed"],400);
+                    }
+                }
     
                 $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                 $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status,$agendaID);
@@ -2033,6 +2052,23 @@ class AgendaController extends AbstractController
                 // $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
     
                 $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context, $fullNameSender);
+                
+                if( $is_already_send_mail_copy === false ){
+                    $current_user= $this->getUser();
+                    $current_user_id= $current_user->getId();
+                    $current_user_email= $current_user->getEmail();
+                    $current_user_fullname= $userService->getFullName($current_user_id);
+
+                    $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+
+                    $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                    
+                    $is_already_send_mail_copy= true;
+
+                    if( $responsecode_mycopy == 550 ){
+                        return $this->json(["result" =>"failed"],400);
+                    }
+                }
                 
                 $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                 $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);
