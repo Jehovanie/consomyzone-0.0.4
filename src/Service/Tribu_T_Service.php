@@ -1852,11 +1852,11 @@ class Tribu_T_Service extends PDOConnexionService
      * 
      * @return array list of the table tribu T. [ [ "table_name" => ... ], ... ]
      */
-    public function getAllTribuT($userID)
+    public function getAllTribuT($userID= null)
     {
 
         $results = array();
-        $tab_not_like = ['%agenda%', '%commentaire%', '%publication%', '%reaction%', '%restaurant%'];
+        $tab_not_like = ['%agenda%', '%commentaire%', '%publication%', '%reaction%', '%restaurant%', '%album%', ];
 
         $query_sql = "SELECT table_name FROM INFORMATION_SCHEMA.TABLES WHERE table_type = 'BASE TABLE' AND table_name like 'tribu_t_%'";
         foreach ($tab_not_like as $not_like) {
@@ -1926,6 +1926,70 @@ class Tribu_T_Service extends PDOConnexionService
         } else {
             //"Tribu T " . ucfirst(explode("_",$object['tribu_t']['name_tribu_t_muable'])[count(explode("_",$object['tribu_t']['name_tribu_t_muable']))-1])
             if ($object['tribu_t']['name'] === $table_name) {
+                $apropos = [
+                    'name' =>  $object['tribu_t']['name_tribu_t_muable'],
+                    'description' => $object['tribu_t']['description'],
+                    'avatar' => $object['tribu_t']['logo_path'],
+                    'fondateurId' => $id
+                ];
+            }
+        }
+
+        return $apropos;
+    }
+
+     /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     *  Get apropos of the tribu T ( name, description,avatar)
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return array associative : [ 'name' => ... , 'description' => ... , 'avatar' => ... ]
+     */
+    public function getAproposUpdate($table_name)
+    {
+        if (!$this->isTableExist($table_name)) {
+            return false;
+        }
+        $apropos = ["name" => "", "description" => "", "avatar" => ""];
+
+        $statement = $this->getPDO()->prepare("SELECT user_id FROM $table_name where roles = 'Fondateur'");
+        $statement->execute();
+        $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$userID_fondateurTribuT) {
+            return false;
+        }
+        $id = $userID_fondateurTribuT['user_id'];
+
+        $statement = $this->getPDO()->prepare("SELECT tribu_t_owned FROM user where id = $id ");
+        $statement->execute();
+        $t_owned = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $tribu_t_owned = $t_owned['tribu_t_owned'];
+
+        $object = json_decode($tribu_t_owned, true);
+
+        if (!array_key_exists("name_tribu_t_muable", $object['tribu_t'])) {
+
+            foreach ($object['tribu_t'] as $trib) {
+
+                //"Tribu T " . ucfirst(explode("_",$trib['name_tribu_t_muable'])[count(explode("_",$trib['name_tribu_t_muable']))-1])
+                if (strtolower($trib['name']) === strtolower($table_name)) {
+                    $apropos = [
+                        'name' => $trib['name_tribu_t_muable'],
+                        'description' => $trib['description'],
+                        'avatar' => $trib['logo_path'],
+                        'fondateurId' => $id
+                    ];
+
+                    break;
+                }
+            }
+        } else {
+            //"Tribu T " . ucfirst(explode("_",$object['tribu_t']['name_tribu_t_muable'])[count(explode("_",$object['tribu_t']['name_tribu_t_muable']))-1])
+            if (strtolower($object['tribu_t']['name']) === strtolower($table_name)) {
                 $apropos = [
                     'name' =>  $object['tribu_t']['name_tribu_t_muable'],
                     'description' => $object['tribu_t']['description'],
@@ -3157,5 +3221,15 @@ class Tribu_T_Service extends PDOConnexionService
         $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
 
         return intval($userId) === intval($userID_fondateurTribuT);
+    }
+
+    public function getListAllTribuT(){
+        $table_list_tribuT= "tribu_t_list";
+
+        $all_list_tribu_t = $this->getPDO()->prepare("SELECT table_name FROM $table_list_tribuT");
+        $all_list_tribu_t->execute();
+        $list_tribu_t = $all_list_tribu_t->fetchAll(PDO::FETCH_ASSOC);
+
+        return $list_tribu_t;
     }
 }

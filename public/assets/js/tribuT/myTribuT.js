@@ -726,15 +726,26 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
           </li>`
 			: "";
 
-		let createSubTribut = `
-      <li class="listNavBarTribu">
-          <a style="cursor:pointer;" id="fetch_sous_tribuT_jheo_js" class="dropdown-item">Sous Tribu</a>
-      </li>
-    `;
+		let request_parainer_tribut = `
+			<li class="listNavBarTribu">
+				<a style="cursor:pointer;" id="action_tribuT_parrainer_jheo_js" class="dropdown-item">
+					Démande de parain Tribu T
+				</a>
+			</li>
+		`;
 
-		const postulantListe = ` <li class="listNavBarTribu postulantListe">
-      <a style="cursor:pointer;" id="cta_postulant_js" class="dropdown-item" onclick=(renderPosulant("${tribu_t[0].name}"))>Postulants</a>
-    </li>`;
+		let createSubTribut = `
+			<li class="listNavBarTribu">
+				<a style="cursor:pointer;" id="fetch_sous_tribuT_jheo_js" class="dropdown-item">Sous Tribu</a>
+			</li>
+		`;
+
+		const postulantListe = ` 
+			<li class="listNavBarTribu postulantListe">
+				<a style="cursor:pointer;" id="cta_postulant_js" class="dropdown-item" onclick=(renderPosulant("${tribu_t[0].name}"))>Postulants</a>
+			</li>
+		`;
+
 		let navMenuTribuT = "";
 		if (screen.width < 1000) {
 			navMenuTribuT = `<nav class=" mx-auto ">
@@ -767,6 +778,8 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 
                           ${newsLetterTribuT}
 
+						  ${request_parainer_tribut}
+
                           ${createSubTribut}
                         </ul>
                       </div>
@@ -796,6 +809,8 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                         ${canUpdateTribuInfo}
 
                         ${newsLetterTribuT}
+
+						${request_parainer_tribut}
 
                         ${createSubTribut}
                     </ul>
@@ -868,6 +883,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 
 		bindActionNewsLetterTribuT(tribu_t_name);
 		bindActionSousTribuT(tribu_t_name);
+		bindActionTribuTParrainer(tribu_t_name);
 	}
 
 	//
