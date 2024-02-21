@@ -2058,7 +2058,16 @@ $pdo=new PDOConnexionService();
         $mailNonInscrit = [];
         $mailInscriteDejaMembre = [];
         $totalEmail = count($principal);
+
+        /// add by Jehovanie RAMANDRIJOEL : email copy 21022024
         $is_already_send_mail_copy= false;
+        
+        $user_list= "<div class='card' style='width: 18rem;'><div class='card-body'><h5 class='card-title'>Ce mail a été envoyé vers les adresses suivantes :</h5><ul class='list-group'>";
+        foreach($principal as $rec){
+            $item = "<li class='list-group-item'>". $rec . "</li>";
+            $user_list = $user_list . $item;
+        }
+        $user_list = $user_list . "</ul></div></div>";
 
         foreach ($principal as $principal_item) {
 
@@ -2122,10 +2131,15 @@ $pdo=new PDOConnexionService();
                             ///remove link
                             $context["link_confirm"]= "#";
                             $context["content_mail"] = $description . 
-                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>" . $user_list;
             
 
-                            $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                            $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                                $current_user_email, 
+                                $current_user_fullname, 
+                                $context, 
+                                "ConsoMyZone"
+                            );
                         
                             $is_already_send_mail_copy= true;
 
@@ -2223,10 +2237,15 @@ $pdo=new PDOConnexionService();
                         ///remove link
                         $context["link_confirm"]= "#";
                         $context["content_mail"] = $description . 
-                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"  . $user_list;;
             
 
-                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                            $current_user_email, 
+                            $current_user_fullname, 
+                            $context, 
+                            "ConsoMyZone"
+                        );
                         
                         $is_already_send_mail_copy= true;
 
@@ -2297,9 +2316,14 @@ $pdo=new PDOConnexionService();
                             ///remove link
                             $context["link_confirm"]= "#";
                             $context["content_mail"] = $description . 
-                                " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+                                " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"  . $user_list;
             
-                            $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                            $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                                $current_user_email, 
+                                $current_user_fullname, 
+                                $context, 
+                                "ConsoMyZone"
+                            );
                             
                             $is_already_send_mail_copy= true;
 

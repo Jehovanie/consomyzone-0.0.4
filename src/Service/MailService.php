@@ -130,18 +130,18 @@ class MailService extends AbstractController {
                 ->subject($context["object_mail"]);
         
         if( count( $cc ) > 0 ){
-            $email = $email->cc(new Address($cc[0], "Future Fans"));
+            $email = $email->cc(new Address($cc[0], ""));
 
             for( $i= 1; $i < count($cc); $i++ ){
-                $email = $email->addCc(new Address($cc[$i], "Future Fans"));
+                $email = $email->addCc(new Address($cc[$i], ""));
             }
         }
 
         if( count( $cci ) > 0 ){
-            $email = $email->bcc(new Address($cci[0], "Future Fans"));
+            $email = $email->bcc(new Address($cci[0], ""));
 
             for( $i= 1; $i < count($cci); $i++ ){
-                $email = $email->addBcc(new Address($cci[$i], "Future Fans"));
+                $email = $email->addBcc(new Address($cci[$i], ""));
             }
         }
 

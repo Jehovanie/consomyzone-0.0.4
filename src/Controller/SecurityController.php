@@ -1491,7 +1491,14 @@ class SecurityController extends AbstractController
         }
         
 
+        /// add by Jehovanie RAMANDRIJOEL : email copy 21022024
         $is_already_send_mail_copy= false;
+        $user_list= "<div class='card' style='width: 18rem;'><div class='card-body'><h5 class='card-title'>Ce mail a été envoyé vers les adresses suivantes :</h5><ul class='list-group'>";
+        foreach($receivers as $rec){
+            $item = "<li class='list-group-item'>". $rec["email"] . "</li>";
+            $user_list = $user_list . $item;
+        }
+        $user_list = $user_list . "</ul></div></div>";
         
         foreach($receivers as $receiver){
             $agendaID = $receiver["agendaId"];
@@ -1522,9 +1529,14 @@ class SecurityController extends AbstractController
                     $current_user_fullname= $userService->getFullName($current_user_id);
 
                     $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
-                    $context["content_mail"] = $description_copie_for_myself;
+                    $context["content_mail"] = $description_copie_for_myself . $user_list;
 
-                    $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                    $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                        $current_user_email, 
+                        $current_user_fullname, 
+                        $context, 
+                        "ConsoMyZone"
+                    );
                     
                     $is_already_send_mail_copy= true;
 
@@ -1554,9 +1566,14 @@ class SecurityController extends AbstractController
                         $current_user_fullname= $userService->getFullName($current_user_id);
 
                         $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
-                        $context["content_mail"] = $description_copie_for_myself;
+                        $context["content_mail"] = $description_copie_for_myself . $user_list;
 
-                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                            $current_user_email, 
+                            $current_user_fullname, 
+                            $context, 
+                            "ConsoMyZone"
+                        );
                         
                         $is_already_send_mail_copy= true;
 
@@ -1584,9 +1601,14 @@ class SecurityController extends AbstractController
                         $current_user_fullname= $userService->getFullName($current_user_id);
 
                         $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
-                        $context["content_mail"] = $description_copie_for_myself;
+                        $context["content_mail"] = $description_copie_for_myself . $user_list;
 
-                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                            $current_user_email, 
+                            $current_user_fullname, 
+                            $context, 
+                            "ConsoMyZone"
+                        );
                         
                         $is_already_send_mail_copy= true;
 
