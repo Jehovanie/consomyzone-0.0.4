@@ -3883,25 +3883,30 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         $list_tribu_parrainer= [];
 
         $all_tribu_t= $tribuTService->getListAllTribuT();
+        $all_private_table= $tribuTService->getAllUnderTableTribuT($table_tribuT);
+
         if( count($all_tribu_t) > 0 ){
             foreach( $all_tribu_t as $tribu_t ){
-                $data_tribuT= $tribuTService->getAproposUpdate($tribu_t["table_name"]);
-                if( $data_tribuT){
-                    $temp =[
-                        "table_name" => $tribu_t["table_name"],
-                        "name" => $data_tribuT["name"],
-                        "description" => $data_tribuT["description"],
-                        "avatar" => $data_tribuT["avatar"],
-                        "fondateur" => $data_tribuT["fondateurId"]
-                    ];
-                    array_push($list_tribu_parrainer, $temp);
+                if(!in_array($tribu_t["table_name"], $all_private_table)){
+                    $data_tribuT= $tribuTService->getAproposUpdate($tribu_t["table_name"]);
+                    if( $data_tribuT){
+                        $temp =[
+                            "table_name" => $tribu_t["table_name"],
+                            "name" => $data_tribuT["name"],
+                            "description" => $data_tribuT["description"],
+                            "avatar" => $data_tribuT["avatar"],
+                            "fondateur" => $data_tribuT["fondateurId"]
+                        ];
+                        array_push($list_tribu_parrainer, $temp);
+                    }
                 }
             }
 
         }
 
         return $this->json([
-            "list_tribu_parrainer" => $list_tribu_parrainer
+            "list_tribu_parrainer" => $list_tribu_parrainer,
+            "all_private_table" => $all_private_table
         ]);
     }
     
