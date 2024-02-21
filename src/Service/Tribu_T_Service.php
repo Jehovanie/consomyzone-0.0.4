@@ -3044,6 +3044,7 @@ class Tribu_T_Service extends PDOConnexionService
         $sql = "CREATE TABLE IF NOT EXISTS " . $table_sub_tribu . " ( 
                 id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
                 name VARCHAR(300) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+                status int(11) NOT NULL DEFAULT 0,
                 datetime timestamp NOT NULL DEFAULT current_timestamp()
             )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
 
@@ -3231,5 +3232,91 @@ class Tribu_T_Service extends PDOConnexionService
         $list_tribu_t = $all_list_tribu_t->fetchAll(PDO::FETCH_ASSOC);
 
         return $list_tribu_t;
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Setting request for tribu Parrainer
+     * 
+     * @param string $tabletribuT: name of the table tribu T
+     * @param int $userid: id of the user to check.
+     * 
+     */
+    public function setRequestTribuParrainer($table_tribu_futur_parrain, $table_tribu_current){
+        $table_sub_list_name_parrainer= $table_tribu_futur_parrain . "_list_sub";
+        
+        if (!$this->isTableExist($table_sub_list_name_parrainer)) {
+            $this->createTableSousTribu($table_tribu_futur_parrain);
+        }
+
+        if(!$this->isColumnExist($table_sub_list_name_parrainer, "status")){
+            $this->addColumnStatusSubTribu($table_sub_list_name_parrainer);
+        }
+
+        $statement = $this->getPDO()->prepare("SELECT name FROM $table_sub_list_name_parrainer where name= '$table_tribu_current'");
+        $statement->execute();
+        $table_tribu_find = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if( $table_tribu_find ){
+            return false;
+        }
+
+        $request_sub_tribu = $this->getPDO()->prepare(
+            "INSERT INTO $table_sub_list_name_parrainer (name, status, datetime) 
+            VALUES (:name, :status, :datetime)"
+        );
+
+        $status = 0;
+
+        $datetime = new \DateTime();
+        $datetime = $datetime->format('Y-m-d H:i:s');
+
+        $request_sub_tribu->bindParam(':name', $table_tribu_current);
+        $request_sub_tribu->bindParam(':status', $status);
+        $request_sub_tribu->bindParam(':datetime', $datetime);
+
+        $request_sub_tribu->execute();
+
+        return true;
+    }
+
+    public function setCancelTribuParrainer($table_tribu_futur_parrain, $table_tribu_current){
+
+        $table_sub_list_name_parrainer= $table_tribu_futur_parrain . "_list_sub";
+        
+        if (!$this->isTableExist($table_sub_list_name_parrainer)) {
+            $this->createTableSousTribu($table_tribu_futur_parrain);
+            return false;
+        }
+
+        if(!$this->isColumnExist($table_sub_list_name_parrainer, "status")){
+            $this->addColumnStatusSubTribu($table_sub_list_name_parrainer);
+            return false;
+        }
+
+        $statement = $this->getPDO()->prepare("SELECT name FROM $table_sub_list_name_parrainer where name= '$table_tribu_current'");
+        $statement->execute();
+        $table_tribu_find = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if( !$table_tribu_find ){
+            return false;
+        } ;
+
+        $cancel_sub_tribu = $this->getPDO()->prepare(
+            "DELETE FROM $table_sub_list_name_parrainer WHERE name= '$table_tribu_current'"
+        );
+        $cancel_sub_tribu->execute();
+    }
+
+
+    public function addColumnStatusSubTribu($table_name_parrainer){
+
+        if( $this->isColumnExist($table_name_parrainer, "status")) return;
+
+        $sql= "ALTER TABLE $table_name_parrainer ADD status INT(11)  NOT NULL DEFAULT 0";
+
+        $request_add_collumn_status = $this->getPDO()->prepare($sql);
+        $request_add_collumn_status->execute();
     }
 }

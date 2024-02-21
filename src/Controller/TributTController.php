@@ -3904,4 +3904,42 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             "list_tribu_parrainer" => $list_tribu_parrainer
         ]);
     }
+    
+    #[Route("/tributT/request_tribu_parrainer", name: "app_request_tribu_parrainer", methods: ["POST"])]
+    public function requestTribuParrainer(
+        Request $request,
+        Tribu_T_Service $tribuTService,
+    ){
+        if(!$this->getUser()){
+            return $this->json(["message" => "unhautorized"],401 );
+        }
+        $data = json_decode($request->getContent(), true);
+        extract($data); /// $table_tribu_futur_parrain, $table_tribu_current
+
+
+        $tribuTService->setRequestTribuParrainer($table_tribu_futur_parrain, $table_tribu_current);
+
+        return $this->json([
+            "data" => "bonjour"
+        ], 201);
+    }
+
+     #[Route("/tributT/cancel_tribu_parrainer", name: "app_cancel_tribu_parrainer", methods: ["POST"])]
+    public function cancelTribuParrainer(
+        Request $request,
+        Tribu_T_Service $tribuTService,
+    ){
+        if(!$this->getUser()){
+            return $this->json(["message" => "unhautorized"],401 );
+        }
+        $data = json_decode($request->getContent(), true);
+        extract($data); /// $table_tribu_futur_parrain, $table_tribu_current
+
+
+        $tribuTService->setCancelTribuParrainer($table_tribu_futur_parrain, $table_tribu_current);
+
+        return $this->json([
+            "data" => "bonjour"
+        ], 201);
+    }
 }
