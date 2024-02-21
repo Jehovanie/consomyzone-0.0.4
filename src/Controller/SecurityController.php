@@ -1451,16 +1451,20 @@ class SecurityController extends AbstractController
         TributGService $tributGService,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-        Filesystem $filesyst
+        Filesystem $filesyst,
+        UserService $userService
         ){
         $context=[];
         $requestContent = json_decode($request->getContent(), true);
+
         $receivers=$requestContent["receiver"];
         $content=$requestContent["emailCore"];
         $piece_joint=$requestContent["files"];
+
         $user = $this->getUser();
         $userId = $user->getId();
         $fullNameSender = $tributGService->getFullName($userId);
+
         $piece_with_path = [];
         if (count($piece_joint) > 0) {
             // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
@@ -1486,41 +1490,115 @@ class SecurityController extends AbstractController
             }
         }
         
+
+        $is_already_send_mail_copy= false;
+        
         foreach($receivers as $receiver){
-                $agendaID = $receiver["agendaId"];
-                $from_id=$receiver["from_id"];
-                $to_id=$receiver["to_id"];
-                $email_to=$receiver["email"];
-                $nom=$receiver["lastname"];
-                $prenom=$receiver["firstname"];
-                $context["object_mail"]=$receiver["objet"];
-                $context["template_path"]="emails/mail_invitation_agenda.html.twig";
-                $context["link_confirm"]="";
-                $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$content);
-                $context["piece_joint"] = $piece_with_path;
-                $table_agenda_partage_name="partage_agenda_".$userId;
-                if(!is_null($to_id)){
+            $agendaID = $receiver["agendaId"];
+            $from_id=$receiver["from_id"];
+            $to_id=$receiver["to_id"];
+            $email_to=$receiver["email"];
+            $nom=$receiver["lastname"];
+            $prenom=$receiver["firstname"];
+            $context["object_mail"]=$receiver["objet"];
+            $context["template_path"]="emails/mail_invitation_agenda.html.twig";
+            $context["link_confirm"]="";
+
+            $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID, "/agenda/confirmation/".$userId."/".$to_id."/".$agendaID, $content);
+            // http://localhost:8000/agenda/confirmation/4
+            $description_copie_for_myself = str_replace("/agenda/confirmation/".$agendaID, "#", $content);
+
+            $context["piece_joint"] = $piece_with_path;
+            $table_agenda_partage_name="partage_agenda_".$userId;
+
+            if(!is_null($to_id)){
+
                 $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
-                    $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
-                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
-                }else{
-                    if($userRepository->findOneBy(["email" => $email_to])){
-                        $userTo = $userRepository->findOneBy(["email" => $email_to]);
-                        $idUserTo = $userTo->getId();
-                        $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$idUserTo."/".$agendaID,$content);
-                        $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
-                        $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$idUserTo]);
-                        $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
-                    }else{
-                        // ADD USER TEMP
-                        $userTemp = new User();
-                        $idUserTo = $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
-                        $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$idUserTo."/".$agendaID,$content);
-                        $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
-                        $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$idUserTo]);
-                        $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
+
+                if( $is_already_send_mail_copy === false ){
+                    $current_user= $this->getUser();
+                    $current_user_id= $current_user->getId();
+                    $current_user_email= $current_user->getEmail();
+                    $current_user_fullname= $userService->getFullName($current_user_id);
+
+                    $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                    $context["content_mail"] = $description_copie_for_myself;
+
+                    $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                    
+                    $is_already_send_mail_copy= true;
+
+                    if( $responsecode_mycopy == 550 ){
+                        return $this->json(["result" =>"failed"],400);
                     }
                 }
+
+                $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
+                $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
+            }else{
+                if($userRepository->findOneBy(["email" => $email_to])){
+                    $userTo = $userRepository->findOneBy(["email" => $email_to]);
+                    $idUserTo = $userTo->getId();
+
+                    $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$idUserTo."/".$agendaID,$content);
+
+                    // http://localhost:8000/agenda/confirmation/4
+                    $description_copie_for_myself = str_replace("/agenda/confirmation/".$agendaID, "#", $content);
+
+                    $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
+                    
+                    if( $is_already_send_mail_copy === false ){
+                        $current_user= $this->getUser();
+                        $current_user_id= $current_user->getId();
+                        $current_user_email= $current_user->getEmail();
+                        $current_user_fullname= $userService->getFullName($current_user_id);
+
+                        $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                        $context["content_mail"] = $description_copie_for_myself;
+
+                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                        
+                        $is_already_send_mail_copy= true;
+
+                        if( $responsecode_mycopy == 550 ){
+                            return $this->json(["result" =>"failed"],400);
+                        }
+                    }
+
+                    $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$idUserTo]);
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
+                }else{
+                    // ADD USER TEMP
+                    $userTemp = new User();
+                    $idUserTo = $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
+
+                    $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$idUserTo."/".$agendaID,$content);
+                    // http://localhost:8000/agenda/confirmation/4
+                    $description_copie_for_myself = str_replace("/agenda/confirmation/".$agendaID, "#", $content);
+
+                    $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
+                    if( $is_already_send_mail_copy === false ){
+                        $current_user= $this->getUser();
+                        $current_user_id= $current_user->getId();
+                        $current_user_email= $current_user->getEmail();
+                        $current_user_fullname= $userService->getFullName($current_user_id);
+
+                        $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                        $context["content_mail"] = $description_copie_for_myself;
+
+                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                        
+                        $is_already_send_mail_copy= true;
+
+                        if( $responsecode_mycopy == 550 ){
+                            return $this->json(["result" =>"failed"],400);
+                        }
+                    }
+
+                    $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$idUserTo]);
+                    $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
+                }
+            }
         }
         $r = $serialize->serialize(["response"=>"0k"], 'json');
         return new JsonResponse($r, 200, [], true);

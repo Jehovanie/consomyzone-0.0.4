@@ -1988,7 +1988,10 @@ class AgendaController extends AbstractController
         $fullNameSender = $tributGService->getFullName($userId);
 
         $is_already_send_mail_copy= false;
+        // http://localhost:8000/agenda/4/confirmation/not/inscrit
+        $description_copie_for_myself = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit", "#", $description);
         
+
         foreach( $principal as $principal_item ){
             
             if($userRepository->findOneBy(["email" => $principal_item])){
@@ -2008,7 +2011,7 @@ class AgendaController extends AbstractController
                 $context["object_mail"] = $object;
                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
                 $context["link_confirm"] = "";
-                $descriptionTmp = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$description);
+                $descriptionTmp = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit", "/agenda/confirmation/".$userId."/".$to_id."/".$agendaID, $description);
                 $context["content_mail"] = $descriptionTmp;
     
                 $context["piece_joint"] = $piece_with_path;
@@ -2022,6 +2025,7 @@ class AgendaController extends AbstractController
                     $current_user_fullname= $userService->getFullName($current_user_id);
 
                     $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                    $context["content_mail"] = $description_copie_for_myself;
 
                     $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
                     
@@ -2060,7 +2064,8 @@ class AgendaController extends AbstractController
                     $current_user_fullname= $userService->getFullName($current_user_id);
 
                     $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
-
+                    $context["content_mail"] = $description_copie_for_myself;
+                    
                     $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
                     
                     $is_already_send_mail_copy= true;

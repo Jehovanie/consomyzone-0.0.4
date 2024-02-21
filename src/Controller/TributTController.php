@@ -2119,9 +2119,11 @@ $pdo=new PDOConnexionService();
                             $current_user_fullname= $userService->getFullName($current_user_id);
 
                             $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
-
                             ///remove link
                             $context["link_confirm"]= "#";
+                            $context["content_mail"] = $description . 
+                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+            
 
                             $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
                         
@@ -2133,7 +2135,8 @@ $pdo=new PDOConnexionService();
                         }
                         ///reset link
                         $context["link_confirm"]= $conserve_link;
-
+                        $context["content_mail"] = $description .
+                            "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
                     
                         if($responsecode == 550){
                             if(count($principal) == 1){
@@ -2219,6 +2222,9 @@ $pdo=new PDOConnexionService();
 
                         ///remove link
                         $context["link_confirm"]= "#";
+                        $context["content_mail"] = $description . 
+                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+            
 
                         $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
                         
@@ -2228,8 +2234,11 @@ $pdo=new PDOConnexionService();
                             return $this->json(["result" =>"failed"],400);
                         }
                     }
+
                     ///reset link
                     $context["link_confirm"]= $conserve_link;
+                    $context["content_mail"] = $description .
+                        "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
 
                     if($responsecode == 550){
                         if(count($principal) == 1){
@@ -2267,13 +2276,41 @@ $pdo=new PDOConnexionService();
             
                         $context["object_mail"] = $object;
                         $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+                        
                         $context["link_confirm"] = $url ;
+                        $conserve_link= $context["link_confirm"];
+
                         $context["content_mail"] = $description .
                             "<a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
             
                         $context["piece_joint"] = $piece_with_path;
                         
                         $responsecode=$mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
+                        if( $is_already_send_mail_copy === false ){
+                            $current_user= $this->getUser();
+                            $current_user_id= $current_user->getId();
+                            $current_user_email= $current_user->getEmail();
+                            $current_user_fullname= $userService->getFullName($current_user_id);
+
+                            $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+
+                            ///remove link
+                            $context["link_confirm"]= "#";
+                            $context["content_mail"] = $description . 
+                                " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+            
+                            $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing($current_user_email, $current_user_fullname, $context, "ConsoMyZone");
+                            
+                            $is_already_send_mail_copy= true;
+
+                            if( $responsecode_mycopy == 550 ){
+                                return $this->json(["result" =>"failed"],400);
+                            }
+                        }
+                        ///reset link
+                        $context["link_confirm"]= $conserve_link;
+                        $context["content_mail"] = $description .
+                            "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
 
                         // $userService->saveInvitationStoryG($table . "_invitation", $userId, $principal_item);
         
