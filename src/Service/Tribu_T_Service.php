@@ -3261,6 +3261,21 @@ class Tribu_T_Service extends PDOConnexionService
         return $results;
     }
 
+    public function getInvitationParrainer($table_parent){
+
+        $table_parent_list_sub= $table_parent . "_list_sub";
+        if (!$this->isTableExist($table_parent_list_sub)) {
+            $this->createTableSousTribu($table_parent);
+            return [];
+        }
+
+        $sub_list_tribu_t = $this->getPDO()->prepare("SELECT id, name, status, datetime FROM $table_parent_list_sub");
+        $sub_list_tribu_t->execute();
+        $all_sub_list_tribu_t = $sub_list_tribu_t->fetchAll(PDO::FETCH_ASSOC);
+
+        return $all_sub_list_tribu_t;
+    }
+
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
@@ -3364,5 +3379,49 @@ class Tribu_T_Service extends PDOConnexionService
         $status_found = $statement->fetch(PDO::FETCH_ASSOC); 
 
         return $status_found ? intval($status_found['status']) : false;
+    }
+
+
+    public function setAcceptInvitationSousTribu($table_futur_sous_tribu, $table_name_parent){
+        $table_list_sub_parent= $table_name_parent . "_list_sub";
+        if (!$this->isTableExist($table_list_sub_parent)) {
+            $this->createTableSousTribu($table_name_parent);
+        }
+
+        $statement = $this->getPDO()->prepare("SELECT name, status FROM $table_list_sub_parent where name= '$table_futur_sous_tribu'");
+        $statement->execute();
+        $status_found = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if( !$status_found ){
+            return false;
+        }
+
+        /// update table list_sub parent
+        $request_accept_invitation = $this->getPDO()->prepare(
+            "UPDATE $table_list_sub_parent SET status = :status WHERE name = :table_futur_sous_tribu"
+        );
+        $status= 1;
+        $request_accept_invitation->bindParam(':status', $status);
+        $request_accept_invitation->bindParam(':table_futur_sous_tribu', $table_futur_sous_tribu);
+        $request_accept_invitation->execute();
+
+        return false;
+    }
+
+    public function getStatusSousTribuT($table_futur_sous_tribu, $table_name_parent){
+        $table_parent_list_sub= $table_name_parent . "_list_sub";
+
+        if (!$this->isTableExist($table_parent_list_sub)) {
+            $this->createTableSousTribu($table_name_parent);
+            return false;
+        }
+
+        $request_status_invitation = $this->getPDO()->prepare("SELECT id, name, status, datetime FROM $table_parent_list_sub WHERE name= :name");
+
+        $request_status_invitation->bindParam(':name', $table_futur_sous_tribu);
+        $request_status_invitation->execute();
+        $status_invitation = $request_status_invitation->fetch(PDO::FETCH_ASSOC);
+
+        return $status_invitation;
     }
 }

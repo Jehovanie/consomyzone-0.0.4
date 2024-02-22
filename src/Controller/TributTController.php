@@ -3888,8 +3888,10 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         $all_private_table= $tribuTService->getAllUnderTableTribuT($table_tribuT);
         array_push($all_private_table, $table_tribuT);
 
+        $all_invitation_parrainer_tribuT= [];
+        $invitation_parrainer_tribuT= $tribuTService->getInvitationParrainer($table_tribuT);
+
         if( count($all_tribu_t) > 0 ){
-            $type_status= [ -1, 0, 1 ];
             foreach( $all_tribu_t as $tribu_t ){
                 if(!in_array($tribu_t["table_name"], $all_private_table)){
                     $data_tribuT= $tribuTService->getAproposUpdate($tribu_t["table_name"]);
@@ -3913,12 +3915,39 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
                     }
                 }
             }
+        }
 
+        if( count($invitation_parrainer_tribuT) > 0){
+            foreach( $invitation_parrainer_tribuT as $parrainer_tribuT ){
+                $data_tribuT= $tribuTService->getAproposUpdate($parrainer_tribuT["name"]);
+                if( $data_tribuT){
+                    $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
+                    $temp =[
+                        "table_name" => $parrainer_tribuT["name"],
+                        "name" => $data_tribuT["name"],
+                        "description" => $data_tribuT["description"],
+                        "avatar" => $data_tribuT["avatar"],
+                        "fondateur" => [
+                            "pseudo" => $user_fondateur->getPseudo(),
+                            "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
+                        ],
+                        // "status" => $type_status[array_rand($type_status, 1)],
+                        "status" => $tribuTService->getStatusFillieul($parrainer_tribuT["name"], $table_tribuT),
+                    ];
+                    array_push(
+                        $all_invitation_parrainer_tribuT, [
+                            "id" => $parrainer_tribuT["id"],
+                            "status" => $parrainer_tribuT["status"],
+                            "datetime" => $parrainer_tribuT["datetime"],
+                            "tribu" => $temp
+                        ]);
+                }
+            }
         }
 
         return $this->json([
             "list_tribu_parrainer" => $list_tribu_parrainer,
-            "all_private_table" => $all_private_table
+            "all_invitation_parrainer_tribuT" => $all_invitation_parrainer_tribuT
         ]);
     }
     
@@ -3960,7 +3989,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         ], 201);
     }
 
-     #[Route("/tributT/cancel_tribu_parrainer", name: "app_cancel_tribu_parrainer", methods: ["POST"])]
+    #[Route("/tributT/cancel_tribu_parrainer", name: "app_cancel_tribu_parrainer", methods: ["POST"])]
     public function cancelTribuParrainer(
         Request $request,
         Tribu_T_Service $tribuTService,
@@ -3995,5 +4024,50 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             "tribu_futur_parrain" => $tribu_futur_parrain,
             "table_tribu_current" => $table_tribu_current
         ], 201);
+    }
+
+    #[Route("/tributT/accept_invitation_sous_tribu", name: "app_accept_invitation_sous_tribu", methods: ["POST"])]
+    public function acceptInvitationSousTribuT(
+        Request $request,
+        Tribu_T_Service $tribuTService,
+        UserRepository $userRepository,
+        UserService $userService
+    ){
+        if(!$this->getUser()){
+            return $this->json(["message" => "unhautorized"],401 );
+        }
+
+        $data = json_decode($request->getContent(), true);
+        extract($data); /// $table_futur_sous_tribu, $table_tribu_current
+
+        $resunt= $tribuTService->setAcceptInvitationSousTribu($table_futur_sous_tribu, $table_tribu_current);
+
+        $data_tribuT= $tribuTService->getAproposUpdate($table_futur_sous_tribu);
+        $parrainer_tribuT= $tribuTService->getStatusSousTribuT($table_futur_sous_tribu, $table_tribu_current);
+
+        $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
+        $temp =[
+            "table_name" => $table_futur_sous_tribu,
+            "name" => $data_tribuT["name"],
+            "description" => $data_tribuT["description"],
+            "avatar" => $data_tribuT["avatar"],
+            "fondateur" => [
+                "pseudo" => $user_fondateur->getPseudo(),
+                "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
+            ],
+            "status" => $tribuTService->getStatusFillieul($table_futur_sous_tribu, $table_tribu_current),
+        ];
+
+        $tribu_futur_parrain=  [
+            "id" => $parrainer_tribuT["id"],
+            "status" => $parrainer_tribuT["status"],
+            "datetime" => $parrainer_tribuT["datetime"],
+            "tribu" => $temp
+        ];
+
+        return $this->json([
+            "futur_sous_tribu" => $tribu_futur_parrain,
+            "table_tribu_current" => $table_tribu_current
+        ]);
     }
 }
