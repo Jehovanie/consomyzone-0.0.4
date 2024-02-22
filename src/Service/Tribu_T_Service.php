@@ -3252,6 +3252,12 @@ class Tribu_T_Service extends PDOConnexionService
         foreach($all_sub_list_tribu_t as $sub_list){
             array_push($results, $sub_list['name']);
         }
+
+        foreach($all_sub_list_tribu_t as $sub_list){
+            $result_temp= $this->getAllUnderTableTribuT($sub_list['name']);
+            $results= array_merge($results, $result_temp );
+        }
+
         return $results;
     }
 
@@ -3339,5 +3345,24 @@ class Tribu_T_Service extends PDOConnexionService
 
         $request_add_collumn_status = $this->getPDO()->prepare($sql);
         $request_add_collumn_status->execute();
+    }
+
+
+    public function getStatusFillieul($table_name_parent, $table_name_fils){
+        $table_list_sub_parent= $table_name_parent . "_list_sub";
+        
+        if (!$this->isTableExist($table_list_sub_parent)) {
+            $this->createTableSousTribu($table_name_parent);
+        }
+
+        if(!$this->isColumnExist($table_list_sub_parent, "status")){
+            $this->addColumnStatusSubTribu($table_list_sub_parent);
+        }
+
+        $statement = $this->getPDO()->prepare("SELECT status FROM $table_list_sub_parent where name= '$table_name_fils'");
+        $statement->execute();
+        $status_found = $statement->fetch(PDO::FETCH_ASSOC); 
+
+        return $status_found ? intval($status_found['status']) : false;
     }
 }

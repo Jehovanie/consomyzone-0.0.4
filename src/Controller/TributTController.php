@@ -2237,7 +2237,7 @@ $pdo=new PDOConnexionService();
                         ///remove link
                         $context["link_confirm"]= "#";
                         $context["content_mail"] = $description . 
-                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"  . $user_list;;
+                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"  . $user_list;
             
 
                         $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
@@ -3879,23 +3879,35 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
     public function getListTribuParrainer(
         $table_tribuT,
         Tribu_T_Service $tribuTService,
+        UserRepository $userRepository,
+        UserService $userService
     ){
         $list_tribu_parrainer= [];
 
         $all_tribu_t= $tribuTService->getListAllTribuT();
         $all_private_table= $tribuTService->getAllUnderTableTribuT($table_tribuT);
+        array_push($all_private_table, $table_tribuT);
 
         if( count($all_tribu_t) > 0 ){
+            $type_status= [ -1, 0, 1 ];
             foreach( $all_tribu_t as $tribu_t ){
                 if(!in_array($tribu_t["table_name"], $all_private_table)){
                     $data_tribuT= $tribuTService->getAproposUpdate($tribu_t["table_name"]);
                     if( $data_tribuT){
+                        // $data_tribuT["fondateurId"]
+                        $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
+
                         $temp =[
                             "table_name" => $tribu_t["table_name"],
                             "name" => $data_tribuT["name"],
                             "description" => $data_tribuT["description"],
                             "avatar" => $data_tribuT["avatar"],
-                            "fondateur" => $data_tribuT["fondateurId"]
+                            "fondateur" => [
+                                "pseudo" => $user_fondateur->getPseudo(),
+                                "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
+                            ],
+                            // "status" => $type_status[array_rand($type_status, 1)],
+                            "status" => $tribuTService->getStatusFillieul($tribu_t["table_name"], $table_tribuT),
                         ];
                         array_push($list_tribu_parrainer, $temp);
                     }
@@ -3914,6 +3926,8 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
     public function requestTribuParrainer(
         Request $request,
         Tribu_T_Service $tribuTService,
+        UserRepository $userRepository,
+        UserService $userService
     ){
         if(!$this->getUser()){
             return $this->json(["message" => "unhautorized"],401 );
@@ -3921,11 +3935,28 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         $data = json_decode($request->getContent(), true);
         extract($data); /// $table_tribu_futur_parrain, $table_tribu_current
 
-
         $tribuTService->setRequestTribuParrainer($table_tribu_futur_parrain, $table_tribu_current);
 
+        $data_tribuT= $tribuTService->getAproposUpdate($table_tribu_futur_parrain);
+
+        // $data_tribuT["fondateurId"]
+        $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
+
+        $tribu_futur_parrain= [
+            "table_name" => $table_tribu_futur_parrain,
+            "name" => $data_tribuT["name"],
+            "description" => $data_tribuT["description"],
+            "avatar" => $data_tribuT["avatar"],
+            "fondateur" => [
+                "pseudo" => $user_fondateur->getPseudo(),
+                "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
+            ],
+            "status" => $tribuTService->getStatusFillieul($table_tribu_futur_parrain, $table_tribu_current),
+        ];
+
         return $this->json([
-            "data" => "bonjour"
+            "tribu_futur_parrain" => $tribu_futur_parrain,
+            "table_tribu_current" => $table_tribu_current
         ], 201);
     }
 
@@ -3933,6 +3964,8 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
     public function cancelTribuParrainer(
         Request $request,
         Tribu_T_Service $tribuTService,
+        UserRepository $userRepository,
+        UserService $userService
     ){
         if(!$this->getUser()){
             return $this->json(["message" => "unhautorized"],401 );
@@ -3940,11 +3973,27 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         $data = json_decode($request->getContent(), true);
         extract($data); /// $table_tribu_futur_parrain, $table_tribu_current
 
-
         $tribuTService->setCancelTribuParrainer($table_tribu_futur_parrain, $table_tribu_current);
 
+        $data_tribuT= $tribuTService->getAproposUpdate($table_tribu_futur_parrain);
+        // $data_tribuT["fondateurId"]
+        $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
+
+        $tribu_futur_parrain= [
+            "table_name" => $table_tribu_futur_parrain,
+            "name" => $data_tribuT["name"],
+            "description" => $data_tribuT["description"],
+            "avatar" => $data_tribuT["avatar"],
+            "fondateur" => [
+                "pseudo" => $user_fondateur->getPseudo(),
+                "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
+            ],
+            "status" => $tribuTService->getStatusFillieul($table_tribu_futur_parrain, $table_tribu_current),
+        ];
+
         return $this->json([
-            "data" => "bonjour"
+            "tribu_futur_parrain" => $tribu_futur_parrain,
+            "table_tribu_current" => $table_tribu_current
         ], 201);
     }
 }

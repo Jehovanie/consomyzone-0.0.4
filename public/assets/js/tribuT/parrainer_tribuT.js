@@ -92,10 +92,13 @@ function generateListHtmlTribuTParrainer(list_tribu_parrainer, table_name_curren
 }
 
 function generateItemHtmlTribuTParrainer(tribu_futur_parrain, table_tribu_current) {
-	const { name, description, avatar, table_name, fondateur } = tribu_futur_parrain;
+	const { name, description, avatar, table_name, fondateur, status } = tribu_futur_parrain;
+	const { pseudo, fullname } = fondateur;
 
 	let photo_avatar = avatar != "" ? avatar : "/uploads/tribu_t/photo/avatar_tribu.jpg";
 	photo_avatar = IS_DEV_MODE ? photo_avatar : `/public/${photo_avatar}`;
+
+	let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
 
 	const item_html_tribuT_parrainer = `
 		<li class="list-group-item">
@@ -108,22 +111,19 @@ function generateItemHtmlTribuTParrainer(tribu_futur_parrain, table_tribu_curren
 							</div>
 							<div class="col">
 								<div class="overflow-hidden flex-nowrap">
-									<h6 class="mb-1">
+									<h6 class="mb-1 d-inline-block ">
 										${name}
 									</h6>
-									<span class="text-muted d-block mb-2 small">
+									<em class="text-muted d-inline-block  text-italic" style="font-size: 0.8rem;">fondé par <strong>${pseudo}</strong> </em>
+									<span class="text-muted d-block small">
 										${description}
 									</span>
+									
 								</div>
 							</div>
 						</div>
 						<div class="content_cta_action_parrainer d-flex justify-content-end align-items-center">
-							<button type="button"
-								class="btn btn-primary btn-sm cta_request_${table_name}_jheo_js"
-								onclick="ctaRequestTribuParrainer('${table_name}', '${table_tribu_current}')"
-							>
-								Envoyer une demande de parainner
-							</button>
+							${btn_action}
 						</div>
 					</div>
 				</div>
@@ -131,6 +131,66 @@ function generateItemHtmlTribuTParrainer(tribu_futur_parrain, table_tribu_curren
 		</li>
 	`;
 	return item_html_tribuT_parrainer;
+}
+
+function getBtnStateAction(tribu_futur_parrain, table_tribu_current) {
+	const { table_name, status } = tribu_futur_parrain;
+
+	let btn_action = "";
+
+	if (status === 0) {
+		btn_action = `
+			<button type="button"
+				class="btn btn-info btn-sm text-white me-1 cta_request_${table_name}_jheo_js"
+			>
+				<i class="fa-solid fa-hourglass-half fa-spin"></i>
+				Demande envoyer
+			</button>
+			<button type="button"
+				class="btn btn-danger btn-sm cta_cancel_${table_name}_jheo_js"
+				onclick="ctaCancelTribuParrainer('${table_name}', '${table_tribu_current}')"
+			>
+				<i class="fa-solid fa-ban"></i>
+				Annuler
+			</button>
+		`;
+	} else if (status === 1) {
+		btn_action = `
+			<button type="button"
+				class="btn btn-warning btn-sm text-white me-1"
+			>
+				<i class="fa-solid fa-check"></i>
+				Demande accepter
+			</button>
+			<button type="button"
+				class="btn btn-danger btn-sm cta_cancel_${table_name}_jheo_js"
+				onclick="ctaCancelTribuParrainer('${table_name}', '${table_tribu_current}')"
+			>
+				<i class="fa-solid fa-ban"></i>
+				Annuler
+			</button>
+		`;
+	} else if (status === -1) {
+		btn_action = `
+			<button type="button"
+				class="btn btn-secondary btn-sm text-white me-1"
+			>
+				<i class="fa-solid fa-circle-xmark"></i>
+				Demande rejeter
+			</button>
+		`;
+	} else {
+		btn_action = `
+			<button type="button"
+				class="btn btn-primary btn-sm cta_request_${table_name}_jheo_js"
+				onclick="ctaRequestTribuParrainer('${table_name}', '${table_tribu_current}')"
+			>
+				Envoyer une demande de parainner
+			</button>
+		`;
+	}
+
+	return btn_action;
 }
 
 function ctaRequestTribuParrainer(table_tribu_futur_parrain, table_tribu_current) {
@@ -169,24 +229,13 @@ function ctaRequestTribuParrainer(table_tribu_futur_parrain, table_tribu_current
 			return response.json();
 		})
 		.then((response) => {
-			console.log(response);
+			const { tribu_futur_parrain, table_tribu_current } = response;
+
 			const parent_cta_request = cta_request.parentElement;
 
-			parent_cta_request.innerHTML = `
-				<button type="button"
-					class="btn btn-info btn-sm text-white me-1 cta_request_${table_tribu_futur_parrain}_jheo_js"
-				>
-					<i class="fa-solid fa-check"></i>
-					Demande envoyer
-				</button>
-				<button type="button"
-					class="btn btn-danger btn-sm cta_cancel_${table_tribu_futur_parrain}_jheo_js"
-					onclick="ctaCancelTribuParrainer('${table_tribu_futur_parrain}', '${table_tribu_current}')"
-				>
-					<i class="fa-solid fa-ban"></i>
-					Annuler
-				</button>
-			`;
+			let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
+
+			parent_cta_request.innerHTML = btn_action;
 		})
 		.catch((error) => console.log(error));
 }
@@ -227,16 +276,12 @@ function ctaCancelTribuParrainer(table_tribu_futur_parrain, table_tribu_current)
 			return response.json();
 		})
 		.then((response) => {
-			const parent_cta_cancel = cta_cancel_.parentElement;
+			const { tribu_futur_parrain, table_tribu_current } = response;
 
-			parent_cta_cancel.innerHTML = `
-				<button type="button"
-					class="btn btn-primary btn-sm cta_request_${table_tribu_futur_parrain}_jheo_js"
-					onclick="ctaRequestTribuParrainer('${table_tribu_futur_parrain}', '${table_tribu_current}')"
-				>
-					Envoyer une demande de parainner
-				</button>
-			`;
+			let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
+
+			const parent_cta_cancel = cta_cancel_.parentElement;
+			parent_cta_cancel.innerHTML = btn_action;
 		})
 		.catch((error) => console.log(error));
 }
@@ -249,6 +294,5 @@ function unhautorizedResult() {
 			Vous étés deconnecter, veuilllez reconnecter.
 		</button>
 	`;
-
 	return body;
 }
