@@ -2062,7 +2062,7 @@ $pdo=new PDOConnexionService();
         /// add by Jehovanie RAMANDRIJOEL : email copy 21022024
         $is_already_send_mail_copy= false;
         
-        $user_list= "<div class='card' style='width: 18rem;'><div class='card-body'><h5 class='card-title'>Ce mail a été envoyé vers les adresses suivantes :</h5><ul class='list-group'>";
+        $user_list= "<div class='card' style='width: 18rem;'><div class='card-body'><h5 class='card-title'>Ce mail a bien été envoyé vers ces adresses:</h5><ul class='list-group'>";
         foreach($principal as $rec){
             $item = "<li class='list-group-item'>". $rec . "</li>";
             $user_list = $user_list . $item;
