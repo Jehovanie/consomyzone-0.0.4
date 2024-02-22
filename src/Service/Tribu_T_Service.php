@@ -3193,10 +3193,13 @@ class Tribu_T_Service extends PDOConnexionService
         }
 
         $request_sub_tribu = $this->getPDO()->prepare(
-            "SELECT id, name, datetime FROM $table_sub_tribu"
+            "SELECT id, name, datetime FROM $table_sub_tribu WHERE status= :status ORDER BY datetime DESC"
         );
 
+        $status= 1;
+        $request_sub_tribu->bindParam(':status', $status);
         $request_sub_tribu->execute();
+
         $result = $request_sub_tribu->fetchAll(PDO::FETCH_ASSOC);
 
         return $result;
@@ -3269,7 +3272,7 @@ class Tribu_T_Service extends PDOConnexionService
             return [];
         }
 
-        $sub_list_tribu_t = $this->getPDO()->prepare("SELECT id, name, status, datetime FROM $table_parent_list_sub");
+        $sub_list_tribu_t = $this->getPDO()->prepare("SELECT id, name, status, datetime FROM $table_parent_list_sub ORDER BY datetime DESC");
         $sub_list_tribu_t->execute();
         $all_sub_list_tribu_t = $sub_list_tribu_t->fetchAll(PDO::FETCH_ASSOC);
 

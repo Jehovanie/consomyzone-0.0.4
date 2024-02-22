@@ -3885,6 +3885,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         $list_tribu_parrainer= [];
 
         $all_tribu_t= $tribuTService->getListAllTribuT();
+        
         $all_private_table= $tribuTService->getAllUnderTableTribuT($table_tribuT);
         array_push($all_private_table, $table_tribuT);
 
