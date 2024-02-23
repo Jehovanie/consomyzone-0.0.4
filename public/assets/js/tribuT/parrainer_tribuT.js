@@ -31,7 +31,7 @@ function bindActionTribuTParrainer(tribuTName) {
 			fetch(url)
 				.then((response) => response.json())
 				.then((response) => {
-					const { list_tribu_parrainer, all_invitation_parrainer_tribuT } = response;
+					const { list_tribu_parrainer, all_invitation_parrainer_tribuT, hierarchical_tribu_t } = response;
 
 					const current_list_html_parrainer = generateListHtmlTribuTParrainer(
 						list_tribu_parrainer,
@@ -43,25 +43,35 @@ function bindActionTribuTParrainer(tribuTName) {
 						tribuTName
 					);
 
+					const current_html_parent_tribuT = generateHierarchicalTribuT(hierarchical_tribu_t);
+
 					const body = `
 						<div class="card">
 							<div class="card-body content_sous_tribu">
 								<div class="content_entete mb-2">
 									<div class="d-flex justify-content-between align-items-center">
 										<ul class="nav nav-tabs">
-											<li class="nav-item" onclick="activeOnglet('demand_adhesion')">
-												<span class="nav-link nav_link_sub_tribu_jheo_js  active nav_demand_adhesion_jheo_js" aria-current="page">
+											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('demand_adhesion')">
+												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js  active nav_demand_adhesion_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-code-pull-request fa-beat-fade"></i>
 														Demande d'adhésion sous tribu
 													</span>
 												</span>
 											</li>
-											<li class="nav-item" onclick="activeOnglet('invitation_adherer')">
-												<span class="nav-link nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
+											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('invitation_adherer')">
+												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-users-viewfinder fa-beat-fade"></i>
 														Invitation d'adhérer une tribu
+													</span>
+												</span>
+											</li>
+											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('parrent_tribuT')">
+												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_parrent_tribuT_jheo_js" aria-current="page">
+													<span> 
+														<i class="fa-solid fa-sitemap fa-beat-fade"></i>
+														Hierarchy Tribu T
 													</span>
 												</span>
 											</li>
@@ -69,13 +79,18 @@ function bindActionTribuTParrainer(tribuTName) {
 									</div>
 								</div>
 								<div class="content_list_sub_tribu_jheo_js content_list_demand_adhesion_tribuT_jheo_js">
-									<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT content_list_sub_tribuT_jheo_js">
+									<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT">
 										${current_list_html_parrainer}
 									</ul>
 								</div>
 								<div class="d-none content_list_sub_tribu_jheo_js content_list_invitation_adherer_tribuT_jheo_js">
-									<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT content_list_sub_tribuT_jheo_js">
+									<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT">
 										${current_list_html_invitation_parrainer}
+									</ul>
+								</div>
+								<div class="d-none content_list_sub_tribu_jheo_js content_list_parrent_tribuT_tribuT_jheo_js">
+									<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT">
+										${current_html_parent_tribuT}
 									</ul>
 								</div>
 							</div>
@@ -593,4 +608,76 @@ function ctaRejectInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 			parent_cta_reject_invitation.innerHTML = btn_action;
 		})
 		.catch((error) => console.log(error));
+}
+
+function generateHierarchicalTribuT(list_hierarchical_tribuT) {
+	if (list_hierarchical_tribuT.length === 0) {
+		const none_invitation_parrainer = `
+					<li class="list-group-item">
+						<div class="alert alert-danger text-center" role="alert">
+							Vous n'avez pas de Tribut Parent.
+						</div>
+					</li>
+				`;
+
+		return none_invitation_parrainer;
+	}
+
+	return generateItemHierarchical(list_hierarchical_tribuT);
+}
+
+function generateItemHierarchical(list_hierarchical) {
+	let fist_element = list_hierarchical.shift();
+
+	const { name, description, avatar, fondateur } = fist_element;
+	const { pseudo, fullname } = fondateur;
+
+	let photo_avatar = avatar != "" ? avatar : "/uploads/tribu_t/photo/avatar_tribu.jpg";
+	photo_avatar = IS_DEV_MODE ? photo_avatar : `/public/${photo_avatar}`;
+
+	let item_hierarchical_tribuT = `
+			<div class="d-flex align-items-center">
+				<div class="col-xl-12">
+					<div class="mt-2">
+						<div class="row align-items-center">
+							<div class="col-auto">
+								<img class="img50_50" src="${photo_avatar}" class="width-90 rounded-3" alt="tribuT">
+							</div>
+							<div class="col">
+								<div class="overflow-hidden flex-nowrap">
+									<h6 class="mb-1 d-inline-block ">
+										${name}
+									</h6>
+									<em class="text-muted d-inline-block  text-italic" style="font-size: 0.8rem;">fondé par <strong>${pseudo}</strong> </em>
+									<span class="text-muted d-block small">
+										${description}
+									</span>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+	`;
+
+	if (list_hierarchical.length === 0) {
+		return `
+			<ul class='wtree mt-2'>
+				<li class="card card-body">
+					${item_hierarchical_tribuT}
+					<ul></ul>
+				</li>
+			</ul>
+
+		`;
+	}
+
+	return `
+		<ul class='wtree mt-2'>
+			<li class="card card-body">
+				${item_hierarchical_tribuT}
+				${generateItemHierarchical(list_hierarchical)}
+			</li>
+		</ul>
+	`;
 }

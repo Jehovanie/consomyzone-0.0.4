@@ -61,17 +61,13 @@ class Tribu_T_Service extends PDOConnexionService
 
                 email VARCHAR(255) NULL,
 
-                table_parent VARCHAR(300) NULL DEFAULT 0,
+                table_parent VARCHAR(300) NULL DEFAULT NULL,
 
                 livel_parent int(11) NOT NULL DEFAULT 0
 				
 				)ENGINE=InnoDB";
 
-
-
             $this->getPDO()->exec($sql);
-
-
 
             $data = "Insert into tribu_t_" . $user_id . "_" . $tableName . " (id, user_id, roles, status) values (UUID(), $user_id, 'Fondateur', 1)";
 
@@ -312,7 +308,7 @@ class Tribu_T_Service extends PDOConnexionService
                     $this->getPDO()->exec($sqlCreateTablePathAlbum);
 
 
-                    
+                    $this->addListTribuT($output);
                 }
             }
         }
@@ -3027,6 +3023,18 @@ class Tribu_T_Service extends PDOConnexionService
         }
     }
 
+
+    public function addListTribuT($new_table_tribu_t_name){
+        $tribu_t_list= "tribu_t_list";
+
+        $request_tribu_t_list = $this->getPDO()->prepare(
+            "INSERT INTO $tribu_t_list (table_name)  VALUES (:table_name)"
+        );
+        
+        $request_tribu_t_list->bindParam(':table_name', $new_table_tribu_t_name);
+        $request_tribu_t_list->execute();
+    }
+
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
@@ -3071,16 +3079,17 @@ class Tribu_T_Service extends PDOConnexionService
         }
 
         $request_sub_tribu = $this->getPDO()->prepare(
-            "INSERT INTO $table_sub_tribu (name, datetime) 
-            VALUES (:name, :datetime)"
+            "INSERT INTO $table_sub_tribu (name, status, datetime) 
+            VALUES (:name, :status, :datetime)"
         );
 
         $name= $table_fils;
-
+        $status= 1; /// already accepted.
         $datetime = new \DateTime();
         $datetime = $datetime->format('Y-m-d H:i:s');
 
         $request_sub_tribu->bindParam(':name', $name);
+        $request_sub_tribu->bindParam(':status', $status);
         $request_sub_tribu->bindParam(':datetime', $datetime);
 
         $request_sub_tribu->execute();
@@ -3485,6 +3494,14 @@ class Tribu_T_Service extends PDOConnexionService
         $request_accept_invitation->bindParam(':table_futur_sous_tribu', $table_futur_sous_tribu);
         $request_accept_invitation->execute();
 
+        /// update table list_sub parent
+        $request_set_table_parent = $this->getPDO()->prepare(
+            "UPDATE $table_futur_sous_tribu SET table_parent = :table_parent"
+        );
+
+        $request_set_table_parent->bindParam(':table_parent', $table_name_parent);
+        $request_set_table_parent->execute();
+
         return true;
     }
 
@@ -3553,5 +3570,30 @@ class Tribu_T_Service extends PDOConnexionService
         $status_invitation = $request_status_invitation->fetch(PDO::FETCH_ASSOC);
 
         return $status_invitation;
+    }
+
+    public function getHierarchicalTribu($table_name_parent){
+        $table_parent_list_sub= $table_name_parent . "_list_sub";
+
+        if (!$this->isTableExist($table_parent_list_sub)) {
+            $this->createTableSousTribu($table_name_parent);
+            return [];
+        }
+
+        $hierarchical_tribuT= $this->getTableParent($table_name_parent);
+        return array_reverse($hierarchical_tribuT);	
+    }
+
+    public function getTableParent($table_name){
+        $results = [];
+
+        $request_table_parent = $this->getPDO()->prepare("SELECT table_parent FROM $table_name");
+        $request_table_parent->execute();
+        $response = $request_table_parent->fetch(PDO::FETCH_ASSOC);
+        $table_parent= $response["table_parent"];
+
+        if( $table_parent === null) return [];
+
+        return array_merge([$table_parent], $this->getTableParent($table_parent));
     }
 }

@@ -3889,9 +3889,6 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         $all_private_table= $tribuTService->getAllUnderTableTribuT($table_tribuT);
         array_push($all_private_table, $table_tribuT);
 
-        $all_invitation_parrainer_tribuT= [];
-        $invitation_parrainer_tribuT= $tribuTService->getInvitationParrainer($table_tribuT);
-
         if( count($all_tribu_t) > 0 ){
             foreach( $all_tribu_t as $tribu_t ){
                 if(!in_array($tribu_t["table_name"], $all_private_table)){
@@ -3918,6 +3915,8 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             }
         }
 
+        $all_invitation_parrainer_tribuT= [];
+        $invitation_parrainer_tribuT= $tribuTService->getInvitationParrainer($table_tribuT);
         if( count($invitation_parrainer_tribuT) > 0){
             foreach( $invitation_parrainer_tribuT as $parrainer_tribuT ){
                 $data_tribuT= $tribuTService->getAproposUpdate($parrainer_tribuT["name"]);
@@ -3946,9 +3945,35 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             }
         }
 
+        $all_hierarchical_tribuT= [];
+        $hierarchical_tribuT= $tribuTService->getHierarchicalTribu($table_tribuT);
+        if(  count($hierarchical_tribuT) > 0 ){
+            foreach( $hierarchical_tribuT as $item_hierarchical_tribuT ){
+                $data_tribuT= $tribuTService->getAproposUpdate($item_hierarchical_tribuT);
+
+                if( $data_tribuT){
+                    $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
+                    $temp =[
+                        "table_name" => $item_hierarchical_tribuT,
+                        "name" => $data_tribuT["name"],
+                        "description" => $data_tribuT["description"],
+                        "avatar" => $data_tribuT["avatar"],
+                        "fondateur" => [
+                            "pseudo" => $user_fondateur->getPseudo(),
+                            "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
+                        ],
+                    ];
+
+                    array_push($all_hierarchical_tribuT, $temp);
+                }
+            }
+        }
+        
+
         return $this->json([
             "list_tribu_parrainer" => $list_tribu_parrainer,
-            "all_invitation_parrainer_tribuT" => $all_invitation_parrainer_tribuT
+            "all_invitation_parrainer_tribuT" => $all_invitation_parrainer_tribuT,
+            "hierarchical_tribu_t" => $all_hierarchical_tribuT,
         ]);
     }
     

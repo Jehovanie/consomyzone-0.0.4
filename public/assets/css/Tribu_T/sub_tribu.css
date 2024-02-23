@@ -5,11 +5,17 @@
 .content_right_actualite {
 	top: -50px;
 }
-.content_news_letter{
+.content_news_letter {
 	width: 95% !important;
 }
 
 .content_sous_tribu {
 	min-height: 47vh !important;
 }
-
+.nav_item_sub_tribu {
+	font-size: 0.9rem;
+}
+.nav_link_sub_tribu.active {
+	background-color: #0d6efd !important;
+	color: white !important;
+}
