@@ -3227,6 +3227,14 @@ class Tribu_T_Service extends PDOConnexionService
         return intval($userId) === intval($userID_fondateurTribuT);
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: get all list table tribu T in database
+     * Use in: TributTController.php
+     * 
+     * @return array [ [ 'table_name' => ...], ... ]
+     */
     public function getListAllTribuT(){
         $table_list_tribuT= "tribu_t_list";
 
@@ -3237,10 +3245,21 @@ class Tribu_T_Service extends PDOConnexionService
         return $list_tribu_t;
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovaneiram@gmail.com>
+     * 
+     * Goal: Get all hierarchie table tribu from my tribu T
+     * User in: TributTController.php
+     * 
+     * @param string $table_parent: Name of the table start.
+     * 
+     * @return array [] if empty otherwise list table tribu T
+     */
     public function getAllUnderTableTribuT($table_parent){
         $table_parent_list_sub= $table_parent . "_list_sub";
         if (!$this->isTableExist($table_parent_list_sub)) {
             $this->createTableSousTribu($table_parent);
+            return [];
         }
         $results= [];
 
@@ -3264,6 +3283,17 @@ class Tribu_T_Service extends PDOConnexionService
         return $results;
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanie@gmail.com>
+     * 
+     * Goal: Get list for all invitation sub tribu T
+     * Use in: TributTController.php
+     * 
+     * @param string $table_parent: Table name tribu T
+     * 
+     * @return array vide if empty otherwise array associtive 
+     *  [ [ id => ..., name => ..., status => ..., datetime => ... ], ...]
+     */
     public function getInvitationParrainer($table_parent){
 
         $table_parent_list_sub= $table_parent . "_list_sub";
@@ -3326,6 +3356,17 @@ class Tribu_T_Service extends PDOConnexionService
         return true;
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Cancel request to sub tribu T
+     * Use in : TributTController.php
+     * 
+     * @param string $table_tribu_futur_parrain: Table Name of the future parraine
+     * @param string $table_tribu_current: Table name send demande
+     * 
+     * @return boolean false if action failed otherwise true
+     */
     public function setCancelTribuParrainer($table_tribu_futur_parrain, $table_tribu_current){
 
         $table_sub_list_name_parrainer= $table_tribu_futur_parrain . "_list_sub";
@@ -3352,9 +3393,20 @@ class Tribu_T_Service extends PDOConnexionService
             "DELETE FROM $table_sub_list_name_parrainer WHERE name= '$table_tribu_current'"
         );
         $cancel_sub_tribu->execute();
+
+        return true;
     }
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Add column status for table list_sub tribu T.
+     * Use in: Tribu_T_Service.php
+     * 
+     * @param string $table_name_parrainer: Table name '<tribu>_list_sup'
+     * 
+     * @return void
+     */
     public function addColumnStatusSubTribu($table_name_parrainer){
 
         if( $this->isColumnExist($table_name_parrainer, "status")) return;
@@ -3365,7 +3417,20 @@ class Tribu_T_Service extends PDOConnexionService
         $request_add_collumn_status->execute();
     }
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Get status for one sous tribu T inside their parent
+     * Use in: TributTController.php
+     * 
+     * @param string $table_name_parent: Name table tribu T parent
+     * @param string $table_name_fils: Name  table tribu T fils
+     * 
+     * @return false if the parent don't have tribu T fils or not match, otherwise number
+     *  -1: reject
+     *   0: pedding
+     *   1: accepter
+     */
     public function getStatusFillieul($table_name_parent, $table_name_fils){
         $table_list_sub_parent= $table_name_parent . "_list_sub";
         
@@ -3384,11 +3449,22 @@ class Tribu_T_Service extends PDOConnexionService
         return $status_found ? intval($status_found['status']) : false;
     }
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Accept an invitation to tribuT fils for tribuT parent
+     * Use in: TributTController.php
+     * 
+     * @param string $table_futur_sous_tribu: Name  table tribu T fils
+     * @param string $talbe_name_parent: Name table tribu T parent
+     * 
+     * @return boolean false if action failed otherwise true
+     */
     public function setAcceptInvitationSousTribu($table_futur_sous_tribu, $table_name_parent){
         $table_list_sub_parent= $table_name_parent . "_list_sub";
         if (!$this->isTableExist($table_list_sub_parent)) {
             $this->createTableSousTribu($table_name_parent);
+            return false;
         }
 
         $statement = $this->getPDO()->prepare("SELECT name, status FROM $table_list_sub_parent where name= '$table_futur_sous_tribu'");
@@ -3403,14 +3479,65 @@ class Tribu_T_Service extends PDOConnexionService
         $request_accept_invitation = $this->getPDO()->prepare(
             "UPDATE $table_list_sub_parent SET status = :status WHERE name = :table_futur_sous_tribu"
         );
+
         $status= 1;
         $request_accept_invitation->bindParam(':status', $status);
         $request_accept_invitation->bindParam(':table_futur_sous_tribu', $table_futur_sous_tribu);
         $request_accept_invitation->execute();
 
-        return false;
+        return true;
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Reject an invitation to tribuT fils for tribuT parent
+     * Use in: TributTController.php
+     * 
+     * @param string $table_futur_sous_tribu: Name  table tribu T fils
+     * @param string $talbe_name_parent: Name table tribu T parent
+     * 
+     * @return boolean false if action failed otherwise true
+     */
+    public function setRejectInvitationSousTribu($table_futur_sous_tribu, $table_name_parent){
+        $table_list_sub_parent= $table_name_parent . "_list_sub";
+        if (!$this->isTableExist($table_list_sub_parent)) {
+            $this->createTableSousTribu($table_name_parent);
+            return false;
+        }
+
+        $statement = $this->getPDO()->prepare("SELECT name, status FROM $table_list_sub_parent where name= '$table_futur_sous_tribu'");
+        $statement->execute();
+        $status_found = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if( !$status_found ){
+            return false;
+        }
+
+        /// update table list_sub parent
+        $request_accept_invitation = $this->getPDO()->prepare(
+            "UPDATE $table_list_sub_parent SET status = :status WHERE name = :table_futur_sous_tribu"
+        );
+        $status= -1;
+        $request_accept_invitation->bindParam(':status', $status);
+        $request_accept_invitation->bindParam(':table_futur_sous_tribu', $table_futur_sous_tribu);
+        $request_accept_invitation->execute();
+
+        return true;
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Get status for one sous tribu T inside their parent
+     * Use in: TributTController.php
+     * 
+     * @param string $table_futur_sous_tribu: Name  table tribu T fils
+     * @param string $table_name_parent: Name table tribu T parent
+     * 
+     * @return false if the parent don't have tribu T fils or not match, otherwise array associated
+     *  [ id => ..., name => ..., status => ... , datetime => ... ]
+     */
     public function getStatusSousTribuT($table_futur_sous_tribu, $table_name_parent){
         $table_parent_list_sub= $table_name_parent . "_list_sub";
 

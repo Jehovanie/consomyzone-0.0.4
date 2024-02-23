@@ -49,16 +49,16 @@ function bindActionTribuTParrainer(tribuTName) {
 								<div class="content_entete mb-2">
 									<div class="d-flex justify-content-between align-items-center">
 										<ul class="nav nav-tabs">
-											<li class="nav-item" onclick="activeOnglet('demande')">
-												<span class="nav-link active nav_demand_adhesion_jheo_js" aria-current="page">
+											<li class="nav-item" onclick="activeOnglet('demand_adhesion')">
+												<span class="nav-link nav_link_sub_tribu_jheo_js  active nav_demand_adhesion_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-code-pull-request fa-beat-fade"></i>
 														Demande d'adhésion sous tribu
 													</span>
 												</span>
 											</li>
-											<li class="nav-item" onclick="activeOnglet('invitation')">
-												<span class="nav-link nav_invitation_adherer_jheo_js" aria-current="page">
+											<li class="nav-item" onclick="activeOnglet('invitation_adherer')">
+												<span class="nav-link nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-users-viewfinder fa-beat-fade"></i>
 														Invitation d'adhérer une tribu
@@ -68,12 +68,12 @@ function bindActionTribuTParrainer(tribuTName) {
 										</ul>
 									</div>
 								</div>
-								<div class="content_list_demande_adhesion_tribuT_jheo_js">
+								<div class="content_list_sub_tribu_jheo_js content_list_demand_adhesion_tribuT_jheo_js">
 									<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT content_list_sub_tribuT_jheo_js">
 										${current_list_html_parrainer}
 									</ul>
 								</div>
-								<div class="d-none content_list_invitation_adherer_tribuT_jheo_js">
+								<div class="d-none content_list_sub_tribu_jheo_js content_list_invitation_adherer_tribuT_jheo_js">
 									<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT content_list_sub_tribuT_jheo_js">
 										${current_list_html_invitation_parrainer}
 									</ul>
@@ -88,62 +88,57 @@ function bindActionTribuTParrainer(tribuTName) {
 	}
 }
 
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * Goal: Active link on nav tribu T adhession
+ *
+ * @param {string} action_type
+ * @returns
+ */
 function activeOnglet(action_type) {
-	const nav_demand = document.querySelector(".nav_demand_adhesion_jheo_js");
-	const nav_invitation = document.querySelector(".nav_invitation_adherer_jheo_js");
-	const content_demand = document.querySelector(".content_list_demande_adhesion_tribuT_jheo_js");
-	const content_invitation = document.querySelector(".content_list_invitation_adherer_tribuT_jheo_js");
+	const nav_action_type = document.querySelector(`.nav_${action_type}_jheo_js`);
+	const content_list_action_type = document.querySelector(`.content_list_${action_type}_tribuT_jheo_js`);
 
-	if (!nav_demand) {
-		console.log(`Selector not found: nav_demand_adhesion_jheo_js`);
+	if (!nav_action_type || !content_list_action_type) {
+		console.log(`Selector not found: .nav_${action_type}_jheo_js`);
+		console.log(`Selector not found: .content_list_${action_type}_tribuT_jheo_js`);
+		return;
 	}
 
-	if (!nav_invitation) {
-		console.log(`Selector not found: nav_invitation_adherer_jheo_js`);
+	const all_nav_link_sub_tribu = document.querySelectorAll(".nav_link_sub_tribu_jheo_js");
+	const all_content_list_sub_tribu = document.querySelectorAll(".content_list_sub_tribu_jheo_js");
+
+	all_nav_link_sub_tribu.forEach((item_nav_link) => {
+		if (item_nav_link.classList.contains("active")) {
+			item_nav_link.classList.remove("active");
+		}
+	});
+
+	all_content_list_sub_tribu.forEach((item_content_list_sub) => {
+		if (!item_content_list_sub.classList.contains("d-none")) {
+			item_content_list_sub.classList.add("d-none");
+		}
+	});
+
+	if (!nav_action_type.classList.contains("active")) {
+		nav_action_type.classList.add("active");
 	}
 
-	if (!content_demand) {
-		console.log(`Selector not found: content_list_demande_adhesion_tribuT_jheo_js`);
-	}
-	if (!content_invitation) {
-		console.log(`Selector not found: content_list_invitation_adherer_tribuT_jheo_js`);
-	}
-
-	if (action_type === "demande") {
-		if (!nav_demand.classList.contains("active")) {
-			nav_demand.classList.add("active");
-		}
-
-		if (nav_invitation.classList.contains("active")) {
-			nav_invitation.classList.remove("active");
-		}
-
-		if (content_demand.classList.contains("d-none")) {
-			content_demand.classList.remove("d-none");
-		}
-
-		if (!content_invitation.classList.contains("d-none")) {
-			content_invitation.classList.add("d-none");
-		}
-	} else if (action_type === "invitation") {
-		if (nav_demand.classList.contains("active")) {
-			nav_demand.classList.remove("active");
-		}
-
-		if (!nav_invitation.classList.contains("active")) {
-			nav_invitation.classList.add("active");
-		}
-
-		if (content_invitation.classList.contains("d-none")) {
-			content_invitation.classList.remove("d-none");
-		}
-
-		if (!content_demand.classList.contains("d-none")) {
-			content_demand.classList.add("d-none");
-		}
+	if (content_list_action_type.classList.contains("d-none")) {
+		content_list_action_type.classList.remove("d-none");
 	}
 }
 
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * Goal: Generate list html for tribu T parrainer
+ *
+ * @param {*} list_tribu_parrainer
+ * @param {*} table_name_current
+ * @returns
+ */
 function generateListHtmlTribuTParrainer(list_tribu_parrainer, table_name_current) {
 	if (list_tribu_parrainer.length === 0) {
 		const none_tribuT_parrainer = `
@@ -177,6 +172,7 @@ function generateItemHtmlTribuTParrainer(tribu_futur_parrain, table_tribu_curren
 	let photo_avatar = avatar != "" ? avatar : "/uploads/tribu_t/photo/avatar_tribu.jpg";
 	photo_avatar = IS_DEV_MODE ? photo_avatar : `/public/${photo_avatar}`;
 
+	///get btn action
 	let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
 
 	const item_html_tribuT_parrainer = `
@@ -212,6 +208,16 @@ function generateItemHtmlTribuTParrainer(tribu_futur_parrain, table_tribu_curren
 	return item_html_tribuT_parrainer;
 }
 
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * Goal: Generate btn action for the adhesion request sub tribu
+ *
+ * @param {*} tribu_futur_parrain
+ * @param {*} table_tribu_current : Name current table tribu T
+ *
+ * @returns
+ */
 function getBtnStateAction(tribu_futur_parrain, table_tribu_current) {
 	const { table_name, status } = tribu_futur_parrain;
 
@@ -460,7 +466,8 @@ function getBtnStateActionInvitation(tribu_futur_sous_tribu, table_tribu_current
 				Accepter la demande
 			</button>
 			<button type="button"
-				class="btn btn-danger btn-sm cta_cancel_${table_name}_jheo_js"
+				class="btn btn-danger btn-sm cta_reject_invitation_${table_name}_jheo_js"
+				onclick="ctaRejectInvitationSousTribu('${table_name}', '${table_tribu_current}')"
 			>
 				<i class="fa-solid fa-ban"></i>
 				Refuser
@@ -478,7 +485,7 @@ function getBtnStateActionInvitation(tribu_futur_sous_tribu, table_tribu_current
 	} else if (status === -1) {
 		btn_action = `
 			<button type="button"
-				class="btn btn-danger btn-sm text-white me-1 cta_request_${table_name}_jheo_js"
+				class="btn btn-secondary btn-sm text-white me-1 cta_request_${table_name}_jheo_js"
 			>
 				<i class="fa-solid fa-ban"></i>
 				Demander rejeter 
@@ -502,7 +509,7 @@ function ctaAcceptInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 
 	cta_invitation.setAttribute("disabled", true);
 
-	const url = `/tributT/accept_invitation_sous_tribu`;
+	const url = `/tributT/response_invitation_sous_tribu`;
 	const request = new Request(url, {
 		method: "POST",
 		headers: {
@@ -512,6 +519,7 @@ function ctaAcceptInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 		body: JSON.stringify({
 			table_futur_sous_tribu,
 			table_tribu_current,
+			action: "accept",
 		}),
 	});
 
@@ -533,6 +541,56 @@ function ctaAcceptInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 			let btn_action = getBtnStateActionInvitation({ table_name, status }, table_tribu_current);
 
 			parent_cta_invitation.innerHTML = btn_action;
+		})
+		.catch((error) => console.log(error));
+}
+
+function ctaRejectInvitationSousTribu(table_futur_sous_tribu, table_tribu_current) {
+	if (!document.querySelector(`.cta_reject_invitation_${table_futur_sous_tribu}_jheo_js`)) {
+		console.log(`Selector not found: .cta_reject_invitation_${table_futur_sous_tribu}_jheo_js`);
+		return false;
+	}
+
+	const cta_reject_invitation = document.querySelector(`.cta_reject_invitation_${table_futur_sous_tribu}_jheo_js`);
+	cta_reject_invitation.innerHTML = `
+		<i class="fa-solid fa-spinner fa-spin"></i>
+		Action en cours...
+	`;
+
+	cta_reject_invitation.setAttribute("disabled", true);
+
+	const url = `/tributT/response_invitation_sous_tribu`;
+
+	const request = new Request(url, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			table_futur_sous_tribu,
+			table_tribu_current,
+			action: "reject",
+		}),
+	});
+	fetch(request)
+		.then((response) => {
+			if (response.status === 401) {
+				const parent_cta_reject_invitation = cta_reject_invitation.parentElement;
+				parent_cta_reject_invitation.innerHTML = unhautorizedResult();
+				throw new Error("Unhautorized");
+			}
+			return response.json();
+		})
+		.then((response) => {
+			const { futur_sous_tribu, table_tribu_current } = response;
+			const { table_name, status } = futur_sous_tribu;
+
+			const parent_cta_reject_invitation = cta_reject_invitation.parentElement;
+
+			let btn_action = getBtnStateActionInvitation({ table_name, status }, table_tribu_current);
+
+			parent_cta_reject_invitation.innerHTML = btn_action;
 		})
 		.catch((error) => console.log(error));
 }

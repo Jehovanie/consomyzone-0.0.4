@@ -4027,8 +4027,8 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         ], 201);
     }
 
-    #[Route("/tributT/accept_invitation_sous_tribu", name: "app_accept_invitation_sous_tribu", methods: ["POST"])]
-    public function acceptInvitationSousTribuT(
+    #[Route("/tributT/response_invitation_sous_tribu", name: "app_response_invitation_sous_tribu", methods: ["POST"])]
+    public function responseInvitationSousTribuT(
         Request $request,
         Tribu_T_Service $tribuTService,
         UserRepository $userRepository,
@@ -4039,9 +4039,13 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         }
 
         $data = json_decode($request->getContent(), true);
-        extract($data); /// $table_futur_sous_tribu, $table_tribu_current
+        extract($data); /// $table_futur_sous_tribu, $table_tribu_current, action
 
-        $resunt= $tribuTService->setAcceptInvitationSousTribu($table_futur_sous_tribu, $table_tribu_current);
+        if($action === "accept"){
+            $result= $tribuTService->setAcceptInvitationSousTribu($table_futur_sous_tribu, $table_tribu_current);
+        }else if($action === "reject"){
+            $result= $tribuTService->setRejectInvitationSousTribu($table_futur_sous_tribu, $table_tribu_current);
+        }
 
         $data_tribuT= $tribuTService->getAproposUpdate($table_futur_sous_tribu);
         $parrainer_tribuT= $tribuTService->getStatusSousTribuT($table_futur_sous_tribu, $table_tribu_current);
