@@ -3693,6 +3693,10 @@ class Tribu_T_Service extends PDOConnexionService
     public function getTableParent($table_name){
         $results = [];
 
+        if(!$this->isColumnExist($table_name, "table_parent")){
+            $this->updateTableTribuAddCullumnTableParent($table_name);
+        }
+
         $request_table_parent = $this->getPDO()->prepare("SELECT table_parent FROM $table_name");
         $request_table_parent->execute();
         $response = $request_table_parent->fetch(PDO::FETCH_ASSOC);
