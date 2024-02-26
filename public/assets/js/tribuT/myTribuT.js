@@ -908,18 +908,29 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 			new_reaction_show = data[i].nbr_reaction
 				? data[i].nbr_reaction + (data[i].nbr_reaction > 1 ? " réactions" : " réaction")
 				: "0 réaction";
+
+			let publication_photo = data[i].photo ? data[i].photo : "";
+			publication_photo = IS_DEV_MODE ? publication_photo.replace("/public", "") : publication_photo;
+
 			let pub_photo = data[i].photo
 				? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${
-						data[i].photo /*.replace("/public","")*/
+						publication_photo /*.replace("/public","")*/
 				  }" alt="">`
 				: `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;display:none;" onclick="setPhotoTribu(this)" src="" alt="">`;
 
 			let confidentiality = parseInt(data[i].confidentiality, 10);
 			let contentPublication = "";
+
 			let _fullName = data[i].user_profil.firstname + " " + data[i].user_profil.lastname;
+
 			let _profilImg = data[i].user_profil.photo_profil
 				? "/public" + data[i].user_profil.photo_profil
 				: "/public/assets/image/img_avatar3.png";
+
+			_profilImg = IS_DEV_MODE ? _profilImg.replace("/public", "") : _profilImg;
+
+			let name_muable_tribu_T = data[i].tribu_apropos.name;
+			let table_tribu_T_name = data[i].table_name;
 
 			if (confidentiality === 1) {
 				//public
@@ -927,49 +938,50 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 				let changeVisibility =
 					parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)
 						? `<div class="btn-group" role="group" aria-label="Button group with nested dropdown">
-                                        <div class="btn-group" role="group">
-                                            
-                                            <span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                                <i class="fa-solid fa-earth-oceania"></i>
-                                            </span>
-                                            <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-                                                <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
-                                                <a data-id="${data[i].id}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
-                                            </div>
-                                        </div>
-                                    </div>`
+								<div class="btn-group" role="group">
+									
+									<span style="cursor:pointer;" id="btnGroupDrop1" class="dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+										<i class="fa-solid fa-earth-oceania"></i>
+									</span>
+									<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
+										<a data-id="${data[i].id}" data-name="${table_tribu_T_name}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
+										<a data-id="${data[i].id}" data-name="${table_tribu_T_name}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
+									</div>
+								</div>
+							</div>`
 						: "";
+
 				let canUpdateOrDeletePub =
 					parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)
 						? `<div id="contentUpdateOrDelete">
-                                        <span class="float-end dropstart">
-                                            <span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
-                                                <i class="bi bi-three-dots" style="cursor:pointer"></i>
-                                            </span>
-                                            <ul class="dropdown-menu">
-                                                <li>
-                                                <button onclick="setHiddenValue('${tribu_t_name_0}', 'Update', '${data[i].id}')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+								<span class="float-end dropstart">
+									<span class="float-end" style="cursor:pointer" data-bs-toggle="dropdown">
+										<i class="bi bi-three-dots" style="cursor:pointer"></i>
+									</span>
+									<ul class="dropdown-menu">
+										<li>
+										<button onclick="setHiddenValue('${table_tribu_T_name}', 'Update', '${data[i].id}')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
 
-                                                </li>
-                                                <li>
+										</li>
+										<li>
 
-                                                    <button onclick="setHiddenValue('${tribu_t_name_0}', '', '${data[i].id}')" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
-                                                        <i class="bi bi-trash3" aria-hidden="true"></i>
-                                                        Supprimer
-                                                    </button>
-                                                </li>
-                                            </ul>
-                                        </span>
-                                    </div>`
+											<button onclick="setHiddenValue('${table_tribu_T_name}', '', '${data[i].id}')" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
+												<i class="bi bi-trash3" aria-hidden="true"></i>
+												Supprimer
+											</button>
+										</li>
+									</ul>
+								</span>
+							</div>`
 						: "";
 
 				contentPublication = `<div id="${
-					tribu_t_name_0 + "_" + data[i].id
-				}" data-name = "${tribu_t_name_0}" data-id="${
+					table_tribu_T_name + "_" + data[i].id
+				}" data-name = "${table_tribu_T_name}" data-id="${
 					data[i].id
-				}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${
-					tribu_t[0].name
-				}_${data[i].id}_jheo_js">
+				}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${table_tribu_T_name}_${
+					data[i].id
+				}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230-tribu-t rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -982,13 +994,19 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                     <div class="name-content-h">
                                                         <div class="name-content responsif-none">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
-                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name
-																.replace(/tribu_t_[0-9]+_/, "")
-																.replaceAll("_", " ")}</span></p></div>
+                                                            <div  class="publiate_on">
+																<p  class="p-title">
+																	a publié sur
+																	<span>
+																	${name_muable_tribu_T}
+																	</span>
+																</p>
+															</div>
                                                         </div>
-<div class="publiate_on responsif-none-pc"><p  class="p-title"><span>${tribu_t[0].name
-					.replace(/tribu_t_[0-9]+_/, "")
-					.replaceAll("_", " ")}</span></p>
+														<div class="publiate_on responsif-none-pc">
+															<p  class="p-title">
+																<span>${table_tribu_T_name}</span>
+															</p>
                                                         </div>
                                                         <div class="name-content responsif-none-pc">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
@@ -1013,16 +1031,14 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js" onclick="">
-                                                                 <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${
-																		tribu_t[0].name
-																	}_${data[i].id}" onclick="getAllReaction('${
+                                                                 <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${table_tribu_T_name}_${
 					data[i].id
-				}', 
-                                                        '${tribu_t[0].name}', '${
+				}" onclick="getAllReaction('${data[i].id}', 
+                                                        '${table_tribu_T_name}', '${
 					data[i].user_id
 				}')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
           <span style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#commentaire" class="nbr_comment_jheo_js" 
-			    onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${
+			    onclick="getAllComment('${data[i].id}', '${table_tribu_T_name}', '${
 					data[i].user_id
 				}')"> ${dataNbr} commentaire(s)</span>
                                                
@@ -1034,13 +1050,13 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 																	? "bi-heart-fill"
 																	: "bi-heart"
 																: "bi-heart"
-														} like reaction_${tribu_t[0].name}_${
+														} like reaction_${table_tribu_T_name}_${
 					data[i].id
-				}" onclick="isLike('${data[i].id}', '${data[i].user_id}', '${tribu_t[0].name}')"></i>
+				}" onclick="isLike('${data[i].id}', '${data[i].user_id}', '${table_tribu_T_name}')"></i>
                                                                             <i style="cursor:pointer;" class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                            onclick="getAllComment('${data[i].id}', '${
-					tribu_t[0].name
-				}', '${data[i].user_id}')"></i>
+                                                            onclick="getAllComment('${
+																data[i].id
+															}', '${table_tribu_T_name}', '${data[i].user_id}')"></i>
                                                                                   </div>
                                                 </div>
                                                 
@@ -1083,12 +1099,12 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 				if (parseInt(id_c_u, 10) === parseInt(data[i].user_id, 10)) {
 					contentPublication = `
                                         <div id="${
-											tribu_t_name_0 + "_" + data[i].id
-										}" data-name = "${tribu_t_name_0}" data-id="${
+											table_tribu_T_name + "_" + data[i].id
+										}" data-name = "${table_tribu_T_name}" data-id="${
 						data[i].id
-					}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${
-						tribu_t[0].name
-					}_${data[i].id}_jheo_js">
+					}" data-confid="${confidentiality}" class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${table_tribu_T_name}_${
+						data[i].id
+					}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -1101,13 +1117,19 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                     <div class="name-content-h">
                                                         <div class="name-content  responsif-none">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
-                                                            <div  class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name
-																.replace(/tribu_t_[0-9]+_/, "")
-																.replaceAll("_", " ")}</span></p></div>
+                                                            <div  class="publiate_on">
+																<p  class="p-title">
+																	a publié sur 
+																	<span>
+																		${name_muable_tribu_T}
+																	</span>
+																</p>
+															</div>
                                                         </div>
-<div class="publiate_on responsif-none-pc"><p  class="p-title"><span>${tribu_t[0].name
-						.replace(/tribu_t_[0-9]+_/, "")
-						.replaceAll("_", " ")}</span></p>
+														<div class="publiate_on responsif-none-pc">
+															<p  class="p-title">
+																<span>${table_tribu_T_name}</span>
+															</p>
                                                         </div>
                                                         <div class="name-content responsif-none-pc">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
@@ -1125,10 +1147,10 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                                         <a data-id="${
 																			data[i].id
-																		}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
+																		}" data-name="${table_tribu_T_name}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
                                                                         <a data-id="${
 																			data[i].id
-																		}" data-name="${tribu_t_name_0}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
+																		}" data-name="${table_tribu_T_name}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1142,14 +1164,14 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                             </span>
                                                             <ul class="dropdown-menu">
                                                                 <li>
-                                                                <button onclick="setHiddenValue('${tribu_t_name_0}', 'Update', '${
+                                                                <button onclick="setHiddenValue('${table_tribu_T_name}', 'Update', '${
 						data[i].id
 					}')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
 
                                                                 </li>
                                                                 <li>
 
-                                                                    <button onclick="setHiddenValue('${tribu_t_name_0}', '', '${
+                                                                    <button onclick="setHiddenValue('${table_tribu_T_name}', '', '${
 						data[i].id
 					}')" data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="text-danger dropdown-item">
                                                                         <i class="bi bi-trash3" aria-hidden="true"></i>
@@ -1170,14 +1192,16 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js" onclick="">
-                                                        <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${
-															tribu_t[0].name
-														}_${data[i].id}" onclick="getAllReaction('${data[i].id}', 
-                                        '${tribu_t[0].name}', '${
+                                                        <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${table_tribu_T_name}_${
+						data[i].id
+					}" onclick="getAllReaction('${data[i].id}', 
+                                        '${table_tribu_T_name}', '${
 						data[i].user_id
 					}')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
                 <span style="cursor:pointer;"data-bs-toggle="modal" data-bs-target="#commentaire" class="nbr_comment_jheo_js" 
-				onclick="getAllComment('${data[i].id}', '${tribu_t[0].name}', '${data[i].user_id}')">  ${dataNbr} commentaire(s) </span>
+				onclick="getAllComment('${data[i].id}', '${table_tribu_T_name}', '${
+						data[i].user_id
+					}')">  ${dataNbr} commentaire(s) </span>
                                                     </p>
                                                     <div class="reaction-icon d-flex">
                                                         <i style="cursor:pointer;" class="${
@@ -1186,13 +1210,13 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 																	? "bi-heart-fill"
 																	: "bi-heart"
 																: "bi-heart"
-														} like reaction_${tribu_t[0].name}_${
+														} like reaction_${table_tribu_T_name}_${
 						data[i].id
-					}" onclick="isLike('${data[i].id}', '${data[i].user_id}', '${tribu_t[0].name}')"></i>
+					}" onclick="isLike('${data[i].id}', '${data[i].user_id}', '${table_tribu_T_name}')"></i>
                                                                                   <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                        onclick="getAllComment('${data[i].id}', '${
-						tribu_t[0].name
-					}', '${data[i].user_id}')"></i>
+                                                        onclick="getAllComment('${
+															data[i].id
+														}', '${table_tribu_T_name}', '${data[i].user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
@@ -1273,18 +1297,29 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 							new_reaction_show = dataG.nbr_reaction
 								? dataG.nbr_reaction + (dataG.nbr_reaction > 1 ? " réactions" : " réaction")
 								: "0 réaction";
+
+							let photo_publication = dataG.photo ? dataG.photo : "";
+							photo_publication = IS_DEV_MODE
+								? photo_publication.replace("/public", "")
+								: photo_publication;
+
 							let pub_photo = dataG.photo
-								? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${
-										dataG.photo /*.replace("/public","")*/
-								  }" alt="">`
+								? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${photo_publication}" alt="">`
 								: `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;display:none;" onclick="setPhotoTribu(this)" src="" alt="">`;
 
 							let confidentiality = parseInt(dataG.confidentiality, 10);
 
 							let _fullName = dataG.user_profil.firstname + " " + dataG.user_profil.lastname;
+
 							let _profilImg = dataG.user_profil.photo_profil
 								? "/public" + dataG.user_profil.photo_profil
 								: "/public/assets/image/img_avatar3.png";
+
+							_profilImg = IS_DEV_MODE ? _profilImg.replace("/public", "") : _profilImg;
+
+							let name_muable_tribu_T = dataG.tribu_apropos.name;
+							let table_tribu_T_name = dataG.table_name;
+
 							lastIdf = dataG?.id;
 							new_reaction_show = dataG.nbr_reaction
 								? dataG.nbr_reaction + (dataG.nbr_reaction > 1 ? " réactions" : " réaction")
@@ -1292,9 +1327,9 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 							//console.log("data N°: " + i);
 							console.log(dataG);
 							const contentPublication = `
-                                    <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${
-										tribu_t[0].name
-									}_${dataG.id}_jheo_js">
+                                    <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${table_tribu_T_name}_${
+								dataG.id
+							}_jheo_js">
                                             <!-- ====== Chart One Start -->
                                             <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr content-pub">
                                                 <div class="head-pub">
@@ -1307,13 +1342,16 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                     <div class="name-content-h">
                                                         <div class="name-content responsif-none">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
-                                                            <div class="publiate_on"><p  class="p-title"> a publié sur <span>${tribu_t[0].name
-																.replace(/tribu_t_[0-9]+_/, "")
-																.replaceAll("_", " ")}</span></p></div>
+                                                            <div class="publiate_on">
+																<p  class="p-title">
+																	a publié sur 
+																	<span>
+																	${name_muable_tribu_T}
+																	</span>
+																</p>
+															</div>
                                                         </div>
-<div class="publiate_on responsif-none-pc"><p  class="p-title"><span>${tribu_t[0].name
-								.replace(/tribu_t_[0-9]+_/, "")
-								.replaceAll("_", " ")}</span></p>
+<div class="publiate_on responsif-none-pc"><p  class="p-title"><span>${table_tribu_T_name}</span></p>
                                                         </div>
                                                         <div class="name-content responsif-none-pc">
                                                             <h5> &ensp;${_fullName} &ensp;</h5>
@@ -1330,11 +1368,11 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                                         <a data-id="${
 																			dataG.id
-																		}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)"
+																		}" data-name="${table_tribu_T_name}" class="dropdown-item" onclick="updateVisibility(this)"
                                                                          href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
                                                                         <a data-id="${
 																			dataG.id
-																		}" data-name="${tribu_t_name_0}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
+																		}" data-name="${table_tribu_T_name}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1371,15 +1409,13 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 
                                                 <div class="card-reaction">
                                                     <p class="text-comment content_nbr_comment_jheo_js" onclick="">
-                                                        <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${
-															tribu_t[0].name
-														}_${dataG.id}" onclick="getAllReaction('${dataG.id}', '${
-								tribu_t[0].name
-							}', '${
+                                                        <span class="nbr_reaction_elie_js" id="nbr_reaction_pub_${table_tribu_T_name}_${
+								dataG.id
+							}" onclick="getAllReaction('${dataG.id}', '${table_tribu_T_name}', '${
 								dataG.user_id
 							}')" data-bs-toggle="modal" data-bs-target="#listeReacteur">${new_reaction_show}</span>
                  <span style="cursor:pointer;" data-bs-toggle="modal" data-bs-target="#commentaire" class="nbr_comment_jheo_js" 
-				 	onclick="getAllComment('${dataG.id}', '${tribu_t[0].name}', '${dataG.user_id}')"> ${dataNbr} commentaire(s) </span>
+				 	onclick="getAllComment('${dataG.id}', '${table_tribu_T_name}', '${dataG.user_id}')"> ${dataNbr} commentaire(s) </span>
                                                     </p>
 
                                                     <div class="reaction-icon d-flex">
@@ -1389,13 +1425,13 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 																	? "bi-heart-fill"
 																	: "bi-heart"
 																: "bi-heart"
-														} like reaction_${tribu_t[0].name}_${
+														} like reaction_${table_tribu_T_name}_${
 								dataG.id
-							}" onclick="isLike('${dataG.id}', '${dataG.user_id}', '${tribu_t[0].name}')"></i>
+							}" onclick="isLike('${dataG.id}', '${dataG.user_id}', '${table_tribu_T_name}')"></i>
                                                         <i class="fa-regular fa-comment comment" data-bs-toggle="modal" data-bs-target="#commentaire"  
-                                                        onclick="getAllComment('${dataG.id}', '${tribu_t[0].name}', '${
-								dataG.user_id
-							}')"></i>
+                                                        onclick="getAllComment('${
+															dataG.id
+														}', '${table_tribu_T_name}', '${dataG.user_id}')"></i>
                                                     </div>
                                                 </div>
                                                 
