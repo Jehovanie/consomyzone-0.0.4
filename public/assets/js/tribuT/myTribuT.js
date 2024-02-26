@@ -1277,18 +1277,10 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 				const scrollable = document.documentElement.scrollHeight - window.innerHeight;
 				const scrolled = window.scrollY;
 				if (Math.ceil(scrolled) === scrollable) {
-					//if (data) {
-
-					// console.log("data id" + data.id);
-					// lastIdf = data.length > 0 ?  parseInt(data.id) : 0;
-					console.log("new c" + genCursorPos);
-					console.log("last id" + lastIdf);
 					if (genCursorPos === gen_length && genCursorPos > 0) {
 						//TODO appel recurcive
-						showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastIdf);
+						showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastIdf + 1);
 					} else {
-						// console.log(data)
-						// console.log("last id " + lastId)
 						let dataG = gen.next().value;
 
 						if (dataG !== undefined) {
@@ -1325,7 +1317,8 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 							let name_muable_tribu_T = dataG.tribu_apropos.name;
 							let table_tribu_T_name = dataG.table_name;
 
-							lastIdf = dataG?.id;
+							// lastIdf = dataG?.id; we don't need to use the last id element we mast to change in the next...
+
 							new_reaction_show = dataG.nbr_reaction
 								? dataG.nbr_reaction + (dataG.nbr_reaction > 1 ? " réactions" : " réaction")
 								: "0 réaction";

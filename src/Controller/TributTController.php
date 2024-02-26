@@ -2683,7 +2683,8 @@ $pdo=new PDOConnexionService();
         $limits = $request->query->get('limits');
         $tableCommentaireTribuT = $request->query->get('tblCommentaire');
 
-        $result = $srv->getPartisantPublication($tableTribuTPublication, $tableCommentaireTribuT, $idMin, $limits, $userId);
+        $result = $srv->getPartisantPublicationUpdate($tableTribuTPublication, $tableCommentaireTribuT, $idMin, $limits, $userId);
+        
         $json = $serializer->serialize($result, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
