@@ -960,7 +960,12 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 									</span>
 									<ul class="dropdown-menu">
 										<li>
-										<button onclick="setHiddenValue('${table_tribu_T_name}', 'Update', '${data[i].id}')" data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="text-primary dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+											<button onclick="setHiddenValue('${table_tribu_T_name}', 'Update', '${data[i].id}')" 
+												data-bs-toggle="modal" data-bs-target="#modal_publication_modif" 
+												class="text-primary dropdown-item">
+													<i class="fas fa-edit"></i> 
+													Modifier
+											</button>
 
 										</li>
 										<li>
@@ -1326,6 +1331,10 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 								: "0 réaction";
 							//console.log("data N°: " + i);
 							console.log(dataG);
+
+							let confid_all = confidentiality === 1 ? "active" : "";
+							let confid_private = confidentiality === 2 ? "active" : "";
+
 							const contentPublication = `
                                     <div class="lc kg hg av vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 pub_${table_tribu_T_name}_${
 								dataG.id
@@ -1368,11 +1377,11 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                                         <a data-id="${
 																			dataG.id
-																		}" data-name="${table_tribu_T_name}" class="dropdown-item" onclick="updateVisibility(this)"
+																		}" data-name="${table_tribu_T_name}" class="dropdown-item ${confid_all}" onclick="updateVisibility(this)"
                                                                          href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
                                                                         <a data-id="${
 																			dataG.id
-																		}" data-name="${table_tribu_T_name}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
+																		}" data-name="${table_tribu_T_name}" class="dropdown-item  ${confid_private}"" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
                                                                     </div>
                                                                 </div>
                                                             </div>
@@ -1387,11 +1396,21 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                             </span>
                                                             <ul class="dropdown-menu">
                                                                 <li>
-                                                                    <button data-bs-toggle="modal" data-bs-target="#modal_publication_modif" class="dropdown-item"><i class="fas fa-edit"></i> Modifier</button>
+                                                                    <button data-bs-toggle="modal" 
+																		data-bs-target="#modal_publication_modif" 
+																		class="text-primary dropdown-item"
+																		onclick="setHiddenValue('${table_tribu_T_name}', 'Update', '${dataG.id}')" 
+																		>
+																		<i class="fas fa-edit"></i> 
+																		Modifier
+																	</button>
                                                                 </li>
                                                                 <li>
-
-                                                                    <button data-bs-toggle="modal" data-bs-target="#deletePubModalConfirm" class="dropdown-item">
+                                                                    <button data-bs-toggle="modal" 
+																		data-bs-target="#deletePubModalConfirm" 
+																		class="text-danger dropdown-item"
+																		onclick="setHiddenValue('${table_tribu_T_name}', '', '${dataG.id}')"
+																		>
                                                                         <i class="bi bi-trash3" aria-hidden="true"></i>
                                                                         Supprimer
                                                                     </button>
