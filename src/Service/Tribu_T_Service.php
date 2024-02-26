@@ -1707,8 +1707,17 @@ class Tribu_T_Service extends PDOConnexionService
         $tableReaction = preg_replace($regex, "_reaction", $table_publication_Tribu_T);
         $table_tribu_T = preg_replace($regex, "", $table_publication_Tribu_T);
 
+        // dump("param");
+        // dump($table_publication_Tribu_T);
+        // dump($table_commentaire_Tribu_T);
+        // dump($userId);
+
         $all_table_parent= $this->getTableParent($table_tribu_T);
 
+        // dump("table hierarchy");
+        // dd($all_table_parent);
+
+        
         if($idMin == 0){
             //id,user_id,confidentiality,photo,userfullname,datetime, publication 
             //t1.user_id IS NOT NULL AND
@@ -1718,15 +1727,38 @@ class Tribu_T_Service extends PDOConnexionService
             //     ) AS t2 ON t1.id = t2.pub_id WHERE t1.user_id IS NOT NULL ORDER BY t1.id DESC
             // ";
 
-            $sql="SELECT * FROM (
+            $sql="SELECT *, '$table_tribu_T' as 'table_name' FROM (
                     SELECT * FROM $table_publication_Tribu_T AS t1
                     LEFT JOIN (
                         SELECT pub_id, count(*) AS nbr FROM $table_commentaire_Tribu_T GROUP BY  pub_id
-                    ) AS t2 ON t1.id = t2.pub_id WHERE t1.user_id IS NOT NULL ORDER BY t1.id DESC LIMIT :limits
+                    ) AS t2 ON t1.id = t2.pub_id WHERE t1.user_id IS NOT NULL ORDER BY t1.id DESC
                 ) AS tb1 LEFT JOIN (
                     SELECT GROUP_CONCAT(user_id) user_react_list, user_id AS user_id_react, pub_id AS pub_id_react, COUNT(*) AS nbr_reaction, reaction FROM $tableReaction
                     WHERE reaction = 1 GROUP BY pub_id_react 
             ) AS tb2 ON tb1.id = tb2.pub_id_react";
+
+            if( count($all_table_parent) > 0 ){
+                foreach($all_table_parent as $table_parent){
+                    $table_parent_publication = $table_parent . "_publication";
+                    $table_parent_commentaire = $table_parent . "_commentaire";
+                    $table_parent_reaction= $table_parent . "_reaction";
+
+                    $union_sql ="SELECT *, '$table_parent' as 'table_name' FROM (
+                            SELECT * FROM $table_parent_publication AS t1
+                            LEFT JOIN (
+                                SELECT pub_id, count(*) AS nbr FROM $table_parent_commentaire GROUP BY  pub_id
+                            ) AS t2 ON t1.id = t2.pub_id WHERE t1.user_id IS NOT NULL ORDER BY t1.id DESC
+                        ) AS tb1 LEFT JOIN (
+                            SELECT GROUP_CONCAT(user_id) user_react_list, user_id AS user_id_react, pub_id AS pub_id_react, COUNT(*) AS nbr_reaction, reaction FROM $table_parent_reaction
+                            WHERE reaction = 1 GROUP BY pub_id_react 
+                    ) AS tb2 ON tb1.id = tb2.pub_id_react";
+
+
+                    $sql = "$sql UNION $union_sql";
+                }
+            }
+
+            $sql = "SELECT * FROM ( $sql) AS table_final LIMIT :limits";
 
             // $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN (SELECT pub_id ,count(*)".
             // " as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id = t2.pub_id WHERE". 
@@ -1779,6 +1811,7 @@ class Tribu_T_Service extends PDOConnexionService
             $result["publication"] = $this->convertUnicodeToUtf8($result["publication"]);
             $result["publication"]=mb_convert_encoding($result["publication"], 'UTF-8', 'UTF-8');
             $result["user_profil"]=$user_profil;
+            $result["tribu_apropos"]= $this->getAproposUpdate($result["table_name"]);
             array_push($resultF,$result);
         }
         return $resultF;
