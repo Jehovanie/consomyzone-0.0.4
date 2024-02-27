@@ -3922,6 +3922,21 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             }
         }
 
+        return $this->json([
+            "list_tribu_parrainer" => $list_tribu_parrainer,
+        ]);
+    }
+
+    
+    #[Route("/tributT/listInvitationParrainer/{table_tribuT}", name: "app_list_invitation_parrainer", methods: ["GET"])]
+    public function getListInvitationParrainer(
+        $table_tribuT,
+        Tribu_T_Service $tribuTService,
+        UserRepository $userRepository,
+        UserService $userService
+    ){
+        $table_tribu_parent= $tribuTService->getSingleTableParent($table_tribuT);
+
         $all_invitation_parrainer_tribuT= [];
         $invitation_parrainer_tribuT= $tribuTService->getInvitationParrainer($table_tribuT);
         if( count($invitation_parrainer_tribuT) > 0){
@@ -3952,6 +3967,20 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             }
         }
 
+        return $this->json([
+            "all_invitation_parrainer_tribuT" => $all_invitation_parrainer_tribuT,
+        ]);
+    }
+
+    #[Route("/tributT/listHierarchyTribu/{table_tribuT}", name: "app_list_hierarchy_tribu", methods: ["GET"])]
+    public function getListHierarchyTribu(
+        $table_tribuT,
+        Tribu_T_Service $tribuTService,
+        UserRepository $userRepository,
+        UserService $userService
+    ){
+        $table_tribu_parent= $tribuTService->getSingleTableParent($table_tribuT);
+
         $all_hierarchical_tribuT= [];
         $hierarchical_tribuT= $tribuTService->getHierarchicalTribu($table_tribuT);
         array_push($hierarchical_tribuT, $table_tribuT);
@@ -3978,10 +4007,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             }
         }
         
-
         return $this->json([
-            "list_tribu_parrainer" => $list_tribu_parrainer,
-            "all_invitation_parrainer_tribuT" => $all_invitation_parrainer_tribuT,
             "hierarchical_tribu_t" => $all_hierarchical_tribuT,
         ]);
     }

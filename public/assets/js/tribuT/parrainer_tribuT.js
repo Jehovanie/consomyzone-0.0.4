@@ -31,19 +31,12 @@ function bindActionTribuTParrainer(tribuTName) {
 			fetch(url)
 				.then((response) => response.json())
 				.then((response) => {
-					const { list_tribu_parrainer, all_invitation_parrainer_tribuT, hierarchical_tribu_t } = response;
+					const { list_tribu_parrainer } = response;
 
 					const current_list_html_parrainer = generateListHtmlTribuTParrainer(
 						list_tribu_parrainer,
 						tribuTName
 					);
-
-					const current_list_html_invitation_parrainer = generateListHtmlInvitationTParrainer(
-						all_invitation_parrainer_tribuT,
-						tribuTName
-					);
-
-					const current_html_parent_tribuT = generateHierarchicalTribuT(hierarchical_tribu_t);
 
 					const body = `
 						<div class="card">
@@ -51,7 +44,7 @@ function bindActionTribuTParrainer(tribuTName) {
 								<div class="content_entete mb-2">
 									<div class="d-flex justify-content-between align-items-center">
 										<ul class="nav nav-tabs">
-											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('demand_adhesion')">
+											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('demand_adhesion', '${tribuTName}')">
 												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js  active nav_demand_adhesion_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-code-pull-request fa-beat-fade"></i>
@@ -59,7 +52,7 @@ function bindActionTribuTParrainer(tribuTName) {
 													</span>
 												</span>
 											</li>
-											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('invitation_adherer')">
+											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('invitation_adherer', '${tribuTName}')">
 												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-users-viewfinder fa-beat-fade"></i>
@@ -67,7 +60,7 @@ function bindActionTribuTParrainer(tribuTName) {
 													</span>
 												</span>
 											</li>
-											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('parrent_tribuT')">
+											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('parrent_tribuT', '${tribuTName}')">
 												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_parrent_tribuT_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-sitemap fa-beat-fade"></i>
@@ -84,13 +77,17 @@ function bindActionTribuTParrainer(tribuTName) {
 									</ul>
 								</div>
 								<div class="d-none content_list_sub_tribu_jheo_js content_list_invitation_adherer_tribuT_jheo_js">
-									<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT">
-										${current_list_html_invitation_parrainer}
+									<ul class="list-group list-group-flush mt-2  content_list_invitation_parrainer_jheo_js">
+										<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
+											<span class="visually-hidden">Loading...</span>
+										</div>
 									</ul>
 								</div>
 								<div class="d-none content_list_sub_tribu_jheo_js content_list_parrent_tribuT_tribuT_jheo_js">
-									<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT">
-										${current_html_parent_tribuT}
+									<ul class="list-group list-group-flush mt-2 content_list_hierarchy_tribu_jheo_js">
+										<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
+											<span class="visually-hidden">Loading...</span>
+										</div>
 									</ul>
 								</div>
 							</div>
@@ -109,9 +106,10 @@ function bindActionTribuTParrainer(tribuTName) {
  * Goal: Active link on nav tribu T adhession
  *
  * @param {string} action_type
+ * @param {string} table_name
  * @returns
  */
-function activeOnglet(action_type) {
+function activeOnglet(action_type, table_name) {
 	const nav_action_type = document.querySelector(`.nav_${action_type}_jheo_js`);
 	const content_list_action_type = document.querySelector(`.content_list_${action_type}_tribuT_jheo_js`);
 
@@ -143,8 +141,65 @@ function activeOnglet(action_type) {
 	if (content_list_action_type.classList.contains("d-none")) {
 		content_list_action_type.classList.remove("d-none");
 	}
+
+	if (action_type === "invitation_adherer") {
+		fetchListInvitationParrainer(table_name);
+	} else if (action_type === "parrent_tribuT") {
+		fetchParentHierachyParrainer(table_name);
+	}
 }
 
+function fetchListInvitationParrainer(tribuTName) {
+	if (document.querySelector(".content_list_invitation_parrainer_jheo_js")) {
+		const content_list = document.querySelector(".content_list_invitation_parrainer_jheo_js");
+		content_list.innerHTML = `
+			<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		`;
+	}
+
+	const url = `/tributT/listInvitationParrainer/${tribuTName}`;
+	fetch(url)
+		.then((response) => response.json())
+		.then((response) => {
+			const { all_invitation_parrainer_tribuT } = response;
+
+			const current_list_html_invitation_parrainer = generateListHtmlInvitationTParrainer(
+				all_invitation_parrainer_tribuT,
+				tribuTName
+			);
+
+			if (document.querySelector(".content_list_invitation_parrainer_jheo_js")) {
+				const content_list = document.querySelector(".content_list_invitation_parrainer_jheo_js");
+				content_list.innerHTML = current_list_html_invitation_parrainer;
+			}
+		});
+}
+
+function fetchParentHierachyParrainer(tribuTName) {
+	if (document.querySelector(".content_list_hierarchy_tribu_jheo_js")) {
+		const content_list = document.querySelector(".content_list_hierarchy_tribu_jheo_js");
+		content_list.innerHTML = `
+			<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
+				<span class="visually-hidden">Loading...</span>
+			</div>
+		`;
+	}
+	const url = `/tributT/listHierarchyTribu/${tribuTName}`;
+	fetch(url)
+		.then((response) => response.json())
+		.then((response) => {
+			const { hierarchical_tribu_t } = response;
+
+			const current_html_parent_tribuT = generateHierarchicalTribuT(hierarchical_tribu_t);
+
+			if (document.querySelector(".content_list_hierarchy_tribu_jheo_js")) {
+				const content_list = document.querySelector(".content_list_hierarchy_tribu_jheo_js");
+				content_list.innerHTML = current_html_parent_tribuT;
+			}
+		});
+}
 /**
  * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
  *
