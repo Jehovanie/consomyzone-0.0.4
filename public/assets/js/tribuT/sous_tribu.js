@@ -47,7 +47,7 @@ function bindActionSousTribuT(tribuTName) {
 								<div class="content_entete mb-2">
 									<div class="d-flex justify-content-between align-items-center">
 										<div class="title">
-											Liste de mes sous tribu T
+											Liste de mes sous-tribus T
 										</div>
 										<div class="btn_cta_create_subtribu me-1">
 											<button type="button" 
@@ -57,7 +57,7 @@ function bindActionSousTribuT(tribuTName) {
 												onclick="setTableParent('${tribuTName}')"
 											>
 												<i class="fa-solid fa-plus fa-beat-fade"></i>
-												Créer un sous tribu
+												Créer une sous-tribu
 											</button>
 										</div>
 									</div>
@@ -87,7 +87,7 @@ function generateListHtmlSubTribuT(listSubTribuT) {
 		const none_sub_tribuT = `
 			<li class="list-group-item">
 				<div class="alert alert-danger text-center" role="alert">
-					Vous n'avez pas encore un sous tribu sur cette tribu T
+					Vous n'avez pas encore une sous-tribu sur cette tribu T.
 				</div>
 			</li>
 		`;
@@ -142,63 +142,4 @@ function generateItemHtmlSubTribuT(itemSubTribuT) {
 		</li>
 	`;
 	return item_html_sub_tribuT;
-}
-
-function fetchListTribuParrainer(tribuTName) {
-	/// show loading indicator
-	const content_list_sub_tribuT = document.querySelector(".content_list_sub_tribuT_jheo_js");
-	if (!content_list_sub_tribuT) {
-		return;
-	}
-
-	content_list_sub_tribuT.innerHTML = `
-		<div class="spinner-grow text-info d-block mx-auto" role="status">
-			<span class="visually-hidden">Loading...</span>
-		</div>
-	`;
-
-	const url = `/tributT/listTribuParrainer/${tribuTName}`;
-
-	fetch(url)
-		.then((response) => response.json())
-		.then((response) => {
-			const { list_tribu_parrainer } = response;
-			console.log(list_tribu_parrainer);
-
-			const current_list_html_parrainer = generateListHtmlTribuTParrainer(list_tribu_parrainer);
-
-			content_list_sub_tribuT.innerHTML = `
-				${current_list_html_parrainer}
-			`;
-		});
-}
-
-function generateListHtmlTribuTParrainer(list_tribu_parrainer) {
-	if (list_tribu_parrainer.length === 0) {
-		const none_tribuT_parrainer = `
-			<li class="list-group-item">
-				<div class="alert alert-danger text-center" role="alert">
-					Il n'y a pas de tribu T peuvent vous parainner.
-				</div>
-			</li>
-		`;
-
-		return none_tribuT_parrainer;
-	}
-
-	let list_html_tribuT_parrainer = "";
-
-	list_tribu_parrainer.forEach((item_tribuT_parrainer) => {
-		const item_html_tribuT_parrainer = generateItemHtmlTribuTParrainer(item_tribuT_parrainer);
-		list_html_tribuT_parrainer += item_html_tribuT_parrainer;
-	});
-
-	return list_html_tribuT_parrainer;
-}
-
-function generateItemHtmlTribuTParrainer(item_tribuT_parrainer) {
-	const item_html_tribuT_parrainer = `
-		<li class="list-group-item">An item</li>
-	`;
-	return item_html_tribuT_parrainer;
 }

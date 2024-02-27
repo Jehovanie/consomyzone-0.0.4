@@ -48,7 +48,7 @@ function bindActionTribuTParrainer(tribuTName) {
 												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js  active nav_demand_adhesion_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-code-pull-request fa-beat-fade"></i>
-														Demande d'adhésion sous tribu
+														Demande d'adhésion
 													</span>
 												</span>
 											</li>
@@ -56,7 +56,7 @@ function bindActionTribuTParrainer(tribuTName) {
 												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-users-viewfinder fa-beat-fade"></i>
-														Invitation d'adhérer une tribu
+														Invitation d'adhésion
 													</span>
 												</span>
 											</li>
@@ -64,7 +64,7 @@ function bindActionTribuTParrainer(tribuTName) {
 												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_parrent_tribuT_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-sitemap fa-beat-fade"></i>
-														Hierarchy Tribu T
+														Hiérarchie de ma Tribu 
 													</span>
 												</span>
 											</li>
@@ -320,7 +320,7 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 				class="btn btn-info btn-sm text-white me-1 cta_request_${table_name}_jheo_js"
 			>
 				<i class="fa-solid fa-hourglass-half fa-spin"></i>
-				Demande envoyer
+				Demande envoyée
 			</button>
 			<button type="button"
 				class="btn btn-danger btn-sm cta_cancel_${table_name}_jheo_js"
@@ -336,7 +336,7 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 				class="btn btn-warning btn-sm text-white me-1"
 			>
 				<i class="fa-solid fa-check"></i>
-				Demande accepter
+				Demande acceptée
 			</button>
 			<button type="button"
 				class="btn btn-danger btn-sm cta_cancel_${table_name}_jheo_js"
@@ -352,7 +352,7 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 				class="btn btn-secondary btn-sm text-white me-1"
 			>
 				<i class="fa-solid fa-circle-xmark"></i>
-				Demande rejeter
+				Demande rejetée
 			</button>
 		`;
 	} else {
@@ -362,7 +362,7 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 					class="btn btn-primary btn-sm cta_request_${table_name}_jheo_js"
 					onclick="ctaRequestTribuParrainer('${table_name}', '${table_tribu_current}')"
 				>
-					Envoyer une demande de parainner
+					Envoyer une demande parrainer
 				</button>
 			`;
 		} else {
@@ -370,7 +370,7 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 				<button type="button"
 					class="btn btn-secondary btn-sm cta_request_${table_name}_jheo_js"
 				>
-					Envoyer une demande de parainner
+					Envoyer une demande parrainer
 				</button>
 			`;
 		}
@@ -606,7 +606,7 @@ function getBtnStateActionInvitation(tribu_futur_sous_tribu, table_tribu_current
 				class="btn btn-info btn-sm text-white me-1 cta_request_${table_name}_jheo_js"
 			>
 				<i class="fa-solid fa-check"></i>
-				Accepter
+				Demande acceptée
 			</button>
 		`;
 	} else if (status === -1) {
@@ -615,7 +615,7 @@ function getBtnStateActionInvitation(tribu_futur_sous_tribu, table_tribu_current
 				class="btn btn-secondary btn-sm text-white me-1 cta_request_${table_name}_jheo_js"
 			>
 				<i class="fa-solid fa-ban"></i>
-				Demander rejeter 
+				Demander rejetée
 			</button>
 		`;
 	}

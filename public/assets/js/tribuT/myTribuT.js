@@ -729,16 +729,20 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 		let request_parainer_tribut = `
 			<li class="listNavBarTribu">
 				<a style="cursor:pointer;" id="action_tribuT_parrainer_jheo_js" class="dropdown-item">
-					Démande de parain Tribu T
+					Adhésion sous Tribu T
 				</a>
 			</li>
 		`;
+		request_parainer_tribut = !document.querySelector("#activeTribu").classList.contains("other")
+			? request_parainer_tribut
+			: "";
 
 		let createSubTribut = `
 			<li class="listNavBarTribu">
 				<a style="cursor:pointer;" id="fetch_sous_tribuT_jheo_js" class="dropdown-item">Sous Tribu</a>
 			</li>
 		`;
+		createSubTribut = !document.querySelector("#activeTribu").classList.contains("other") ? createSubTribut : "";
 
 		const postulantListe = ` 
 			<li class="listNavBarTribu postulantListe">
