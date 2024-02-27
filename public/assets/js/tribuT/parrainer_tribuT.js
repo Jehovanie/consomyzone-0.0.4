@@ -169,10 +169,15 @@ function generateListHtmlTribuTParrainer(list_tribu_parrainer, table_name_curren
 
 	let list_html_tribuT_parrainer = "";
 
+	let isHaveRequestAcceptOrPedding = list_tribu_parrainer.some(
+		({ status }) => parseInt(status) === 1 || parseInt(status) === 0
+	);
+
 	list_tribu_parrainer.forEach((item_tribut_futur_parrain) => {
 		const item_html_tribuT_parrainer = generateItemHtmlTribuTParrainer(
 			item_tribut_futur_parrain,
-			table_name_current
+			table_name_current,
+			isHaveRequestAcceptOrPedding
 		);
 		list_html_tribuT_parrainer += item_html_tribuT_parrainer;
 	});
@@ -180,7 +185,21 @@ function generateListHtmlTribuTParrainer(list_tribu_parrainer, table_name_curren
 	return list_html_tribuT_parrainer;
 }
 
-function generateItemHtmlTribuTParrainer(tribu_futur_parrain, table_tribu_current) {
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * Goal: Generate item list html for tribu T parrainer
+ *
+ * @param {*} tribu_futur_parrain
+ * @param {*} table_tribu_current
+ * @param {*} isHaveRequestAcceptOrPedding
+ * @returns
+ */
+function generateItemHtmlTribuTParrainer(
+	tribu_futur_parrain,
+	table_tribu_current,
+	isHaveRequestAcceptOrPedding = false
+) {
 	const { name, description, avatar, table_name, fondateur, status } = tribu_futur_parrain;
 	const { pseudo, fullname } = fondateur;
 
@@ -188,10 +207,10 @@ function generateItemHtmlTribuTParrainer(tribu_futur_parrain, table_tribu_curren
 	photo_avatar = IS_DEV_MODE ? photo_avatar : `/public/${photo_avatar}`;
 
 	///get btn action
-	let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
+	let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveRequestAcceptOrPedding);
 
 	const item_html_tribuT_parrainer = `
-		<li class="list-group-item">
+		<li class="list-group-item item_parrainer_${table_name}_jheo_js">
 			<div class="col-xl-12">
 				<div class="mt-2">
 					<div class="d-flex justify-content-between align-items-end">
@@ -212,7 +231,7 @@ function generateItemHtmlTribuTParrainer(tribu_futur_parrain, table_tribu_curren
 								</div>
 							</div>
 						</div>
-						<div class="content_cta_action_parrainer d-flex justify-content-end align-items-center">
+						<div class="content_cta_action_parrainer cta_parrainer_${table_name}_jheo_js d-flex justify-content-end align-items-center">
 							${btn_action}
 						</div>
 					</div>
@@ -230,10 +249,12 @@ function generateItemHtmlTribuTParrainer(tribu_futur_parrain, table_tribu_curren
  *
  * @param {*} tribu_futur_parrain
  * @param {*} table_tribu_current : Name current table tribu T
+ * @param {*} isHaveRequestAcceptOrPedding : Name current table tribu T
+ *
  *
  * @returns
  */
-function getBtnStateAction(tribu_futur_parrain, table_tribu_current) {
+function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveRequestAcceptOrPedding = false) {
 	const { table_name, status } = tribu_futur_parrain;
 
 	let btn_action = "";
@@ -280,14 +301,24 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current) {
 			</button>
 		`;
 	} else {
-		btn_action = `
-			<button type="button"
-				class="btn btn-primary btn-sm cta_request_${table_name}_jheo_js"
-				onclick="ctaRequestTribuParrainer('${table_name}', '${table_tribu_current}')"
-			>
-				Envoyer une demande de parainner
-			</button>
-		`;
+		if (!isHaveRequestAcceptOrPedding) {
+			btn_action = `
+				<button type="button"
+					class="btn btn-primary btn-sm cta_request_${table_name}_jheo_js"
+					onclick="ctaRequestTribuParrainer('${table_name}', '${table_tribu_current}')"
+				>
+					Envoyer une demande de parainner
+				</button>
+			`;
+		} else {
+			btn_action = `
+				<button type="button"
+					class="btn btn-secondary btn-sm cta_request_${table_name}_jheo_js"
+				>
+					Envoyer une demande de parainner
+				</button>
+			`;
+		}
 	}
 
 	return btn_action;
@@ -329,15 +360,38 @@ function ctaRequestTribuParrainer(table_tribu_futur_parrain, table_tribu_current
 			return response.json();
 		})
 		.then((response) => {
-			const { tribu_futur_parrain, table_tribu_current } = response;
+			const { tribu_futur_parrain, table_tribu_current, list_tribu_parrainer } = response;
 
 			const parent_cta_request = cta_request.parentElement;
 
 			let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
-
 			parent_cta_request.innerHTML = btn_action;
+
+			////disable all other buttons.
+			updateStateActionBtn(list_tribu_parrainer, table_tribu_current);
 		})
 		.catch((error) => console.log(error));
+}
+
+function updateStateActionBtn(list_tribu_parrainer, table_tribu_current) {
+	let isHaveRequestAcceptOrPedding = list_tribu_parrainer.some(
+		({ status }) => parseInt(status) === 1 || parseInt(status) === 0
+	);
+
+	list_tribu_parrainer.forEach((item_tribut_futur_parrain) => {
+		const { table_name } = item_tribut_futur_parrain;
+
+		///get btn action
+		let btn_action = getBtnStateAction(
+			item_tribut_futur_parrain,
+			table_tribu_current,
+			isHaveRequestAcceptOrPedding
+		);
+
+		if (document.querySelector(`.cta_parrainer_${table_name}_jheo_js`)) {
+			document.querySelector(`.cta_parrainer_${table_name}_jheo_js`).innerHTML = btn_action;
+		}
+	});
 }
 
 function ctaCancelTribuParrainer(table_tribu_futur_parrain, table_tribu_current) {
@@ -376,12 +430,15 @@ function ctaCancelTribuParrainer(table_tribu_futur_parrain, table_tribu_current)
 			return response.json();
 		})
 		.then((response) => {
-			const { tribu_futur_parrain, table_tribu_current } = response;
+			const { tribu_futur_parrain, table_tribu_current, list_tribu_parrainer } = response;
 
 			let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
 
 			const parent_cta_cancel = cta_cancel_.parentElement;
 			parent_cta_cancel.innerHTML = btn_action;
+
+			////disable all other buttons.
+			updateStateActionBtn(list_tribu_parrainer, table_tribu_current);
 		})
 		.catch((error) => console.log(error));
 }

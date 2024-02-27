@@ -3370,28 +3370,32 @@ class Tribu_T_Service extends PDOConnexionService
      * 
      * @return array [] if empty otherwise list table tribu T
      */
-    public function getAllUnderTableTribuT($table_parent){
+    public function getAllUnderTableTribuT($table_parent, $memo= []){
+
+        if( in_array($table_parent, $memo)) return [];
+
         $table_parent_list_sub= $table_parent . "_list_sub";
         if (!$this->isTableExist($table_parent_list_sub)) {
             $this->createTableSousTribu($table_parent);
             return [];
         }
-        $results= [];
+        
 
         $sub_list_tribu_t = $this->getPDO()->prepare("SELECT name FROM $table_parent_list_sub");
         $sub_list_tribu_t->execute();
         $all_sub_list_tribu_t = $sub_list_tribu_t->fetchAll(PDO::FETCH_ASSOC);
 
         if( count($all_sub_list_tribu_t) === 0 ){
-            return $results;
+            return [];
+        }
+
+        $results= [];
+        foreach($all_sub_list_tribu_t as $sub_list){
+            array_push($results, strtolower($sub_list['name']));
         }
 
         foreach($all_sub_list_tribu_t as $sub_list){
-            array_push($results, $sub_list['name']);
-        }
-
-        foreach($all_sub_list_tribu_t as $sub_list){
-            $result_temp= $this->getAllUnderTableTribuT($sub_list['name']);
+            $result_temp= $this->getAllUnderTableTribuT($sub_list['name'], $results);
             $results= array_merge($results, $result_temp );
         }
 
@@ -3502,12 +3506,25 @@ class Tribu_T_Service extends PDOConnexionService
 
         if( !$table_tribu_find ){
             return false;
-        } ;
+        };
 
         $cancel_sub_tribu = $this->getPDO()->prepare(
             "DELETE FROM $table_sub_list_name_parrainer WHERE name= '$table_tribu_current'"
         );
         $cancel_sub_tribu->execute();
+
+        /// update table list_sub parent
+        $request_set_table_parent = $this->getPDO()->prepare(
+            "UPDATE $table_tribu_current SET table_parent = :table_parent WHERE roles= :roles"
+        );
+
+        $table_name_parent= null;
+        $roles= "Fondateur";
+        
+        $request_set_table_parent->bindParam(':roles', $roles);
+        $request_set_table_parent->bindParam(':table_parent', $table_name_parent);
+        $request_set_table_parent->execute();
+
 
         return true;
     }
@@ -3602,9 +3619,12 @@ class Tribu_T_Service extends PDOConnexionService
 
         /// update table list_sub parent
         $request_set_table_parent = $this->getPDO()->prepare(
-            "UPDATE $table_futur_sous_tribu SET table_parent = :table_parent"
+            "UPDATE $table_futur_sous_tribu SET table_parent = :table_parent WHERE roles = :roles"
         );
 
+        $roles= "Fondateur";
+
+        $request_set_table_parent->bindParam(':roles', $roles);
         $request_set_table_parent->bindParam(':table_parent', $table_name_parent);
         $request_set_table_parent->execute();
 
@@ -3693,17 +3713,28 @@ class Tribu_T_Service extends PDOConnexionService
     public function getTableParent($table_name){
         $results = [];
 
-        if(!$this->isColumnExist($table_name, "table_parent")){
-            $this->updateTableTribuAddCullumnTableParent($table_name);
-        }
-
-        $request_table_parent = $this->getPDO()->prepare("SELECT table_parent FROM $table_name");
-        $request_table_parent->execute();
-        $response = $request_table_parent->fetch(PDO::FETCH_ASSOC);
-        $table_parent= $response["table_parent"];
+        $table_parent = $this->getSingleTableParent($table_name);
 
         if( $table_parent === null) return [];
 
         return array_merge([$table_parent], $this->getTableParent($table_parent));
+    }
+
+    public function getSingleTableParent($table_name){
+
+        if(!$this->isColumnExist($table_name, "table_parent")){
+            $this->updateTableTribuAddCullumnTableParent($table_name);
+            return null;
+        }
+
+        $request_table_parent = $this->getPDO()->prepare("SELECT table_parent FROM $table_name WHERE roles= :roles");
+        
+        $roles= "Fondateur";
+
+        $request_table_parent->bindParam(':roles', $roles);
+        $request_table_parent->execute();
+        $response = $request_table_parent->fetch(PDO::FETCH_ASSOC);
+
+        return $response ? $response["table_parent"] : null;
     }
 }

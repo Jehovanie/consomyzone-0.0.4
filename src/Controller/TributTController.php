@@ -3883,21 +3883,23 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         UserRepository $userRepository,
         UserService $userService
     ){
+        $table_tribu_parent= $tribuTService->getSingleTableParent($table_tribuT);
+
         $list_tribu_parrainer= [];
 
         $all_tribu_t= $tribuTService->getListAllTribuT();
         
         $all_private_table= $tribuTService->getAllUnderTableTribuT($table_tribuT);
-        array_push($all_private_table, $table_tribuT);
+        array_push($all_private_table, strtolower($table_tribuT));
 
         if( count($all_tribu_t) > 0 ){
             foreach( $all_tribu_t as $tribu_t ){
-                if(!in_array($tribu_t["table_name"], $all_private_table)){
+                if(!in_array(strtolower($tribu_t["table_name"]), $all_private_table)){
                     $data_tribuT= $tribuTService->getAproposUpdate($tribu_t["table_name"]);
                     if( $data_tribuT){
-                        // $data_tribuT["fondateurId"]
                         $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
 
+                        $status_fillieul= $tribuTService->getStatusFillieul($tribu_t["table_name"], $table_tribuT);
                         $temp =[
                             "table_name" => $tribu_t["table_name"],
                             "name" => $data_tribuT["name"],
@@ -3907,10 +3909,14 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
                                 "pseudo" => $user_fondateur->getPseudo(),
                                 "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
                             ],
-                            // "status" => $type_status[array_rand($type_status, 1)],
-                            "status" => $tribuTService->getStatusFillieul($tribu_t["table_name"], $table_tribuT),
+                            "status" => $status_fillieul,
                         ];
-                        array_push($list_tribu_parrainer, $temp);
+
+                        if( $status_fillieul === 1 || $status_fillieul === 0 ){
+                            array_unshift($list_tribu_parrainer, $temp);
+                        }else{
+                            array_push($list_tribu_parrainer, $temp);
+                        }
                     }
                 }
             }
@@ -3948,6 +3954,8 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
 
         $all_hierarchical_tribuT= [];
         $hierarchical_tribuT= $tribuTService->getHierarchicalTribu($table_tribuT);
+        array_push($hierarchical_tribuT, $table_tribuT);
+        
         if(  count($hierarchical_tribuT) > 0 ){
             foreach( $hierarchical_tribuT as $item_hierarchical_tribuT ){
                 $data_tribuT= $tribuTService->getAproposUpdate($item_hierarchical_tribuT);
@@ -4010,9 +4018,47 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             "status" => $tribuTService->getStatusFillieul($table_tribu_futur_parrain, $table_tribu_current),
         ];
 
+        $list_tribu_parrainer= [];
+        
+        $all_tribu_t= $tribuTService->getListAllTribuT();
+        
+        $all_private_table= $tribuTService->getAllUnderTableTribuT($table_tribu_current);
+        array_push($all_private_table, $table_tribu_current);
+
+        if( count($all_tribu_t) > 0 ){
+            foreach( $all_tribu_t as $tribu_t ){
+                if(!in_array($tribu_t["table_name"], $all_private_table)){
+                    $data_tribuT= $tribuTService->getAproposUpdate($tribu_t["table_name"]);
+                    if( $data_tribuT){
+                        $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
+
+                        $status_fillieul= $tribuTService->getStatusFillieul($tribu_t["table_name"], $table_tribu_current);
+                        $temp =[
+                            "table_name" => $tribu_t["table_name"],
+                            "name" => $data_tribuT["name"],
+                            "description" => $data_tribuT["description"],
+                            "avatar" => $data_tribuT["avatar"],
+                            "fondateur" => [
+                                "pseudo" => $user_fondateur->getPseudo(),
+                                "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
+                            ],
+                            "status" => $status_fillieul,
+                        ];
+
+                        if( $status_fillieul === 1 || $status_fillieul === 0 ){
+                            array_unshift($list_tribu_parrainer, $temp);
+                        }else{
+                            array_push($list_tribu_parrainer, $temp);
+                        }
+                    }
+                }
+            }
+        }
+
         return $this->json([
             "tribu_futur_parrain" => $tribu_futur_parrain,
-            "table_tribu_current" => $table_tribu_current
+            "table_tribu_current" => $table_tribu_current,
+            "list_tribu_parrainer" => $list_tribu_parrainer,
         ], 201);
     }
 
@@ -4047,9 +4093,47 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             "status" => $tribuTService->getStatusFillieul($table_tribu_futur_parrain, $table_tribu_current),
         ];
 
+        $list_tribu_parrainer= [];
+        
+        $all_tribu_t= $tribuTService->getListAllTribuT();
+        
+        $all_private_table= $tribuTService->getAllUnderTableTribuT($table_tribu_current);
+        array_push($all_private_table, $table_tribu_current);
+
+        if( count($all_tribu_t) > 0 ){
+            foreach( $all_tribu_t as $tribu_t ){
+                if(!in_array($tribu_t["table_name"], $all_private_table)){
+                    $data_tribuT= $tribuTService->getAproposUpdate($tribu_t["table_name"]);
+                    if( $data_tribuT){
+                        $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
+
+                        $status_fillieul= $tribuTService->getStatusFillieul($tribu_t["table_name"], $table_tribu_current);
+                        $temp =[
+                            "table_name" => $tribu_t["table_name"],
+                            "name" => $data_tribuT["name"],
+                            "description" => $data_tribuT["description"],
+                            "avatar" => $data_tribuT["avatar"],
+                            "fondateur" => [
+                                "pseudo" => $user_fondateur->getPseudo(),
+                                "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
+                            ],
+                            "status" => $status_fillieul,
+                        ];
+
+                        if( $status_fillieul === 1 || $status_fillieul === 0 ){
+                            array_unshift($list_tribu_parrainer, $temp);
+                        }else{
+                            array_push($list_tribu_parrainer, $temp);
+                        }
+                    }
+                }
+            }
+        }
+
         return $this->json([
             "tribu_futur_parrain" => $tribu_futur_parrain,
-            "table_tribu_current" => $table_tribu_current
+            "table_tribu_current" => $table_tribu_current,
+            "list_tribu_parrainer" => $list_tribu_parrainer
         ], 201);
     }
 
