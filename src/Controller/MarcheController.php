@@ -2,6 +2,12 @@
 
 namespace App\Controller;
 
+use App\Service\Status;
+use Doctrine\ORM\EntityManagerInterface;
+use App\Service\MessageService;
+use App\Service\TributGService;
+use App\Repository\UserRepository;
+
 use App\Repository\MarcheRepository;
 use App\Service\PDOConnexionService;
 use App\Repository\DepartementRepository;
@@ -14,15 +20,39 @@ class MarcheController extends AbstractController
 {
     #[Route('/marche', name: 'app_marche')]
     public function getAllDepartementMarche(
+Status $status,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        UserRepository $userRepository,
+        MessageService $messageService,
+
         DepartementRepository $departementRepository,
         MarcheRepository $marcheRepository,
     ): Response
     {
+$statusProfile = $status->statusFondateur($this->getUser());
+
+        ///current user connected
+        $user = $this->getUser();
+
+        //dd($user);
+        $userConnected = $status->userProfilService($this->getUser());
+
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+        ///to contains profil user information [ [ id => ..., photo => ..., email => ..., firstname => ..., lastname => ..., image_profil => ..., last_message => ..., is_online => ... ], ... ]
+        $amis_in_tributG = $messageService->getListAmisToChat($user, $tributGService, $entityManager, $userRepository);
+        
+
         $count_marche= $marcheRepository->getAccountMarche();
 
         return $this->render('marche/index.html.twig',[
             "departements" => $departementRepository->getDep(),
-            "count_marche" => $count_marche
+            "count_marche" => $count_marche,
+
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "amisTributG" => $amis_in_tributG, 
+            "userConnected" => $userConnected,
         ]);
     }
 
@@ -30,7 +60,13 @@ class MarcheController extends AbstractController
     public function getSpecifiqueMarche(
         Request $request,
         MarcheRepository $marcheRepository,
-        PDOConnexionService $pdoConnexionService
+        PDOConnexionService $pdoConnexionService,
+
+        Status $status,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        UserRepository $userRepository,
+        MessageService $messageService,
     ) {
         $id_dep= $request->query->get('id_dep');
         $id_dep= intval($id_dep);
@@ -58,12 +94,30 @@ class MarcheController extends AbstractController
             array_push($marches, $result);  
         }
 
+        $statusProfile = $status->statusFondateur($this->getUser());
+        
+        ///current user connected
+        $user = $this->getUser();
+
+        //dd($user);
+        $userConnected = $status->userProfilService($this->getUser());
+
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+        ///to contains profil user information [ [ id => ..., photo => ..., email => ..., firstname => ..., lastname => ..., image_profil => ..., last_message => ..., is_online => ... ], ... ]
+        $amis_in_tributG = $messageService->getListAmisToChat($user, $tributGService, $entityManager, $userRepository);
+        
+
         return $this->render("marche/specific_departement.html.twig", [
             "id_dep" => $id_dep,
             "nom_dep" => $nom_dep,
             "type" => "marche",
             "count_marche" => $count_marche,
-            "marches" => $marches
+            "marches" => $marches,
+
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "amisTributG" => $amis_in_tributG, 
+            "userConnected" => $userConnected,
         ]);
     }
 
