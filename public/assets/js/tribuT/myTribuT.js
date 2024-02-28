@@ -927,6 +927,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 
 			let _fullName = data[i].user_profil.firstname + " " + data[i].user_profil.lastname;
 
+			
 			let _profilImg = data[i].user_profil.photo_profil
 				? "/public" + data[i].user_profil.photo_profil
 				: "/public/assets/image/img_avatar3.png";
@@ -948,7 +949,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 										<i class="fa-solid fa-earth-oceania"></i>
 									</span>
 									<div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
-										<a data-id="${data[i].id}" data-name="${table_tribu_T_name}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
+										<a data-id="${data[i].id}" data-name="${table_tribu_T_name}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Partisans </a>
 										<a data-id="${data[i].id}" data-name="${table_tribu_T_name}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
 									</div>
 								</div>
@@ -1156,7 +1157,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                     <div class="dropdown-menu" aria-labelledby="btnGroupDrop1">
                                                                         <a data-id="${
 																			data[i].id
-																		}" data-name="${table_tribu_T_name}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
+																		}" data-name="${table_tribu_T_name}" class="dropdown-item" onclick="updateVisibility(this)" href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Partisans </a>
                                                                         <a data-id="${
 																			data[i].id
 																		}" data-name="${table_tribu_T_name}" class="dropdown-item active" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
@@ -1375,7 +1376,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                                                                         <a data-id="${
 																			dataG.id
 																		}" data-name="${table_tribu_T_name}" class="dropdown-item ${confid_all}" onclick="updateVisibility(this)"
-                                                                         href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les Fans </a>
+                                                                         href="#"><i class="fa-solid fa-earth-oceania"></i> Tous les partisans </a>
                                                                         <a data-id="${
 																			dataG.id
 																		}" data-name="${table_tribu_T_name}" class="dropdown-item  ${confid_private}"" onclick="updateVisibility(this)" href="#"><i class="bi bi-lock-fill"></i> Moi uniquement</a>
@@ -2391,7 +2392,7 @@ function showInvitations() {
                         </li>
                     </ul>
                     <div id="blockSendEmailInvitation" style="display:none;" class="mt-4 px-3">
-                        <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre fan par e-mail</h5>
+                        <h5 class="modal-title text-primary" id="exampleModalLabel">Inviter d'autre partisan par e-mail</h5>
 <h6 class="modal-title text-primary" >Vous pouvez modifier le corps de l'e-mail comme vous le voulez.</h6>
                         <h6 class="modal-title text-primary" >Le lien d'invitation sera généré automatiquement par CMZ.</h6>
                         <h6 class="modal-title text-primary" >L'e-mail envoyé sera automatiquement signé à votre nom.</h6>

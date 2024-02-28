@@ -2672,7 +2672,9 @@ $pdo=new PDOConnexionService();
     public function getPublicationList(
         Request $request,
         Tribu_T_Service $srv,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
     ) {
 
 
@@ -2683,7 +2685,7 @@ $pdo=new PDOConnexionService();
         $limits = $request->query->get('limits');
         $tableCommentaireTribuT = $request->query->get('tblCommentaire');
 
-        $result = $srv->getPartisantPublicationUpdate($tableTribuTPublication, $tableCommentaireTribuT, $idMin, $limits, $userId);
+        $result = $srv->getPartisantPublicationUpdate($tableTribuTPublication, $tableCommentaireTribuT, $idMin, $limits, $userId, $confidentialityService, $userService);
         
         $json = $serializer->serialize($result, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
@@ -3883,8 +3885,6 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         UserRepository $userRepository,
         UserService $userService
     ){
-        $table_tribu_parent= $tribuTService->getSingleTableParent($table_tribuT);
-
         $list_tribu_parrainer= [];
 
         $all_tribu_t= $tribuTService->getListAllTribuT();
@@ -3895,7 +3895,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         if( count($all_tribu_t) > 0 ){
             foreach( $all_tribu_t as $tribu_t ){
                 if(!in_array(strtolower($tribu_t["table_name"]), $all_private_table)){
-                    $data_tribuT= $tribuTService->getAproposUpdate($tribu_t["table_name"]);
+                    $data_tribuT= $tribuTService->getAproposUpdate(strtolower($tribu_t["table_name"]));
                     if( $data_tribuT){
                         $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
 
@@ -3954,7 +3954,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
                             "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
                         ],
                         // "status" => $type_status[array_rand($type_status, 1)],
-                        "status" => $tribuTService->getStatusFillieul($parrainer_tribuT["name"], $table_tribuT),
+                        "status" => $tribuTService->getStatusFillieul($table_tribuT, $parrainer_tribuT["name"]),
                     ];
                     array_push(
                         $all_invitation_parrainer_tribuT, [
@@ -4196,7 +4196,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
                 "pseudo" => $user_fondateur->getPseudo(),
                 "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
             ],
-            "status" => $tribuTService->getStatusFillieul($table_futur_sous_tribu, $table_tribu_current),
+            "status" => $tribuTService->getStatusFillieul($table_tribu_current, $table_futur_sous_tribu),
         ];
 
         $tribu_futur_parrain=  [

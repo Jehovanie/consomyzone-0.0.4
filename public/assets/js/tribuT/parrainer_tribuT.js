@@ -72,16 +72,40 @@ function bindActionTribuTParrainer(tribuTName) {
 									</div>
 								</div>
 								<div class="content_list_sub_tribu_jheo_js content_list_demand_adhesion_tribuT_jheo_js">
-									<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT">
-										${current_list_html_parrainer}
-									</ul>
+									<table class="table table-striped" id="list_tribu_parrainer_jheo_js">
+										<thead>
+											<tr>
+												<th class="text-center" scope="col">Image</th>
+												<th class="text-center" scope="col">A propos </th>
+												<th class="text-center" scope="col">Fondateur</th>
+												<th class="text-center" scope="col">Action</th>
+											</tr>
+										</thead>
+										<tbody class="mt-2 content_list_sub_tribuT">
+											${current_list_html_parrainer}
+										</tbody>
+									</table>
 								</div>
 								<div class="d-none content_list_sub_tribu_jheo_js content_list_invitation_adherer_tribuT_jheo_js">
-									<ul class="list-group list-group-flush mt-2  content_list_invitation_parrainer_jheo_js">
-										<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
-											<span class="visually-hidden">Loading...</span>
-										</div>
-									</ul>
+									<table class="table table-striped" id="list_invitation_parrainer_jheo_js">
+										<thead>
+											<tr>
+												<th class="text-center" scope="col">Image</th>
+												<th class="text-center" scope="col">A propos </th>
+												<th class="text-center" scope="col">Fondateur</th>
+												<th class="text-center" scope="col">Action</th>
+											</tr>
+										</thead>
+										<tbody class="mt-2 content_list_sub_tribuT content_list_invitation_parrainer_jheo_js">
+											<tr>
+												<td colspan="4">
+													<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
+														<span class="visually-hidden">Loading...</span>
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
 								</div>
 								<div class="d-none content_list_sub_tribu_jheo_js content_list_parrent_tribuT_tribuT_jheo_js">
 									<ul class="list-group list-group-flush mt-2 content_list_hierarchy_tribu_jheo_js">
@@ -95,6 +119,13 @@ function bindActionTribuTParrainer(tribuTName) {
 					`;
 
 					tribuTContainer.innerHTML = body;
+
+					$.fn.dataTable.ext.errMode = "throw";
+					$("#list_tribu_parrainer_jheo_js").DataTable({
+						language: {
+							url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+						},
+					});
 				});
 		});
 	}
@@ -153,9 +184,11 @@ function fetchListInvitationParrainer(tribuTName) {
 	if (document.querySelector(".content_list_invitation_parrainer_jheo_js")) {
 		const content_list = document.querySelector(".content_list_invitation_parrainer_jheo_js");
 		content_list.innerHTML = `
-			<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
-				<span class="visually-hidden">Loading...</span>
-			</div>
+			<td colspan="4">
+				<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
+					<span class="visually-hidden">Loading...</span>
+				</div>
+			</td>
 		`;
 	}
 
@@ -174,6 +207,12 @@ function fetchListInvitationParrainer(tribuTName) {
 				const content_list = document.querySelector(".content_list_invitation_parrainer_jheo_js");
 				content_list.innerHTML = current_list_html_invitation_parrainer;
 			}
+
+			$("#list_invitation_parrainer_jheo_js").DataTable({
+				language: {
+					url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+				},
+			});
 		});
 }
 
@@ -212,16 +251,16 @@ function fetchParentHierachyParrainer(tribuTName) {
 function generateListHtmlTribuTParrainer(list_tribu_parrainer, table_name_current) {
 	if (list_tribu_parrainer.length === 0) {
 		const none_tribuT_parrainer = `
-			<li class="list-group-item">
-				<div class="alert alert-danger text-center" role="alert">
-					Il n'y a pas de tribu T peuvent vous parainner.
-				</div>
-			</li>
+			<tr>
+				<td colspan="4">
+					<div class="alert alert-danger text-center" role="alert">
+						Il n'y a pas de tribu T peuvent vous parainner.
+					</div>
+				</td>
+			</tr>
 		`;
-
 		return none_tribuT_parrainer;
 	}
-
 	let list_html_tribuT_parrainer = "";
 
 	let isHaveRequestAcceptOrPedding = list_tribu_parrainer.some(
@@ -264,37 +303,37 @@ function generateItemHtmlTribuTParrainer(
 	///get btn action
 	let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveRequestAcceptOrPedding);
 
-	const item_html_tribuT_parrainer = `
-		<li class="list-group-item item_parrainer_${table_name}_jheo_js">
-			<div class="col-xl-12">
-				<div class="mt-2">
-					<div class="d-flex justify-content-between align-items-end">
-						<div class="row align-items-center">
-							<div class="col-auto">
-								<img class="img50_50" src="${photo_avatar}" class="width-90 rounded-3" alt="tribuT">
-							</div>
-							<div class="col">
-								<div class="overflow-hidden flex-nowrap">
-									<h6 class="mb-1 d-inline-block ">
-										${name}
-									</h6>
-									<em class="text-muted d-inline-block  text-italic" style="font-size: 0.8rem;">fondé par <strong>${pseudo}</strong> </em>
-									<span class="text-muted d-block small">
-										${description}
-									</span>
-									
-								</div>
-							</div>
-						</div>
-						<div class="content_cta_action_parrainer cta_parrainer_${table_name}_jheo_js d-flex justify-content-end align-items-center">
-							${btn_action}
-						</div>
+	const item_html_tribuT_parrainer_tr = `
+		<tr>
+			<th>
+				<div class="col-auto">
+					<img class="img50_50" src="${photo_avatar}" class="width-90 rounded-3" alt="tribuT">
+				</div>
+			</th>
+			<td>
+				<div class="col">
+					<div class="overflow-hidden flex-nowrap">
+						<h6 class="mb-1 d-inline-block ">
+							${name}
+						</h6>
+						<span class="text-muted d-block small">
+							${description}
+						</span>
 					</div>
 				</div>
-			</div>
-		</li>
+			</td>
+
+			<td>
+				<strong>${pseudo}</strong>
+			</td>
+			<td>
+				<div class="content_cta_action_parrainer cta_parrainer_${table_name}_jheo_js d-flex justify-content-end align-items-center">
+					${btn_action}
+				</div>
+			</td>
+		</tr>
 	`;
-	return item_html_tribuT_parrainer;
+	return item_html_tribuT_parrainer_tr;
 }
 
 /**
@@ -512,11 +551,13 @@ function unhautorizedResult() {
 function generateListHtmlInvitationTParrainer(list_tribu_invitation_parrainer, table_name_current) {
 	if (list_tribu_invitation_parrainer.length === 0) {
 		const none_invitation_parrainer = `
-			<li class="list-group-item">
-				<div class="alert alert-danger text-center" role="alert">
+			<tr>
+				<td colspan="4">
+					<div class="alert alert-danger text-center" role="alert">
 					Vous n'avez pas demande de sous tribu T.
 				</div>
-			</li>
+				</td>
+			</tr>
 		`;
 
 		return none_invitation_parrainer;
@@ -545,37 +586,38 @@ function generateItemHtmlTribuTInvitationParrainer(tribu_futur_sous_tribut, tabl
 
 	let btn_action = getBtnStateActionInvitation({ table_name, status }, table_tribu_current);
 
-	const item_html_invitation_tribuT = `
-		<li class="list-group-item">
-			<div class="col-xl-12">
-				<div class="mt-2">
-					<div class="d-flex justify-content-between align-items-end">
-						<div class="row align-items-center">
-							<div class="col-auto">
-								<img class="img50_50" src="${photo_avatar}" class="width-90 rounded-3" alt="tribuT">
-							</div>
-							<div class="col">
-								<div class="overflow-hidden flex-nowrap">
-									<h6 class="mb-1 d-inline-block ">
-										${name}
-									</h6>
-									<em class="text-muted d-inline-block  text-italic" style="font-size: 0.8rem;">fondé par <strong>${pseudo}</strong> </em>
-									<span class="text-muted d-block small">
-										${description}
-									</span>
-									
-								</div>
-							</div>
-						</div>
-						<div class="content_cta_action_parrainer d-flex justify-content-end align-items-center">
-							${btn_action}
-						</div>
+	const item_html_invitation_tribuT_tr = `
+		<tr>
+			<th>
+				<div class="col-auto">
+					<img class="img50_50" src="${photo_avatar}" class="width-90 rounded-3" alt="tribuT">
+				</div>
+			</th>
+			<td>
+				<div class="col">
+					<div class="overflow-hidden flex-nowrap">
+						<h6 class="mb-1 d-inline-block ">
+							${name}
+						</h6>
+						<span class="text-muted d-block small">
+							${description}
+						</span>
 					</div>
 				</div>
-			</div>
-		</li>
+			</td>
+
+			<td>
+				<strong>${pseudo}</strong>
+			</td>
+			<td>
+				<div class="content_cta_action_parrainer d-flex justify-content-end align-items-center">
+					${btn_action}
+				</div>
+			</td>
+		</tr>
 	`;
-	return item_html_invitation_tribuT;
+
+	return item_html_invitation_tribuT_tr;
 }
 
 function getBtnStateActionInvitation(tribu_futur_sous_tribu, table_tribu_current) {

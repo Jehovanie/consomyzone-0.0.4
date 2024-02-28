@@ -63,14 +63,31 @@ function bindActionSousTribuT(tribuTName) {
 									</div>
 								</div>
 								<hr />
-								<ul class="list-group list-group-flush mt-2 content_list_sub_tribuT content_list_sub_tribuT_jheo_js">
-									${current_list_html_sub_tribuT}
-								</ul>
+								<div class="list-group list-group-flush mt-2 content_list_sub_tribuT">
+									<table class="table table-striped" id="content_list_sub_tribuT_jheo_js">
+										<thead>
+											<tr>
+												<th class="text-center" scope="col">Image</th>
+												<th class="text-center" scope="col">A propos </th>
+											</tr>
+										</thead>
+										<tbody class="mt-2 content_list_sub_tribuT">
+											${current_list_html_sub_tribuT}
+										</tbody>
+									</table>
+								</div>
 							</div>
 						</div>
 					`;
 
 					tribuTContainer.innerHTML = body;
+
+					$.fn.dataTable.ext.errMode = "throw";
+					$("#content_list_sub_tribuT_jheo_js").DataTable({
+						language: {
+							url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+						},
+					});
 				});
 		});
 	}
@@ -85,11 +102,13 @@ function setTableParent(tribuTName) {
 function generateListHtmlSubTribuT(listSubTribuT) {
 	if (listSubTribuT.length === 0) {
 		const none_sub_tribuT = `
-			<li class="list-group-item">
-				<div class="alert alert-danger text-center" role="alert">
-					Vous n'avez pas encore une sous-tribu sur cette tribu T.
-				</div>
-			</li>
+			<tr>
+				<td colspan="2">
+					<div class="alert alert-danger text-center" role="alert">
+						Vous n'avez pas encore une sous-tribu sur cette tribu T.
+					</div>
+				</td>
+			</tr>
 		`;
 
 		return none_sub_tribuT;
@@ -114,32 +133,31 @@ function generateItemHtmlSubTribuT(itemSubTribuT) {
 	let isOwned_str = isOwned ? "owned" : "joined";
 	let link_to_navigate = `/user/tribu/my-tribu-t?type=${isOwned_str}&tribu=${table_name}`;
 
-	const item_html_sub_tribuT = `
-		<li class="list-group-item">
-			<div class="col-xl-12">
-				<div class="mt-2">
-					<div class="row align-items-center">
-						<div class="col-auto">
-							<a href="${link_to_navigate}">
-								<img class="img50_50" src="${photo_avatar}" class="width-90 rounded-3" alt="tribuT">
+	const item_html_sub_tribuT_tr = `
+		<tr>
+			<th>
+				<div class="col-auto">
+					<a href="${link_to_navigate}">
+						<img class="img50_50" src="${photo_avatar}" class="width-90 rounded-3" alt="tribuT">
+					</a>
+				</div>
+			</th>
+			<td>
+				<div class="col">
+					<div class="overflow-hidden flex-nowrap">
+						<h6 class="mb-1">
+							<a href="${link_to_navigate}" class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
+								${name}
 							</a>
-						</div>
-						<div class="col">
-							<div class="overflow-hidden flex-nowrap">
-								<h6 class="mb-1">
-									<a href="${link_to_navigate}" class="link-offset-2 link-offset-3-hover link-underline link-underline-opacity-0 link-underline-opacity-75-hover">
-										${name}
-									</a>
-								</h6>
-								<span class="text-muted d-block mb-2 small">
-									${description}
-								</span>
-							</div>
-						</div>
+						</h6>
+						<span class="text-muted d-block mb-2 small">
+							${description}
+						</span>
 					</div>
 				</div>
-			</div>
-		</li>
+			</td>
+		</tr>
 	`;
-	return item_html_sub_tribuT;
+
+	return item_html_sub_tribuT_tr;
 }

@@ -81,7 +81,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                 $output = "tribu_t_" . $user_id . "_" . $tableName;
 
-                $query = "CREATE TABLE " . $output . "_publication(
+                $query = "CREATE TABLE IF NOT EXISTS " . $output . "_publication(
 
                     id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 
@@ -115,7 +115,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                 if ($final2 == 0) {
 
-                    $query_table_invitation = "CREATE TABLE " . $output . "_invitation(
+                    $query_table_invitation = "CREATE TABLE IF NOT EXISTS " . $output . "_invitation(
                         id int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
                         user_id int(11) DEFAULT NULL,
                         sender_id int(11) DEFAULT NULL,
@@ -126,7 +126,7 @@ class Tribu_T_Service extends PDOConnexionService
 
                     $this->getPDO()->exec($query_table_invitation);
 
-                    $sql = "CREATE TABLE " . $output . "_commentaire(
+                    $sql = "CREATE TABLE IF NOT EXISTS " . $output . "_commentaire(
 
                         id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 
@@ -159,7 +159,7 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-                    $sql = "CREATE TABLE " . $output . "_reaction(
+                    $sql = "CREATE TABLE IF NOT EXISTS " . $output . "_reaction(
 
                         id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
 
@@ -209,7 +209,7 @@ class Tribu_T_Service extends PDOConnexionService
                     $this->getPDO()->exec($sqlCreateTableImpImg);
 
                     
-                    $sql = "CREATE TABLE " . $output . "_agenda(
+                    $sql = "CREATE TABLE IF NOT EXISTS " . $output . "_agenda(
 
                         `id` int(11) NOT NULL AUTO_INCREMENT,
 
@@ -251,7 +251,7 @@ class Tribu_T_Service extends PDOConnexionService
                     // $this->getPDO()->exec($sql);
 
 
-                    $sql = "CREATE TABLE " . $output . "_agenda_action(
+                    $sql = "CREATE TABLE IF NOT EXISTS " . $output . "_agenda_action(
 
                         `id` int(11) NOT NULL AUTO_INCREMENT,
 
@@ -308,7 +308,7 @@ class Tribu_T_Service extends PDOConnexionService
                     $this->getPDO()->exec($sqlCreateTablePathAlbum);
 
 
-                    $this->addListTribuT($output);
+                    $this->addListTribuT($output, $user_id);
                 }
             }
         }
@@ -1701,78 +1701,43 @@ class Tribu_T_Service extends PDOConnexionService
         return $resultF;
     }
 
-    public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits, $userId){
+    public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits, $userId, $confidentialityService, $userService){
         $resultF=[];
         $regex = "/\_publication+$/";
 
         $tableReaction = preg_replace($regex, "_reaction", $table_publication_Tribu_T);
-        $table_tribu_T = preg_replace($regex, "", $table_publication_Tribu_T);
-
-        // dump("param");
-        // dump($table_publication_Tribu_T);
-        // dump($table_commentaire_Tribu_T);
-        // dump($userId);
-
-        $all_table_parent= $this->getTableParent($table_tribu_T);
-
-        // dump("table hierarchy");
-        // dd($all_table_parent);
-
-        
+  
         if($idMin == 0){
             //id,user_id,confidentiality,photo,userfullname,datetime, publication 
             //t1.user_id IS NOT NULL AND
-            // $sql = "SELECT * FROM $table_publication_Tribu_T AS t1
-            //     LEFT JOIN (
-            //         SELECT pub_id, count(*) AS nbr FROM $table_commentaire_Tribu_T GROUP BY  pub_id
-            //     ) AS t2 ON t1.id = t2.pub_id WHERE t1.user_id IS NOT NULL ORDER BY t1.id DESC
-            // ";
-
-            $sql="SELECT *, '$table_tribu_T' as 'table_name' FROM (
-                    SELECT * FROM $table_publication_Tribu_T AS t1
-                    LEFT JOIN (
-                        SELECT pub_id, count(*) AS nbr FROM $table_commentaire_Tribu_T GROUP BY  pub_id
-                    ) AS t2 ON t1.id = t2.pub_id WHERE t1.user_id IS NOT NULL ORDER BY t1.id DESC
-                ) AS tb1 LEFT JOIN (
-                    SELECT GROUP_CONCAT(user_id) user_react_list, user_id AS user_id_react, pub_id AS pub_id_react, COUNT(*) AS nbr_reaction, reaction FROM $tableReaction
-                    WHERE reaction = 1 GROUP BY pub_id_react 
-            ) AS tb2 ON tb1.id = tb2.pub_id_react";
-
-            if( count($all_table_parent) > 0 ){
-                foreach($all_table_parent as $table_parent){
-                    $table_parent_publication = $table_parent . "_publication";
-                    $table_parent_commentaire = $table_parent . "_commentaire";
-                    $table_parent_reaction= $table_parent . "_reaction";
-
-                    $union_sql ="SELECT *, '$table_parent' as 'table_name' FROM (
-                        SELECT * FROM $table_parent_publication AS t1
-                            LEFT JOIN (
-                                SELECT pub_id, count(*) AS nbr FROM $table_parent_commentaire GROUP BY  pub_id
-                            ) AS t2 ON t1.id = t2.pub_id WHERE t1.user_id IS NOT NULL ORDER BY t1.id DESC
-                        ) AS tb1 LEFT JOIN (
-                            SELECT GROUP_CONCAT(user_id) user_react_list, user_id AS user_id_react, pub_id AS pub_id_react, COUNT(*) AS nbr_reaction, reaction FROM $table_parent_reaction
-                            WHERE reaction = 1 GROUP BY pub_id_react 
-                    ) AS tb2 ON tb1.id = tb2.pub_id_react";
-
-                    $sql = "$sql UNION $union_sql";
-                }
-            }
-
-            $sql = "SELECT * FROM ( $sql) AS table_final ORDER BY table_final.datetime DESC LIMIT :limits OFFSET :offsets";
-
+             $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN (SELECT pub_id ,count(*)".
+            " as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id = t2.pub_id WHERE". 
+            "  t1.user_id IS NOT NULL ORDER BY t1.id DESC LIMIT :limits) as tb1 " .
+            " LEFT JOIN (SELECT GROUP_CONCAT(user_id) user_react_list, user_id as user_id_react, pub_id as pub_id_react, count(*) as nbr_reaction,". 
+            " reaction FROM $tableReaction WHERE reaction = 1 group by pub_id_react) as tb2 on tb1.id = tb2.pub_id_react"
+            ;
+            // and tb2.user_id_react = $userId
+            // $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T as t1 LEFT JOIN(SELECT pub_id ,count(*)".
+            // " as nbr FROM $table_commentaire_Tribu_T group by pub_id ) as t2 on t1.id=t2.pub_id".  
+            // " ORDER BY t1.id DESC LIMIT :limits) as tb1 " .
+            // " LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react,". 
+            // " reaction FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId"
+            // ;
+           
             $stmt = $this->getPDO()->prepare($sql);
-
-            $offsets= 5;
-
-
             $stmt->bindValue(':limits', $limits, PDO::PARAM_INT);
-            $stmt->bindValue(':offsets', $offsets, PDO::PARAM_INT);
             $stmt->execute();
             $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
             
         }else{
-            $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)".
+            // $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)".
+            // " as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id and t1.id <". 
+            // " :idmin ORDER BY id DESC LIMIT :limits) as tb1 " .
+            // " LEFT JOIN (SELECT user_id as user_id_react, pub_id as pub_id_react, reaction ". 
+            // " FROM $tableReaction) as tb2 on tb1.id = tb2.pub_id_react and tb2.user_id_react = $userId";
+            // and tb2.user_id_react = $userId
+             $sql = "SELECT * FROM (SELECT * FROM $table_publication_Tribu_T  as t1 LEFT JOIN(SELECT pub_id ,count(*)".
             " as nbr FROM $table_commentaire_Tribu_T  group by pub_id ) as t2 on t1.id=t2.pub_id where t1.id < :idmin and t1.user_id is NOT NULL  ORDER BY id DESC LIMIT :limits) as tb1" .
             " LEFT JOIN (SELECT GROUP_CONCAT(user_id) user_react_list, user_id as user_id_react, pub_id as pub_id_react, count(*)".
 			" as nbr_reaction, reaction FROM $tableReaction WHERE reaction = 1 group by pub_id_react) as tb2 on tb1.id = tb2.pub_id_react";
@@ -1786,6 +1751,7 @@ class Tribu_T_Service extends PDOConnexionService
 
         foreach($results as $result){
             $userSentPub=$result['user_id'];
+            $pseudo = $confidentialityService->getConfFullname(intval($userSentPub), $userId);
             $statement_photos = $this->getPDO()->prepare("SELECT photo_profil,firstname,lastname FROM (SELECT photo_profil, user_id,firstname,lastname FROM consumer union SELECT photo_profil, user_id,firstname,lastname FROM supplier) as tab WHERE tab.user_id = $userSentPub");
             $statement_photos->execute();
             $user_profil = $statement_photos->fetch(PDO::FETCH_ASSOC);
@@ -1793,7 +1759,7 @@ class Tribu_T_Service extends PDOConnexionService
             $result["publication"] = $this->convertUnicodeToUtf8($result["publication"]);
             $result["publication"]=mb_convert_encoding($result["publication"], 'UTF-8', 'UTF-8');
             $result["user_profil"]=$user_profil;
-            $result["tribu_apropos"]= $this->getAproposUpdate($result["table_name"]);
+            $result["userfullname"] = $pseudo;
             array_push($resultF,$result);
         }
         return $resultF;
@@ -1803,7 +1769,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
      */
-    public function getPartisantPublicationUpdate($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits, $userId){
+    public function getPartisantPublicationUpdate($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits, $userId, $confidentialityService, $userService){
         $resultF=[];
         $regex = "/\_publication+$/";
 
@@ -1855,6 +1821,7 @@ class Tribu_T_Service extends PDOConnexionService
         
         foreach($results as $result){
             $userSentPub=$result['user_id'];
+            $pseudo = $confidentialityService->getConfFullname(intval($userSentPub), $userId);
             $statement_photos = $this->getPDO()->prepare("SELECT photo_profil,firstname,lastname FROM (SELECT photo_profil, user_id,firstname,lastname FROM consumer union SELECT photo_profil, user_id,firstname,lastname FROM supplier) as tab WHERE tab.user_id = $userSentPub");
             $statement_photos->execute();
             $user_profil = $statement_photos->fetch(PDO::FETCH_ASSOC);
@@ -2054,8 +2021,7 @@ class Tribu_T_Service extends PDOConnexionService
         if (!$this->isTableExist($table_name)) {
             return false;
         }
-        $apropos = ["name" => "", "description" => "", "avatar" => ""];
-
+        
         $statement = $this->getPDO()->prepare("SELECT user_id FROM $table_name where roles = 'Fondateur'");
         $statement->execute();
         $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
@@ -2086,7 +2052,7 @@ class Tribu_T_Service extends PDOConnexionService
                         'fondateurId' => $id
                     ];
 
-                    break;
+                    return $apropos;
                 }
             }
         } else {
@@ -2098,10 +2064,14 @@ class Tribu_T_Service extends PDOConnexionService
                     'avatar' => $object['tribu_t']['logo_path'],
                     'fondateurId' => $id
                 ];
+
+                return $apropos;
             }
+
         }
 
-        return $apropos;
+        return false;
+
     }
 
 
@@ -3130,14 +3100,20 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
-    public function addListTribuT($new_table_tribu_t_name){
+    public function addListTribuT($new_table_tribu_t_name, $user_id){
         $tribu_t_list= "tribu_t_list";
 
         $request_tribu_t_list = $this->getPDO()->prepare(
-            "INSERT INTO $tribu_t_list (table_name)  VALUES (:table_name)"
+            "INSERT INTO $tribu_t_list (table_name, user_id, datetime)  VALUES (:table_name, :user_id, :datetime )"
         );
+
+        $datetime = new \DateTime();
+        $datetime = $datetime->format('Y-m-d H:i:s');
         
-        $request_tribu_t_list->bindParam(':table_name', $new_table_tribu_t_name);
+        $request_tribu_t_list->bindParam(':table_name', $new_table_tribu_t_name, PDO::PARAM_STR);
+        $request_tribu_t_list->bindParam(':user_id', $user_id);
+        $request_tribu_t_list->bindParam(':datetime', $datetime, PDO::PARAM_STR);
+
         $request_tribu_t_list->execute();
     }
 
@@ -3338,8 +3314,9 @@ class Tribu_T_Service extends PDOConnexionService
         $statement = $this->getPDO()->prepare("SELECT user_id FROM $tabletribuT where roles = 'Fondateur'");
         $statement->execute();
         $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
+        $userID= $userID_fondateurTribuT["user_id"];
 
-        return intval($userId) === intval($userID_fondateurTribuT);
+        return intval($userId) === intval($userID);
     }
 
     /**
@@ -3520,7 +3497,7 @@ class Tribu_T_Service extends PDOConnexionService
 
         $table_name_parent= null;
         $roles= "Fondateur";
-        
+
         $request_set_table_parent->bindParam(':roles', $roles);
         $request_set_table_parent->bindParam(':table_parent', $table_name_parent);
         $request_set_table_parent->execute();
@@ -3727,10 +3704,12 @@ class Tribu_T_Service extends PDOConnexionService
             return null;
         }
 
-        $request_table_parent = $this->getPDO()->prepare("SELECT table_parent FROM $table_name WHERE roles= :roles");
+        $request_table_parent = $this->getPDO()->prepare("SELECT table_parent FROM $table_name WHERE roles= :roles AND table_parent != :table_parent");
         
         $roles= "Fondateur";
+        $table_parent= 0;
 
+        $request_table_parent->bindParam(':table_parent', $table_parent);
         $request_table_parent->bindParam(':roles', $roles);
         $request_table_parent->execute();
         $response = $request_table_parent->fetch(PDO::FETCH_ASSOC);
