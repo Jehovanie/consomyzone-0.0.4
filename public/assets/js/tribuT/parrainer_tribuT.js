@@ -19,7 +19,7 @@ function bindActionTribuTParrainer(tribuTName) {
 			/// active link newletter
 			callActionTribuParrainer.classList.add("active");
 
-			/// show loading indicator
+			/// show loading indicator 
 			tribuTContainer.innerHTML = `
 				<div class="spinner-grow text-info d-block mx-auto" role="status">
 					<span class="visually-hidden">Loading...</span>
@@ -327,7 +327,7 @@ function generateItemHtmlTribuTParrainer(
 				<strong>${pseudo}</strong>
 			</td>
 			<td>
-				<div class="content_cta_action_parrainer cta_parrainer_${table_name}_jheo_js d-flex justify-content-end align-items-center">
+				<div class="content_cta_action_parrainer_jheo_js cta_parrainer_${table_name}_jheo_js d-flex justify-content-end align-items-center">
 					${btn_action}
 				</div>
 			</td>
@@ -398,7 +398,7 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 		if (!isHaveRequestAcceptOrPedding) {
 			btn_action = `
 				<button type="button"
-					class="btn btn-primary btn-sm cta_request_${table_name}_jheo_js"
+					class="btn btn-primary btn-sm cta_request_parrainer_jheo_js cta_request_${table_name}_jheo_js"
 					onclick="ctaRequestTribuParrainer('${table_name}', '${table_tribu_current}')"
 				>
 					Envoyer une demande parrainer
@@ -407,7 +407,8 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 		} else {
 			btn_action = `
 				<button type="button"
-					class="btn btn-secondary btn-sm cta_request_${table_name}_jheo_js"
+					class="btn btn-secondary btn-sm cta_request_parrainer_jheo_js cta_request_${table_name}_jheo_js"
+					onclick="ctaRequestTribuParrainer('${table_name}', '${table_tribu_current}')"
 				>
 					Envoyer une demande parrainer
 				</button>
@@ -430,6 +431,19 @@ function ctaRequestTribuParrainer(table_tribu_futur_parrain, table_tribu_current
 	`;
 
 	cta_request.setAttribute("disabled", true);
+
+	const all_content_btn = document.querySelectorAll(".content_cta_action_parrainer_jheo_js");
+	all_content_btn.forEach((item_content_btn) => {
+		if (!item_content_btn.classList.contains(`cta_parrainer_${table_tribu_futur_parrain}_jheo_js`)) {
+			const btn_action = item_content_btn.querySelector(`.cta_request_parrainer_jheo_js`);
+			if (btn_action.classList.contains("btn-primary")) {
+				btn_action.classList.remove("btn-primary");
+				btn_action.classList.add("btn-secondary");
+
+				btn_action.setAttribute("disabled", false);
+			}
+		}
+	});
 
 	const url = `/tributT/request_tribu_parrainer`;
 	const request = new Request(url, {
@@ -454,15 +468,12 @@ function ctaRequestTribuParrainer(table_tribu_futur_parrain, table_tribu_current
 			return response.json();
 		})
 		.then((response) => {
-			const { tribu_futur_parrain, table_tribu_current, list_tribu_parrainer } = response;
+			const { tribu_futur_parrain, table_tribu_current } = response;
 
 			const parent_cta_request = cta_request.parentElement;
 
 			let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
 			parent_cta_request.innerHTML = btn_action;
-
-			////disable all other buttons.
-			updateStateActionBtn(list_tribu_parrainer, table_tribu_current);
 		})
 		.catch((error) => console.log(error));
 }
@@ -502,6 +513,7 @@ function ctaCancelTribuParrainer(table_tribu_futur_parrain, table_tribu_current)
 	cta_cancel_.setAttribute("disabled", true);
 
 	const url = `/tributT/cancel_tribu_parrainer`;
+
 	const request = new Request(url, {
 		method: "POST",
 		headers: {
@@ -524,15 +536,25 @@ function ctaCancelTribuParrainer(table_tribu_futur_parrain, table_tribu_current)
 			return response.json();
 		})
 		.then((response) => {
-			const { tribu_futur_parrain, table_tribu_current, list_tribu_parrainer } = response;
+			const { tribu_futur_parrain, table_tribu_current } = response;
 
 			let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
 
 			const parent_cta_cancel = cta_cancel_.parentElement;
 			parent_cta_cancel.innerHTML = btn_action;
 
-			////disable all other buttons.
-			updateStateActionBtn(list_tribu_parrainer, table_tribu_current);
+			const all_content_btn = document.querySelectorAll(".content_cta_action_parrainer_jheo_js");
+			all_content_btn.forEach((item_content_btn) => {
+				if (!item_content_btn.classList.contains(`cta_parrainer_${table_tribu_futur_parrain}_jheo_js`)) {
+					const btn_action = item_content_btn.querySelector(`.cta_request_parrainer_jheo_js`);
+					if (btn_action.classList.contains("btn-secondary")) {
+						btn_action.classList.remove("btn-secondary");
+						btn_action.classList.add("btn-primary");
+
+						btn_action.removeAttribute("disabled");
+					}
+				}
+			});
 		})
 		.catch((error) => console.log(error));
 }
@@ -554,8 +576,8 @@ function generateListHtmlInvitationTParrainer(list_tribu_invitation_parrainer, t
 			<tr>
 				<td colspan="4">
 					<div class="alert alert-danger text-center" role="alert">
-					Vous n'avez pas demande de sous tribu T.
-				</div>
+						Vous n'avez pas demande de sous tribu T.
+					</div>
 				</td>
 			</tr>
 		`;

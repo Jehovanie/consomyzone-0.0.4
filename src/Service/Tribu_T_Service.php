@@ -3338,6 +3338,38 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
     /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: get all tribu T private the list of the tribu T given.
+     * Use in: TributTController.php
+     * 
+     * @param array $all_private_table list of the private tribu T 
+     * 
+     * @return array [ [ 'table_name' => ...], ... ]
+     */
+    public function getAllTablePossibleParrainer($all_private_table ){
+
+        $table_list_tribuT= "tribu_t_list";
+
+        $first_private_table= $all_private_table[0];
+
+        $sql = "SELECT table_name FROM $table_list_tribuT WHERE table_name NOT LIKE '$first_private_table'";
+
+        if( count($all_private_table) > 1 ){
+            for( $i= 1; $i < count($all_private_table); $i++ ){
+                $item_private_table= $all_private_table[$i];
+                $sql .= " AND table_name NOT LIKE '$item_private_table'";
+            }
+        }
+
+        $all_list_tribu_t = $this->getPDO()->prepare($sql);
+        $all_list_tribu_t->execute();
+        $list_tribu_t = $all_list_tribu_t->fetchAll(PDO::FETCH_ASSOC);
+
+        return $list_tribu_t;
+    }
+
+    /**
      * @author Jehovanie RAMANDRIJOEL <jehovaneiram@gmail.com>
      * 
      * Goal: Get all hierarchie table tribu from my tribu T
