@@ -63,6 +63,8 @@ class Tribu_T_Service extends PDOConnexionService
 
                 table_parent VARCHAR(300) NULL DEFAULT NULL,
 
+                state_table_parent INT(11) NULL DEFAULT NULL,
+
                 livel_parent int(11) NOT NULL DEFAULT 0
 				
 				)ENGINE=InnoDB";
@@ -3199,6 +3201,25 @@ class Tribu_T_Service extends PDOConnexionService
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
+     * Goal: Update table tribu_t already exist to add new collumns 'state_table_parent'
+     * 
+     * @param string $table_tribu: name of table tribu T
+     * 
+     * @return void
+     */
+    public function updateTableTribuAddCullumnStateTableParent($table_tribu){
+
+        if( $this->isColumnExist($table_tribu, "state_table_parent")) return;
+
+        $sql= "ALTER TABLE $table_tribu ADD state_table_parent INT(11) NULL DEFAULT NULL";
+
+        $request_add_collumn_table_parent = $this->getPDO()->prepare($sql);
+        $request_add_collumn_table_parent->execute();
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
      * Goal: Update table tribu_t already exist to add new collumns 'livel_parent'
      * 
      * @param string $table_tribu: name of table tribu T
@@ -3233,6 +3254,10 @@ class Tribu_T_Service extends PDOConnexionService
             $this->updateTableTribuAddCullumnTableParent($table_parent);
         }
 
+        if( !$this->isColumnExist($table_parent, "state_table_parent") ){
+            $this->updateTableTribuAddCullumnStateTableParent($table_parent);
+        }
+
         if( !$this->isColumnExist($table_parent, "livel_parent") ){
             $this->updateTableTribuAddCullumnLivelParent($table_parent);
         }
@@ -3240,6 +3265,11 @@ class Tribu_T_Service extends PDOConnexionService
         if( !$this->isColumnExist($table_fils, "table_parent") ){
             $this->updateTableTribuAddCullumnTableParent($table_fils);
         }
+
+        if( !$this->isColumnExist($table_fils, "state_table_parent") ){
+            $this->updateTableTribuAddCullumnStateTableParent($table_fils);
+        }
+
 
         if( !$this->isColumnExist($table_fils, "livel_parent") ){
             $this->updateTableTribuAddCullumnLivelParent($table_fils);
@@ -3253,12 +3283,17 @@ class Tribu_T_Service extends PDOConnexionService
 
         /// update table fils
         $request_update_livel_parent = $this->getPDO()->prepare(
-            "UPDATE $table_fils SET table_parent = :table_parent, livel_parent = :livel_parent"
+            "UPDATE $table_fils SET table_parent = :table_parent, livel_parent = :livel_parent, state_table_parent= :state_table_parent WHERE roles = :roles"
         );
         
         $livel_parent= intval($parent_livel_parent) + 1;
+        $state_table_parent= 1;
+        $roles = "Fondateur";
+
         $request_update_livel_parent->bindParam(':table_parent', $table_parent);
         $request_update_livel_parent->bindParam(':livel_parent', $livel_parent);
+        $request_update_livel_parent->bindParam(':state_table_parent', $state_table_parent);
+        $request_update_livel_parent->bindParam(':roles', $roles);
         $request_update_livel_parent->execute();
 
     }
@@ -3465,6 +3500,19 @@ class Tribu_T_Service extends PDOConnexionService
             return false;
         }
 
+        $statement_check_parent = $this->getPDO()->prepare("SELECT table_parent, state_table_parent FROM $table_tribu_current WHERE table_parent= :table_tribu_futur_parrain AND state_table_parent = :state_table_parent");
+        
+        $state_table_parent= 1;
+        $statement_check_parent->bindParam(':table_tribu_futur_parrain', $table_tribu_futur_parrain);
+        $statement_check_parent->bindParam(':state_table_parent', $state_table_parent);
+        
+        $statement_check_parent->execute();
+        $check_parent = $statement_check_parent->fetch(PDO::FETCH_ASSOC);
+
+        if( $check_parent ){
+            return false;
+        }
+
         $request_sub_tribu = $this->getPDO()->prepare(
             "INSERT INTO $table_sub_list_name_parrainer (name, status, datetime) 
             VALUES (:name, :status, :datetime)"
@@ -3480,6 +3528,19 @@ class Tribu_T_Service extends PDOConnexionService
         $request_sub_tribu->bindParam(':datetime', $datetime);
 
         $request_sub_tribu->execute();
+
+        /// update table list_sub parent
+        $request_set_table_parent = $this->getPDO()->prepare(
+            "UPDATE $table_tribu_current SET table_parent = :table_tribu_futur_parrain, state_table_parent= :state_table_parent WHERE roles = :roles"
+        );
+
+        $roles= "Fondateur";
+        $state_table_parent= 0;
+
+        $request_set_table_parent->bindParam(':roles', $roles);
+        $request_set_table_parent->bindParam(':state_table_parent', $state_table_parent);
+        $request_set_table_parent->bindParam(':table_tribu_futur_parrain', $table_tribu_futur_parrain);
+        $request_set_table_parent->execute();
 
         return true;
     }
@@ -3524,13 +3585,15 @@ class Tribu_T_Service extends PDOConnexionService
 
         /// update table list_sub parent
         $request_set_table_parent = $this->getPDO()->prepare(
-            "UPDATE $table_tribu_current SET table_parent = :table_parent WHERE roles= :roles"
+            "UPDATE $table_tribu_current SET table_parent = :table_parent, state_table_parent= :state_table_parent WHERE roles= :roles"
         );
 
         $table_name_parent= null;
         $roles= "Fondateur";
+        $state_table_parent= null;
 
         $request_set_table_parent->bindParam(':roles', $roles);
+        $request_set_table_parent->bindParam(':state_table_parent', $state_table_parent);
         $request_set_table_parent->bindParam(':table_parent', $table_name_parent);
         $request_set_table_parent->execute();
 
@@ -3608,6 +3671,10 @@ class Tribu_T_Service extends PDOConnexionService
             return false;
         }
 
+        if( !$this->isColumnExist($table_futur_sous_tribu, "state_table_parent") ){
+            $this->updateTableTribuAddCullumnStateTableParent($table_futur_sous_tribu);
+        }
+
         $statement = $this->getPDO()->prepare("SELECT name, status FROM $table_list_sub_parent where name= '$table_futur_sous_tribu'");
         $statement->execute();
         $status_found = $statement->fetch(PDO::FETCH_ASSOC);
@@ -3628,12 +3695,14 @@ class Tribu_T_Service extends PDOConnexionService
 
         /// update table list_sub parent
         $request_set_table_parent = $this->getPDO()->prepare(
-            "UPDATE $table_futur_sous_tribu SET table_parent = :table_parent WHERE roles = :roles"
+            "UPDATE $table_futur_sous_tribu SET table_parent = :table_parent, state_table_parent = :state_table_parent WHERE roles = :roles"
         );
 
         $roles= "Fondateur";
+        $state_table_parent= 1;
 
         $request_set_table_parent->bindParam(':roles', $roles);
+        $request_set_table_parent->bindParam(':state_table_parent', $state_table_parent);
         $request_set_table_parent->bindParam(':table_parent', $table_name_parent);
         $request_set_table_parent->execute();
 
@@ -3674,6 +3743,20 @@ class Tribu_T_Service extends PDOConnexionService
         $request_accept_invitation->bindParam(':status', $status);
         $request_accept_invitation->bindParam(':table_futur_sous_tribu', $table_futur_sous_tribu);
         $request_accept_invitation->execute();
+
+
+        /// update table futur sous tribu
+        $request_set_table_parent = $this->getPDO()->prepare(
+            "UPDATE $table_futur_sous_tribu SET table_parent = :table_parent, state_table_parent= :state_table_parent WHERE roles = :roles"
+        );
+
+        $roles= "Fondateur";
+        $state_table_parent= -1;
+
+        $request_set_table_parent->bindParam(':roles', $roles);
+        $request_set_table_parent->bindParam(':state_table_parent', $state_table_parent);
+        $request_set_table_parent->bindParam(':table_parent', $table_name_parent);
+        $request_set_table_parent->execute();
 
         return true;
     }
@@ -3736,12 +3819,19 @@ class Tribu_T_Service extends PDOConnexionService
             return null;
         }
 
-        $request_table_parent = $this->getPDO()->prepare("SELECT table_parent FROM $table_name WHERE roles= :roles AND table_parent != :table_parent");
+        if(!$this->isColumnExist($table_name, "state_table_parent")){
+            $this->updateTableTribuAddCullumnStateTableParent($table_name);
+            return null;
+        }
+
+        $request_table_parent = $this->getPDO()->prepare("SELECT table_parent FROM $table_name WHERE roles= :roles AND state_table_parent = :state_table_parent  AND table_parent != :table_parent");
         
         $roles= "Fondateur";
         $table_parent= 0;
+        $state_table_parent= 1;
 
         $request_table_parent->bindParam(':table_parent', $table_parent);
+        $request_table_parent->bindParam(':state_table_parent', $state_table_parent);
         $request_table_parent->bindParam(':roles', $roles);
         $request_table_parent->execute();
         $response = $request_table_parent->fetch(PDO::FETCH_ASSOC);

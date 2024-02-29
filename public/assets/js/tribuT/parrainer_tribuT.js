@@ -19,7 +19,7 @@ function bindActionTribuTParrainer(tribuTName) {
 			/// active link newletter
 			callActionTribuParrainer.classList.add("active");
 
-			/// show loading indicator 
+			/// show loading indicator
 			tribuTContainer.innerHTML = `
 				<div class="spinner-grow text-info d-block mx-auto" role="status">
 					<span class="visually-hidden">Loading...</span>
@@ -647,7 +647,7 @@ function getBtnStateActionInvitation(tribu_futur_sous_tribu, table_tribu_current
 
 	let btn_action = "";
 
-	if (status === 0) {
+	if (parseInt(status) === 0) {
 		btn_action = `
 			<button type="button"
 				class="btn btn-primary btn-sm text-white me-1 cta_invitation_${table_name}_jheo_js"
@@ -664,7 +664,7 @@ function getBtnStateActionInvitation(tribu_futur_sous_tribu, table_tribu_current
 				Refuser
 			</button>
 		`;
-	} else if (status === 1) {
+	} else if (parseInt(status) === 1) {
 		btn_action = `
 			<button type="button"
 				class="btn btn-info btn-sm text-white me-1 cta_request_${table_name}_jheo_js"
@@ -673,7 +673,7 @@ function getBtnStateActionInvitation(tribu_futur_sous_tribu, table_tribu_current
 				Demande acceptée
 			</button>
 		`;
-	} else if (status === -1) {
+	} else if (parseInt(status) === -1) {
 		btn_action = `
 			<button type="button"
 				class="btn btn-secondary btn-sm text-white me-1 cta_request_${table_name}_jheo_js"

@@ -4029,7 +4029,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         $data = json_decode($request->getContent(), true);
         extract($data); /// $table_tribu_futur_parrain, $table_tribu_current
 
-        $tribuTService->setRequestTribuParrainer($table_tribu_futur_parrain, $table_tribu_current);
+        $result = $tribuTService->setRequestTribuParrainer($table_tribu_futur_parrain, $table_tribu_current);
 
         $data_tribuT= $tribuTService->getAproposUpdate($table_tribu_futur_parrain);
 
@@ -4051,6 +4051,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         return $this->json([
             "tribu_futur_parrain" => $tribu_futur_parrain,
             "table_tribu_current" => $table_tribu_current,
+            "result" => $result,
         ], 201);
     }
 
