@@ -28,98 +28,105 @@ function bindActionTribuTParrainer(tribuTName) {
 
 			const url = `/tributT/listTribuParrainer/${tribuTName}`;
 
-			const list_tribu_parrainer = [];
+			fetch(url)
+				.then((response) => response.json())
+				.then((response) => {
+					const { list_tribu_parrainer } = response;
 
-			const current_list_html_parrainer = generateListHtmlTribuTParrainer(list_tribu_parrainer, tribuTName);
+					const current_list_html_parrainer = generateListHtmlTribuTParrainer(
+						list_tribu_parrainer,
+						tribuTName
+					);
 
-			const body = `
-				<div class="card">
-					<div class="card-body content_sous_tribu">
-						<div class="content_entete mb-2">
-							<div class="d-flex justify-content-between align-items-center">
-								<ul class="nav nav-tabs">
-									<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('demand_adhesion', '${tribuTName}')">
-										<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js  active nav_demand_adhesion_jheo_js" aria-current="page">
-											<span> 
-												<i class="fa-solid fa-code-pull-request fa-beat-fade"></i>
-												Demande d'adhésion
-											</span>
-										</span>
-									</li>
-									<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('invitation_adherer', '${tribuTName}')">
-										<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
-											<span> 
-												<i class="fa-solid fa-users-viewfinder fa-beat-fade"></i>
-												Invitation d'adhésion
-											</span>
-										</span>
-									</li>
-									<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('parrent_tribuT', '${tribuTName}')">
-										<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_parrent_tribuT_jheo_js" aria-current="page">
-											<span> 
-												<i class="fa-solid fa-sitemap fa-beat-fade"></i>
-												Hiérarchie de ma Tribu 
-											</span>
-										</span>
-									</li>
-								</ul>
+					const body = `
+						<div class="card">
+							<div class="card-body content_sous_tribu">
+								<div class="content_entete mb-2">
+									<div class="d-flex justify-content-between align-items-center">
+										<ul class="nav nav-tabs">
+											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('demand_adhesion', '${tribuTName}')">
+												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js  active nav_demand_adhesion_jheo_js" aria-current="page">
+													<span> 
+														<i class="fa-solid fa-code-pull-request fa-beat-fade"></i>
+														Demande d'adhésion
+													</span>
+												</span>
+											</li>
+											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('invitation_adherer', '${tribuTName}')">
+												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
+													<span> 
+														<i class="fa-solid fa-users-viewfinder fa-beat-fade"></i>
+														Invitation d'adhésion
+													</span>
+												</span>
+											</li>
+											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('parrent_tribuT', '${tribuTName}')">
+												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_parrent_tribuT_jheo_js" aria-current="page">
+													<span> 
+														<i class="fa-solid fa-sitemap fa-beat-fade"></i>
+														Hiérarchie de ma Tribu 
+													</span>
+												</span>
+											</li>
+										</ul>
+									</div>
+								</div>
+								<div class="content_list_sub_tribu_jheo_js content_list_demand_adhesion_tribuT_jheo_js">
+									<table class="table table-striped" id="list_tribu_parrainer_jheo_js">
+										<thead>
+											<tr>
+												<th class="text-center" scope="col">Image</th>
+												<th class="text-center" scope="col">A propos </th>
+												<th class="text-center" scope="col">Fondateur</th>
+												<th class="text-center" scope="col">Action</th>
+											</tr>
+										</thead>
+										<tbody class="mt-2 content_list_sub_tribuT">
+											${current_list_html_parrainer}
+										</tbody>
+									</table>
+								</div>
+								<div class="d-none content_list_sub_tribu_jheo_js content_list_invitation_adherer_tribuT_jheo_js">
+									<table class="table table-striped" id="list_invitation_parrainer_jheo_js">
+										<thead>
+											<tr>
+												<th class="text-center" scope="col">Image</th>
+												<th class="text-center" scope="col">A propos </th>
+												<th class="text-center" scope="col">Fondateur</th>
+												<th class="text-center" scope="col">Action</th>
+											</tr>
+										</thead>
+										<tbody class="mt-2 content_list_sub_tribuT content_list_invitation_parrainer_jheo_js">
+											<tr>
+												<td colspan="4">
+													<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
+														<span class="visually-hidden">Loading...</span>
+													</div>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+								<div class="d-none content_list_sub_tribu_jheo_js content_list_parrent_tribuT_tribuT_jheo_js">
+									<ul class="list-group list-group-flush mt-2 content_list_hierarchy_tribu_jheo_js">
+										<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
+											<span class="visually-hidden">Loading...</span>
+										</div>
+									</ul>
+								</div>
 							</div>
 						</div>
-						<div class="content_list_sub_tribu_jheo_js content_list_demand_adhesion_tribuT_jheo_js">
-							<table class="table table-striped" id="list_tribu_parrainer_jheo_js">
-								<thead>
-									<tr>
-										<th class="text-center" scope="col">Image</th>
-										<th class="text-center" scope="col">A propos </th>
-										<th class="text-center" scope="col">Fondateur</th>
-										<th class="text-center" scope="col">Action</th>
-									</tr>
-								</thead>
-								<tbody class="mt-2 content_list_sub_tribuT">
-									${current_list_html_parrainer}
-								</tbody>
-							</table>
-						</div>
-						<div class="d-none content_list_sub_tribu_jheo_js content_list_invitation_adherer_tribuT_jheo_js">
-							<table class="table table-striped" id="list_invitation_parrainer_jheo_js">
-								<thead>
-									<tr>
-										<th class="text-center" scope="col">Image</th>
-										<th class="text-center" scope="col">A propos </th>
-										<th class="text-center" scope="col">Fondateur</th>
-										<th class="text-center" scope="col">Action</th>
-									</tr>
-								</thead>
-								<tbody class="mt-2 content_list_sub_tribuT content_list_invitation_parrainer_jheo_js">
-									<tr>
-										<td colspan="4">
-											<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
-												<span class="visually-hidden">Loading...</span>
-											</div>
-										</td>
-									</tr>
-								</tbody>
-							</table>
-						</div>
-						<div id="hierarchy_tribu_jheo_js" class="d-none hierarchy_tribu content_list_sub_tribu_jheo_js content_list_parrent_tribuT_tribuT_jheo_js">
-							<ul class="list-group list-group-flush mt-2 content_list_hierarchy_tribu_jheo_js">
-								<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
-									<span class="visually-hidden">Loading...</span>
-								</div>
-							</ul>
-						</div>
-					</div>
-				</div>
-			`;
+					`;
 
-			tribuTContainer.innerHTML = body;
+					tribuTContainer.innerHTML = body;
 
-			$.fn.dataTable.ext.errMode = "throw";
-			$("#list_tribu_parrainer_jheo_js").DataTable({
-				language: {
-					url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
-				},
-			});
+					$.fn.dataTable.ext.errMode = "throw";
+					$("#list_tribu_parrainer_jheo_js").DataTable({
+						language: {
+							url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+						},
+					});
+				});
 		});
 	}
 }
@@ -224,13 +231,7 @@ function fetchParentHierachyParrainer(tribuTName) {
 		.then((response) => {
 			const { hierarchical_tribu_t } = response;
 
-			const current_html_parent_tribuT = `
-				<div id="tree">
-					<div class="branch">
-						${getHierarchyCallUpdates(hierarchical_tribu_t)}
-					</div>
-				</div>
-			`;
+			const current_html_parent_tribuT = generateHierarchicalTribuT(hierarchical_tribu_t);
 
 			if (document.querySelector(".content_list_hierarchy_tribu_jheo_js")) {
 				const content_list = document.querySelector(".content_list_hierarchy_tribu_jheo_js");
@@ -238,92 +239,6 @@ function fetchParentHierachyParrainer(tribuTName) {
 			}
 		});
 }
-
-function getHierarchyCallUpdates(data) {
-	// const data = {
-	// 	apropos: {
-	// 		name: "Tribu A",
-	// 	},
-	// 	child: [
-	// 		{
-	// 			apropos: { name: "Tribu AA" },
-	// 			child: [
-	// 				{ apropos: { name: "Tribu AAA" }, child: [] },
-	// 				{
-	// 					apropos: { name: "Tribu AAB" },
-	// 					child: [
-	// 						{
-	// 							apropos: {
-	// 								name: "Tribu AABA",
-	// 								child: [{ apropos: { name: "Trib AABAA" }, child: [] }],
-	// 							},
-	// 							child: [],
-	// 						},
-	// 					],
-	// 				},
-	// 			],
-	// 		},
-	// 		{
-	// 			apropos: { name: "Tribu AB" },
-	// 			child: [
-	// 				{
-	// 					apropos: { name: "Tribu ABA" },
-	// 					child: [
-	// 						{
-	// 							apropos: { name: "Tribu ABAA" },
-	// 							child: [{ apropos: { name: "Tribu ABAB" }, child: [] }],
-	// 						},
-	// 					],
-	// 				},
-	// 				{
-	// 					apropos: { name: "Tribu ABB" },
-	// 					child: [
-	// 						{
-	// 							apropos: {
-	// 								name: "Tribu ABBA",
-	// 								child: [{ apropos: { name: "Trib ABBAA" }, child: [] }],
-	// 							},
-	// 							child: [],
-	// 						},
-	// 					],
-	// 				},
-	// 			],
-	// 		},
-	// 		{ apropos: { name: "Tribu AC" }, child: [] },
-	// 	],
-	// };
-	return getitemHierarchy(data);
-}
-
-function getitemHierarchy(itemTribuT) {
-	const { apropos, child: child_tribuT } = itemTribuT;
-	const { name } = apropos;
-
-	let hierarchyChild = "";
-	if (child_tribuT.length > 0) {
-		hierarchyChild = `<div class="branch">`;
-		child_tribuT.forEach((item_Child) => {
-			hierarchyChild += getitemHierarchy(item_Child);
-		});
-		hierarchyChild += `</div>`;
-	}
-
-	const head = `
-		<button type="button" class="btn btn-sm">
-			<span class="badge bg-info text-dark">${name}</span></br>
-			Fonde par <span class="badge bg-warning text-dark">Jheo</span>
-		</button>
-	`;
-
-	const itemHierarchy = `
-		<div class="entry">
-			${head}
-			${hierarchyChild}
-		</div>
-	`;
-	return itemHierarchy;
-}
-
 /**
  * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
  *

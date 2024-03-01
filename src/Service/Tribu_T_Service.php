@@ -1065,6 +1065,13 @@ class Tribu_T_Service extends PDOConnexionService
         return $result[0]["result"];
     }
 
+    public function getUser($userId){
+        $statement = $this->getPDO()->prepare("SELECT id, email, pseudo FROM user WHERE id  = $userId");
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
 
 
     function getName($table, $userId)
@@ -3791,15 +3798,130 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
     public function getHierarchicalTribu($table_name_parent){
-        $table_parent_list_sub= $table_name_parent . "_list_sub";
 
-        if (!$this->isTableExist($table_parent_list_sub)) {
-            $this->createTableSousTribu($table_name_parent);
-            return [];
+        $list_table_parent= [];
+        $table_parent= $this->getSingleTableParent($table_name_parent);
+        while($table_parent != null){
+            array_push($list_table_parent, $table_parent);
+            $table_parent = $this->getSingleTableParent($table_parent);
         }
 
-        $hierarchical_tribuT= $this->getTableParent($table_name_parent);
-        return array_reverse($hierarchical_tribuT);	
+        $list_table_parent= array_reverse($list_table_parent);
+        array_push($list_table_parent, $table_name_parent);
+
+        $data= null;
+        if( count($list_table_parent) > 0 ){
+            foreach($list_table_parent as $item_table_parent){
+                $data = $this->dataTransformHierchicalTribu($item_table_parent, $data);
+            }
+        }
+        $sub_list_trub= $this->getListSousTribuT($table_name_parent);
+
+
+        if( count($data["child"]) === 0 ){
+            $ref_mytribu_in_hierchical = &$data;
+        }else{
+            $ref_mytribu_in_hierchical = &$data["child"][0];
+            while(count($ref_mytribu_in_hierchical["child"]) > 0 ){
+                $ref_mytribu_in_hierchical= &$ref_mytribu_in_hierchical["child"][0];
+            }
+        }
+
+        foreach($sub_list_trub as $item_sub_list){
+            $hierachy_temp = $this->getHierarchicalFrom($item_sub_list["name"]);
+            array_push($ref_mytribu_in_hierchical["child"], $hierachy_temp);
+        }
+
+        return $data;
+    }
+
+    public function dataTransformHierchicalTribu($table_name, $data){
+        $apropos=  $this->getAproposUpdate($table_name);
+        $user_fondateur= $this->getUser(intval($apropos["fondateurId"]));
+
+        $hierarchical_tribu = [
+            "apropos" => [
+                "table_name" => $table_name,
+                "name" => $apropos["name"],
+                "description" => $apropos["description"],
+                "avatar" => $apropos["avatar"],
+                "fondateur" => [
+                    "pseudo" => $user_fondateur["pseudo"],
+                    "fullname" => ""
+                ],
+            ],
+            "child" => []
+        ];
+
+        if( is_null($data)) return $hierarchical_tribu;
+
+
+        if(count($data["child"]) === 0 ){
+            $data["child"][] = $hierarchical_tribu;
+        }else{
+            $temp = &$data["child"][0];
+            while(count($temp["child"]) > 0 ){
+                $temp= $temp["child"];
+            }
+
+            $temp["child"][] = $hierarchical_tribu;
+        }
+       
+        return $data;
+    }
+
+    public function getHierarchicalFrom($table_name, $data= null){
+        $apropos=  $this->getAproposUpdate($table_name);
+        $user_fondateur= $this->getUser(intval($apropos["fondateurId"]));
+
+        $data_temp = [
+            "apropos" => [
+                "table_name" => $table_name,
+                "name" => $apropos["name"],
+                "description" => $apropos["description"],
+                "avatar" => $apropos["avatar"],
+                "fondateur" => [
+                    "pseudo" => $user_fondateur["pseudo"],
+                    "fullname" => ""
+                ],
+            ],
+            "child" => []
+        ];
+
+        $sub_list_trub= $this->getListSousTribuT($table_name);
+
+        if( count($sub_list_trub) === 0 && is_null($data) ) return $data_temp;
+
+        if( count($sub_list_trub) === 0 && !is_null($data) ){
+            array_push($data["child"], $data_temp);
+            return $data;
+        }
+
+
+        foreach($sub_list_trub as $item_tribu){
+            $apropos=  $this->getAproposUpdate($item_tribu["name"]);
+            $user_fondateur= $this->getUser(intval($apropos["fondateurId"]));
+
+            $data_temp_item= [
+                "apropos" => [
+                    "table_name" => $item_tribu["name"],
+                    "name" => $apropos["name"],
+                    "description" => $apropos["description"],
+                    "avatar" => $apropos["avatar"],
+                    "fondateur" => [
+                        "pseudo" => $user_fondateur["pseudo"],
+                        "fullname" => ""
+                    ],
+                ],
+                "child" => []
+            ];
+
+            $data_item= $this->getHierarchicalFrom($item_tribu["name"], $data_temp_item);
+            array_push($data_temp["child"], $data_item);
+        }
+
+        return $data_temp;
+
     }
 
     public function getTableParent($table_name){

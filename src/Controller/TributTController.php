@@ -3980,39 +3980,13 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
     public function getListHierarchyTribu(
         $table_tribuT,
         Tribu_T_Service $tribuTService,
-        UserRepository $userRepository,
-        UserService $userService
     ){
         $table_tribu_parent= $tribuTService->getSingleTableParent($table_tribuT);
 
-        $all_hierarchical_tribuT= [];
         $hierarchical_tribuT= $tribuTService->getHierarchicalTribu($table_tribuT);
-        array_push($hierarchical_tribuT, $table_tribuT);
-        
-        if(  count($hierarchical_tribuT) > 0 ){
-            foreach( $hierarchical_tribuT as $item_hierarchical_tribuT ){
-                $data_tribuT= $tribuTService->getAproposUpdate($item_hierarchical_tribuT);
-
-                if( $data_tribuT){
-                    $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
-                    $temp =[
-                        "table_name" => $item_hierarchical_tribuT,
-                        "name" => $data_tribuT["name"],
-                        "description" => $data_tribuT["description"],
-                        "avatar" => $data_tribuT["avatar"],
-                        "fondateur" => [
-                            "pseudo" => $user_fondateur->getPseudo(),
-                            "fullname" => $userService->getFullName(intval($data_tribuT["fondateurId"]))
-                        ],
-                    ];
-
-                    array_push($all_hierarchical_tribuT, $temp);
-                }
-            }
-        }
         
         return $this->json([
-            "hierarchical_tribu_t" => $all_hierarchical_tribuT,
+            "hierarchical_tribu_t" => $hierarchical_tribuT,
         ]);
     }
     
