@@ -1,3 +1,4 @@
+{% set currentPath = path(app.request.attributes.get('_route'), app.request.attributes.get('_route_params')) %}
 
 <header class="g s r vd vd-head ya cj padding_header" :class="{ '' : stickyMenu }" @scroll.window="stickyMenu = (window.pageYOffset > 20) ? true : false">
 	<div class="bb 2xl:ud-px-0 oo wf yf i">
@@ -5,21 +6,24 @@
 
         {# =================== CONTENT LOGO AND FORM SEARCH =================== #}
 		<div class="vd to/4 to/4/2 tc wf yf">
-			<div class="content-logo-shearch row">
+			<div class="content-logo-shearch row" style={{  currentPath is same as("/connexion") ? "width:8vw!important;margin-left:6vw!important;": "" }}>
                 <div class="col-2">
                     <a class="navbar-brand" href="{{path("app_home")}}"><img src="{{asset('assets/image/logo.png')}}" alt="logo"></a>
                 </div>
-                <div class="recherche-navbar col-9 ">
-                    <form action="/search" method="get" class="bar-de-recherche form_content_search_navbar_js">
-                        <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?">
-                        <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Où ?">
-                        <datalist id="datalistOptions"></datalist>
-                        <button type="submit" class="hidden"></button>
-                    </form>
-                    <button class="open-navleft-resto open-navleft-resto-spec open-navleft-resto-arrond open-navleft-ferme open-navleft-ferme-spec open-navleft-station open-navleft-station-spec btn-recher-nav open_nav_left_jheo_js">
-                        <i class="fa-solid fa-minuss icon_open_nav_left_jheo_js"></i>
-                    </button>
-                </div>
+                
+                {% if currentPath is not same as("/connexion") %}
+                    <div class="recherche-navbar col-9 ">
+                        <form action="/search" method="get" class="bar-de-recherche form_content_search_navbar_js">
+                            <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?">
+                            <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Où ?">
+                            <datalist id="datalistOptions"></datalist>
+                            <button type="submit" class="hidden"></button>
+                        </form>
+                        <button class="open-navleft-resto open-navleft-resto-spec open-navleft-resto-arrond open-navleft-ferme open-navleft-ferme-spec open-navleft-station open-navleft-station-spec btn-recher-nav open_nav_left_jheo_js">
+                            <i class="fa-solid fa-minuss icon_open_nav_left_jheo_js"></i>
+                        </button>
+                    </div>
+                {% endif %}
             </div>
 		</div>
         {# =================== END CONTENT LOGO AND FORM SEARCH =================== #}
