@@ -74,7 +74,7 @@
                                             
                                          {% else %}
                                              {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
-                                            {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
+                                            {% include 'card/card_item_message_left.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'fullname': item.fullname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
                                          {% endif %}
                                     {% endfor %}
                                     <!-- end List Chat -->
@@ -100,7 +100,7 @@
 
                                                                 {% else %}
                                                                     {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
-                                                                    {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
+                                                                    {% include 'card/card_item_message_left.html.twig' with {'id': ktem.id, 'photo': ktem.photo, 'firstname': ktem.firstname, 'lastname': ktem.lastname, 'fullname': ktem.fullname, 'is_online': ktem.is_online, 'last_message': ktem.last_message, 'tribuT': jtem.table_name  } %}
                                                                  {% endif %}
                                                             {% endfor %}
                                                             <!-- end List Chat -->
@@ -154,7 +154,8 @@
                                 <p class="mn">
                                     Répondez au message de
                                     <h5 class="un zn gs">
-                                        {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
+                                        {# {{userToProfil.firstname ~ " " ~ userToProfil.lastname }} #}
+                                        {{userToProfil.fullname }}
                                     </h5>
                                 </p>
                             </div>
@@ -195,7 +196,8 @@
                                             </div>
 
                                             <p class="flex-grow-1 qb mn un">
-                                            {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
+                                            {# {{userToProfil.firstname ~ " " ~ userToProfil.lastname }} #}
+                                            {{userToProfil.fullname }}
                                         </p>
                                         </div>
                                         

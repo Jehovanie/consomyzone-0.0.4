@@ -59,7 +59,11 @@ class Tribu_T_Service extends PDOConnexionService
 
                 datetime timestamp NOT NULL DEFAULT current_timestamp(),
 
-                email VARCHAR(255) NULL
+                email VARCHAR(255) NULL,
+
+                table_parent VARCHAR(300) NULL DEFAULT NULL,
+
+                livel_parent int(11) NOT NULL DEFAULT 0
 				
 				)ENGINE=InnoDB";
 
@@ -822,17 +826,20 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    public function getFullName($userId)
+    public function getFullName($userId, $otherUserId = null, $confidentialityService = null)
 
     {
-
+if(is_null($otherUserId) && is_null($confidentialityService)){
         $statement = $this->getPDO()->prepare("SELECT * from (SELECT concat(firstname,' ', lastname) as fullname, user_id from consumer union SELECT concat(firstname,' ', lastname) as fullname, user_id from supplier) as tab where tab.user_id=$userId");
 
         $statement->execute();
 
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-        // dd($result);
+        
         return $result["fullname"];
+}else{
+            return $confidentialityService->getConfFullname($otherUserId, $userId);
+        }
     }
 
     public function getPdp($userId)
@@ -1700,7 +1707,8 @@ class Tribu_T_Service extends PDOConnexionService
         }
         return $resultF;
     }
-    public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits, $userId){
+    
+    public function getPartisantPublication($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits, $userId, $confidentialityService, $userService){
         $resultF=[];
         $regex = "/\_publication+$/";
 
@@ -1750,6 +1758,7 @@ class Tribu_T_Service extends PDOConnexionService
 
         foreach($results as $result){
             $userSentPub=$result['user_id'];
+$pseudo = $confidentialityService->getConfFullname(intval($userSentPub), $userId);
             $statement_photos = $this->getPDO()->prepare("SELECT photo_profil,firstname,lastname FROM (SELECT photo_profil, user_id,firstname,lastname FROM consumer union SELECT photo_profil, user_id,firstname,lastname FROM supplier) as tab WHERE tab.user_id = $userSentPub");
             $statement_photos->execute();
             $user_profil = $statement_photos->fetch(PDO::FETCH_ASSOC);
@@ -1757,6 +1766,77 @@ class Tribu_T_Service extends PDOConnexionService
             $result["publication"] = $this->convertUnicodeToUtf8($result["publication"]);
             $result["publication"]=mb_convert_encoding($result["publication"], 'UTF-8', 'UTF-8');
             $result["user_profil"]=$user_profil;
+$result["userfullname"] = $pseudo;
+            array_push($resultF,$result);
+        }
+        return $resultF;
+    }
+
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     */
+    public function getPartisantPublicationUpdate($table_publication_Tribu_T, $table_commentaire_Tribu_T,$idMin,$limits, $userId, $confidentialityService, $userService){
+        $resultF=[];
+        $regex = "/\_publication+$/";
+
+        $tableReaction = preg_replace($regex, "_reaction", $table_publication_Tribu_T);
+        $table_tribu_T = preg_replace($regex, "", $table_publication_Tribu_T);
+
+        $all_table_parent= $this->getTableParent($table_tribu_T);
+
+        $sql="SELECT *, '$table_tribu_T' as 'table_name' FROM (
+                SELECT * FROM $table_publication_Tribu_T AS t1
+                LEFT JOIN (
+                    SELECT pub_id, count(*) AS nbr FROM $table_commentaire_Tribu_T GROUP BY  pub_id
+                ) AS t2 ON t1.id = t2.pub_id WHERE t1.user_id IS NOT NULL ORDER BY t1.id DESC
+            ) AS tb1 LEFT JOIN (
+                SELECT GROUP_CONCAT(user_id) user_react_list, user_id AS user_id_react, pub_id AS pub_id_react, COUNT(*) AS nbr_reaction, reaction FROM $tableReaction
+                WHERE reaction = 1 GROUP BY pub_id_react 
+        ) AS tb2 ON tb1.id = tb2.pub_id_react";
+
+        if( count($all_table_parent) > 0 ){
+            foreach($all_table_parent as $table_parent){
+                $table_parent_publication = $table_parent . "_publication";
+                $table_parent_commentaire = $table_parent . "_commentaire";
+                $table_parent_reaction= $table_parent . "_reaction";
+
+                $union_sql ="SELECT *, '$table_parent' as 'table_name' FROM (
+                    SELECT * FROM $table_parent_publication AS t1
+                        LEFT JOIN (
+                            SELECT pub_id, count(*) AS nbr FROM $table_parent_commentaire GROUP BY  pub_id
+                        ) AS t2 ON t1.id = t2.pub_id WHERE t1.user_id IS NOT NULL ORDER BY t1.id DESC
+                    ) AS tb1 LEFT JOIN (
+                        SELECT GROUP_CONCAT(user_id) user_react_list, user_id AS user_id_react, pub_id AS pub_id_react, COUNT(*) AS nbr_reaction, reaction FROM $table_parent_reaction
+                        WHERE reaction = 1 GROUP BY pub_id_react 
+                ) AS tb2 ON tb1.id = tb2.pub_id_react";
+
+                $sql = "$sql UNION $union_sql";
+            }
+        }
+
+        $sql = "SELECT * FROM ( $sql) AS table_final ORDER BY table_final.datetime DESC LIMIT :limits OFFSET :offsets";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $offsets= intval($idMin) * 3;
+
+        $stmt->bindValue(':limits', $limits, PDO::PARAM_INT);
+        $stmt->bindValue(':offsets', $offsets, PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        foreach($results as $result){
+            $userSentPub=$result['user_id'];
+            $pseudo = $confidentialityService->getConfFullname(intval($userSentPub), $userId);
+            $statement_photos = $this->getPDO()->prepare("SELECT photo_profil,firstname,lastname FROM (SELECT photo_profil, user_id,firstname,lastname FROM consumer union SELECT photo_profil, user_id,firstname,lastname FROM supplier) as tab WHERE tab.user_id = $userSentPub");
+            $statement_photos->execute();
+            $user_profil = $statement_photos->fetch(PDO::FETCH_ASSOC);
+            $result["publication"]=json_decode($result["publication"],true);
+            $result["publication"] = $this->convertUnicodeToUtf8($result["publication"]);
+            $result["publication"]=mb_convert_encoding($result["publication"], 'UTF-8', 'UTF-8');
+            $result["user_profil"]=$user_profil;
+            $result["tribu_apropos"]= $this->getAproposUpdate($result["table_name"]);
             array_push($resultF,$result);
         }
         return $resultF;
@@ -1809,7 +1889,7 @@ class Tribu_T_Service extends PDOConnexionService
         }
     }
 
-    public function getPartisanOfTribuT($tableTribuT)
+    public function getPartisanOfTribuT($tableTribuT, $userId, $confidentialityService, $userService)
     {
 
         $sql = "SELECT * FROM $tableTribuT as t1   left join (" .
@@ -1821,6 +1901,13 @@ class Tribu_T_Service extends PDOConnexionService
         $stmt = $this->getPDO()->prepare($sql);
         $stmt->execute();
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+for ($i=0; $i < count($result); $i++) {
+            $publication_user_id =  $result[$i]["user_id"];
+            $pseudo = $confidentialityService->getConfFullname(intval($publication_user_id), $userId);
+            $email = $confidentialityService->getVisibilityEmail(intval($publication_user_id), $userId) ? $this->getUserEmail(intval($publication_user_id)) : "Confidentiel";
+            $result[$i]["fullname"] = $pseudo;
+            $result[$i]["email"] = $email;
+        }
         return $result;
     }
 
@@ -1934,6 +2021,73 @@ class Tribu_T_Service extends PDOConnexionService
         return $apropos;
     }
 
+/**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     *  Get apropos of the tribu T ( name, description,avatar)
+     * 
+     * @param string $table_name: name of the table
+     * 
+     * @return array associative : [ 'name' => ... , 'description' => ... , 'avatar' => ... ]
+     */
+    public function getAproposUpdate($table_name)
+    {
+        if (!$this->isTableExist($table_name)) {
+            return false;
+        }
+
+        $statement = $this->getPDO()->prepare("SELECT user_id FROM $table_name where roles = 'Fondateur'");
+        $statement->execute();
+        $userID_fondateurTribuT = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if (!$userID_fondateurTribuT) {
+            return false;
+        }
+        $id = $userID_fondateurTribuT['user_id'];
+
+        $statement = $this->getPDO()->prepare("SELECT tribu_t_owned FROM user where id = $id ");
+        $statement->execute();
+        $t_owned = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $tribu_t_owned = $t_owned['tribu_t_owned'];
+
+        $object = json_decode($tribu_t_owned, true);
+
+        if (!array_key_exists("name_tribu_t_muable", $object['tribu_t'])) {
+
+            foreach ($object['tribu_t'] as $trib) {
+
+                //"Tribu T " . ucfirst(explode("_",$trib['name_tribu_t_muable'])[count(explode("_",$trib['name_tribu_t_muable']))-1])
+                if (strtolower($trib['name']) === strtolower($table_name)) {
+                    $apropos = [
+                        'name' => $trib['name_tribu_t_muable'],
+                        'description' => $trib['description'],
+                        'avatar' => $trib['logo_path'],
+                        'fondateurId' => $id
+                    ];
+
+                    return $apropos;
+                }
+            }
+        } else {
+            //"Tribu T " . ucfirst(explode("_",$object['tribu_t']['name_tribu_t_muable'])[count(explode("_",$object['tribu_t']['name_tribu_t_muable']))-1])
+            if (strtolower($object['tribu_t']['name']) === strtolower($table_name)) {
+                $apropos = [
+                    'name' =>  $object['tribu_t']['name_tribu_t_muable'],
+                    'description' => $object['tribu_t']['description'],
+                    'avatar' => $object['tribu_t']['logo_path'],
+                    'fondateurId' => $id
+                ];
+
+                return $apropos;
+            }
+
+        }
+
+        return false;
+
+    }
+
 
     public function getAllTribuTJoinedAndOwned($id)
     {
@@ -1972,7 +2126,7 @@ class Tribu_T_Service extends PDOConnexionService
      * @param string $table_name: name of the table
      * @param int $id:  publication id
      */
-    public function getCommentsPublication($table_name, $pubID)
+    public function getCommentsPublication($table_name, $pubID, $userId, $confidentialityService, $userService)
     {
 
         $results = [];
@@ -1988,13 +2142,17 @@ class Tribu_T_Service extends PDOConnexionService
             $statement_photos->execute();
             $photo_profil = $statement_photos->fetch(PDO::FETCH_ASSOC); /// [ photo_profil => ...]
             $commentaire= $this->convertUnicodeToUtf8(json_decode($comment["commentaire"],true));
+
+            $pseudo = $confidentialityService->getConfFullname(intval($user_id), $userId);
+
             $temp= [
                 "comment_id" => $comment["id"],
                 "pub_id" => $comment["pub_id"],
                 "dateTime" => $comment["datetime"],
                 "text_comment" => $commentaire,
                 "user" => [
-                    "fullname" => $comment["userfullname"],
+                    //"fullname" => $comment["userfullname"],
+                    "fullname" => $pseudo,
                     "photo" => $photo_profil["photo_profil"],
                     "is_connected" => true
                 ]
@@ -2073,7 +2231,7 @@ class Tribu_T_Service extends PDOConnexionService
      *                              ...
      *                            ]
      */
-    public function getAllPublicationsUpdate($table_name)
+    public function getAllPublicationsUpdate($table_name, $userId, $confidentialityService, $userService)
     {
         $resultats = [];
 
@@ -2108,11 +2266,14 @@ class Tribu_T_Service extends PDOConnexionService
                 $description=json_decode($d_pub["publication"],true);
                 $description=$this->convertUnicodeToUtf8($description);
                 $description=mb_convert_encoding($description, 'UTF-8', 'UTF-8');
+$pseudo = $confidentialityService->getConfFullname(intval($publication_user_id), $userId);
+
                 $data = [
                     "userOwnPub" => [
                         "id" => $d_pub["user_id"],
                         "profil" => $photo_profil["photo_profil"],
-                        "fullName" => $d_pub["userfullname"],
+                        //"fullName" => $d_pub["userfullname"],
+"fullName" => $pseudo,
                     ],
 
                     "publication" => [
@@ -2507,7 +2668,9 @@ class Tribu_T_Service extends PDOConnexionService
         $tribu_t,
         $userRepository,
         $userService,
-        $notificationService)
+        $notificationService,
+        $confidentialityService
+        )
     {
 
         $tableMessageName=$tribu_t."_msg_grp";
@@ -2535,8 +2698,6 @@ class Tribu_T_Service extends PDOConnexionService
             $userSender= $userRepository->find(intval($idSender));
             $firstnameUserSendNotification  = $userService->getUserFirstName($userSender->getId());
             $lastnameUserSendNotification  = $userService->getUserLastName($userSender->getId());
-            $content=$lastnameUserSendNotification." ".$firstnameUserSendNotification.
-            " a envoyé un message dans la discussion générale ".$tribu_t; 
             foreach ($allFanIdInTribuG as $user_id) {
                 $user= $userRepository->find(intval($user_id["user_id"]));
                 $idUserReceivedNotification = $user->getId();
@@ -2546,6 +2707,8 @@ class Tribu_T_Service extends PDOConnexionService
                     $lastnameUserReceivedNotification  = $userService->getUserLastName($user->getId());
                     $link="/user/tribu/msg?name=".$tribu_t."&type=t";
                     //$content.=";". $link;
+                    $pseudo = $confidentialityService->getConfFullname(intval($idSender), $idUserReceivedNotification);
+                    $content=$pseudo." a envoyé un message dans la discussion générale ".$tribu_t; 
                     $notificationService->sendNotificationForOne(intval($idSender), intval($idUserReceivedNotification),
                     $link,$content,$link);
                 }
@@ -2566,7 +2729,7 @@ class Tribu_T_Service extends PDOConnexionService
      * cette fonction recupère tous les messages avec l'user profil des expéditeur
      *  @return any[]
      */
-    public function getMessageGRP($tribu_T){
+    public function getMessageGRP($tribu_T, $userId, $confidentialityService, $userService){
         $tableMessageName=$tribu_T."_msg_grp";
 
         $sql="SELECT t1.id_msg, t1.id_expediteur, t1.msg, ". 
@@ -2576,7 +2739,11 @@ class Tribu_T_Service extends PDOConnexionService
         $statement = $this->getPDO()->prepare($sql);
         $statement->execute();
         $results = $statement->fetchAll(PDO::FETCH_ASSOC);
-
+        for ($i=0; $i < count($results); $i++) { 
+            $publication_user_id = $results[$i]["id_expediteur"];
+            $pseudo = $confidentialityService->getConfFullname(intval($publication_user_id), $userId);
+            $results[$i]["fullname"] = $pseudo;
+        }
         return $results;
     }
 
@@ -2614,7 +2781,7 @@ class Tribu_T_Service extends PDOConnexionService
     /**
      * @author Elie
      *Fetch de toutes les reaction d'un seul publication dans un tribu*/
-    public function findAllReactions($table, $publication_id)
+    public function findAllReactions($table, $publication_id, $userId, $confidentialityService, $userService)
 
     {
 
@@ -2625,6 +2792,14 @@ class Tribu_T_Service extends PDOConnexionService
         $statement->execute();
 
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        for ($i=0; $i < count($result); $i++) { 
+            $otherUserId = $result[$i]["user_id"];
+            //if(intval($otherUserId) != $userId){
+            $result[$i]["userfullname"] = $confidentialityService->getConfFullname(intval($otherUserId), $userId);
+            //}
+
+        }
 
         return $result;
     }
@@ -2957,5 +3132,32 @@ class Tribu_T_Service extends PDOConnexionService
             }
 
         }
+    }
+
+    /**
+    * @author Faniry
+    * creation table drop box pour chaque user
+    * cette fonction a été déclaré ici car instancier la class user 
+    *c'est la galère dans les arguments de cette class
+    */
+    public function createTableDropBox(int $id){
+        $tableName="dropbox_".$id;
+        $rowCount=intval($this->showTableTribu($tableName),10);
+        if($rowCount === 0){
+            $sql="CREATE TABLE ". $tableName ." (".
+            "`id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,".
+            "`file_name` VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,".
+            "`file_path` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,".
+            "`file_extension` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,".
+            "`file_size` VARCHAR(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,".
+            "`created_at` datetime NOT NULL DEFAULT current_timestamp(),".
+            "`deleted_at` datetime NOT NULL DEFAULT current_timestamp(),".
+            "`short_link` VARCHAR(256) NOT NULL UNIQUE,".
+            "`isdeleted`  tinyint(1) NOT NULL DEFAULT 0".
+            ") ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;";
+            $statement=$this->getPDO()->prepare($sql);
+            $statement->execute();
+        }
+        
     }
 }

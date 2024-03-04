@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service;
 
 use PDO;
@@ -22,8 +23,17 @@ class PDOConnexionService
         return $this->pdo;
     }
 
-
-    public function isTableExist($tableName){
+/**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Check if this table is already exists.
+     * 
+     * @param string $tableName name of the table to check;
+     * 
+     * @return boolean true: exist, false: not exist.
+     */
+    public function isTableExist($tableName)
+    {
         $db = $_ENV["DATABASENAME"];
 
         $query = "SHOW TABLES FROM $db like '$tableName'";
@@ -33,14 +43,40 @@ class PDOConnexionService
         return $resultat > 0 ? true : false;
     }
 
-    public function convertUtf8ToUnicode($str){
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Check if colum is already exists in specific table.
+     * 
+     * @param string $tableName name of the table to check
+     * @param string $columName name of the column to check
+     * 
+     * @return boolean true: exist, false: not exist.
+     */
+    public function isColumnExist($tableName, $columnName)
+    {
+        $query = "SELECT * FROM INFORMATION_SCHEMA.COLUMNS WHERE table_name = :table_name AND column_name = :column_name";
+
+        $sql = $this->getPDO()->prepare($query);
+
+        $sql->bindParam(':table_name', $tableName);
+        $sql->bindParam(':column_name', $columnName);
+        $sql->execute();
+
+        $resultat = $sql->fetch(PDO::FETCH_ASSOC);
+        return !!$resultat;
+    }
+
+    public function convertUtf8ToUnicode($str)
+    {
         return json_encode($str);
     }
 
-    public function convertUnicodeToUtf8($str){
+    public function convertUnicodeToUtf8($str)
+    {
         return preg_replace_callback('/\\\\u([0-9a-fA-F]{4})/', function ($match) {
-                    return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
-                },$str);
+            return mb_convert_encoding(pack('H*', $match[1]), 'UTF-8', 'UCS-2BE');
+        }, $str);
     }
 
     /**
@@ -50,8 +86,24 @@ class PDOConnexionService
      * 
      * @return new unique id; 
      */
-    public function generateUniqueID(){
+    public function generateUniqueID()
+    {
         $unique_id = md5(uniqid(mt_rand(), true));
         return $unique_id;
+    }
+
+    /**
+     * @author Nantenaina
+     * Où : On utilise cette fonction pour l'affichage de pseudo d'un utilisateur
+     * Localisation du fichier : ConfidentialityService.php
+     * Je veux : afficher le pseudo d'un utilisateur
+     * @param int $userId : identifiant de l'utilisateur connecté
+    */
+    protected function getPseudoOfUser($userId){
+        $statement = $this->getPDO()->prepare("SELECT pseudo FROM user WHERE id=:userId");
+        $statement->bindParam(':userId', $userId);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result["pseudo"];
     }
 }

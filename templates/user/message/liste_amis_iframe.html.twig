@@ -137,7 +137,7 @@
                                             
                                         {% else %}
                                             {% set isZeroMessage = {'noMessage': 'non', 'haveMessage':'oui'} %}
-                                            {% include 'card/card_item_message_left_iframe.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
+                                            {% include 'card/card_item_message_left_iframe.html.twig' with {'id': item.id, 'photo': item.photo, 'firstname': item.firstname, 'lastname': item.lastname, 'fullname': item.fullname, 'is_online': item.is_online, 'last_message': item.last_message  } %}
                                         {% endif %}
                                     {% endfor %}
 

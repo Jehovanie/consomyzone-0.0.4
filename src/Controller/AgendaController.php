@@ -18,6 +18,8 @@ use App\Repository\UserRepository;
 
 use App\Service\NotificationService;
 use App\Repository\BddRestoRepository;
+
+use App\Service\ConfidentialityService;
 use App\Repository\CodeinseeRepository;
 use App\Repository\ConsumerRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -47,15 +49,17 @@ class AgendaController extends AbstractController
 
     private $entityManager;
 
+    private $confidentialityService;
 
-
-    public function __construct(AgendaService $agendaService, EntityManagerInterface $entityManagerInterface)
+    public function __construct(AgendaService $agendaService, EntityManagerInterface $entityManagerInterface, ConfidentialityService $confidentialityService)
 
     {
 
         $this->agendaService = $agendaService;
 
         $this->entityManager = $entityManagerInterface;
+
+        $this->confidentialityService = $confidentialityService;
     }
 
 
@@ -71,7 +75,7 @@ class AgendaController extends AbstractController
 
         foreach($all_partisans as $partisan){
             extract($partisan); /// $userID, $fullName
-
+            $fullNameConf = $this->confidentialityService->getConfFullname($this->getUser()->getId(), $userID);
             //// email of the user
             $email_user_to_send_email= $userRepository->find(intval($userID))->getEmail();
 
@@ -84,7 +88,8 @@ class AgendaController extends AbstractController
                 [
                     "id" => $this->getUser()->getId(),
                     "email" => $this->getUser()->getEmail(),
-                    "fullname" => $tributGService->getFullName(intval($this->getUser()->getId())),
+                    // "fullname" => $tributGService->getFullName(intval($this->getUser()->getId())),
+                    "fullname" => $fullNameConf,
                     "userToID" => $userID
                 ]
             );
@@ -1144,11 +1149,13 @@ class AgendaController extends AbstractController
         MailService $mailService
     ){
         $user_sender = $userRepository->findOneBy(["id" => intval($userID_sender)]); /// user entity (sender)
-        $user_sender_fullname= $tributGService->getFullName(intval($userID_sender)); /// user full name (sender)
+        // $user_sender_fullname= $tributGService->getFullName(intval($userID_sender)); /// user full name (sender)
+        $user_sender_fullname= $this->confidentialityService->getConfFullname(intval($userID_sender), intval($userID)); /// user full name (sender)
 
 
         $user= $userRepository->findOneBy(["id" => intval($userID)]); /// user entity (qui confirm)
-        $user_fullname= $tributGService->getFullName(intval($userID)); /// user full name (qui confirm)
+        // $user_fullname= $tributGService->getFullName(intval($userID)); /// user full name (qui confirm)
+        $user_fullname= $this->confidentialityService->getConfFullname(intval($userID), intval($userID_sender)); /// user full name (qui confirm)
 
         $table_partage_user_sender= $user_sender->getNomTablePartageAgenda(); /// table partage agenda name (sender)
 
@@ -1177,7 +1184,7 @@ class AgendaController extends AbstractController
 
             /// send  notification for the user that is request is reject because max atteint
             $notificationService->sendNotificationForOne($userID, $userID,"/user/tribu/agenda", $message );
-            dd("Confirmation : REFUSE OU TAILLE MAX ATTEINT");
+            // dd("Confirmation : REFUSE OU TAILLE MAX ATTEINT");
         }else if( intval($result) === 1 ){  //// accepted reussir
 
             /// send  notification for the user this is request is persist.
@@ -1201,7 +1208,7 @@ class AgendaController extends AbstractController
                 [
                     "id" => $user_sender->getId(),
                     "email" => $user_sender->getEmail(),
-                    "fullname" => $tributGService->getFullName(intval($user_sender->getId())),
+                    "fullname" => $user_sender_fullname,
                 ]
             );
         }
@@ -1479,18 +1486,24 @@ class AgendaController extends AbstractController
         
             //$list = array();
 
-            $body = $tributGService->getFullName($userId) . " vous a envoyé un lien pour votre présence à son agenda numéro " . $agenda_id . "
-            .\n Veuillez vérifier le lien dans votre adresse email";
-    
+                
             if(count($listParticipant) > 0){
     
                 foreach ($listParticipant as $key) {
+
                     $id = $key["user_id"];
+                    $user_fullname_one = $this->confidentialityService->getConfFullname(intval($userId), intval($id));
+                    $user_fullname_two = $this->confidentialityService->getConfFullname(intval($id), intval($userId));
+                    
+                    $body = $user_fullname_one . " vous a envoyé un lien pour votre présence à son agenda numéro " . $agenda_id . "
+                    .\n Veuillez vérifier le lien dans votre adresse email";
+
                     $email_to = $userRepository->findOneBy(["id" => $id])->getEmail();
                     $link = $this->generateUrl("agenda_set_presence", array("table_partage_agenda" => "partage_agenda_".$userId, "agenda_id" => $agenda_id, "userId" => $id), UrlGeneratorInterface::ABSOLUTE_URL);
                     $mailService->sendEmail(
                         $email_to,
-                        $tributGService->getFullName($id),
+                        // $tributGService->getFullName($id),
+                        $user_fullname_two,
                         $object,
                         $description . "\nVeuillez cliquer le lien ci-dessous pour valider votre présence.\n" . $link
                     );
@@ -1841,7 +1854,8 @@ class AgendaController extends AbstractController
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
         ConsumerRepository $consumerRepository,
-        SupplierRepository $supplierRepository
+        SupplierRepository $supplierRepository,
+        ConfidentialityService $confidentialityService
     )
     {
         $user = $this->getUser();
@@ -1892,12 +1906,15 @@ class AgendaController extends AbstractController
                     $user_profil = $supplierRepository->findOneBy(['userId' => $tributG["user_id"]]);
                 }
                 // dd($user_profil);
+                $email = $confidentialityService->getVisibilityEmail(intval($tributG["user_id"]), $userId) ? $user->getEmail() : "Confidentiel";
                 $result = [
                     "id" => $tributG["user_id"],
                     "roles" => $tributG["roles"],
                     "email" => $user->getEmail(),
+                    "emailShow" => $email,
                     "firstname" => $user_profil->getFirstname(),
                     "lastname" => $user_profil->getLastname(),
+                    "fullname" => $confidentialityService->getConfFullname($tributG["user_id"], $userId),
                     "commune" => $user_profil->getCommune(),
                     "photoProfil" => $user_profil->getphotoProfil(),
                     "isVerified" => $user_profil->getIsVerifiedTributGAdmin()
@@ -1985,8 +2002,21 @@ class AgendaController extends AbstractController
         
         $table_agenda_partage_name="partage_agenda_".$userId;
 
-        $fullNameSender = $tributGService->getFullName($userId);
+        $fullNameSender = $this->getUser()->getPseudo();
 
+        $is_already_send_mail_copy= false;
+        // http://localhost:8000/agenda/4/confirmation/not/inscrit
+        $description_copie_for_myself = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit", "#", $description);
+        
+
+        /// add by Jehovanie RAMANDRIJOEL : email copy 21022024
+        $user_list= "<div class='card' style='width: 18rem;'><div class='card-body'><h5 class='card-title'>Ce mail a bien été envoyé vers ces adresses:</h5><ul class='list-group'>";
+        foreach($principal as $rec){
+            $item = "<li class='list-group-item'>". $rec . "</li>";
+            $user_list = $user_list . $item;
+        }
+        $user_list = $user_list . "</ul></div></div>";
+        
         foreach( $principal as $principal_item ){
             
             if($userRepository->findOneBy(["email" => $principal_item])){
@@ -1994,7 +2024,7 @@ class AgendaController extends AbstractController
                 $idUserTo = $userTo->getId();
                 $fullNameUserTo = "ConsoMyZone";
                 $status = "Pas encore confirmé";
-    
+                $fullNameSender = $this->confidentialityService->getConfFullname($userId, intval($idUserTo));
                 if($userTo->getType() != "Type"){
                     $fullNameUserTo = $userService->getUserFirstName($idUserTo) . " " . $userService->getUserLastName($idUserTo);
                     $status = "Déjà confirmé";
@@ -2006,12 +2036,36 @@ class AgendaController extends AbstractController
                 $context["object_mail"] = $object;
                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
                 $context["link_confirm"] = "";
-                $descriptionTmp = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit","/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$description);
+                $descriptionTmp = str_replace("/agenda/".$agendaID."/confirmation/not/inscrit", "/agenda/confirmation/".$userId."/".$to_id."/".$agendaID, $description);
                 $context["content_mail"] = $descriptionTmp;
     
                 $context["piece_joint"] = $piece_with_path;
                 // $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
                 $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context, $fullNameSender);
+
+                /// add by Jehovanie RAMANDRIJOEL : email copy 21022024
+                if( $is_already_send_mail_copy === false ){
+                    $current_user= $this->getUser();
+                    $current_user_id= $current_user->getId();
+                    $current_user_email= $current_user->getEmail();
+                    $current_user_fullname= $userService->getFullName($current_user_id);
+
+                    $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                    $context["content_mail"] = $description_copie_for_myself . $user_list;
+
+                    $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                        $current_user_email, 
+                        $current_user_fullname, 
+                        $context, 
+                        "ConsoMyZone"
+                    );
+                    
+                    $is_already_send_mail_copy= true;
+
+                    if( $responsecode_mycopy == 550 ){
+                        return $this->json(["result" =>"failed"],400);
+                    }
+                }
     
                 $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                 $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, $status,$agendaID);
@@ -2021,7 +2075,7 @@ class AgendaController extends AbstractController
                 $context["object_mail"] = $object;
                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
                 $context["link_confirm"] = "";
-    
+                $fullNameSender = $this->getUser()->getPseudo();
                 // ADD USER TEMP
                 $userTemp = new User();
                 $to_id = $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
@@ -2033,6 +2087,29 @@ class AgendaController extends AbstractController
                 // $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
     
                 $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context, $fullNameSender);
+                
+                if( $is_already_send_mail_copy === false ){
+                    $current_user= $this->getUser();
+                    $current_user_id= $current_user->getId();
+                    $current_user_email= $current_user->getEmail();
+                    $current_user_fullname= $userService->getFullName($current_user_id);
+
+                    $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                    $context["content_mail"] = $description_copie_for_myself . $user_list;
+
+                    $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                        $current_user_email, 
+                        $current_user_fullname, 
+                        $context, 
+                        "ConsoMyZone"
+                    );
+                    
+                    $is_already_send_mail_copy= true;
+
+                    if( $responsecode_mycopy == 550 ){
+                        return $this->json(["result" =>"failed"],400);
+                    }
+                } 
                 
                 $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                 $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Pas encore confirmé",$agendaID);

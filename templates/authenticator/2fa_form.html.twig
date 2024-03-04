@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConsoMyZone</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
+</head>
+<body>
+    <div class="container d-flex flex-row mt-3 rounded-4" 
+    style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); 
+    background:white;
+    overflow:hidden;
+    width:100%;
+    max-width:890px;
+    padding-right:0 !important;
+    padding-left:0 !important">
+    <div class="media">
+        <img class="" src="{{asset('/public/assets/image/logo.jpg')}}" width="500" height="500" alt="">
+    </div>
+    <div class="p-3" style="background: #F5F5F5">
+        {# Authentication errors #}
+        {% if authenticationError %}
+        <p>{{ authenticationError|trans(authenticationErrorData, 'SchebTwoFactorBundle') }}</p>
+        {% endif %}
+
+        {# Let the user select the authentication method #}
+        {% if availableTwoFactorProviders|length > 1 %}
+            <p>{{ "choose_provider"|trans({}, 'SchebTwoFactorBundle') }}:
+                {% for provider in availableTwoFactorProviders %}
+                    <a href="{{ path("2fa_login", {"preferProvider": provider}) }}">{{ provider }}</a>
+                {% endfor %}
+            </p>
+        {% endif %}
+
+        {# Display current two-factor provider #}
+        {# <p class="label"><label for="_auth_code">{{ "auth_code"|trans({}, 'SchebTwoFactorBundle') }} {{ twoFactorProvider }}:</label></p> #}
+        <h2 class="title">Authentification à 2 facteurs</h2>
+        <p style="font-size:15px"><label for="_auth_code">Veuillez confirmer l'accès à votre compte en saisissant le code à 6 chiffres <br> , que nous avons envoyé sur votre adresse email {{app.user.email}}</p>
+        <form class="form mx-auto" action="{{ checkPathUrl ? checkPathUrl: path(checkPathRoute) }}" method="post">
+            <p class="widget">
+                <div class="mb-3 ">
+                    <label for="_auth_code" class="form-label">Code à 6 chiffres</label>
+                    <input type="text" 
+                        class="form-control w-100 p-3" 
+                        id="_auth_code" 
+                        name="{{ authCodeParameterName }}" 
+                        autocomplete="one-time-code" 
+                        autofocus
+                        inputmode="numeric"
+                        pattern="[0-9]*"
+                        />
+                </div>
+            </p>
+
+            {% if displayTrustedOption %}
+                <p class="widget" data-bs-toggle="tooltip" 
+                        title="En cochant cette case, vous n'aurez plus à passer cette étape à la prochaine connexion sur ce navigateur." >
+                    <label for="_trusted">
+                        <input id="_trusted" 
+                        type="checkbox" 
+                        
+                        name="{{ trustedParameterName }}" /> {{ "Se souvenir de moi"|trans({}, 'SchebTwoFactorBundle') }}
+                    </label>
+                </p>
+            {% endif %}
+            {% if isCsrfProtectionEnabled %}
+                <input type="hidden" name="{{ csrfParameterName }}" value="{{ csrf_token(csrfTokenId) }}">
+            {% endif %}
+            <p class="submit"style="text-align:center;" data-bs-toggle="tooltip" data-bs-placement="top" title="Connectez-vous"> 
+                <input 
+                    type="submit" class="btn btn-primary w-50" value="{{ "Connexion"|trans({}, 'SchebTwoFactorBundle') }}" 
+                    
+                />
+            </p>
+        </form>
+
+        <p><a href="#" onclick="resend(event)">Renvoyer le code à 6 chiffres </a> </p>
+        <p class="cancel"><a href="{{ logoutPath }}">{{ "Annuler"|trans({}, 'SchebTwoFactorBundle') }}</a></p>
+        <p class="aide"><a href="#" data-bs-toggle="modal" data-bs-target="#staticBackdrop">aide?</a></p>
+    </div>
+    
+</div>
+<div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="staticBackdropLabel">Aide</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Vous pouvez gérer la double authentification dans les paramètres de sécurité de votre compte utilisateur. 
+        La désactiver ou choisir la méthode d'authentification.
+      </div>
+      <div class="modal-footer"></div>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script>
+    function resend(e){
+        e.preventDefault();
+        e.target.textContent ="Renvoie en cours...";
+        e.target.style ="pointer-events: none;";
+        const link="{{path("2fa.resend.code")}}"
+        fetch(link).then(response=>{
+            if(response.status ===200 && response.ok){
+                e.target.textContent="Renvoyer le code à 6 chiffres";
+                e.target.style ="  pointer-events: auto;";
+            }
+        })
+    }
+</script>
+</body>
+</html>
+
+
+
+

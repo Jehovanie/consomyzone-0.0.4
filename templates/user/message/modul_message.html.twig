@@ -22,14 +22,15 @@
         <!-- ====== Chat Box Start -->
         <div class="lc mg vi bj wr head-msg-onglet">
             <div class="lc mg content-entete-msg-onglet content_entete_msg_jheo_js" data-userToFirstname={{userToProfil.firstname}} data-userToLastname={{userToProfil.lastname}}  data-toggle-id-user-to={{userToProfil.id}}>
-                <div class="ob yd nh th pdp-onglet-msg">
+                <div class="ob yd nh th pdp-onglet-msg nanta_test_js">
                     <img src="{{(userToProfil.photo_profile) ? "/public" ~ userToProfil.photo_profile  : '/public/uploads/users/photos/default_pdp.png' }}" alt="{{userToProfil.firstname}}" class="vc yd qk rk pdp-msg-onglet pdp-msg-onglet-tomm-js"/>
                 </div>
                 <div>
                     <p class="mn">
                         {# Répondez au message de #}
                         <h5 class="un zn gs name-msg-onglet">
-                            {{userToProfil.firstname ~ " " ~ userToProfil.lastname }}
+                            {# {{userToProfil.firstname ~ " " ~ userToProfil.lastname }} #}
+                            {{ fullname }}
                         </h5>
                     </p>
                 </div>

@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Service\UserService;
 use App\Service\NotificationService;
+use App\Service\ConfidentialityService;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,10 +17,15 @@ class NotificationController extends AbstractController
 {
     
     #[Route('/user/show/notification', name: 'app_event')]
-    public function event( Request $request,  NotificationService $notificationsService )
+    public function event( 
+        Request $request,  
+        NotificationService $notificationsService,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
+        )
     {
         $table = $this->getUser()->getTablenotification();
-        $notifications = $notificationsService->fetchAllNotification($table);
+        $notifications = $notificationsService->fetchAllNotification($table, $this->getUser()->getId(), $confidentialityService, $userService);
         
         $response = new StreamedResponse();
         $response->setCallback(function () use (&$notifications) {

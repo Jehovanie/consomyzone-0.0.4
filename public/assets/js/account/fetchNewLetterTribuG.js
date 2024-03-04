@@ -206,8 +206,7 @@ function selectDestinationLetter() {
 						<figcaption class="figure-caption">À très bientôt,</figcaption>
 						<figcaption class="figure-caption">Fondateur tribu ${apropos_tribuG.name}</figcaption>
 						<figcaption class="figure-caption">${apropos_tribuG.description}</figcaption>
-						<figcaption class="figure-caption">${user_profil.lastname} ${user_profil.firstname} </figcaption>
-						<figcaption class="figure-caption">${user_profil.email}</figcaption>
+						<figcaption class="figure-caption">${user_profil.fullname} </figcaption>
 					</figure>
 				`);
 	}

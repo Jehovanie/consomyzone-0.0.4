@@ -6,15 +6,18 @@ use App\Entity\Consumer;
 use App\Entity\Supplier;
 use App\Service\TributGService;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Service\ConfidentialityService;
 
 class Status {
     private $entityManager;
     private $tributGService;
+private $confidentialityService;
 
-    public function __construct(EntityManagerInterface $entityManager, TributGService $tributGService)
+    public function __construct(EntityManagerInterface $entityManager, TributGService $tributGService, ConfidentialityService $confidentialityService)
     {
         $this->entityManager = $entityManager;
         $this->tributGService = $tributGService;
+$this->confidentialityService = $confidentialityService;
     }
 
     public function statusFondateur($user){
@@ -66,12 +69,14 @@ class Status {
             $tribuAvatar=$this->tributGService->getAvatar($currentTribug)[0]["avatar"];
             $profilTribuG= $this->tributGService->getProfilTributG( $currentTribug , intval($userId ) );
         }
+$pseudo = $profil ?  $this->confidentialityService->getConfFullname($userId, $userId):"";
         return [
             "id" => $user->getId(),
             "email" => $user->getEmail(),
             "pseudo" => $user->getPseudo(),
             "firstname" =>$profil ?  $profil->getFirstname() : "",
             "lastname" => $profil ? $profil->getLastname() : "",
+"fullname" => $pseudo,
             "photo_profil" => $profil ? $profil->getPhotoProfil() : "",
             "userType" => $userType,
             "tableTribuG" => $profil ? $profil->getTributG() : "",

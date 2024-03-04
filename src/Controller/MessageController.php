@@ -19,6 +19,7 @@ use App\Repository\UserRepository;
 use App\Service\NotificationService;
 use App\Repository\ConsumerRepository;
 use App\Repository\SupplierRepository;
+use App\Service\ConfidentialityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,13 +33,14 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 class MessageController extends AbstractController
 {
 
-    private function decryptData($encryptedData, $iv){
+    private function decryptData($encryptedData, $iv)
+    {
       
        $decryptedData = openssl_decrypt($encryptedData, $_ENV["DECRYPTIONMETHOD"], $_ENV["SECRET"], 0, $iv);
         return $decryptedData;
     }
 
-    #[Route("/user/tribu/msg", name:"app_tribu_g_message",methods:['GET'])]
+    #[Route("/user/tribu/msg", name: "app_tribu_g_message", methods: ['GET'])]
     public function renderMessageTribu(
         Request $request,
         TributGservice $tributGService,
@@ -48,8 +50,8 @@ class MessageController extends AbstractController
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
         Status $status,
-        UserService $userService
-
+        UserService $userService,
+        ConfidentialityService $confidentialityService
     ){
         ///check the user connected
         if (!$this->getUser()) {
@@ -63,59 +65,58 @@ class MessageController extends AbstractController
        
         $all_tribuT = $userRepository->getListTableTribuT();
 
-        $tribuG=$userConnected;
-        $tribuG["name"]= "tribu G ".$tribuG["commune"]." ". $tribuG["quartier"];
+        $tribuG = $userConnected;
+        $tribuG["name"] = "tribu G " . $tribuG["commune"] . " " . $tribuG["quartier"];
         
-        $tribuTSelected=[];
+        $tribuTSelected = [];
        
-        $type=$request->query->get('type');
-        $isT=1;
-        $groupSendTo="";
-        switch($type){
-            case ('t'):{
+        $type = $request->query->get('type');
+        $isT = 1;
+        $groupSendTo = "";
+        switch ($type) {
+            case ('t'): {
                 //TODO get All message of tribu T concerned
-                $tableName=$request->query->get('name');
-                $groupSendTo=$tableName;
-                $allMessage=$tributTService->getMessageGRP($tableName);
-                foreach($allMessage as &$message){
-                    $iv=$tributGService->getIv($groupSendTo,$message["id_msg"])[0]["iv"];
-                    $decryptedData=$this->decryptData($message["msg"],$iv);
-                    $decryptedImages=$this->decryptData($message["images"],$iv);
-                    $decryptedFiles=$this->decryptData($message["files"],$iv);
-                    $message["msg"]= $decryptedData != false ? $decryptedData : json_decode($message["msg"],true);
-                    $message["images"]= $decryptedImages != false ? json_decode($decryptedImages,true): json_decode($message["images"],true);
-                    $message["files"]= $decryptedFiles !=false ?   json_decode($decryptedFiles,true) : json_decode($message["files"],true);
+                $tableName = $request->query->get('name');
+                $groupSendTo = $tableName;
+                $allMessage = $tributTService->getMessageGRP($tableName, $userId, $confidentialityService, $userService);
+                foreach ($allMessage as &$message) {
+                    $iv = $tributGService->getIv($groupSendTo, $message["id_msg"])[0]["iv"];
+                    $decryptedData = $this->decryptData($message["msg"], $iv);
+                    $decryptedImages = $this->decryptData($message["images"], $iv);
+                    $decryptedFiles = $this->decryptData($message["files"], $iv);
+                    $message["msg"] = $decryptedData != false ? $decryptedData : json_decode($message["msg"], true);
+                    $message["images"] = $decryptedImages != false ? json_decode($decryptedImages, true) : json_decode($message["images"], true);
+                    $message["files"] = $decryptedFiles != false ?   json_decode($decryptedFiles, true) : json_decode($message["files"], true);
                 }
-                foreach($all_tribuT as $tribut){
-                     if($tribut["table_name"] ==$tableName)
-                        $tribuTSelected=$tribut;
+                foreach ($all_tribuT as $tribut) {
+                     if ($tribut["table_name"] == $tableName)
+                        $tribuTSelected = $tribut;
                 }
-                $isT=1;
+                $isT = 1;
                 break;
             }
-            case ('g'):{
+            case ('g'): {
                 //TODO get All message of tribu g concerned
-                $groupSendTo=$tribuG["tableTribuG"];
-                $isT=0;
-                $tableName=$request->query->get('name');
-                $allMessage=$tributGService->getMessageGRP($tableName);
-                if(count($allMessage)>0)
-                    $tribuG["last_message"]=$allMessage[0];
+                $groupSendTo = $tribuG["tableTribuG"];
+                $isT = 0;
+                $tableName = $request->query->get('name');
+                $allMessage = $tributGService->getMessageGRP($tableName, $userId, $confidentialityService, $userService);
+                if (count($allMessage) > 0)
+                    $tribuG["last_message"] = $allMessage[0];
                 else
-                    $tribuG["last_message"]=[];
-                foreach($allMessage as &$message){
-                    $iv=$tributGService->getIv($groupSendTo,$message["id_msg"])[0]["iv"];
-                    $decryptedData=$this->decryptData($message["msg"],$iv);
-                    $decryptedImages=$this->decryptData($message["images"],$iv);
-                    $decryptedFiles=$this->decryptData($message["files"],$iv);
-                    $message["msg"]= $decryptedData != false ? $decryptedData : json_decode($message["msg"],true);
-                    $message["images"]= $decryptedImages != false ? json_decode($decryptedImages,true): json_decode($message["images"],true);
-                    $message["files"]= $decryptedFiles !=false ?   json_decode($decryptedFiles,true) : json_decode($message["files"],true);
+                    $tribuG["last_message"] = [];
+                foreach ($allMessage as &$message) {
+                    $iv = $tributGService->getIv($groupSendTo, $message["id_msg"])[0]["iv"];
+                    $decryptedData = $this->decryptData($message["msg"], $iv);
+                    $decryptedImages = $this->decryptData($message["images"], $iv);
+                    $decryptedFiles = $this->decryptData($message["files"], $iv);
+                    $message["msg"] = $decryptedData != false ? $decryptedData : json_decode($message["msg"], true);
+                    $message["images"] = $decryptedImages != false ? json_decode($decryptedImages, true) : json_decode($message["images"], true);
+                    $message["files"] = $decryptedFiles != false ?   json_decode($decryptedFiles, true) : json_decode($message["files"], true);
                 }
                 break;
             }
-            default:{
-
+            default: {
             }
         } 
 
@@ -144,7 +145,8 @@ class MessageController extends AbstractController
         UserService $userService,
         NotificationService $notificationService,
         UrlGeneratorInterface $urlGenerator,
-        MailService $mailService
+        MailService $mailService,
+        ConfidentialityService $confidentialityService,
     ){
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_home');
@@ -196,9 +198,20 @@ class MessageController extends AbstractController
 
         }
         
-        $result= $tributTService->sendMessageGroupe($message,  
-        $file_list , $image_list, $userId, 
-        0, 1, 0,$receiver,$userRepository,$userService,$notificationService);
+        $result = $tributTService->sendMessageGroupe(
+            $message,  
+        $file_list,
+            $image_list,
+            $userId, 
+        0,
+            1,
+            0,
+            $receiver,
+            $userRepository,
+            $userService,
+            $notificationService,
+            $confidentialityService
+        );
 
         /** Email for data infos boucle for user not connected 
          * Edited by Elie
@@ -208,7 +221,7 @@ class MessageController extends AbstractController
 
         $tableTribuTName = $receiver;
 
-        $partisans = $tributTService->getPartisanOfTribuT($tableTribuTName);
+        $partisans = $tributTService->getPartisanOfTribuT($tableTribuTName, $userId, $confidentialityService, $userService);
 
         // dump($content);
 
@@ -232,7 +245,7 @@ class MessageController extends AbstractController
             
                     //send email for parisan not connected
                     if(intval($profil_friend->getIsConnected()) == 0 ){
-            
+                        $my_full_name = $confidentialityService->getConfFullname($this->getUser()->getId(), intval($to_id));
                         $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
                     
                         $mailService->sendEmailForMessage($email_friend, $name_friend, $obj_mail, $my_full_name, $url_redirect);
@@ -262,7 +275,8 @@ class MessageController extends AbstractController
         UserService $userService,
         NotificationService $notificationService,
         UrlGeneratorInterface $urlGenerator,
-        MailService $mailService
+        MailService $mailService,
+        ConfidentialityService $confidentialityService,
     ){
         if (!$this->getUser()) {
             return $this->redirectToRoute('app_home');
@@ -314,8 +328,20 @@ class MessageController extends AbstractController
 
         }
 
-        $result= $tributGService->sendMessageGroupe($message,  $file_list , $image_list, 
-                $userId, 0, 1, 0,$receiver,$userRepository,$userService,$notificationService);
+        $result = $tributGService->sendMessageGroupe(
+            $message,
+            $file_list,
+            $image_list, 
+                $userId,
+            0,
+            1,
+            0,
+            $receiver,
+            $userRepository,
+            $userService,
+            $notificationService,
+            $confidentialityService
+        );
 
         /** Email for data infos boucle for user not connected 
          * Edited by Elie
@@ -349,7 +375,7 @@ class MessageController extends AbstractController
             
                     //send email for parisan not connected
                     if(intval($profil_friend->getIsConnected() == 0)){
-            
+                        $my_full_name = $confidentialityService->getConfFullname($this->getUser()->getId(), intval($to_id));
                         $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
                     
                         $mailService->sendEmailForMessage($email_friend, $name_friend, $obj_mail, $my_full_name, $url_redirect);
@@ -436,6 +462,7 @@ class MessageController extends AbstractController
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
         Status $status,
+ConfidentialityService $confidentialityService,
         UserService $userService
     ){
        
@@ -470,6 +497,10 @@ class MessageController extends AbstractController
                 $user_amis = $userRepository->find(intval($id_amis["user_id"]));
                 $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
                 $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+
+                    $otherId = $id_amis["user_id"];
+
+                    $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
                     ///single profil
                     $amis = [
                         "my_id" => $userId,
@@ -478,6 +509,7 @@ class MessageController extends AbstractController
                         "email" => $user_amis->getEmail(),
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
+                        "fullname" => $pseudo,
                         "image_profil" => $profil_amis->getPhotoProfil(),
                         "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
                         "is_online" => $isActive,
@@ -508,6 +540,10 @@ class MessageController extends AbstractController
                     // if( $user_amis && boolval($isActive)){
                     if($tributGService->getProfil($user_amis, $entityManager)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+$otherId = $result["user_id"];
+
+                        $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
+
                         $amis = [
                             "my_id" => $userId,
                             "id" => $result["user_id"],
@@ -515,6 +551,7 @@ class MessageController extends AbstractController
                             "email" => $user_amis->getEmail(),
                             "firstname" => $profil_amis->getFirstname(),
                             "lastname" => $profil_amis->getLastname(),
+                            "fullname" => $pseudo,
                             "image_profil" => $profil_amis->getPhotoProfil(),
                             "last_message" => $messageService->getLastMessage($user->getTablemessage(), $result["user_id"]),
                             "is_online" => $isActive,
@@ -601,6 +638,175 @@ class MessageController extends AbstractController
         //     //"isInTribut" => $request->query->get("tribuT") ? true : false
         // ]);
         $response=array(0=>$all_tribuT_user,1=> $amis_in_tributG) ;
+        return $this->json($response);
+    }
+
+    #[Route('/user/get/allfans/bulle', name: "app_user_get_all_friend_fan_bulle")]
+    public function getAllFriendFanBulle(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        Tribu_T_Service $tributTService,
+        UserRepository $userRepository,
+        MessageService $messageService,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository,
+        Status $status,
+        UserService $userService,
+        ConfidentialityService $confidentialityService
+    ) {
+
+        ///check the user connected
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+
+        ////status user connected --- status on navBar -------------
+        $userConnected = $status->userProfilService($this->getUser());
+
+
+        ///current user connected 
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+
+        // ////profil user connected
+        $profil = $tributGService->getProfil($user, $entityManager);
+
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+
+        ///get all id the user in the same tribut G for me
+        $id_amis_tributG = $tributGService->getAllTributG($userConnected['tableTribuG']);  /// [ ["user_id" => ...], ... ]
+        $profilTribuG = $tributGService->getProfilTributG($userConnected['tableTribuG'], $userId);
+
+        ///to contains profil user information
+        $amis_in_tributG = [];
+
+        foreach ($id_amis_tributG  as $id_amis) {
+            if (intval($id_amis["user_id"]) !== intval($userId)) {
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
+                $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                ///single profil
+                $amis = [
+                    "my_id" => $userId,
+                    "id" => $id_amis["user_id"],
+                    "photo" => $profil_amis->getPhotoProfil(),
+                    "email" => $user_amis->getEmail(),
+                    "firstname" => $profil_amis->getFirstname(),
+                    "lastname" => $profil_amis->getLastname(),
+                    "fullname" => $confidentialityService->getConfFullname(intval($id_amis["user_id"]), $userId),
+                    "image_profil" => $profil_amis->getPhotoProfil(),
+                    "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
+                    "is_online" => $isActive,
+                    "origine" => "tribu_G",
+                    "nom_tribuG" => $profilTribuG["description"],
+                    "avatarTribuG" =>   $profilTribuG["avatar"],
+
+                ];
+
+                array_push($amis_in_tributG, $amis);
+            }
+        }
+
+        ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
+
+        $all_tribuT_user = [];
+        $all_tribuT = $userRepository->getListTableTribuT();
+        foreach ($all_tribuT as $tribuT) {
+            $tribuT['amis'] = [];
+            $tribuT["origine"] = "tribu_t";
+            $results = $tributTService->getAllPartisanProfil($tribuT['table_name']);
+            foreach ($results as $result) {
+                if (intval($result["user_id"]) !== intval($userId)) {
+                    $user_amis = $userRepository->find(intval($result["user_id"]));
+                    $isActive = intval(($userService->getLastActivity($result["user_id"]))["@status"]);
+                    //dd($result["user_id"]);
+                    // if( $user_amis && boolval($isActive)){
+                    if ($tributGService->getProfil($user_amis, $entityManager)) {
+                        $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $amis = [
+                            "my_id" => $userId,
+                            "id" => $result["user_id"],
+                            "photo" => $profil_amis->getPhotoProfil(),
+                            "email" => $user_amis->getEmail(),
+                            "firstname" => $profil_amis->getFirstname(),
+                            "lastname" => $profil_amis->getLastname(),
+                            "fullname" => $confidentialityService->getConfFullname(intval($result["user_id"]), $userId),
+                            "image_profil" => $profil_amis->getPhotoProfil(),
+                            "last_message" => $messageService->getLastMessage($user->getTablemessage(), $result["user_id"]),
+                            "is_online" => $isActive,
+                        ];
+                        ///get it
+                        array_push($tribuT['amis'], $amis);
+                    }
+                }
+            }
+            array_push($all_tribuT_user, $tribuT);
+        }
+        //// CHECKS USER TO CHAT //////////////////////////////////
+
+        ///if the is id user from the url 
+        if ($request->query->get("user_id")) { /// "1" ...
+            $id_user_to_chat = intval($request->query->get("user_id")); /// 1 ...
+
+        } else { /// the user not specified id user  in the url, just to chat box
+
+            if (count($id_amis_tributG) !== 1) {
+                ////get random user in the tributG
+                $id_user_to_chat = 0; /// random id user
+                while ($id_user_to_chat === 0 || $id_user_to_chat === $user->getId()) {
+                    $temp = rand(0, count($id_amis_tributG));
+                    $i = 0;
+                    foreach ($id_amis_tributG as $id_amis) {
+                        if ($i === $temp) {
+                            $id_user_to_chat = intval($id_amis["user_id"]);
+                            break;
+                        }
+                        $i++;
+                    }
+                }
+            } else {
+                $id_user_to_chat = $user->getId();
+            }
+        }
+        // $id_user_to_chat= 20;
+
+
+        ///user to chat
+        $user_to = $userRepository->find($id_user_to_chat);
+        $user_to = $user_to === null ? $user : $user_to;
+        //// set show and read all last messages.
+
+        ///befor set show and read all last messages
+        $result = $messageService->setShowAndReadMessages($user_to->getId(), $user->getTablemessage());
+
+        ///get the all last messages
+        $old_message = $messageService->getAllOldMessage(
+            $user_to->getId(),
+            $user->getTableMessage()
+        );
+
+        foreach ($old_message as &$message) {
+            $message["content"] = json_decode($message["content"], true);
+        }
+
+        ///profile the user to chat
+        $profil_user_to = $tributGService->getProfil($user_to, $entityManager)[0];
+
+        $user_to_profil = [
+            "id" => $user_to->getId(),
+            "email" => $user_to->getEmail(),
+            "photo_profile" => $profil_user_to->getPhotoProfil(),
+            "firstname" => $profil_user_to->getFirstname(),
+            "lastname" => $profil_user_to->getLastname(),
+            "fullname" => $confidentialityService->getConfFullname(intval($user_to->getId()), $userId),
+            "image_profil" => $profil_user_to->getPhotoProfil(),
+            "messages" => $old_message,
+            "status" => strtoupper($user_to->getType())
+        ];
+
+        $response = array(0 => $all_tribuT_user, 1 => $amis_in_tributG);
         return $this->json($response);
     }
     #[Route('/user/get/fan/online', name:"app_user_get_online")]
@@ -787,6 +993,7 @@ class MessageController extends AbstractController
         MessageService $messageService,
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
+        ConfidentialityService $confidentialityService,
         Status $status,
         UserService $userService
     ): Response {
@@ -825,6 +1032,11 @@ class MessageController extends AbstractController
                 if($tributGService->getProfil($user_amis, $entityManager)){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
                     ///single profil
+
+                    $otherId = $id_amis["user_id"];
+
+                    $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
+
                     $amis = [
                         "id" => $id_amis["user_id"],
                         "photo" => $profil_amis->getPhotoProfil(),
@@ -833,7 +1045,8 @@ class MessageController extends AbstractController
                         "lastname" => $profil_amis->getLastname(),
                         "image_profil" => $profil_amis->getPhotoProfil(),
                         "last_message" => $messageService->getLastMessage($user->getTablemessage(),$id_amis["user_id"]),
-                        "is_online" => $isActive
+                        "is_online" => $isActive,
+                        "fullname" => $pseudo
                     ];
                     ///get it
                     array_push($amis_in_tributG, $amis);
@@ -856,6 +1069,10 @@ class MessageController extends AbstractController
                     //if( $user_amis && $user_amis->getIsConnected()){
                     if($tributGService->getProfil($user_amis, $entityManager)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $otherId = $result["user_id"];
+
+                        $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
+
                         $amis = [
                             "id" => $result["user_id"],
                             "photo" => $profil_amis->getPhotoProfil(),
@@ -865,6 +1082,7 @@ class MessageController extends AbstractController
                             "image_profil" => $profil_amis->getPhotoProfil(),
                             "last_message" => $messageService->getLastMessage($user->getTablemessage(),$result["user_id"]),
                             "is_online" => $isActive,
+                            "fullname" => $pseudo
                         ];
                         ///get it
                         array_push($tribuT['amis'] , $amis);
@@ -1075,7 +1293,8 @@ class MessageController extends AbstractController
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
         Status $status,
-        UserService $userService
+        UserService $userService,
+        ConfidentialityService $confidentialityService
     ): Response {
 
         ///check the user connected
@@ -1111,6 +1330,9 @@ class MessageController extends AbstractController
                 // if ($user_amis && $user_amis->getIsConnected()) {
                 if($tributGService->getProfil($user_amis, $entityManager)){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+
+                    $otherId = intval($id_amis["user_id"]);
+                    $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
                     ///single profil
                     $amis = [
                         "id" => $id_amis["user_id"],
@@ -1118,6 +1340,7 @@ class MessageController extends AbstractController
                         "email" => $user_amis->getEmail(),
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
+                        "fullname" => $pseudo,
                         "image_profil" => $profil_amis->getPhotoProfil(),
                         "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
                         "is_online" => $isActive
@@ -1141,12 +1364,15 @@ class MessageController extends AbstractController
                     // if ($user_amis && $user_amis->getIsConnected()) {
                     if($tributGService->getProfil($user_amis, $entityManager)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $otherId = intval($result["user_id"]);
+                        $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
                         $amis = [
                             "id" => $result["user_id"],
                             "photo" => $profil_amis->getPhotoProfil(),
                             "email" => $user_amis->getEmail(),
                             "firstname" => $profil_amis->getFirstname(),
                             "lastname" => $profil_amis->getLastname(),
+                            "fullname" => $pseudo,
                             "image_profil" => $profil_amis->getPhotoProfil(),
                             "last_message" => $messageService->getLastMessage($user->getTablemessage(), $result["user_id"]),
                             "is_online" => $isActive
@@ -1214,12 +1440,16 @@ class MessageController extends AbstractController
         ///profile the user to chat
         $profil_user_to = $tributGService->getProfil($user_to, $entityManager)[0];
 
+        $otherId = $user_to->getId();
+        $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
+
         $user_to_profil = [
             "id" => $user_to->getId(),
             "email" => $user_to->getEmail(),
             "photo_profile" => $profil_user_to->getPhotoProfil(),
             "firstname" => $profil_user_to->getFirstname(),
             "lastname" => $profil_user_to->getLastname(),
+            "fullname" => $pseudo,
             "image_profil" => $profil_user_to->getPhotoProfil(),
             "messages" => $old_message,
             "status" => strtoupper($user_to->getType())
@@ -1250,7 +1480,8 @@ class MessageController extends AbstractController
         AgendaService $agendaService,
         UserService $userService,
         MailService $mailService,
-        UrlGeneratorInterface $urlGenerator
+        UrlGeneratorInterface $urlGenerator,
+        ConfidentialityService $confidentialityService
     ): Response
     {
         /// get data from front on json format
@@ -1345,12 +1576,13 @@ class MessageController extends AbstractController
 
                     //send email for parisan not connected
 
-                    if(intval($profil_friend->getIsConnected()) == 0){
+                    $profil_friend = $userRepository->findOneBy(['id'=>$to_id]);
 
-                        $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
+                    if (intval($profil_friend->getIsConnected()) == 0) {
+                        $my_full_name = $confidentialityService->getConfFullname($this->getUser()->getId(), intval($to_id));
+                        $obj_mail = $my_full_name . " vous a envoyé un message sur ConsoMyZone";
                     
                         $mailService->sendEmailForMessage($email_to, $name_friend, $obj_mail, $my_full_name, $url_redirect);
-
                     }
 
                     /** End Elie */
@@ -1376,7 +1608,7 @@ class MessageController extends AbstractController
 
             //send email for parisan not connected
             if( intval($profil_friend->getIsConnected()) == 0 ){
-
+                $my_full_name = $confidentialityService->getConfFullname($this->getUser()->getId(), intval($profil_friend->getId()));
                 $obj_mail = $my_full_name. " vous a envoyé un message sur ConsoMyZone";
             
                 $mailService->sendEmailForMessage($email_friend, $name_friend, $obj_mail, $my_full_name, $url_redirect);
@@ -1452,7 +1684,9 @@ class MessageController extends AbstractController
         UserRepository $userRepository,
         MessageService $messageService,
         ConsumerRepository $consumerRepository,
-        SupplierRepository $supplierRepository
+        SupplierRepository $supplierRepository,
+        ConfidentialityService $confidentialityService,
+        UserService $userService,
     )
     {
         /// GET THE LAST MESSAGE FOR ALL USER
@@ -1478,12 +1712,17 @@ class MessageController extends AbstractController
                 $profil_user_send_message = $supplierRepository->findOneBy(["userId" => intval($id_user_send_message)]);
             }
 
+            $otherId = intval($id_user_send_message);
+            $user_id = $this->getUser()->getId();
+            $pseudo = $confidentialityService->getConfFullname(intval($otherId), $user_id);
+
             ///format single profil with message
             $result = [
                 "firstname" => $profil_user_send_message->getFirstName(),
                 "lastname" => $profil_user_send_message->getLastname(),
                 "profil" => $profil_user_send_message->getPhotoProfil(),
-                "message" => $message[0]
+                "message" => $message[0],
+                "fullname" => $pseudo
             ];
 
             //// push in the results
@@ -1553,18 +1792,20 @@ class MessageController extends AbstractController
     public function showMessageInRealTime(
         Request $request,
         Tribu_T_Service $tributTService,
-        TributGService $tributGService
-    
+        TributGService $tributGService,
+        UserService $userService,
+        ConfidentialityService $confidentialityService
     ){
         $type=$request->query->get('type');
         $tableName="";
+        $userId = $this->getUser()->getId();
         $allMessage=[];
         switch($type){
             case 't':{
 
                 $tableName=$request->query->get('name');
                 $groupSendTo=$tableName;
-                $allMessage=$tributTService->getMessageGRP($tableName);
+                $allMessage=$tributTService->getMessageGRP($tableName, $userId, $confidentialityService, $userService);
                 //$allMessage=mb_convert_encoding( $allMessage, 'UTF-8', 'UTF-8');
                 foreach($allMessage as &$message){
                     $iv=$tributGService->getIv($groupSendTo,$message["id_msg"])[0]["iv"];
@@ -1584,7 +1825,7 @@ class MessageController extends AbstractController
             case 'g':{
                 $tableName=$request->query->get('name');
                 $groupSendTo=$tableName;
-                $allMessage=$tributGService->getMessageGRP($tableName);
+                $allMessage=$tributGService->getMessageGRP($tableName, $userId, $confidentialityService, $userService);
                 //$allMessage=mb_convert_encoding( $allMessage, 'UTF-8', 'UTF-8');
                 foreach($allMessage as &$message){
                     $iv=$tributGService->getIv($groupSendTo,$message["id_msg"])[0]["iv"];
@@ -1862,6 +2103,7 @@ class MessageController extends AbstractController
         MessageService $messageService,
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
+        ConfidentialityService $confidentialityService,
         Status $status,
         UserService $userService
     ): Response {
@@ -1899,6 +2141,8 @@ class MessageController extends AbstractController
                 //if( $user_amis && $user_amis->getIsConnected()){
                 if($tributGService->getProfil($user_amis, $entityManager)){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    $otherId = $id_amis["user_id"];
+                    $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
                     ///single profil
                     $amis = [
                         "id" => $id_amis["user_id"],
@@ -1906,6 +2150,7 @@ class MessageController extends AbstractController
                         "email" => $user_amis->getEmail(),
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
+                        "fullname" => $pseudo,
                         "image_profil" => $profil_amis->getPhotoProfil(),
                         "last_message" => $messageService->getLastMessage($user->getTablemessage(),$id_amis["user_id"]),
                         "is_online" => $isActive
@@ -1930,12 +2175,15 @@ class MessageController extends AbstractController
                     //if( $user_amis && $user_amis->getIsConnected()){
                     if($tributGService->getProfil($user_amis, $entityManager)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $otherId = $result["user_id"];
+                        $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
                         $amis = [
                             "id" => $result["user_id"],
                             "photo" => $profil_amis->getPhotoProfil(),
                             "email" => $user_amis->getEmail(),
                             "firstname" => $profil_amis->getFirstname(),
                             "lastname" => $profil_amis->getLastname(),
+                            "fullname" => $pseudo,
                             "image_profil" => $profil_amis->getPhotoProfil(),
                             "last_message" => $messageService->getLastMessage($user->getTablemessage(),$result["user_id"]),
                             "is_online" => $isActive,
@@ -2033,7 +2281,8 @@ class MessageController extends AbstractController
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
         Status $status,
-        UserService $userService
+        UserService $userService,
+        ConfidentialityService $confidentialityService
 
     ){
         ///check the user connected
@@ -2061,7 +2310,7 @@ class MessageController extends AbstractController
                 //TODO get All message of tribu T concerned
                 $tableName=$request->query->get('name');
                 $groupSendTo=$tableName;
-                $allMessage=$tributTService->getMessageGRP($tableName);
+                $allMessage=$tributTService->getMessageGRP($tableName, $userId, $confidentialityService, $userService);
                 foreach($allMessage as &$message){
                     $iv=$tributGService->getIv($groupSendTo,$message["id_msg"])[0]["iv"];
                     $decryptedData=$this->decryptData($message["msg"],$iv);
@@ -2083,7 +2332,7 @@ class MessageController extends AbstractController
                 $groupSendTo=$tribuG["tableTribuG"];
                 $isT=0;
                 $tableName=$request->query->get('name');
-                $allMessage=$tributGService->getMessageGRP($tableName);
+                $allMessage=$tributGService->getMessageGRP($tableName, $userId, $confidentialityService, $userService);
                 if(count($allMessage)>0)
                     $tribuG["last_message"]=$allMessage[0];
                 else
@@ -2131,7 +2380,8 @@ class MessageController extends AbstractController
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
         Status $status,
-        UserService $userService
+        UserService $userService,
+        ConfidentialityService $confidentialityService
     ): Response {
 
         ///check the user connected
@@ -2167,6 +2417,8 @@ class MessageController extends AbstractController
                 // if ($user_amis && $user_amis->getIsConnected()) {
                 if($tributGService->getProfil($user_amis, $entityManager)){
                     $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+$otherId = intval($id_amis["user_id"]);
+                    $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
                     ///single profil
                     $amis = [
                         "id" => $id_amis["user_id"],
@@ -2174,6 +2426,7 @@ class MessageController extends AbstractController
                         "email" => $user_amis->getEmail(),
                         "firstname" => $profil_amis->getFirstname(),
                         "lastname" => $profil_amis->getLastname(),
+                        "fullname" => $pseudo,
                         "image_profil" => $profil_amis->getPhotoProfil(),
                         "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
                         "is_online" => $isActive
@@ -2197,12 +2450,15 @@ class MessageController extends AbstractController
                     // if ($user_amis && $user_amis->getIsConnected()) {
                     if($tributGService->getProfil($user_amis, $entityManager)){
                         $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $otherId = intval($result["user_id"]);
+                        $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
                         $amis = [
                             "id" => $result["user_id"],
                             "photo" => $profil_amis->getPhotoProfil(),
                             "email" => $user_amis->getEmail(),
                             "firstname" => $profil_amis->getFirstname(),
                             "lastname" => $profil_amis->getLastname(),
+                            "fullname" => $pseudo,
                             "image_profil" => $profil_amis->getPhotoProfil(),
                             "last_message" => $messageService->getLastMessage($user->getTablemessage(), $result["user_id"]),
                             "is_online" => $isActive
@@ -2270,12 +2526,16 @@ class MessageController extends AbstractController
         ///profile the user to chat
         $profil_user_to = $tributGService->getProfil($user_to, $entityManager)[0];
 
+        $otherId = $user_to->getId();
+        $pseudo = $confidentialityService->getConfFullname(intval($otherId), $userId);
+
         $user_to_profil = [
             "id" => $user_to->getId(),
             "email" => $user_to->getEmail(),
             "photo_profile" => $profil_user_to->getPhotoProfil(),
             "firstname" => $profil_user_to->getFirstname(),
             "lastname" => $profil_user_to->getLastname(),
+            "fullname" => $pseudo,
             "image_profil" => $profil_user_to->getPhotoProfil(),
             "messages" => $old_message,
             "status" => strtoupper($user_to->getType())
@@ -2308,7 +2568,8 @@ class MessageController extends AbstractController
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository,
         Status $status,
-        UserService $userService
+        UserService $userService,
+        ConfidentialityService $confidentialityService
     ): Response {
 
         ///check the user connected
@@ -2459,6 +2720,7 @@ class MessageController extends AbstractController
             "status" => strtoupper($user_to->getType())
         ];
         $isPostid = $user_to_profil['id'];
+        $pseudo = $confidentialityService->getConfFullname(intval($isPostid), $userId);
         return $this->render('user/message/modul_message.html.twig', [
             "userConnected" => $userConnected,
             "profil" => $profil,
@@ -2468,6 +2730,160 @@ class MessageController extends AbstractController
                 $userId
             ),
             "user_post" => $isPostid,
+            "fullname" => $pseudo,
+            "userToProfil" => $user_to_profil,
+            "amisTributG" => $amis_in_tributG,
+            "allTribuT" => $all_tribuT_user,
+            "isInTribut" => $request->query->get("tribuT") ? true : false
+        ]);
+    }
+
+    #[Route('/user/message/onglet/list', name: 'app_message_list_onglet')]
+    public function amisListOnglet(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        Tribu_T_Service $tributTService,
+        UserRepository $userRepository,
+        MessageService $messageService,
+        ConsumerRepository $consumerRepository,
+        SupplierRepository $supplierRepository,
+        Status $status,
+        UserService $userService
+    ): Response {
+
+        ///check the user connected
+        if (!$this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+        ////status user connected --- status on navBar -------------
+        $userConnected = $status->userProfilService($this->getUser());
+        // dd($userConnected);
+        ///current user connected
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+        // ////profil user connected
+        $profil = $tributGService->getProfil($user, $entityManager);
+        ///////GET PROFIL THE USER IN SAME TRIBUT G WITH ME////////////////////////////////
+        ///get all id the user in the same tribut G for me
+        $id_amis_tributG = $tributGService->getAllTributG($userConnected['tableTribuG']);  /// [ ["user_id" => ...], ... ]
+
+        ///to contains profil user information
+        $amis_in_tributG = [];
+        foreach ($id_amis_tributG  as $id_amis) { /// ["user_id" => ...]
+            if (intval($id_amis["user_id"]) !== intval($userId)) {
+                ///check their type consumer of supplier
+                $user_amis = $userRepository->find(intval($id_amis["user_id"]));
+                $isActive = intval(($userService->getLastActivity($id_amis["user_id"]))["@status"]);
+                //if( $user_amis && $user_amis->getIsConnected()){
+                if ($tributGService->getProfil($user_amis, $entityManager)) {
+                    $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                    ///single profil
+                    $amis = [
+                        "id" => $id_amis["user_id"],
+                        "photo" => $profil_amis->getPhotoProfil(),
+                        "email" => $user_amis->getEmail(),
+                        "firstname" => $profil_amis->getFirstname(),
+                        "lastname" => $profil_amis->getLastname(),
+                        "image_profil" => $profil_amis->getPhotoProfil(),
+                        "last_message" => $messageService->getLastMessage($user->getTablemessage(), $id_amis["user_id"]),
+                        "is_online" => $isActive
+                    ];
+                    ///get it
+                    array_push($amis_in_tributG, $amis);
+                }
+            }
+        }
+        ////// PROFIL FOR ALL FINIS ////////////////////////////////// 
+
+        $all_tribuT_user = [];
+        $all_tribuT = $userRepository->getListTableTribuT();
+        foreach ($all_tribuT as $tribuT) {
+            $tribuT['amis'] = [];
+            $results = $tributTService->getAllPartisanProfil($tribuT['table_name']);
+            foreach ($results as $result) {
+                if (intval($result["user_id"]) !== intval($userId)) {
+                    $user_amis = $userRepository->find(intval($result["user_id"]));
+                    $isActive = intval(($userService->getLastActivity($result["user_id"]))["@status"]);
+                    //if( $user_amis && $user_amis->getIsConnected()){
+                    if ($tributGService->getProfil($user_amis, $entityManager)) {
+                        $profil_amis = $tributGService->getProfil($user_amis, $entityManager)[0];
+                        $amis = [
+                            "id" => $result["user_id"],
+                            "photo" => $profil_amis->getPhotoProfil(),
+                            "email" => $user_amis->getEmail(),
+                            "firstname" => $profil_amis->getFirstname(),
+                            "lastname" => $profil_amis->getLastname(),
+                            "image_profil" => $profil_amis->getPhotoProfil(),
+                            "last_message" => $messageService->getLastMessage($user->getTablemessage(), $result["user_id"]),
+                            "is_online" => $isActive,
+                        ];
+                        ///get it
+                        array_push($tribuT['amis'], $amis);
+                    }
+                }
+            }
+            array_push($all_tribuT_user, $tribuT);
+        }
+        //// CHECKS USER TO CHAT //////////////////////////////////
+        ///if the is id user from the url 
+        if ($request->query->get("user_id")) { /// "1" ...
+            $id_user_to_chat = intval($request->query->get("user_id")); /// 1 ...
+        } else { /// the user not specified id user  in the url, just to chat box
+            if (count($id_amis_tributG) !== 1) {
+                ////get random user in the tributG
+                $id_user_to_chat = 0; /// random id user
+                while ($id_user_to_chat === 0 || $id_user_to_chat === $user->getId()) {
+                    $temp = rand(0, count($id_amis_tributG));
+                    $i = 0;
+                    foreach ($id_amis_tributG as $id_amis) {
+                        if ($i === $temp) {
+                            $id_user_to_chat = intval($id_amis["user_id"]);
+                            break;
+                        }
+                        $i++;
+                    }
+                }
+            } else {
+                $id_user_to_chat = $user->getId();
+            }
+        }
+        // $id_user_to_chat= 20;
+        ///user to chat
+        $user_to = $userRepository->find($id_user_to_chat);
+        $user_to = $user_to === null ? $user : $user_to;
+        //// set show and read all last messages.
+        ///befor set show and read all last messages
+        $result = $messageService->setShowAndReadMessages($user_to->getId(), $user->getTablemessage());
+        ///get the all last messages
+        $old_message = $messageService->getAllOldMessage(
+            $user_to->getId(),
+            $user->getTableMessage()
+        );
+        foreach ($old_message as &$message) {
+            $message["content"] = json_decode($message["content"], true);
+        }
+        ///profile the user to chat
+        $profil_user_to = $tributGService->getProfil($user_to, $entityManager)[0];
+        $user_to_profil = [
+            "id" => $user_to->getId(),
+            "email" => $user_to->getEmail(),
+            "photo_profile" => $profil_user_to->getPhotoProfil(),
+            "firstname" => $profil_user_to->getFirstname(),
+            "lastname" => $profil_user_to->getLastname(),
+            "image_profil" => $profil_user_to->getPhotoProfil(),
+            "messages" => $old_message,
+            "status" => strtoupper($user_to->getType())
+        ];
+        return $this->render('user/message/onglet_list_amie.html.twig', [
+            "userConnected" => $userConnected,
+            "profil" => $profil,
+            "statusTribut" => $tributGService->getStatusAndIfValid(
+                $profil[0]->getTributg(),
+                $profil[0]->getIsVerifiedTributGAdmin(),
+                $userId
+            ),
             "userToProfil" => $user_to_profil,
             "amisTributG" => $amis_in_tributG,
             "allTribuT" => $all_tribuT_user,
@@ -2481,7 +2897,9 @@ class MessageController extends AbstractController
         UserRepository $userRepository,
         MessageService $messageService,
         ConsumerRepository $consumerRepository,
-        SupplierRepository $supplierRepository
+        SupplierRepository $supplierRepository,
+        ConfidentialityService $confidentialityService,
+        UserService $userService,
     ) {
         /// GET THE LAST MESSAGE FOR ALL USER
 
@@ -2506,10 +2924,15 @@ class MessageController extends AbstractController
                 $profil_user_send_message = $supplierRepository->findOneBy(["userId" => intval($id_user_send_message)]);
             }
 
+            $otherId = intval($id_user_send_message);
+            $user_id = $this->getUser()->getId();
+            $pseudo = $confidentialityService->getConfFullname(intval($otherId), $user_id);
+
             ///format single profil with message
             $result = [
                 "firstname" => $profil_user_send_message->getFirstName(),
                 "lastname" => $profil_user_send_message->getLastname(),
+                "fullname" => $pseudo,
                 "profil" => $profil_user_send_message->getPhotoProfil(),
                 "pseudo" => $this->getUser()->getPseudo(),
                 "message" => $message[0]

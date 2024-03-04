@@ -1594,3 +1594,191 @@ function sendEmailForPostulant(ObjetMail,
   })
 }
 //--------------end block faniry-----
+
+/** @author Elie
+ * Fetch list of tribu not validate 
+ */
+function getListeTribuGTovalidate(e) {
+  let linkActives = document.querySelectorAll(
+    "#navbarSuperAdmin > ul > li > a"
+  );
+  linkActives.forEach((link) => {
+    if (link.classList.contains("text-primary"))
+      link.classList.remove("text-primary");
+  });
+
+  if (e) {
+    e.target.classList.add("text-primary");
+  } else {
+    if (rubrique === "golf") {
+      document.querySelector(".phtG_faniry_js").classList.add("text-primary");
+    } else {
+      document.querySelector(".phtR_faniry_js").classList.add("text-primary");
+    }
+  }
+  if (document.querySelector("#list-tribu-g"))
+    document.querySelector("#list-tribu-g").style.display = "none";
+  // document.querySelector("#list-tribu-t").style.display = "none"
+  if (document.querySelector("#list-demande-partenaire"))
+    document.querySelector("#list-demande-partenaire").style.display = "none";
+
+  if (document.querySelector("#list-infoAvalider"))
+    document.querySelector("#list-infoAvalider").style.display = "block";
+
+  document.querySelector("#titre-info").textContent =
+    "Liste des demandes d'adhésions tribu G";
+
+  document.querySelector("#validateStories").classList.add("d-none");
+    
+
+  let _table = `<table class="table" id="listeRestoAvaliderTable">
+                    <thead>
+                        <tr>
+                            <th scope="col">Demandes d'adhésions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    `;
+
+  fetch("/tribuG/get_list_attente")
+    .then((response) => response.json())
+    .then((r) => {
+      console.log(r);
+      let _tr = "";
+      if (r.length > 0) {
+        for (const item of r) {
+          let pdp = item.user_profil.photoProfil?item.user_profil.photoProfil:'/uploads/users/photos/default_pdp.png'
+          let tribu_name = item.tribu_g_apropos.name
+          let email = item.user_email
+          let status = item.is_valid == 0 ? '<span class="badge badge-pill text-bg-warning">En attente</span>' : '<span class="badge badge-pill text-bg-danger">Refusé</span>';
+          let btn_refuse = item.is_valid == 0 ? `<button data-name-tribu="${tribu_name}" data-email="${email}" data-id="${item.tribu_list_id}" data-user="${item.user_id}" data-table-tribu="${item.tribu_table_name}" class="btn btn-danger btn-sm m-2 " onclick='refuseFondateur(this)'>Refuser</button>
+          </div>` : '';
+          let parains = ""
+          if(item.parrains.length > 0){
+            parains = `<span class="badge text-bg-info">${item.parrains[0].fullName}</span>`
+          }else{
+            parains = `<span class="badge text-bg-warning">Aucun parrain</span>`
+          }
+          _tr += `<tr style="text-align:center;vertical-align:middle;" class="tr_photo_">
+                            <td>
+                                <div class="card mb-3">
+                                    <div class="row g-0">
+                                    <div class="col-md-4">
+                                        <img src="/public${pdp}" class="img-fluid rounded-start h-100" alt="..." style="max-height:150px;">
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="card-body">
+                                        <p class="card-text"><a href="/user/profil/${item.user_id}" class="text-body-primary" style="color:blue !important;">${item.pseudo}</a> a demandé d'être un fondateur de la <b>"${tribu_name}"</b> le <small class="text-body-secondary">${item.datetime}</small></p>
+                                        <p class="card-text">Parrainé par : ${parains}</p>
+                                        <p class="card-text">Status : ${status}</p>
+                                        <button data-name-tribu="${tribu_name}" data-email="${email}" data-id="${item.tribu_list_id}" data-user="${item.user_id}" data-table-tribu="${item.tribu_table_name}" class="btn btn-success btn-sm m-2" onclick='validFondateur(this)'>
+                                            Accepter
+                                        </button> 
+                                        ${btn_refuse}
+                                    </div>
+                                    </div>
+                                </div>
+                            </td>
+                            
+                        </tr>`;
+        }
+      } else {
+        _tr = `<tr><td colspan="4">Aucune demande d'adhésion à valider</td></tr>`;
+      }
+      _table += _tr + "</tbody></table>";
+      document.querySelector(".content_list_infoAvalider_js").innerHTML =
+        _table;
+
+      if (r.length > 0) {
+        $("#listeRestoAvaliderTable").DataTable({
+          language: {
+            url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+          },
+          "ordering": false
+        });
+      }
+    });
+}
+
+/**
+ * @author Elie
+ * Function validate the user to fonder of the tribu G
+ * @param {*} elem 
+ */
+function validFondateur(elem){
+  let data ={
+    tribu_list_id:elem.getAttribute("data-id"),
+    user_id:elem.getAttribute("data-user"),
+    table_tribu:elem.getAttribute("data-table-tribu"),
+    name_tribu:elem.getAttribute("data-name-tribu"),
+    email:elem.getAttribute("data-email")
+  }
+
+  fetch("/tribuG/setValid-fondateur",{
+		method: "POST",
+    	headers: {
+      		"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	}).then(re=>re.json())
+  .then(r=>{
+    if(r.statusCode == 200){
+      new  swal({
+        title: "Fait",
+        text: "Demande de fondateur acceptée!",
+        icon: "success",
+        button: "OK",
+      });
+      document.querySelector("#navbarSuperAdmin > ul > li:nth-child(8) > a").click()
+      // getListeTribuGTovalidate();
+    }else{
+      new  swal({
+        title: "Erreur",
+        text: "Erreur 500",
+        icon: "error",
+        button: "OK",
+      });
+    }
+  })
+}
+
+/**
+ * @author Elie
+ * Function refuse the user to fonder of the tribu G
+ * @param {*} elem 
+ */
+function refuseFondateur(elem){
+  let data ={
+    tribu_list_id:elem.getAttribute("data-id"),
+    user_id:elem.getAttribute("data-user"),
+    table_tribu:elem.getAttribute("data-table-tribu"),
+    name_tribu:elem.getAttribute("data-name-tribu"),
+    email:elem.getAttribute("data-email")
+  }
+  fetch("/tribuG/setRefuse-fondateur",{
+		method: "POST",
+    	headers: {
+      		"Content-Type": "application/json",
+		},
+		body: JSON.stringify(data),
+	}).then(re=>re.json())
+  .then(r=>{
+    if(r.statusCode == 200){
+      new  swal({
+        title: "Fait",
+        text: "Demande de fondateur refusé!",
+        icon: "success",
+        button: "OK",
+      });
+      document.querySelector("#navbarSuperAdmin > ul > li:nth-child(8) > a").click()
+      // getListeTribuGTovalidate();
+    }else{
+      new  swal({
+        title: "Erreur",
+        text: "Erreur 500",
+        icon: "error",
+        button: "OK",
+      });
+    }
+  })
+}

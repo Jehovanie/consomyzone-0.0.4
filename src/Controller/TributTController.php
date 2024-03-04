@@ -36,6 +36,8 @@ use App\Service\RequestingService;
 use App\Service\NotificationService;
 use App\Service\PDOConnexionService;
 use App\Repository\BddRestoRepository;
+use App\Service\ConfidentialityService;
+
 use App\Service\StringTraitementService;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -178,10 +180,12 @@ class TributTController extends AbstractController
     public function getPartisanOfTribuT(
         Request $request,
         Tribu_T_Service $serv,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
     ) {
         $tableTribuTName = $request->query->get("tbl_tribu_T_name");
-        $v = $serv->getPartisanOfTribuT($tableTribuTName);
+        $v = $serv->getPartisanOfTribuT($tableTribuTName, $this->getUser()->getId(), $confidentialityService, $userService);
         $results = array_merge(["curent_user" => $this->getUser()->getId()], array($v));
         $json = $serializer->serialize($results, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
@@ -975,7 +979,13 @@ $type = "/user/tribu/my-tribu-t";
 
      */
 
-    public function saveComment(Request $request, NotificationService $notification)
+    public function saveComment(
+        Request $request, 
+        NotificationService $notification,
+        ConfidentialityService $confidentialityService,
+        UserService $userService,
+        UserRepository $userRepository
+        )
 
     {
 
@@ -1045,16 +1055,11 @@ $type = "/user/tribu/my-tribu-t";
 
         $publicationUrl = "#pub_number_" . $pub_id;
 
-        $contentForDestinator = $tribut->getFullName($user_id) . " a commenté votre publication dans la tribu " . $tribut->showRightTributName($tribuTable)["name"];
-
-        $contentForDestinator .= "<a href='/user/actualite#" .$tribuTable. " _ " . $pub_id. "' style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\" data-ancre=\"" . $publicationUrl . "\">Voir</a>";
-
-
-
-
-
-
         if ($user_id != $user_id_pub) {
+            $pseudo = $confidentialityService->getConfFullname($user_id, intval($user_id_pub));
+            $contentForDestinator = $pseudo . " a commenté votre publication dans la tribu " . $tribut->showRightTributName($tribuTable)["name"];
+
+            $contentForDestinator .= "<a href='/user/actualite#" .$tribuTable. " _ " . $pub_id. "' style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\" data-ancre=\"" . $publicationUrl . "\">Voir</a>";
 
             $notification->sendNotificationForTribuGmemberOrOneUser($user_id, $user_id_pub, $type, $contentForDestinator, $tribuTable);
         }
@@ -1132,7 +1137,12 @@ $type = "/user/tribu/my-tribu-t";
 
      */
 
-    public function saveReaction(Request $request, NotificationService $notification)
+    public function saveReaction(
+        Request $request, 
+        NotificationService $notification,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
+        )
 
     {
 
@@ -1164,18 +1174,14 @@ $type = "/user/tribu/my-tribu-t";
 
         $publicationUrl = "#".$tribuTable."_".$pub_id;
 
-
-
-        $contentForDestinator = $tribut->getFullName($user_id) . " a réagi votre publication dans la tribu " . $tribut->showRightTributName($tribuTable)["name"];
+        if ($user_id != $user_id_pub) {
+            $pseudo = $confidentialityService->getConfFullname($user_id, intval($user_id_pub));
+            $contentForDestinator = $pseudo . " a réagi votre publication dans la tribu " . $tribut->showRightTributName($tribuTable)["name"];
 
         $contentForDestinator .= "<a href='".$type."' style=\"display:block;padding-left:5px;\" class=\"btn btn-primary btn-sm w-50 mx-auto\" data-ancre=\"" . $publicationUrl . "\">Voir</a>";
 
-        if ($user_id != $user_id_pub) {
-
             $notification->sendNotificationForTribuGmemberOrOneUser($user_id, $user_id_pub, $type, $contentForDestinator, $tribuTable);
         }
-
-
 
         return $this->json($tribut->setReaction($table_reaction, $user_id, $pub_id, $new_react));
     }
@@ -1995,7 +2001,7 @@ $pdo=new PDOConnexionService();
         NotificationService $notification,
         Filesystem $filesyst
     ) {
-$emailNotExist=[];
+        $emailNotExist=[];
         if (!$this->getUser()) {
             return $this->json(["result" => "error"], 401);
         }
@@ -2058,6 +2064,17 @@ $emailNotExist=[];
         $mailNonInscrit = [];
         $mailInscriteDejaMembre = [];
         $totalEmail = count($principal);
+
+        /// add by Jehovanie RAMANDRIJOEL : email copy 21022024
+        $is_already_send_mail_copy= false;
+
+        $user_list= "<div class='card' style='width: 18rem;'><div class='card-body'><h5 class='card-title'>Ce mail a bien été envoyé vers ces adresses:</h5><ul class='list-group'>";
+        foreach($principal as $rec){
+            $item = "<li class='list-group-item'>". $rec . "</li>";
+            $user_list = $user_list . $item;
+        }
+        $user_list = $user_list . "</ul></div></div>";
+
         foreach ($principal as $principal_item) {
 
             $user_receiver = $userRepository->findOneBy(["email" => $principal_item]);
@@ -2092,7 +2109,10 @@ $emailNotExist=[];
         
                     $context["object_mail"] = $object;
                     $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+
                     $context["link_confirm"] = $url;
+                    $conserve_link= $context["link_confirm"];
+
                     $context["content_mail"] = $description . 
                     " <a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
         
@@ -2100,14 +2120,43 @@ $emailNotExist=[];
         
                     //TODO verifier si membre envoyer email si et seulemnt si non membre
                     
-    
+                    /// send for her
                     $responsecode=$mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
                
                     $contentForSender = "Vous avez envoyé une invitation à " . $tribuTService->getFullName($id_receiver) . " de rejoindre la tribu " . $table;
                     
-                    
-
                     $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+
+                    if( $is_already_send_mail_copy === false ){
+                        $current_user= $this->getUser();
+                        $current_user_id= $current_user->getId();
+                        $current_user_email= $current_user->getEmail();
+                        $current_user_fullname= $userService->getFullName($current_user_id);
+
+                        $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                        ///remove link
+                        $context["link_confirm"]= "#";
+                        $context["content_mail"] = $description . 
+                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>" . $user_list;
+            
+
+                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                                $current_user_email, 
+                                $current_user_fullname, 
+                                $context, 
+                                "ConsoMyZone"
+                            );
+                    
+                        $is_already_send_mail_copy= true;
+
+                        if( $responsecode_mycopy == 550 ){
+                            return $this->json(["result" =>"failed"],400);
+                        }
+                    }
+                    ///reset link
+                    $context["link_confirm"]= $conserve_link;
+                    $context["content_mail"] = $description .
+                            "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
                    
                     if($responsecode == 550){
                         if(count($principal) == 1){
@@ -2166,7 +2215,10 @@ $emailNotExist=[];
     
                 $context["object_mail"] = $object;
                 $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+
                 $context["link_confirm"] = $url;
+$conserve_link= $context["link_confirm"];
+
                 $context["content_mail"] = $description .
                     "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
     
@@ -2174,11 +2226,45 @@ $emailNotExist=[];
     
                 // $mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
 
-// if ($isMembre == "not_invited")
+                // if ($isMembre == "not_invited")
                 //     $tribuTService->addMemberTemp($table, $principal_item);
 
                 // array_push($mailNonInscrit,$principal_item);
                 $responsecode=$mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
+
+                if( $is_already_send_mail_copy === false ){
+                    $current_user= $this->getUser();
+                    $current_user_id= $current_user->getId();
+                    $current_user_email= $current_user->getEmail();
+                    $current_user_fullname= $userService->getFullName($current_user_id);
+
+                    $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+
+                    ///remove link
+                    $context["link_confirm"]= "#";
+                    $context["content_mail"] = $description . 
+                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"  . $user_list;
+            
+
+                    $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                            $current_user_email, 
+                            $current_user_fullname, 
+                            $context, 
+                            "ConsoMyZone"
+                        );
+                    
+                    $is_already_send_mail_copy= true;
+
+                    if( $responsecode_mycopy == 550 ){
+                        return $this->json(["result" =>"failed"],400);
+                    }
+                }
+
+                ///reset link
+                $context["link_confirm"]= $conserve_link;
+                $context["content_mail"] = $description .
+                        "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+
                 if($responsecode == 550){
                     if(count($principal) == 1){
                         return $this->json(["result" =>"failed"],400);
@@ -2190,13 +2276,12 @@ $emailNotExist=[];
                     array_push($mailNonInscrit,$principal_item);
                 if($isMembre == "not_invited")
                     $tribuTService->addMemberTemp($table, $principal_item);
+
 $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item, 0 ,$userId);
                 }
 
                                 // Sauvegarder l'historique d'invitation
-                
-
-            }else{
+                            }else{
                 if(!$user_receiver){
                     //envoyé invitation pour les non inscrit dans cmz
                     
@@ -2216,13 +2301,46 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
         
                     $context["object_mail"] = $object;
                     $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+
                     $context["link_confirm"] = $url ;
+                    $conserve_link= $context["link_confirm"];
+
                     $context["content_mail"] = $description .
                         "<a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
         
                     $context["piece_joint"] = $piece_with_path;
                     
                     $responsecode=$mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
+                    if( $is_already_send_mail_copy === false ){
+                        $current_user= $this->getUser();
+                        $current_user_id= $current_user->getId();
+                        $current_user_email= $current_user->getEmail();
+                        $current_user_fullname= $userService->getFullName($current_user_id);
+
+                        $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+
+                        ///remove link
+                        $context["link_confirm"]= "#";
+                        $context["content_mail"] = $description . 
+                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"  . $user_list;
+        
+                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                                $current_user_email, 
+                                $current_user_fullname, 
+                                $context, 
+                                "ConsoMyZone"
+                            );
+                        
+                        $is_already_send_mail_copy= true;
+
+                        if( $responsecode_mycopy == 550 ){
+                            return $this->json(["result" =>"failed"],400);
+                        }
+                    }
+                    ///reset link
+                    $context["link_confirm"]= $conserve_link;
+                    $context["content_mail"] = $description .
+                        "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
 
 // $userService->saveInvitationStoryG($table . "_invitation", $userId, $principal_item);
     
@@ -2236,7 +2354,7 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
                         
                     }else{
                        // if($isMembre == "not_invited")
-                        //     $tribuTService->addMemberTemp($table, $principal_item);
+                        // $tribuTService->addMemberTemp($table, $principal_item);
                     $userService->saveInvitationStoryG($table . "_invitation", $userId, $principal_item);
                         array_push($mailNonInscrit,$principal_item);
                 }
@@ -2354,7 +2472,10 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
         StringTraitementService $stringTraitementService,
-        BddRestoRepository $bddRestoRepository
+        BddRestoRepository $bddRestoRepository,
+        ConfidentialityService $confidentialityService,
+        UserService $userService,
+        SortResultService $sortResultService
     ): Response {
         $userConnected = $status->userProfilService($this->getUser());
 
@@ -2424,7 +2545,7 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
                 "extensionData" => $data["extensionData"]
             );
 
-            $bool = $this->createTribu_T($body, $stringTraitementService, $status);
+            $bool = $this->createTribu_T($body, $stringTraitementService, $status, $confidentialityService);
             if ($bool) {
                 $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";
             } else {
@@ -2470,7 +2591,7 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
         if (count($all_tribuT) > 0) {
             $all_pub_tribuT = [];
             foreach ($all_tribuT as $tribuT) {
-                $temp_pub = $tribu_T_Service->getAllPublicationsUpdate($tribuT['table_name']);
+                $temp_pub = $tribu_T_Service->getAllPublicationsUpdate($tribuT['table_name'], $userId, $confidentialityService, $userService);
                 $all_pub_tribuT = array_merge($all_pub_tribuT, $temp_pub);
             }
             $publications = array_merge($publications, $all_pub_tribuT);
@@ -2491,6 +2612,7 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
                 "form" => $form->createView(),
             ]);
         }else{
+        $publications= (count($publications) > 0 ) ? $sortResultService->sortTapByKey($publications, "publication", "createdAt") : $publications;
         return $this->render('tribu_t/tribuT.html.twig', [
             "publications" => $publications,
             "userConnected" => $userConnected,
@@ -2546,7 +2668,9 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
     public function getPublicationList(
         Request $request,
         Tribu_T_Service $srv,
-        SerializerInterface $serializer
+        SerializerInterface $serializer,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
     ) {
 
 
@@ -2557,7 +2681,7 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
         $limits = $request->query->get('limits');
         $tableCommentaireTribuT = $request->query->get('tblCommentaire');
 
-        $result = $srv->getPartisantPublication($tableTribuTPublication, $tableCommentaireTribuT, $idMin, $limits, $userId);
+        $result = $srv->getPartisantPublication($tableTribuTPublication, $tableCommentaireTribuT, $idMin, $limits, $userId, $confidentialityService, $userService);
         $json = $serializer->serialize($result, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
@@ -2580,7 +2704,7 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
      * @author  Tommy <tommyramihoatrarivo@gmail.com>
      * create  tribu-t
      */
-    public function createTribu_T($body, $stringTraitementService, $status)
+    public function createTribu_T($body, $stringTraitementService, $status, $confidentialityService)
 
     {
 
@@ -2628,6 +2752,8 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
                 $extension["golf"] = ($golf == "on") ? 1 : 0;
 
                 $tribut->setTribuT($output, $description, $path, $extension, $userId, "tribu_t_owned", $nomTribuT);
+
+                $confidentialityService->insertRowInConfTribu($userId, $output);
 
                 $isSuccess = true;
 
@@ -2918,7 +3044,13 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
 
     #[Route('/user/all_tribu_g/members', name: 'all_tribu_g_members')]
 
-    public function fetchAllTribuGMember(TributGService $tribu_g, Tribu_T_Service $tribut): Response
+    public function fetchAllTribuGMember(
+        TributGService $tribu_g, 
+        Tribu_T_Service $tribut,
+        ConfidentialityService $confidentialityService,
+        UserService $userService,
+        UserRepository $userRepository
+        ): Response
 
     {
 
@@ -2927,8 +3059,16 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
         $users = array();
 
         for ($i = 0; $i < count($members); $i++) {
-
-            array_push($users, ["id" => $members[$i]["id"], "fullName" => $members[$i]["firstname"] . " " . $members[$i]["lastname"], "email" => $members[$i]["email"], "tribug" => $members[$i]["tribug"], "isMember" => $tribut->testSiMembre($_GET["tribu_t"], $members[$i]["user_id"])]);
+            $user = $this->getUser();
+            $user_id = $user->getId();
+            $otherId = $members[$i]["id"];
+            $pseudo = $confidentialityService->getConfFullname(intval($otherId), $user_id);
+            if(intval($otherId) == $user_id){
+                $email = $members[$i]["email"];
+            }else{
+                $email = $confidentialityService->getVisibilityEmail(intval($otherId), $user_id) ? $members[$i]["email"] : "Confidentiel";
+            }
+            array_push($users, ["id" => $members[$i]["id"], "fullName" => $pseudo, "email" => $email, "tribug" => $members[$i]["tribug"], "isMember" => $tribut->testSiMembre($_GET["tribu_t"], $members[$i]["user_id"])]);
         }
 
         return $this->json($users);
@@ -2936,19 +3076,24 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
 
     #[Route('/user/pub/tribu_t', name: 'all_pub_tribu_t')]
 
-    public function fetchAllPubTribuT(UserRepository $userRepository, Tribu_T_Service $tribu_T_Service): Response
+    public function fetchAllPubTribuT(
+        UserRepository $userRepository, 
+        Tribu_T_Service $tribu_T_Service,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
+        ): Response
 
     {
 
         //// ALL PUBLICATION FOR ALL TRIBU T /////
         $all_tribuT = $userRepository->getListTableTribuT(); /// tribu T owned and join
         // dd($all_tribuT);
-
+        $userId = $this->getUser()->getId();
         if (count($all_tribuT) > 0) {
             $publications = [];
             $all_pub_tribuT = [];
             foreach ($all_tribuT as $tribuT) {
-                $temp_pub = $tribu_T_Service->getAllPublicationsUpdate($tribuT['table_name']);
+                $temp_pub = $tribu_T_Service->getAllPublicationsUpdate($tribuT['table_name'], $userId, $confidentialityService, $userService);
                 $all_pub_tribuT = array_merge($all_pub_tribuT, $temp_pub);
             }
             $publications = array_merge($publications, $all_pub_tribuT);
@@ -3065,7 +3210,7 @@ $result=false;
      * ajouter le 24-10-2023
      */
     #[Route("/tribu/invitation/get_all_story/{table}", name: "app_get_all_story_invitation", methods: ["GET"])]
-    public function getAllStoryInvitation($table, Tribu_T_Service $tribuTService, UserService $user_serv)
+    public function getAllStoryInvitation($table, Tribu_T_Service $tribuTService, UserService $user_serv, ConfidentialityService $confidentialityService)
     {
 
         $table_invitation = $table . "_invitation";
@@ -3074,21 +3219,32 @@ $result=false;
 
         $hist = [];
 
+        $userId = $this->getUser()->getId();
+
         if (count($result) > 0) {
             foreach ($result as $user) {
                 $pp = null;
                 $sender = null;
-
+                $fullNameInvited = null;
+                $fullNameSender = null;
                 if ($user['user_id']) {
                     $pp = $user_serv->getUserProfileFromId($user['user_id']);
+                    if($pp){
+                        $fullNameInvited = $confidentialityService->getConfFullname(intval($user['user_id']), $userId);;
+                    }
                 }
                 if ($user['sender_id']) {
                     $sender = $user_serv->getUserProfileFromId($user['sender_id']);
+                    if($sender){
+                        $fullNameSender = $confidentialityService->getConfFullname(intval($user['sender_id']), $userId);;
+                    }
                 }
 
                 array_push($hist, [
                     'user' => $pp,
                     'is_valid' => $user['is_valid'],
+                    "fullNameInvited" => $fullNameInvited,
+                    "fullNameSender" => $fullNameSender,
                     'date' => $user['datetime'],
                     'email' => $user['email'],
                     "sender" => $sender,
@@ -3138,7 +3294,7 @@ $result=false;
      * ajouter le 24-10-2023
      */
     #[Route("/tribu/invitation/confirm", name: "app_confirm_invitation_tribu", methods: ["GET"])]
-    public function confirmInvitation(Tribu_T_Service $tribuTService, Request $request, UserService $userService)
+    public function confirmInvitation(Tribu_T_Service $tribuTService, Request $request, UserService $userService, ConfidentialityService $confidentialityService)
     {
 
         $table = $request->query->get("tribu");
@@ -3182,6 +3338,8 @@ $result=false;
                         //// set tribu T for this new user.
                     $tribuTService->setTribuT($apropos_tribuTtoJoined["name"], $apropos_tribuTtoJoined["description"], $apropos_tribuTtoJoined["logo_path"], $apropos_tribuTtoJoined["extension"], $this->getUser()->getId(), "tribu_t_joined", $tribuTtoJoined);
 
+                    $confidentialityService->insertRowInConfTribu($this->getUser()->getId(), $apropos_tribuTtoJoined["name"]);
+
                     ///update status of the user in table tribu T
                     $tribuTService->updateMember($request->query->get("tribu"), $this->getUser()->getId(), 1);
 
@@ -3209,15 +3367,20 @@ $result=false;
         return $this->render("tribu_t/invitation_accepted.html.twig");
     }
     #[Route('/user/get/reaction/pub', name: "user_get_reactions_pubss", methods: ["GET"])]
-    public function getReactionPubTribuT(Request $request, Tribu_T_Service $serv, SerializerInterface $serializer)
+    public function getReactionPubTribuT(
+        Request $request, Tribu_T_Service $serv, 
+        SerializerInterface $serializer,
+        UserService $userService,
+        ConfidentialityService $confidentialityService
+        )
     {
 
         $datas = $request->query->all();
-
+        $userId = $this->getUser()->getId();
         $tabl_react_tribu_t = $datas["tbl_tribu_t_reaction"];
         $user_id = $datas["user_id"];
         $idPub = $datas["pub_id"];
-        $response = $serv->findAllReactions($tabl_react_tribu_t, intval($idPub)); // getCommentPubTribuT($tabl_cmnt_tribu_t, $idPub, $idMin, $limits);
+        $response = $serv->findAllReactions($tabl_react_tribu_t, intval($idPub), $userId, $confidentialityService, $userService); // getCommentPubTribuT($tabl_cmnt_tribu_t, $idPub, $idMin, $limits);
         $json = $serializer->serialize($response, 'json');
 
         return new JsonResponse($json, Response::HTTP_OK, [], true);
@@ -3233,7 +3396,8 @@ $result=false;
         $tribuTName,
         Tribu_T_Service $tribuTService,
         UserService $userService,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        ConfidentialityService $confidentialityService
     ) {
         if ($tribuTName === "" || !$tribuTService->isTableExist($tribuTName)) {
             return $this->json(["success" => false, "message" => "Tribu not found."], 401);
@@ -3258,6 +3422,7 @@ $result=false;
                 "id" => $user_profil->getUserId()->getId(),
                 "firstname" => $user_profil->getFirstname(),
                 "lastname" => $user_profil->getLastname(),
+                "fullname" => $confidentialityService->getConfFullname($user_connected->getId(), $user_connected->getId()),
                 "email" => $user_profil->getUserId()->getEmail(),
                 "pseudo" => $user_profil->getUserId()->getPseudo(),
             ]
@@ -3277,7 +3442,8 @@ $result=false;
         MailService $mailService,
         Filesystem $filesyst,
         NotificationService $notificationService,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        ConfidentialityService $confidentialityService
     ) {
         if (!$this->getUser() && $this->getUser()->getType() === "Type") {
             return $this->json(["success" => false, "message" => "User not connected"], 401);
@@ -3331,7 +3497,7 @@ $emailNotExist = [];
         $context["piece_joint"] = $piece_with_path;
         
 
-        $all_fans_tribuT = $tribuTService->getPartisanOfTribuT($table_name); /// user_id, ...
+        $all_fans_tribuT = $tribuTService->getPartisanOfTribuT($table_name, $user_connnected_id, $confidentialityService, $userService); /// user_id, ...
         $all_user_receiver = [];
         foreach ($all_fans_tribuT as $fans_tribuT) {
             $user_id_fans = $fans_tribuT["user_id"];
@@ -3404,7 +3570,9 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
     public function getListUserAll(
         UserService $user_service,
         UserRepository $userRepository,
-        Tribu_t_service $tribu_service
+        Tribu_t_service $tribu_service,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
     ) {
         $all_tribuT = $userRepository->getListTableTribuT();
         $tableTribuTName = [];
@@ -3415,7 +3583,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         }
         $allPartisanArray = [];
         foreach ($tableTribuTName as $tableTribu) {
-            $allTribuT = $tribu_service->getPartisanOfTribuT($tableTribu);
+            $allTribuT = $tribu_service->getPartisanOfTribuT($tableTribu, $this->getUser()->getId(), $confidentialityService, $userService);
 
             $isEmailTribuT = [];
             foreach ($allTribuT as $tribu) {

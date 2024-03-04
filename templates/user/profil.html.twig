@@ -16,7 +16,6 @@
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 	{# // <script src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	{# // <script src="{{ asset('assets/js/profiles/profile.js') }}" defer></script> #}
-	//
 	<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js" defer></script>
 
 {% endblock %}
@@ -38,14 +37,14 @@
 								<div class="container-fluid">
 									<div class="navbar-collapse" id="navbarProfil">
 										<ul class="navbar-nav me-auto mb-2 mb-lg-0">
-											<li class="nav-item">
+											<li class="nav-item" title="A propos">
 												<label for="cover" class=" bg-pdp-profil  lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 apropos_pdp" data-target="apropos_pdp">
 													<span>
 														<i class="bi bi-info-circle fils" data-target="apropos_pdp"></i>
 													</span>
 												</label>
 											</li>
-											<li class="nav-item ">
+											<li class="nav-item" title="Photos">
 												<label
 													for="cover" class="lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 elie_gallery_profil" data-target="elie_gallery_profil">
 													{# <input type="file" name="cover" id="cover" class="d"/> #}
@@ -57,7 +56,7 @@
 													</span>
 												</label>
 											</li>
-											<li class="nav-item">
+											<li class="nav-item" title="Partisans">
 												<label for="cover" class="lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 tribu_profil" data-target="tribu_profil">
 													<span>
 														<i class="fa-solid fa-users-rays fw-bold" data-target="tribu_profil"></i>
@@ -65,7 +64,7 @@
 												</label>
 											</li>
 											{% if app.user.id is same as autre_profil[0].userId.id %}
-												<li class="nav-item">
+												<li class="nav-item" title="Paramètres">
 													<div class="lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 cta_param_account">
 														<span>
 															<a href="{{path('account_setting')}}" class="un mn qv lc mg ah gp dp zq">
@@ -74,9 +73,9 @@
 														</span>
 													</div>
 												</li>
-												<li class="nav-item">
+												<li class="nav-item" title="Abonnement">
 													<label for="abonnement" class="lc rc _d cg mg pg sh ni jj lj nj fk eo xq me-3 abonnement_partisan" data-target="abonnement_partisan">
-														<span title="Abonnement">
+														<span>
 															{# <i class="fa-solid fa-money-bill-wheat"></i> #}
 															<img src="{{asset('assets/image/icons8-subscription.png')}}" alt="" data-target="abonnement_partisan">
 														</span>
@@ -108,9 +107,11 @@
 						<div class="yd iu">
 							<div class="wb mg qg ss">
 								<div class="zb qs">
-									<h4 class="xb qn wn zn gs">
-										{{ autre_profil[0].getFirstname }}
-										{{ autre_profil[0].getLastname }}
+									<h4
+										class="xb qn wn zn gs">
+										{# {{ autre_profil[0].getFirstname }}
+										{{ autre_profil[0].getLastname }} #}
+										{{fullName}}
 									</h4>
 
 									<p class="mn un" id="elie_my_tribu_g" data-g="{{autre_profil[0].getTributG|replace({'tribug' : '', '_' : ' ' })}}">
@@ -138,20 +139,20 @@
 												<div class=" p-4" style="background-color: #f8f9fa;">
 													<p class="font-italic mb-1">
 														<i class="bi bi-briefcase"></i>
-														<span class="fw-light">Categories:</span>
+														<span class="fw-light">Catégories:</span>
 														{% if type is same as('Partisan') %}
 															{{'Partisan'}}
 														{% elseif type is same as('Type')%}
 															{{'Postulant'}}
 														{% endif %}
 													</p>
-													{% if app.user.id is same as autre_profil[0].userId.id %}
+													{% if app.user.id is same as autre_profil[0].userId.id or isAdresseVisible %}
 														<p class="font-italic mb-1">
 															<i class="bi bi-geo-alt"></i>
-															Addresse:
+															Adresse:
 															{{ autre_profil[0].getNumRue ~ " " ~ autre_profil[0].getCodePostal ~ " " ~ autre_profil[0].getCommune ~ " " ~ autre_profil[0].getPays}}
 														</p>
-													{% endif %}
+													
 													<p class="font-italic mb-1">
 														<i class="bi bi-mailbox"></i>
 														Code Postal:
@@ -162,17 +163,44 @@
 														Commune:
 														{{autre_profil[0].getCommune }}
 													</p>
-													{% if app.user.id is same as autre_profil[0].userId.id %}
+													{% endif %}
+													{% if app.user.id is same as autre_profil[0].userId.id or isPhoneNumberVisible %}
 														<p class="font-italic mb-1">
 															<i class="bi bi-telephone"></i>
-															Telephone Mobile:
+															Téléphone Mobile:
 															{{ autre_profil[0].getTelephone }}
 														</p>
 														<p class="font-italic mb-1">
 															<i class="bi bi-telephone-inbound"></i>
-															Telephone Fixe:
+															Téléphone Fixe:
 															{{ autre_profil[0].getTelFixe }}
 														</p>
+													{% endif %}
+													{% if badge_fan.fan == 1 %}
+														{% if app.user.id is same as autre_profil[0].userId.id or isBadgeFanPublic %}
+															<p class="font-italic mb-1">
+																<i class="fa-solid fa-users-rays"></i>
+																<span class="badge text-bg-warning">Fan</span>
+															</p>
+														{% endif %}
+													{% endif %}
+
+													{% if badge_donateur_vert.donateur_vert == 1 %}
+														{% if app.user.id is same as autre_profil[0].userId.id or isBadgeDonVertPublic %}
+															<p class="font-italic mb-1">
+																<i class="fa-solid fa-money-check-dollar"></i>
+																<span class="badge text-bg-success">Donateur vert</span>
+															</p>
+														{% endif %}
+													{% endif %}
+
+													{% if badge_donateur_bleu.donateur_bleu == 1 %}
+														{% if app.user.id is same as autre_profil[0].userId.id or isBadgeDonBleuPublic %}
+															<p class="font-italic mb-1">
+																<i class="fa-solid fa-money-check-dollar"></i>
+																<span class="badge text-bg-primary">Donateur bleu</span>
+															</p>
+														{% endif %}
 													{% endif %}
 												</div>
 											</div>
@@ -252,37 +280,46 @@
 														<div class="input-group mb-3">
 															<button class="btn btn-secondary text-start w-50" type="button">1- Cotisations</button>
 															<input type="number" class="form-control w-25" placeholder="Saisir un montant" aria-label="Saisir un montant" name="firstOption" id="firstOption">
-															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;"><i class="bi bi-currency-euro"></i></button>
+															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;">
+																<i class="bi bi-currency-euro"></i>
+															</button>
 															<button class="btn btn-primary" type="button" onclick="submitSubscription(event,1)">Soumettre</button>
 														</div>
 														<div class="input-group mb-3">
 															<button class="btn btn-secondary text-start w-50" type="button">2- Participation supplémentaire</button>
 															<input type="number" class="form-control w-25" placeholder="Saisir un montant" aria-label="Saisir un montant" name="secondOption" id="secondOption">
-															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;"><i class="bi bi-currency-euro"></i></button>
+															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;">
+																<i class="bi bi-currency-euro"></i>
+															</button>
 															<button class="btn btn-primary" type="button" onclick="submitSubscription(event,2)">Soumettre</button>
 														</div>
 														<div class="input-group mb-3">
 															<button class="btn btn-secondary text-start w-50" type="button">3- Cotisation tribu</button>
 															<input type="number" class="form-control w-25" placeholder="Saisir un montant" aria-label="Saisir un montant" name="thirdOption" id="thirdOption">
-															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;"><i class="bi bi-currency-euro"></i></button>
+															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;">
+																<i class="bi bi-currency-euro"></i>
+															</button>
 															<button class="btn btn-primary" type="button" onclick="submitSubscription(event,3)">Soumettre</button>
 														</div>
 														<div class="input-group mb-3">
 															<button class="btn btn-secondary text-start w-50" type="button">4- Participation verte</button>
 															<input type="number" class="form-control w-25" placeholder="Saisir un montant" aria-label="Saisir un montant" name="fourthOption" id="fourthOption">
-															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;"><i class="bi bi-currency-euro"></i></button>
+															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;">
+																<i class="bi bi-currency-euro"></i>
+															</button>
 															<button class="btn btn-primary" type="button" onclick="submitSubscription(event,4)">Soumettre</button>
 														</div>
 														<div class="input-group mb-3">
 															<button class="btn btn-secondary text-start w-50" type="button">5- Participation bleue</button>
 															<input type="number" class="form-control w-25" placeholder="Saisir un montant" aria-label="Saisir un montant" name="fifthOption" id="fifthOption">
-															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;"><i class="bi bi-currency-euro"></i></button>
+															<button type="button" style="background-color:#FFFFFF;border: 1px solid #CED4DA;">
+																<i class="bi bi-currency-euro"></i>
+															</button>
 															<button class="btn btn-primary" type="button" onclick="submitSubscription(event,5)">Soumettre</button>
 														</div>
 
 													</div>
 													<div id="subscriptionStory" style="display:none;">
-														
 													</div>
 												</div>
 											</div>
@@ -364,7 +401,7 @@
 						<table id="table_tribu_g" class="display mt-3 table_tribu_g" style="width:100%">
 							<thead>
 								<tr>
-									<th>Nom d'utilisateur</th>
+									<th>Avatar</th>
 									<th>E-mail</th>
 									<th>Rôle</th>
 									<th>Tribu G</th>
@@ -375,7 +412,7 @@
 
 									<tr>
 										<td>
-											<a href="{{user.id}}" class="text-primary">{{user.firstname ~" "~ user.lastname}}</a>
+											<a href="{{user.id}}" class="text-primary">{{user.name}}</a>
 										</td>
 										<td>{{user.email}}</td>
 										<td>{{user.status}}</td>
@@ -405,7 +442,7 @@
 										<td>{{user.tribuT.name}}
 										</td>
 										<td>
-											<a href="{{user.user.id}}" class="">{{user.user.firstname ~" "~ user.user.lastname}}</a>
+											<a href="{{user.user.id}}" class="">{{user.user.name}}</a>
 										</td>
 										<td>{{user.user.email}}</td>
 										<td>{{user.user.role}}</td>

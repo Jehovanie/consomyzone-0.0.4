@@ -11,6 +11,7 @@
 
 {% block javascripts %}
     <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+<script  src="{{ asset('assets/js/account/confidentiality.js') }}" defer></script>
 	{# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
 	<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 {% endblock %}
@@ -25,7 +26,347 @@
 		<div class="sk bu 2xl:ud-p-11 account-setting-connected">
 			<div title="Revenir vers la page profil"><a href="/user/profil/{{app.user.id}}"><i class="bi bi-arrow-left" style="font-size:30px;"></i></a></div>
 			<div class="lc kg hg yg _b">
+				<!-- Confidentialité Card -->
+				<div class="yd qh ni bj wr nj xr cl">
 
+					<h3 class="tn jn zn gs ab">
+						Confidentialité sur le compte
+						<i class="fas fa-plus-circle" data-bs-toggle="collapse" href="#confid_compte" role="button" onclick="toggleClass(this)"></i>
+					</h3>
+
+					<div class="mt-4 collapse" id="confid_compte">
+
+						<p class="text-warning">Modifiez votre Confidentialité</p>
+
+						<div class="content-confid-email confid_compte_nanta_js row mt-2">
+							<div class="col-5">
+								<p>Adresse e-mail</p>
+								{# <span class="fst-italic">to************@gmail.com</span> #}
+							</div>
+							<div class="col-7">
+								<div class="row">
+									<div class="col-4">
+										<label for="" title="Non visible pour tous le membre de vos tribus G et T">Moi uniquement</label>
+										<input title="Non visible pour tous le membre de vos tribus G et T" type="radio" name="email" id="non-mail-tout" data-rank="0" {% if confEmail["isEmailPrivate"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour tous le membre de vos tribus G et T">Public</label>
+										<input title="Visible pour tous le membre de vos tribus G et T" type="radio" name="email" id="oui-mail-tout" data-rank="1" {% if confEmail["isEmailPublic"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour le membre de certaines tribus">Tribu</label>
+										<input title="Visible pour le membre de certaines tribus" type="radio" name="email" data-rank="2" {% if confEmail["isEmailPublicOnTribu"] %}checked{% endif %} id="email-tribu" data-bs-toggle="collapse" href="#confid_compte_email" role="button">
+									</div>
+									<div class="mt-4 collapse content-confid-tribu" id="confid_compte_email">
+<button type="button" class="btn-close" aria-label="Close" onclick="closeParentList(this)" title="Fermer la liste"></button>
+										<ul class="list-group list-group-flush">
+											{% for item in allTribus %}
+												<li class="list-group-item">
+													<label for="email_{{item['table_name']}}">
+													{{ item["type"] == "t" ? "Tribu T " : "Tribu G " }}{{item["name"]}}</label>
+													<input type="checkbox" data-boum="{{item['table_name']}}" name="email_{{item['table_name']}}" id="email_{{item['table_name']}}" 
+													{% if item["isEmailPublic"] %}checked{% endif %} title="Visible pour le membre de cette tribu si cette case est cochée">
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+
+								</div>
+							</div>
+						</div>
+						<div class="content-confid-fname confid_compte_nanta_js row mt-4">
+							<div class="col-5">
+								<p>Prénom(s)</p>
+							</div>
+							<div class="col-7">
+								<div class="row">
+									<div class="col-4">
+										<label for="" title="Non visible pour tous le membre de vos tribus G et T">Moi uniquement</label>
+										<input title="Non visible pour tous le membre de vos tribus G et T" type="radio" name="firstName" data-rank="0" id="non-fname-tout" {% if conFirstName["isFirstNamePrivate"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour tous le membre de vos tribus G et T">Public</label>
+										<input title="Visible pour tous le membre de vos tribus G et T" type="radio" name="firstName" data-rank="1" id="oui-fname-tout" {% if conFirstName["isFirstNamePublic"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour le membre de certains tribus">Tribu</label>
+										<input title="Visible pour le membre de certains tribus" type="radio" name="firstName" data-rank="2" {% if conFirstName["isFirstNamePublicOnTribu"] %}checked{% endif %} id="fname-tribu" data-bs-toggle="collapse" href="#confid_compte_fname" role="button">
+									</div>
+									<div class="mt-4 collapse content-confid-tribu" id="confid_compte_fname">
+<button type="button" class="btn-close" aria-label="Close" onclick="closeParentList(this)" title="Fermer la liste"></button>
+										<ul class="list-group list-group-flush">
+											{% for item in allTribus %}
+												<li class="list-group-item">
+													<label for="firstName_{{item['table_name']}}">{{ item["type"] == "t" ? "Tribu T " : "Tribu G " }}{{item["name"]}}</label>
+													<input type="checkbox" data-boum="{{item['table_name']}}" name="firstName_{{item['table_name']}}" id="firstName_{{item['table_name']}}" 
+													{% if item["isFirstNamePublic"] %}checked{% endif %} title="Visible pour le membre de cette tribu si cette case est cochée">
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="content-confid-lname confid_compte_nanta_js row mt-4">
+							<div class="col-5">
+								<p>Nom</p>
+							</div>
+							<div class="col-7">
+								<div class="row">
+									<div class="col-4">
+										<label for="" title="Non visible pour tous le membre de vos tribus G et T">Moi uniquement</label>
+										<input title="Non visible pour tous le membre de vos tribus G et T" type="radio" name="lastName" data-rank="0" id="non-fname-tout" {% if conLastName["isLastNamePrivate"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour tous le membre de vos tribus G et T">Public</label>
+										<input title="Visible pour tous le membre de vos tribus G et T" type="radio" name="lastName" data-rank="1" id="oui-fname-tout" {% if conLastName["isLastNamePublic"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour le membre de certains tribus">Tribu</label>
+										<input title="Visible pour le membre de certains tribus" type="radio" name="lastName" data-rank="2" {% if conLastName["isLastNamePublicOnTribu"] %}checked{% endif %} id="lname-tribu" data-bs-toggle="collapse" href="#confid_compte_lname" role="button">
+									</div>
+									<div class="mt-4 collapse content-confid-tribu" id="confid_compte_lname">
+<button type="button" class="btn-close" aria-label="Close" onclick="closeParentList(this)" title="Fermer la liste"></button>
+										<ul class="list-group list-group-flush">
+											{% for item in allTribus %}
+												<li class="list-group-item">
+													<label for="lastName_{{item['table_name']}}">{{ item["type"] == "t" ? "Tribu T " : "Tribu G " }}{{item["name"]}}</label>
+													<input type="checkbox" data-boum="{{item['table_name']}}" name="lastName_{{item['table_name']}}" id="lastName_{{item['table_name']}}" 
+													{% if item["isLastNamePublic"] %}checked{% endif %} title="Visible pour le membre de cette tribu si cette case est cochée">
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="content-confid-adresse confid_compte_nanta_js row mt-4">
+							<div class="col-5">
+								<p>Adresse</p>
+							</div>
+							<div class="col-7">
+								<div class="row">
+									<div class="col-4">
+										<label for="" title="Non visible pour tous le membre de vos tribus G et T">Moi uniquement</label>
+										<input title="Non visible pour tous le membre de vos tribus G et T" type="radio" name="adresse" data-rank="0" id="non-adress-tout" {% if confAdresse["isAdressePrivate"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour tous le membre de vos tribus G et T">Public</label>
+										<input title="Visible pour tous le membre de vos tribus G et T" type="radio" name="adresse" data-rank="1" id="oui-adress-tout" {% if confAdresse["isAdressePublic"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour le membre de certaines tribus">Tribu</label>
+										<input title="Visible pour le membre de certaines tribus" type="radio" name="adresse" data-rank="2" {% if confAdresse["isAdressePublicOnTribu"] %}checked{% endif %} id="adresse-tribu" data-bs-toggle="collapse" href="#confid_compte_adress" role="button">
+									</div>
+									<div class="mt-4 collapse content-confid-tribu" id="confid_compte_adress">
+<button type="button" class="btn-close" aria-label="Close" onclick="closeParentList(this)" title="Fermer la liste"></button>
+										<ul class="list-group list-group-flush">
+											{% for item in allTribus %}
+												<li class="list-group-item">
+													<label for="adresse_{{item['table_name']}}">{{ item["type"] == "t" ? "Tribu T " : "Tribu G " }}{{item["name"]}}</label>
+													<input type="checkbox" data-boum="{{item['table_name']}}" name="adresse_{{item['table_name']}}" id="adresse_{{item['table_name']}}" 
+													{% if item["isAdressePublic"] %}checked{% endif %} title="Visible pour le membre de cette tribu si cette case est cochée">
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="content-confid-phone confid_compte_nanta_js row mt-4">
+							<div class="col-5">
+								<p>Numéro de téléphone</p>
+							</div>
+							<div class="col-7">
+								<div class="row">
+									<div class="col-4">
+										<label for="" title="Non visible pour tous le membre de vos tribus G et T">Moi uniquement</label>
+										<input title="Non visible pour tous le membre de vos tribus G et T" type="radio" name="num" data-rank="0" id="non-num-tout" {% if confPhoneNumber["isPhoneNumberPrivate"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour tous le membre de vos tribus G et T">Public</label>
+										<input title="Visible pour tous le membre de vos tribus G et T" type="radio" name="num" data-rank="1" id="oui-num-tout" {% if confPhoneNumber["isPhoneNumberPublic"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour le membre de certaines tribus">Tribu</label>
+										<input title="Visible pour le membre de certaines tribus" type="radio" name="num" data-rank="2" {% if confPhoneNumber["isPhoneNumberPublicOnTribu"] %}checked{% endif %} id="phone-tribu" data-bs-toggle="collapse" href="#confid_compte_num" role="button">
+									</div>
+									<div class="mt-4 collapse content-confid-tribu" id="confid_compte_num">
+<button type="button" class="btn-close" aria-label="Close" onclick="closeParentList(this)" title="Fermer la liste"></button>
+										<ul class="list-group list-group-flush">
+											{% for item in allTribus %}
+												<li class="list-group-item">
+													<label for="phone_{{item['table_name']}}">{{ item["type"] == "t" ? "Tribu T " : "Tribu G " }}{{item["name"]}}</label>
+													<input type="checkbox" data-boum="{{item['table_name']}}" name="phone_{{item['table_name']}}" id="phone_{{item['table_name']}}" 
+													{% if item["isPhonePublic"] %}checked{% endif %} title="Visible pour le membre de cette tribu si cette case est cochée">
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="content-confid-badgeFan confid_compte_nanta_js row mt-4">
+							<div class="col-5">
+								<p>Badge Fan</p>
+							</div>
+							<div class="col-7">
+								<div class="row">
+									<div class="col-4">
+										<label for="" title="Non visible pour tous le membre de vos tribus G et T">Moi uniquement</label>
+										<input title="Non visible pour tous le membre de vos tribus G et T" type="radio" name="badgeFan" data-rank="0" id="non-badgeFan-tout" {% if confBadgeFan["isBadgeFanPrivate"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour tous le membre de vos tribus G et T">Public</label>
+										<input title="Visible pour tous le membre de vos tribus G et T" type="radio" name="badgeFan" data-rank="1" id="oui-badgeFan-tout" {% if confBadgeFan["isBadgeFanPublic"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour le membre de certaines tribus">Tribu</label>
+										<input title="Visible pour le membre de certaines tribus" type="radio" name="badgeFan" data-rank="2" {% if confBadgeFan["isBadgeFanPublicOnTribu"] %}checked{% endif %} id="badgeFan-tribu" data-bs-toggle="collapse" href="#confid_compte_badgeFan" role="button">
+									</div>
+									<div class="mt-4 collapse content-confid-tribu" id="confid_compte_badgeFan">
+<button type="button" class="btn-close" aria-label="Close" onclick="closeParentList(this)" title="Fermer la liste"></button>
+										<ul class="list-group list-group-flush">
+											{% for item in allTribus %}
+												<li class="list-group-item">
+													<label for="badgeFan_{{item['table_name']}}">{{ item["type"] == "t" ? "Tribu T " : "Tribu G " }}{{item["name"]}}</label>
+													<input type="checkbox" data-boum="{{item['table_name']}}" name="badgeFan_{{item['table_name']}}" id="badgeFan_{{item['table_name']}}" 
+													{% if item["isBadgeFanPublic"] %}checked{% endif %} title="Visible pour le membre de cette tribu si cette case est cochée">
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="content-confid-badgeDonBleu confid_compte_nanta_js row mt-4">
+							<div class="col-5">
+								<p>Badge Donateur bleu</p>
+							</div>
+							<div class="col-7">
+								<div class="row">
+									<div class="col-4">
+										<label for="" title="Non visible pour tous le membre de vos tribus G et T">Moi uniquement</label>
+										<input title="Non visible pour tous le membre de vos tribus G et T" type="radio" name="badgeDonBleu" data-rank="0" id="non-badgeDonBleu-tout" {% if confBadgeDonBleu["isBadgeDonBleuPrivate"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour tous le membre de vos tribus G et T">Public</label>
+										<input title="Visible pour tous le membre de vos tribus G et T" type="radio" name="badgeDonBleu" data-rank="1" id="oui-badgeDonBleu-tout" {% if confBadgeDonBleu["isBadgeDonBleuPublic"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour le membre de certaines tribus">Tribu</label>
+										<input title="Visible pour le membre de certaines tribus" type="radio" name="badgeDonBleu" data-rank="2" {% if confBadgeDonBleu["isBadgeDonBleuPublicOnTribu"] %}checked{% endif %} id="badgeDonBleu-tribu" data-bs-toggle="collapse" href="#confid_compte_badgeDonBleu" role="button">
+									</div>
+									<div class="mt-4 collapse content-confid-tribu" id="confid_compte_badgeDonBleu">
+<button type="button" class="btn-close" aria-label="Close" onclick="closeParentList(this)" title="Fermer la liste"></button>
+										<ul class="list-group list-group-flush">
+											{% for item in allTribus %}
+												<li class="list-group-item">
+													<label for="badgeDonBleu_{{item['table_name']}}">{{ item["type"] == "t" ? "Tribu T " : "Tribu G " }}{{item["name"]}}</label>
+													<input type="checkbox" data-boum="{{item['table_name']}}" name="badgeDonBleu_{{item['table_name']}}" id="badgeDonBleu_{{item['table_name']}}" 
+													{% if item["isBadgeDonBleuPublic"] %}checked{% endif %} title="Visible pour le membre de cette tribu si cette case est cochée">
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="content-confid-badgeDonVert confid_compte_nanta_js row mt-4">
+							<div class="col-5">
+								<p>Badge Donateur vert</p>
+							</div>
+							<div class="col-7">
+								<div class="row">
+									<div class="col-4">
+										<label for="" title="Non visible pour tous le membre de vos tribus G et T">Moi uniquement</label>
+										<input title="Non visible pour tous le membre de vos tribus G et T" type="radio" name="badgeDonVert" data-rank="0" id="non-badgeDonVert-tout" {% if confBadgeDonVert["isBadgeDonVertPrivate"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour tous le membre de vos tribus G et T">Public</label>
+										<input title="Visible pour tous le membre de vos tribus G et T" type="radio" name="badgeDonVert" data-rank="1" id="oui-badgeDonVert-tout" {% if confBadgeDonVert["isBadgeDonVertPublic"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour le membre de certaines tribus">Tribu</label>
+										<input title="Visible pour le membre de certaines tribus" type="radio" name="badgeDonVert" data-rank="2" {% if confBadgeDonVert["isBadgeDonVertPublicOnTribu"] %}checked{% endif %} id="badgeDonVert-tribu" data-bs-toggle="collapse" href="#confid_compte_badgeDonVert" role="button">
+									</div>
+									<div class="mt-4 collapse content-confid-tribu" id="confid_compte_badgeDonVert">
+<button type="button" class="btn-close" aria-label="Close" onclick="closeParentList(this)" title="Fermer la liste"></button>
+										<ul class="list-group list-group-flush">
+											{% for item in allTribus %}
+												<li class="list-group-item">
+													<label for="badgeDonVert_{{item['table_name']}}">{{ item["type"] == "t" ? "Tribu T " : "Tribu G " }}{{item["name"]}}</label>
+													<input type="checkbox" data-boum="{{item['table_name']}}" name="badgeDonVert_{{item['table_name']}}" id="badgeDonVert_{{item['table_name']}}" 
+													{% if item["isBadgeDonVertPublic"] %}checked{% endif %} title="Visible pour le membre de cette tribu si cette case est cochée">
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="content-confid-badgeActionnaire confid_compte_nanta_js row mt-4">
+							<div class="col-5">
+								<p>Badge Actionnaire</p>
+							</div>
+							<div class="col-7">
+								<div class="row">
+									<div class="col-4">
+										<label for="" title="Non visible pour tous le membre de vos tribus G et T">Moi uniquement</label>
+										<input title="Non visible pour tous le membre de vos tribus G et T" type="radio" name="badgeActionnaire" data-rank="0" id="non-badgeActionnaire-tout" {% if confBadgeActionnaire["isBadgeActionnairePrivate"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour tous le membre de vos tribus G et T">Public</label>
+										<input title="Visible pour tous le membre de vos tribus G et T" type="radio" name="badgeActionnaire" data-rank="1" id="oui-badgeActionnaire-tout" {% if confBadgeActionnaire["isBadgeActionnairePublic"] %}checked{% endif %}>
+									</div>
+									<div class="col-4">
+										<label for="" title="Visible pour le membre de certaines tribus">Tribu</label>
+										<input title="Visible pour le membre de certaines tribus" type="radio" name="badgeActionnaire" data-rank="2" {% if confBadgeActionnaire["isBadgeActionnairePublicOnTribu"] %}checked{% endif %} id="badgeActionnaire-tribu" data-bs-toggle="collapse" href="#confid_compte_badgeActionnaire" role="button">
+									</div>
+									<div class="mt-4 collapse content-confid-tribu" id="confid_compte_badgeActionnaire">
+<button type="button" class="btn-close" aria-label="Close" onclick="closeParentList(this)" title="Fermer la liste"></button>
+										<ul class="list-group list-group-flush">
+											{% for item in allTribus %}
+												<li class="list-group-item">
+													<label for="badgeActionnaire_{{item['table_name']}}">{{ item["type"] == "t" ? "Tribu T " : "Tribu G " }}{{item["name"]}}</label>
+													<input type="checkbox" data-boum="{{item['table_name']}}" name="badgeActionnaire_{{item['table_name']}}" id="badgeActionnaire_{{item['table_name']}}" 
+													{% if item["isBadgeActionnairePublic"] %}checked{% endif %} title="Visible pour le membre de cette tribu si cette case est cochée">
+												</li>
+											{% endfor %}
+										</ul>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<div class="content-confid-identif row mt-4 d-none">
+							<div class="col-5">
+								<p>Identification à deux facteurs</p>
+							</div>
+							<div class="col-7">
+								<div class="row">
+									<div class="col-6">
+										<label for="">E-mail</label>
+										<input type="radio" name="idontification" id="par-email">
+									</div>
+									<div class="col-6">
+										<label for="">SMS</label>
+										<input type="radio" name="idontification" id="par-sms">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+				</div>
+					<!-- Confidentialité Card -->
 				<!-- Setting Card One -->
 				<div class="yd qh ni bj wr nj xr cl">
 
@@ -59,6 +400,12 @@
 
 						{% if app.user.type == "consumer" %}
 							{{form_start(form)}}
+<div class="db">
+									<label class="jc un zn gs fb form-label required" lng-tag="pseudo" for="setting_pseudo">Pseudo</label>
+									<input type="text" id="setting_pseudo" name="setting_pseudo" required="required" class="yd nj qh ni bj jr fr ps zn gs il cm zr wr form-control" value="{{pseudo}}">
+									<span class="text-danger text-sm input-not-valid d-none pseudo_required">Veuillez renseigner votre pseudo</span>
+									<span class="text-danger text-sm input-not-valid d-none pseudo_checked"></span>
+								</div>
 								<div class="db">
 									{{ form_label(form.firstname , "Prénom", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'nom'}}) }}
 									{{ form_widget(form.firstname, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
@@ -110,14 +457,19 @@
 										{{ message }}</div>
 								{% endif %}
 
-								<button class="yd lc pg qh un eo oj br dl" type="submit">
+								<button class="yd lc pg qh un eo oj br dl nanta_submit_js" type="submit">
 									Mettez à jour maintenant
 								</button>
 							{{form_end(form)}}
 
 						{% else %}
 							{{form_start(form)}}
-
+<div class="db">
+									<label class="jc un zn gs fb form-label required" lng-tag="pseudo" for="setting_pseudo">Pseudo</label>
+									<input type="text" id="setting_pseudo" name="setting_pseudo" required="required" class="yd nj qh ni bj jr fr ps zn gs il cm zr wr form-control" value="{{pseudo}}">
+									<span class="text-danger text-sm input-not-valid d-none pseudo_required">Veuillez renseigner votre pseudo</span>
+									<span class="text-danger text-sm input-not-valid d-none pseudo_checked"></span>
+								</div>
 								<div class="db">
 									{{ form_label(form.firstname , "Nom", {'label_attr': {'class': 'jc un zn gs fb','lng-tag' :'nom'}}) }}
 									{{ form_widget(form.firstname, {'attr': {'class': 'yd nj qh ni bj jr fr ps zn gs il cm zr wr'}}) }}
@@ -189,7 +541,7 @@
 										{{ message }}</div>
 								{% endif %}
 
-								<button class="yd lc pg qh un eo oj br dl" type="submit" name="save_profil">
+								<button class="yd lc pg qh un eo oj br dl nanta_submit_js" type="submit" name="save_profil">
 									Mettez à jour maintenant
 								</button>
 
@@ -325,7 +677,7 @@
 				<div class="yd qh ni bj wr nj xr cl">
 
 					<h3 class="tn jn zn gs ab">
-						Modifier les paramètres de connexion <i class="fas fa-plus-circle" data-bs-toggle="collapse" href="#statu_compte" role="button" onclick="toggleClass(this)"></i>
+						Modifier les paramètres de sécurité et connexion <i class="fas fa-plus-circle" data-bs-toggle="collapse" href="#statu_compte" role="button" onclick="toggleClass(this)"></i>
 					</h3>
 
 					<div class="mt-4 collapse" id="statu_compte">
@@ -339,7 +691,10 @@
 							<option value="30">30 min</option>
 							<option value="1">1 heure</option>
 						</select>
-
+						<div class="mt-4 collapse show" id="secu_compte">
+							<p> Sécurité du compte </p>
+							<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#doublefamodal">Gérer la double authentification.</button>
+						</div>
 					</div>
 					</div>
 					<div class="yd qh ni bj wr nj xr cl">
@@ -376,5 +731,65 @@
 	<!-- ===== Main Content End ===== -->
 	{% include 'user/modal_upload_photo.twig' %}
 	{% include 'shard/modal/media_modal.html.twig' %}
+	<div class="modal fade" id="doublefamodal" tabindex="-1" aria-labelledby="2famodalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-fullscreen">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="2famodalLabel">Authentification à deux facteurs</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					<div>
+						<div class="form-check">
+							<div class="doublefa enabled" >
+								<p> Voulez-vous désactiver la double authentification?</p>
+								<div class="form-check">
+									<input class="form-check-input doublefa_js_fa" type="checkbox" value="" id="yes2fa">
+									<label class="form-check-label" for="yes2fa" style="margin-top:0 !important">
+										oui
+									</label>
+								</div>
+								<div class="form-check">
+									<input class="form-check-input doublefa_js_fa" type="checkbox" value="" id="no2fa">
+									<label class="form-check-label" for="no2fa" style="margin-top:0 !important">
+										non
+									</label>
+								</div>
+							</div>
+							<div class="method_2fa">
+								<p>Veuillez choisir une méthode d’authentification</p>
+								<div class="message_2fa"></div
+								<div class="from-check">
+									<div class="peremail d-flex flex-row gap-3">
+										<img src="{{asset('/public/assets/image/emails.jpg')}}" class="img-fluid" alt="..." width="300" heigth="300">
+										<div class="call_action pt-5">
+											<p>
+												Si vous Choisissez l'authentification par e-mail, </br> le code à 6 chiffres sera envoyé sur votre adresse e-mail de connexion.
+											</p>
+											<button type="button" class="btn btn-primary" id="doitmail">Utiliser l'e-mail</button>
+										</div>
+										
+										
+									</div>
+									<div class="persms d-flex flex-row gap-3">
+										<img src="{{asset('/public/assets/image/message.jpg')}}" class="img-fluid" alt="..." width="300" heigth="300">
+										<div class="call_action pt-5">
+											<p>
+												Si vous Choisissez l'authentification par sms,</br> le code à 6 chiffres sera envoyé sur votre numero de téléphone.
+											</p>
+											<button type="button" class="btn btn-primary" id="doitsms">Utiliser le texto</button>
+										</div>
+										
+									</div>
+								</div>
+								
+							</div>
+							
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 {% endblock %}

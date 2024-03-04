@@ -118,8 +118,9 @@
                                         <thead>
                                             <tr>
                                                 <th scope="col">Profil</th>
-                                                <th scope="col">Nom</th>
-                                                <th scope="col">Prénom</th>
+                                                {# <th scope="col">Nom</th>
+                                                <th scope="col">Prénom</th> #}
+                                                <th scope="col">Avatar</th>
                                                 <th scope="col">Email</th>
                                                 <th scope="col">Rôle</th>
                                                 <th scope="col">
@@ -140,9 +141,10 @@
                                                         <img src="/public/assets/image/img_avatar3.png" alt="" class="pdp-agenda-tribu-g">
                                                     {% endif %}
                                                 </td>
-                                                <td data-id="{{ result.id }}" class="lastname">{{ result.firstname }}</td>
-                                                <td class="firstname">{{ result.lastname }}</td>
-                                                <td class="email">{{ result.email }}</td>
+                                                {# <td data-id="{{ result.id }}" class="lastname">{{ result.firstname }}</td>
+                                                <td class="firstname">{{ result.lastname }}</td> #}
+                                                <td data-id="{{ result.id }}" class="fullname">{{ result.fullname }}</td>
+                                                <td class="email" data-email="{{ result.email }}">{{ result.emailShow }}</td>
                                                 <td class="role">{{ result.roles }}</td>
                                                 <td class="content-checkbox">
                                                     <input type="checkbox" name="selectOui" 

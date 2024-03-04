@@ -1344,3 +1344,89 @@ function orderOldMessage() {
 orderOldMessage();
 
 /** End appel triage */
+
+
+function lookupFanBulle(
+  event,
+  useDefaulAction = true,
+  myaction1 = null,
+  myaction2 = null
+) {
+  const target = event.target;
+  clearTimeout(lookupFanDebounce);
+  if (target != null && target instanceof HTMLElement) {
+    let word = target.value;
+    if (word.length > 2) {
+      lookupFanDebounce = setTimeout(() => {
+        if (!useDefaulAction) createLoader();
+        fetch(`/user/look/${word}`, { method: "GET" }).then((r) => {
+          if (r.status === 200 && r.ok) {
+            if (useDefaulAction) {
+            const lookContainer = document.querySelector(
+              ".lookup_fan_result_tom_js"
+            );
+            lookContainer.innerHTML = "";
+            r.json().then((jsons) => {
+              if (jsons.length > 0) {
+                for (let json of jsons) {
+                  const link = "/user/message/perso?user_id=" + json.user_id;
+                  const fullname = json.firstname + " " + json.lastname;
+                  const anchorElement = document.createElement("a");
+                  anchorElement.innerHTML = `<span class="fan_name fan_name_tom_js onglet-message-${json.user_id}-tomm-js" onclick="addOngletMessage(${json.user_id})">${fullname}</span>`;
+                  lookContainer.appendChild(anchorElement);
+                }
+                lookContainer.classList.remove("d-none");
+              } else {
+                const anchorElement = document.createElement("a");
+                anchorElement.innerHTML = `<span class="fan_name fan_name_tom_js">Aucune résulta.</span>`;
+
+                lookContainer.appendChild(anchorElement);
+                document
+                  .querySelector(".lookup_fan_result_tom_js")
+                  .classList.toggle("d-none");
+                swal({
+                    title: "Oops...",
+                    text: "Aucune résulta.",
+                    icon: "error",
+                    button: "OK",
+                  });
+              }
+            });
+          } else {
+            createLoader(true);
+              r.json().then((jsons) => {
+                if (jsons.length > 0) {
+                  myaction2(jsons);
+                } else {
+                  swal({
+                    title: "Oops...",
+                    text: "Erreur 500!",
+                    icon: "error",
+                    button: "OK",
+                  });
+                }
+              });
+            }
+          } else {
+            swal({
+              title: "Oops...",
+              text: "Erreur 500!",
+              icon: "error",
+              button: "OK",
+            });
+          }
+        });
+      }, 3000);
+    } else if (word.length === 0) {
+      if (useDefaulAction) {
+        const lookContainer = document.querySelector(
+          ".lookup_fan_result_tom_js"
+        );
+      lookContainer.classList.add("d-none");
+    } else {
+        //todo mettre à jour
+        myaction1();
+      }
+    }
+  }
+}

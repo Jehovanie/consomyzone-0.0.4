@@ -198,14 +198,17 @@ function sendInvitation(event){
 
             if(i>0){
                 let email = contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexMail]
+                let lastname = contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexName]
+                let firstname = contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexFirstName]
                 if(validateEmail(email)){
                     dataInfos.push({
                         agendaId:agenda.id,
                         objet:mailObject,
                         from_id:null,
                         to_id:null,
-                        lastname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexName],
-                        firstname : contenu.trim().split('\r\n')[i].split(";")[headerIndex.indexFirstName],
+                        lastname : lastname,
+                        firstname : firstname,
+                        fullname : firstname + " " + lastname,
                         email : email
                     })
                 }else{
@@ -365,14 +368,17 @@ function getUserInfoForSharing(isG, dataInfos,data,mailObject){
         for (let i = 0; i < allTr.length; i++) {
             let isChecked = allTr[i].querySelector("input").checked
             if(isChecked){
-                let to_id = allTr[i].querySelector(".lastname").dataset.id
+                let to_id = allTr[i].querySelector(".fullname").dataset.id
                 let from_id=allTr[i].parentElement.dataset.id
-                let lastname = allTr[i].querySelector(".lastname").textContent
-                let firstname = allTr[i].querySelector(".firstname").textContent
-                let email = allTr[i].querySelector(".email").textContent
+                // let lastname = allTr[i].querySelector(".lastname").textContent
+                // let firstname = allTr[i].querySelector(".firstname").textContent
+                let lastname = ""
+                let firstname = ""
+                let fullname = allTr[i].querySelector(".fullname").textContent
+                // let email = allTr[i].querySelector(".email").textContent
+                let email = allTr[i].querySelector(".email").dataset.email
                 var tempDiv = document.createElement('div');
                 tempDiv.innerHTML = data;
-                console.log(data)
                 tempDiv.querySelector("a#mail_link_Natenaina_js_css").href=`${window.location.origin}/agenda/confirmation/${agenda.id}`
                 tempDiv.querySelector("a#mail_link_Natenaina_js_css").disabled=false
                 data=tempDiv.outerHTML
@@ -383,6 +389,7 @@ function getUserInfoForSharing(isG, dataInfos,data,mailObject){
                     to_id:to_id,
                     lastname : lastname,
                     firstname : firstname,
+                    fullname : fullname,
                     email : email
                 })
                 if(validateEmail(email)){
@@ -400,11 +407,15 @@ function getUserInfoForSharing(isG, dataInfos,data,mailObject){
         for (let i = 0; i < allTr.length; i++) {
             let isChecked = allTr[i].querySelector("input").checked
             if(isChecked){
-                let to_id = allTr[i].querySelector(".lastname").dataset.id
+                let to_id = allTr[i].querySelector(".fullname").dataset.id
                 let from_id=allTr[i].parentElement.dataset.id
-                let lastname = allTr[i].querySelector(".lastname").textContent
-                let firstname = allTr[i].querySelector(".firstname").textContent
-                let email = allTr[i].querySelector(".email").textContent
+                // let lastname = allTr[i].querySelector(".lastname").textContent
+                // let firstname = allTr[i].querySelector(".firstname").textContent
+                // let email = allTr[i].querySelector(".email").textContent
+                let lastname = ""
+                let firstname = ""
+                let fullname = allTr[i].querySelector(".fullname").textContent
+                let email = allTr[i].querySelector(".email").dataset.email
                 var tempDiv = document.createElement('div');
                 tempDiv.innerHTML = data;
                 tempDiv.querySelector("a#mail_link_Natenaina_js_css").href=`${window.location.origin}/agenda/confirmation/${agenda.id}`
@@ -417,6 +428,7 @@ function getUserInfoForSharing(isG, dataInfos,data,mailObject){
                     to_id:to_id,
                     lastname : lastname,
                     firstname : firstname,
+                    fullname : fullname,
                     email : email
                 })
                 if(validateEmail(email)){

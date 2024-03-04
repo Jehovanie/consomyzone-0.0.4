@@ -1,0 +1,146 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+	ConsoMyZone : drop box cmz
+{% endblock %}
+
+{% block stylesheets %}
+	<link rel="stylesheet" href="{{asset('assets/css/account/account.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
+	<link rel="stylesheet" href="{{asset('assets/css/account/actualite.css')}}">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+{% endblock %}
+
+{% block javascripts %}
+	
+	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	
+{% endblock %}
+
+{% block body %}
+
+	<div class="nh main_user_id" data-toggle-full-name='{{profil[0].getFirstname ~ " " ~ profil[0].getLastname }}'>
+		{% include 'shard/account_navleft_new.html.twig' %}
+		{% include 'shard/account_navbar_new.html.twig' %}
+		<!-- ===== Main Content Start ===== -->
+		<main class="gv hm hv content-actualite-connected">
+            <div class="sk bu 2xl:ud-p-11">
+            
+                <div class="mx-auto">
+                    <h1>Vos Fichiers</h1>
+                	<div class="mb-3">
+						<input type="file"  id="choose-file-drop" name="choose-file-drop" class="form-control" style="display:none">
+						<label class="bg-primary "for="choose-file-drop" 
+							style="width:127,58px; height:40px; padding:5px; color:white ;border-radius:5px" >
+							<i class="fa-solid fa-plus m-1"></i> 
+							<span class="m-2">Nouveau</span>
+						</label>
+					</div>
+					<div class="mx-auto spinner-border text-primary d-none" role="status" id="drop-box-loader-js">
+						<span class="visually-hidden">Loading...</span>
+					</div>
+					{% if allFiles|length > 0  %}
+						<table class="table table-striped drop_box_table">
+							<thead>
+								<tr>
+									<th>
+										Nom du fichier	
+									</th>
+									<th>
+									  	Type du fichier	
+									</th>
+									<th>
+										Taille du fichier (Ko)
+									</th>
+									<th>
+										Date de création
+									</th>
+									<th>
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for allFile in allFiles %}
+									<tr class="drop-box file-name">
+										<td class="file_name" >
+											{{allFile.file_name}}
+											
+										</td>
+										<td class="file_extension">{{allFile.file_extension}}</td>
+										<td>{{allFile.file_size}}</td>
+										<td>{{allFile.created_at}}</td>
+										<td >
+											<div class="drop-action-fa-js {% if userConnected.isSuperAdmin is same as(true) %}action-super-admin-dropfa-js{% endif %}"
+												data-rank="{{idUser}}"
+												data-short="{{allFile.short_link}}"></div>
+										</td>
+									</tr>						
+								{% endfor %}
+							</tbody>
+						</table>
+					{% else %}
+						<div class="alert alert-primary" role="alert">
+							Vous n'avez pas encore téléversé aucun fichier.
+						</div>
+					{% endif %}
+                </div>
+            </div>
+		</main>
+
+		<!-- Modal -->
+	<div class="modal fade" id="rnmFileInDp" tabindex="-1" aria-labelledby="rnmFileInDpLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="rnmFileInDpLabel">Renommer le fichier</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				<div class="mb-3">
+					<label for="rnmFileInDpFajs" class="form-label">Nom du fichier</label>
+					<input type="text" class="form-control" id="inputFileInDpFajs" placeholder="">
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="rnmFileInDpFajs">Renommer</button>
+			</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="shareFileInDp" tabindex="-1" aria-labelledby="shareFileInDpLabel" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="shareFileInDpLabel">Partagez votre fichier</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body share-drop-file">
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="basic-addon1">Destinataires</span>
+					<input type="text" id="dest_area_drop_box" class="form-control destinaire_drop_box" placeholder="" aria-label="Destinataire" aria-describedby="basic-addon1">
+				</div>
+				<div class="input-group mb-3">
+					<span class="input-group-text" id="basic-addon1">Objet</span>
+					<input type="text" id="objet_area_object_drop" class="form-control objet_destinataire" placeholder="" aria-label="Objet" aria-describedby="basic-addon1">
+				</div>
+				<div id="exampleFormControlTextareaDropBox">
+					<div class="wrapper pt-3 pb-3">
+						<textarea cols="100 invitation_description_js_jheo" id="partage_file_drop_email">
+							
+						</textarea>
+
+						<pre id="output"></pre>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="shareFileInDpFajs">Partager</button>
+			</div>
+			</div>
+		</div>
+	</div>
+		
+
+
+{% endblock %}

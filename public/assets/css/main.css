@@ -3377,7 +3377,7 @@ stop_audio_avis_elie_js {
 	position: fixed;
 	bottom: 0;
 	right: 5%;
-	z-index: 2;
+	z-index: 100;
 	display: flex;
 }
 
@@ -3454,6 +3454,23 @@ stop_audio_avis_elie_js {
 	width: 50px;
 	height: 50px;
 	clip-path: circle(45%);
+margin-top: -100px;
+}
+
+.content-bulle-list{
+	background: #1f88ff;
+	width: 50px;
+	height: 50px;
+	clip-path: circle(45%);
+	position: relative;
+}
+
+.content-bulle-list i {
+	color: #fff;
+	position: absolute;
+    top: 25%;
+    left: 25%;
+    font-size: 20pt;
 }
 
 .navleft .list-depart-all-specific-arrond {
@@ -3683,7 +3700,7 @@ stop_audio_avis_elie_js {
   li.list-dw >a[href$=".doc"]:after,
   li.list-dw >a[href$=".xls"]:after,
   li.list-dw >a[href$=".zip"]:after {
-    content: "Télécharger.";
+    content: "Consulter.";
     position: absolute;
     top: 10px;
     left: 60px;
@@ -3892,3 +3909,152 @@ stop_audio_avis_elie_js {
     margin-left: auto !important;
 }
 /**end new tribu g*/
+
+.head-list-onglet {
+	background-color: #fff;
+	width: 100%;
+	height: 50px;
+	position: fixed;
+	top: 0;
+	left: 0;
+	padding-left: 10px;
+	z-index: 3;
+}
+
+.head-list-onglet .fa-people-line{
+	font-size: 15pt;
+}
+
+.position-msg-onglet{
+	right: 31% !important;
+}
+
+.content-entete-list-onglet{
+	margin-left: 0 !important;
+	width: 90%;
+}
+
+.search-message {
+	margin-top: 60px !important;
+	position: relative;
+	z-index: 2;
+}
+
+.lookup_fan_result_bulle{
+	margin-top: 100px !important;
+}
+
+.list-group-flush-bulle{
+	margin-top: 100px;
+}
+
+.content-confid-tribu{
+	background-color: #fff;
+	box-shadow: 3px 2px 6px 2px rgba(0, 0, 0, 0.2);
+	border-radius: 10px;
+	padding: 15px;
+}
+
+
+/** Reponse avis by Elie*/
+
+.profil_image_v2 {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+}
+ul {
+  margin-left:20px;
+}
+.wtree{
+	margin-top: 10px;
+	margin-left: 10px;
+}
+.wtree {
+  li {
+    list-style-type: none;
+    margin:10px 0 10px 10px;
+	border-radius: 5px;
+    position: relative;
+    &:before {
+      content: "";
+      position: absolute;
+      top:-10px;
+      left:-20px;
+      border-left: 1px solid #ddd;
+      border-bottom:1px solid #ddd;
+      width: 20px;
+      height:15px;
+    }
+    &:after {
+      position:absolute;
+      content:"";
+      top:5px;
+      left: -20px;
+      border-left: 1px solid #ddd;
+      border-top:1px solid #ddd;
+      width: 20px;
+      height:100%;
+    }
+    &:last-child:after {
+      display:none;
+    }
+    span {
+      /* display:block;
+      border: 1px solid #ddd;
+      padding:10px;
+      color:#888;
+      text-decoration:none; */
+    }
+  }
+}
+
+.wtree {
+  li {
+    span {
+      &:hover,
+      &:focus {
+        background: #eee; 
+        color: #000; 
+        border: 1px solid #aaa;
+        & + ul {
+          li {
+            span {
+              background: #eee; 
+              color: #000; 
+              border: 1px solid #aaa;
+            }
+          }
+        }
+      }
+
+      &:hover + ul, 
+      &:focus + ul {
+        li {
+          &:after,&:before {
+            border-color:  #aaa;
+          }
+        }
+      }
+    }
+  }
+}
+span.btn_event:hover {
+	background: #eee; 
+	color: #000; 
+	border: 1px solid #aaa !important;
+  }
+
+/** End Reponse avis*/
+
+.content_global_super_admin .dataTables_wrapper {
+	overflow-x: auto;
+}
+
+.dataTables_wrapper{
+	overflow-x: auto;
+}
+
+.icon-connexion div{
+	width: 70px;
+}

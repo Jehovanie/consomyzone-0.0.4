@@ -304,6 +304,7 @@ try{
         $customMailer->send($email);
 
     }
+
     public function sendLinkOnEmailAboutTribuTInvitation($email_to=[], $fullName_to, $context, $sender="ConsoMyZone", $cc= [], $cci= [] ):void
     {
         $customMailer =  $this->configSendEmail();
@@ -437,6 +438,36 @@ return 250;
                 return 550;
             }
         }
+    }
+
+    /**
+     * @author faniry
+* 
+     * envoie les emails de partage de fichier provenant du drop box
+     */
+    public function sendEmailSharingFileFromDropBox(
+        $fullName_from,
+        $emailAddressReceiver,
+        $context){
+        $customMailer= $this->configSendEmail();
+
+        $email=  (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender, $fullName_from)) 
+                ->subject($context["object_mail"])
+                ->to(new Address($emailAddressReceiver["email"], $emailAddressReceiver["fullName"]));
+
+         //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
+         $email =  $email->html($this->renderView($context["template_path"],[
+            'email' => new WrappedTemplatedEmail($this->twig, $email),
+            'content' => $context["content_mail"],
+        ]));
+        try{
+            $customMailer->send($email);
+            return 250;
+        }catch(Exception $e){
+            return 550;
+        }
+        
     }
 
     /**
@@ -642,9 +673,62 @@ return 250;
         // }
     }
 
+/**
+     * @author Elie
+     * Envoi de mail pour la validation de la demande d'adhésion de partisan dans une tribu 
+     * just send simple template to user
+     */
+    public function sendEmailForValidationTribu($email_to, $fullName_to, $objet, $url, $type_tribu, $tribu_name, $verbe, $txt):void
 
+    {
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
+                ->to(new Address($email_to, $fullName_to ))
+                ->subject($objet);
+                // ->text($message);
+        
+        $date = date('Y-m-d H:i:s'); // Date actuelle au format YYYY-MM-DD
+        // $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        $date_fr = date_format(date_create($date),"d-m-Y H:i:s");
+
+        //// Generate email with the contents html
+        $email =  $email->html($this->renderView('emails/mail_for_valid_tribu.html.twig',[
+            'email' => new WrappedTemplatedEmail($this->twig, $email),
+            'today' => $date_fr,
+            'name_friend' => $fullName_to,
+            "url" => $url,
+            "type"=>$type_tribu,
+            "tribu_name"=>$tribu_name,
+            "verbe"=>$verbe,
+            "txt"=>$txt,
+        ]));
+
+        $customMailer->send($email);
+    }
+
+/**
+     * @author Tomm
+     * relence email pour l'abonnement
+     * userController
+     */
+    public function sendEmailRelanceAbonnement($email_to,$objet,$message):void
+
+    {
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+            ->from(new Address($this->defaultEmailSender ,"ConsoMyZone"))
+            ->to(new Address($email_to))
+            ->subject($objet)
+            ->text($message);
+
+        $customMailer->send($email);
+    }
 
 }
-
-
 ?>

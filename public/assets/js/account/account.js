@@ -79,8 +79,7 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
       } else {
         //set cookie old
 
-        console.log("tsy misy lty a");
-        for (let notif of Array.from(allNotifications)) {
+                for (let notif of Array.from(allNotifications)) {
           for (let msg of new_message) {
             if (notif.dataset.toggleOtherId == msg.message.user_post) {
               obj = { [notif.dataset.toggleOtherId]: parseInt(notif.id) };
@@ -122,7 +121,8 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
           single_message.message.content,
           single_message.message.isForMe,
           single_message.message.isRead,
-          single_message.profil
+          single_message.profil,
+          single_message.fullname
         );
       });
     } else {
@@ -210,7 +210,8 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
             single_message.message.content,
             single_message.message.isForMe,
             single_message.message.isRead,
-            single_message.profil
+            single_message.profil,
+            single_message.fullname
           );
         });
       }
@@ -348,7 +349,7 @@ if (document.querySelector(".message_jheo_js")) {
         })
         .then((res) => {
           if (res) {
-            console.log(res);
+            // console.log(res);
           }
         });
     }
@@ -441,8 +442,15 @@ if (document.querySelectorAll(".radio-publi").length > 0) {
   });
 }
 
-if (document.querySelector(".banished")) {
-  document.querySelector(".banished").onclick = (e) => {
+
+function isBanished(event) {
+  let idUser = parseInt(
+            event.target.dataset.token
+              .split(":")[2]
+              .split(".")[1]
+              .replace(/[^0-9]/g, ""),
+            10
+          )
     const request = new Request("/set/banished", {
       method: "POST",
 
@@ -452,23 +460,78 @@ if (document.querySelector(".banished")) {
 
       body:
         "id=" +
-        encodeURIComponent(
-          parseInt(
-            e.target.dataset.token
+        encodeURIComponent(idUser),
+    });
+
+    fetch(request).
+    then(response => {
+      if (response.ok && response.status == 200) {
+      if (document.querySelector(`.content-is-banished-${idUser}`)) {
+          event.target.remove()
+          document.querySelector(`.content-is-banished-${idUser}`).innerHTML = `
+            <button type="button" class="btn btn-danger isRetablir-${idUser}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:4145B77.${idUser}H:bAUoBJQQ-EN6BAhzEAo" onclick="isRetabliBanished(event)">
+              Retablir
+            </button>
+          `
+        }
+        
+        if (document.querySelector(".btn-admin-banished-tomm-js")) {
+        location.reload()
+      }
+    }
+    })
+  }
+
+
+function isSuspendre(event) {
+  let idUser = parseInt(
+            event.target.dataset.token
               .split(":")[2]
               .split(".")[1]
               .replace(/[^0-9]/g, ""),
             10
           )
-        ),
+    const request = new Request("/set/suspendre", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+
+      body:
+        "id=" +
+        encodeURIComponent(
+          parseInt(idUser)
+        ),   
     });
 
-    fetch(request);
-  };
-}
+    fetch(request).
+      then(response => {
+        if (response.ok && response.status == 200) {
+          if (document.querySelector(`.content-is-banished-${idUser}`)) {
+            event.target.remove()
+            document.querySelector(`.content-is-suspendre-${idUser}`).innerHTML = `
+              <button type="button" class="btn btn-danger isRetablir-${idUser}-susp-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:4145B77.${idUser}H:bAUoBJQQ-EN6BAhzEAo" onclick="isRetabliSuspendre(event)">
+                Retablir
+              </button>
+            `
+          }
+          if (document.querySelector(".btn-admin-banished-tomm-js")) {
+        location.reload()
+      }
+    }
+      })
+  }
 
-if (document.querySelector(".retablir")) {
-  document.querySelector(".retablir").onclick = (e) => {
+
+function isRetabliBanished(event) {
+  let idUser = parseInt(
+            event.target.dataset.token
+              .split(":")[2]
+              .split(".")[1]
+              .replace(/[^0-9]/g, ""),
+            10
+          )
     const request = new Request("/undo/banished", {
       method: "POST",
 
@@ -479,19 +542,102 @@ if (document.querySelector(".retablir")) {
       body:
         "id=" +
         encodeURIComponent(
-          parseInt(
-            e.target.dataset.token
+          parseInt(idUser)
+        ),
+    });
+
+    fetch(request).
+      then(response => {
+        if (response.ok && response.status == 200) {
+      if (document.querySelector(`.content-is-banished-${idUser}`)) { 
+            event.target.remove()
+            document.querySelector(`.content-is-banished-${idUser}`).innerHTML = `
+              <button type="button" class="btn btn-danger isBanished-${idUser}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.${idUser}H:bAUBppJQQ-EN6BAhzEAo" onclick="isBanished(event)">
+                Radier
+              </button>
+            `
+          }
+          
+          if (document.querySelector(".btn-admin-banished-tomm-js")) {
+        location.reload()
+      }
+    
+        }
+      })
+  }
+
+function isRetabliSuspendre(event) {
+  let idUser = parseInt(
+            event.target.dataset.token
               .split(":")[2]
               .split(".")[1]
               .replace(/[^0-9]/g, ""),
             10
           )
+    const request = new Request("/undo/suspendre", {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+
+      body:
+        "id=" +
+        encodeURIComponent(
+          parseInt(idUser)
         ),
     });
 
-    fetch(request);
-  };
+    fetch(request).
+      then(response => {
+        if (response.ok && response.status == 200) {
+          if (document.querySelector(`.content-is-banished-${idUser}`)) {
+            event.target.remove()
+            document.querySelector(`.content-is-suspendre-${idUser}`).innerHTML = `
+              <button type="button" class="btn btn-warning isSuspendre-${idUser}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.${idUser}H:bAUBppJQQ-EN6BAhzEAo" onclick="isSuspendre(event)">
+                Suspendre
+              </button>
+            `
+          }
+          if (document.querySelector(".btn-admin-banished-tomm-js")) {
+            location.reload()
+          }
+        }
+      })
 }
+
+function relanceMailAbonnement(event, isEmail) {
+  let idUser = parseInt(
+        event.target.dataset.token
+              .split(":")[2]
+              .split(".")[1]
+              .replace(/[^0-9]/g, ""),
+            10
+          )
+        
+  const request = new Request("/user/relance/mail/abonnement", {
+    method: "POST",
+    headers:  {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+      },
+    body:JSON.stringify({
+      "idUser" : idUser,
+      "email" : isEmail
+      })
+  });
+  fetch(request).then(response => {
+        if (response.ok && response.status == 200) {
+        swal({
+          title: "Email envoyer",
+          text: "Votre email a été bien envoyer",
+          icon: "success",
+          button: "OK",
+        })
+        }
+    })
+  }
+
 
 if (document.querySelector("#send-request")) {
   document.getElementById("send-request").onclick = (e) => {
@@ -549,7 +695,7 @@ function showToastNotification(notifications, allNotificationsId) {
           notification.notification_type
         }">
                             <div class="h sa wf uk th ni ej cb">
-                                <img class="image_profil_navbar_msg" src="${
+                                <img class="image_profil_navbar_msg image_profil_${notification.id}_msg_tomm_js" src="${
                                   notification.photoDeProfil
                                     ? "/public" + notification.photoDeProfil
                                     : "/public/uploads/users/photos/default_pdp.png"
@@ -634,6 +780,7 @@ function showToastMessage(
     for (const message of allMessageNotifications) {
       const userLastName = message.lastname;
       const userFirstName = message.firstname;
+const fullNameConf = message.fullname;
       const profil = message.profil;
       const userId = parseInt(message.message.user_post); // id user who send message
       const mesageId = message.message.id; // new message
@@ -663,7 +810,8 @@ function showToastMessage(
                   userId,
                   userFirstName,
                   userLastName,
-                  message
+                  message,
+                  fullNameConf
                 );
               } else {
                 showNotifVisoCallWithSound(
@@ -672,7 +820,8 @@ function showToastMessage(
                   userId,
                   userFirstName,
                   userLastName,
-                  message
+                  message,
+                  fullNameConf
                 );
               }
             } else {
@@ -682,7 +831,8 @@ function showToastMessage(
                 userId,
                 userFirstName,
                 userLastName,
-                message
+                message,
+                fullNameConf
               );
             }
           }
@@ -696,7 +846,8 @@ function showToastMessage(
                 userId,
                 userFirstName,
                 userLastName,
-                message
+                message,
+                fullNameConf
               );
             } else {
               showNotifVisoCallWithSound(
@@ -705,7 +856,8 @@ function showToastMessage(
                 userId,
                 userFirstName,
                 userLastName,
-                message
+                message,
+                fullNameConf
               );
             }
           } else {
@@ -715,7 +867,8 @@ function showToastMessage(
               userId,
               userFirstName,
               userLastName,
-              message
+              message,
+              fullNameConf
             );
           }
         }
@@ -746,7 +899,7 @@ function justShowSimpleToastWithoutSound(
   div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
   div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
                             <div class="h sa wf uk th ni ej cb">
-                                <img class="image_profil_navbar_msg" src="${
+                                <img class="image_profil_navbar_msg image_profil_${userId}_msg_tomm_js" src="${
                                   profil
                                     ? "/public" + profil
                                     : "/public/uploads/users/photos/default_pdp.png"
@@ -814,13 +967,14 @@ function showNotifMessageWithSound(
   userId,
   userFirstName,
   userLastName,
-  message
+  message,
+  fullNameConf = ""
 ) {
   const div = document.createElement("div");
   div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
   div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
                             <div class="h sa wf uk th ni ej cb">
-                                <img class="image_profil_navbar_msg" src="${
+                                <img class="image_profil_navbar_msg image_profil_${userId}_msg_tomm_js" src="${
                                   profil
                                     ? "/public" + profil
                                     : "/public/uploads/users/photos/default_pdp.png"
@@ -834,7 +988,7 @@ function showNotifMessageWithSound(
                                         </h6>
                                         <p class="mn hc">
                                             ${
-                                              userFirstName + " " + userLastName
+                                              fullNameConf != "" ? fullNameConf: userFirstName + " " + userLastName
                                             }
                                         </p>
                                     </blockquote>
@@ -900,13 +1054,14 @@ function showNotifVisoCallWithSound(
   userId,
   userFirstName,
   userLastName,
-  message
+  message,
+  fullNameConf = ""
 ) {
   const div = document.createElement("div");
   div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
   div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
                             <div class="h sa wf uk th ni ej cb">
-                                <img class="image_profil_navbar_msg" src="${
+                                <img class="image_profil_navbar_msg image_profil_${userId}_msg_tomm_js" src="${
                                   profil
                                     ? "/public" + profil
                                     : "/public/uploads/users/photos/default_pdp.png"
@@ -920,7 +1075,7 @@ function showNotifVisoCallWithSound(
                                         </h6>
                                         <p class="mn hc">
                                             ${
-                                              userFirstName + " " + userLastName
+                                              fullNameConf != "" ? fullNameConf: userFirstName + " " + userLastName
                                             }
                                         </p>
                                     </blockquote>
@@ -989,7 +1144,7 @@ function showNotifVisoCallWithoutSound(
   div.setAttribute("id", `toast_message_faniry_${mesageId}_js`);
   div.innerHTML = `<a class="lc kg ug" href="/user/message/perso?user_id=${userId}">
                             <div class="h sa wf uk th ni ej cb">
-                                <img class="image_profil_navbar_msg" src="${
+                                <img class="image_profil_navbar_msg image_profil_${userId}_msg_tomm_js" src="${
                                   profil
                                     ? "/public" + profil
                                     : "/public/uploads/users/photos/default_pdp.png"
@@ -1192,7 +1347,8 @@ function createAndAddCardMessage(
   message,
   isForMe,
   isRead,
-  profil
+  profil,
+  __fullName = ""
 ) {
   //// format the message to long
   // const { text, images } = JSON.parse(message)
@@ -1244,7 +1400,7 @@ function createAndAddCardMessage(
   
         <div class="lc mg ug onglet-message-${other_id}-tomm-js" onclick="addOngletMessage(${other_id})">
             <div class="h sa wf uk th ni ej">
-                <img class="image_profil_navbar_msg"  src='${
+                <img class="image_profil_navbar_msg image_profil_${other_id}_msg_tomm_js"  src='${
                   profil
                     ? "/public" + profil
                     : "/public/uploads/users/photos/default_pdp.png"
@@ -1253,7 +1409,7 @@ function createAndAddCardMessage(
 
             <div>
                 <h6 class="un zn gs">
-                    ${firstname} ${lastname}
+                    ${__fullName}
                 </h6>
                 <p class="mn hc content_msg_text_jheo_js">
                     ${message_text}
@@ -1883,14 +2039,20 @@ if (arrangeSetingApparitionMobile()) {
 }
 
 function closeOnglet(other_id) {
+removeOngletSession(other_id)
   let windowNoIframe = window.parent.document.documentElement;
   let elementIframe = windowNoIframe.querySelector(`#onglet${other_id}Msg`);
   document.querySelector(".content-close-tomm-js").classList.add("d-none");
   elementIframe.remove();
+
 }
 
 function addOngletMessage(other_id) {
+
+  let windowNoIframe = window.parent.document.documentElement;
   if (document.querySelector(".add-onglet-msg-tomm-js")) {
+// let imgUrl = document.querySelector(`.image_profil_${other_id}_msg_tomm_js`).getAttribute("src");
+    // storageBulleList(other_id, imgUrl)
     document.querySelector(".message_jheo_js").click();
     if (document.querySelector(`#onglet${other_id}Msg`)) {
       document.querySelector(`#onglet${other_id}Msg`).remove();
@@ -1908,15 +2070,75 @@ function addOngletMessage(other_id) {
     if (document.querySelector(`#bulle${other_id}Msg`)) {
       document.querySelector(`#bulle${other_id}Msg`).remove();
     }
+  
+    let iframe = windowNoIframe.querySelector(`#onglet${other_id}Msg`)
+      let iframeDocument = iframe.contentWindow.document.querySelector(".ref_tom_js");
+      let iframeDocumentBody = iframe.contentWindow.document.querySelector("body");
+
+      if (iframeDocument === null) {
+        iframeDocumentBody.innerHTML = `
+                            <div class="spinner-border text-primary mx-auto" role="status">
+                              <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
+                                <radialGradient id='a7' cx='.66' fx='.66' cy='.3125' fy='.3125' gradientTransform='scale(1.5)'>
+                                    <stop offset='0' stop-color='#0d6efd'></stop><stop offset='.3' stop-color='#0d6efd' stop-opacity='.9'></stop>
+                                    <stop offset='.6' stop-color='#0d6efd' stop-opacity='.6'></stop>
+                                    <stop offset='.8' stop-color='#0d6efd' stop-opacity='.3'></stop>
+                                    <stop offset='1' stop-color='#0d6efd' stop-opacity='0'></stop>
+                                </radialGradient>
+                                <circle transform-origin='center' fill='none' stroke='url(#a7)' stroke-width='2' stroke-linecap='round' stroke-dasharray='200 1000' stroke-dashoffset='0' cx='100' cy='100' r='7'>
+                                    <animateTransform type='rotate' attributeName='transform' calcMode='spline' dur='2' values='360;0' keyTimes='0;1' keySplines='0 0 1 1' repeatCount='indefinite'>
+                                    </animateTransform>
+                                </circle>
+                                <circle transform-origin='center' fill='none' opacity='.2' stroke='#0d6efd' stroke-width='2' stroke-linecap='round' cx='100' cy='100' r='7'></circle>
+                              </svg>
+                            </div>`;
+      }
+      
+  } else if (windowNoIframe.querySelector(".add-onglet-msg-tomm-js")) {
+    let imgUrl = document.querySelector(`.image_profil_${other_id}_msg_tomm_js`).getAttribute("src");
+    storageBulleList(other_id, imgUrl)
+    if (windowNoIframe.querySelector(`#onglet${other_id}Msg`)) {
+      windowNoIframe.querySelector(`#onglet${other_id}Msg`).remove();
+    }
+
+    
+    let contentongletMsg = windowNoIframe.querySelector(".onglet-msg-all-tomm-js");
+    contentongletMsg.classList.remove("d-none");
+    // contentongletMsg.dataset.otherId = other_id
+    let url = `/user/message/onglet/perso?user_id=${other_id}`;
+    let iframeongletMsg = document.createElement("iframe");
+    iframeongletMsg.src = url;
+    iframeongletMsg.classList = "onglet-msg onglet-msg-tomm-js";
+    iframeongletMsg.id = `onglet${other_id}Msg`;
+    iframeongletMsg.dataset.otherId = other_id;
+    contentongletMsg.appendChild(iframeongletMsg);
+    if (windowNoIframe.querySelector(`#bulle${other_id}Msg`)) {
+      windowNoIframe.querySelector(`#bulle${other_id}Msg`).remove();
+    }
   }
 }
 
+
+
 function reduirOnglet(other_id) {
-  let windowNoIframe = window.parent.document.documentElement;
+  
   let imgUrl = document
     .querySelector(".pdp-msg-onglet-tomm-js")
     .getAttribute("src");
+storageBulleList(other_id, imgUrl)
+  let windowNoIframe = window.parent.document.documentElement;
   let elementIframe = windowNoIframe.querySelector(`#onglet${other_id}Msg`);
+let bulleMsg = windowNoIframe.querySelector(`#bulle${other_id}Msg`);
+  if (bulleMsg) {
+    bulleMsg.remove()
+    let contentongletMsg = windowNoIframe.querySelector(".content-bulle-tomm-js");
+    elementIframe.remove();
+    contentongletMsg.innerHTML += `
+        <div class="content-bulle content-bulle-tomm-js" id="bulle${other_id}Msg" onclick="bulleMsg(${other_id})">
+          <img src="${imgUrl}" class="content-bulle">
+        </div>
+      `;
+  } else {
   let contentongletMsg = windowNoIframe.querySelector(".content-bulle-tomm-js");
   elementIframe.remove();
   contentongletMsg.innerHTML += `
@@ -1924,6 +2146,9 @@ function reduirOnglet(other_id) {
         <img src="${imgUrl}" class="content-bulle">
       </div>
     `;
+}
+
+
 }
 
 function bulleMsg(other_id) {
@@ -2175,13 +2400,13 @@ function fetchInvitationExterne() {
                 if(item.is_forMe && item.is_valid != 1 ){
                   // console.log(item);
 
-                  let user = item.user ? `<a href="/user/profil/${item.user.userId.id}" class="badge text-bg-primary">${item.user.firstname + " " + item.user.lastname
+                  let user = item.user ? `<a href="/user/profil/${item.user.userId.id}" class="badge text-bg-primary">${item.fullNameUser
                   }</a>` : `<span class="badge text-bg-warning">Compte non trouvé</span>`;
 
                   let user_img = (item.user && item.user.photoProfil) ? "/public"+item.user.photoProfil : "/public/uploads/users/photos/default_pdp.png"
                   let sender_img = (item.sender && item.sender.photoProfil) ? "/public"+item.sender.photoProfil : "/public/uploads/users/photos/default_pdp.png"
 
-                  let sender_profil = item.sender ? `<a class="text-primary" href="/user/profil/${item.sender.id}" >${item.sender.firstname +" " +item.sender.lastname}</a>` : "Le fondateur"
+                  let sender_profil = item.sender ? `<a class="text-primary" href="/user/profil/${item.sender.id}" >${item.fullNameSender}</a>` : "Le fondateur"
 
                   let roles =""
                   let btn_supp =""
@@ -2204,7 +2429,7 @@ function fetchInvitationExterne() {
                                           <img src="${sender_img}" alt="user">
                                       </div>
                                       <div class="notification-list_detail">
-                                          <p>${item.is_forMe? "Vous avez " :sender_profil +" a "} invité <b>${user} [<span class="text-primary">${item.email}</span>]</b></p>
+                                          <p>${item.is_forMe? "Vous avez " :sender_profil +" a "} invité <b>${user} [<span class="text-primary">${item.emailConf}</span>]</b></p>
                                           <p class="text-muted"> à rejoindre la tribu T "${item.tribu}" le <small>${item.date}</small></p>
                                           <p class="text-muted"><small>${item.is_valid == 1 ? `<span class="badge text-bg-success"><i class="fa-solid fa-check-double"></i> Validé</span>` : `<span class="badge text-bg-warning"><i class="fa-solid fa-hourglass-start"></i> En attente</span>`}</small></p>
                                       </div>
@@ -2468,92 +2693,9 @@ function getSubscriptionStoryOrForm(e){
   }
 }
 
-/**
- * @author Nantenaina a ne pas contacté pendant les congés
- * où: On utilise cette fonction dans l'onglet abonnement de la page profil partisan
- * localisation du fichier: dans account.js,
- * je veux: soumettre un formulaire d'abonnement
- */
-function submitSubscription(e,typeAbonnement){
-  
-  let inputNumber = e.target.parentElement.querySelector("input")
-  let inputValue = inputNumber.value
-
-  if(inputValue == ""){
-    swal({
-      title: "Attention !",
-      text: "Veuillez saisir un montant",
-      icon: "warning",
-      button: "Ok",
-    });
-  }else{
-      inputValue = inputValue.replace(",",".")
-      if(isNaN(inputValue)){
-        swal({
-          title: "Attention !",
-          text: "Veuillez saisir un nombre",
-          icon: "warning",
-          button: "Ok",
-        });
-      }else{
-          if(inputValue <= 0){
-            swal({
-              title: "Attention !",
-              text: "Veuillez saisir un montant positif",
-              icon: "warning",
-              button: "Ok",
-            });
-            inputNumber.value = inputValue.replace("-","")
-          }else{
-              e.target.disabled = true
-              e.target.textContent = "Soumission..."
-              e.target.classList = "btn btn-secondary"
-              let data = {
-                typeAbonnement : parseInt(typeAbonnement),
-                montant : inputValue
-              }
-
-              let request = new Request("/save/one/abonnement/", {
-                body: JSON.stringify(data),
-                method: "POST",
-                headers: {
-                  Accept: "application/json",
-                  "Content-Type": "application/json",
-                },
-              });
-          
-              fetch(request).then((response) => {
-                if (response.status === 201) {
-                  swal({
-                    title: "Merci !",
-                    text: "Votre abonnement est prise en compte.",
-                    icon: "success",
-                    button: "Ok",
-                  });
-                  e.target.disabled = false
-                  e.target.textContent = "Soumettre"
-                  e.target.classList = "btn btn-primary"
-                } else if (response.status === 205) {
-                  swal({
-                    title: "Hors Ligne !",
-                    text: "Veuillez vous reconnecter.",
-                    icon: "warning",
-                    button: "Ok",
-                  }).then((result)=>{
-                      location.href = "/connexion"
-                  });
-                  e.target.disabled = false
-                  e.target.textContent = "Soumettre"
-                  e.target.classList = "btn btn-primary"
-                }
-              });
-          }
-      }
-  }
-}
 
 /**
- * @author Nantenaina a ne pas contacté pendant les congés
+ * @author Nantenaina mise a jour Tomm
  * où: On utilise cette fonction dans l'onglet abonnement de la page profil partisan
  * localisation du fichier: dans account.js,
  * je veux: afficher la liste des abonnements d'un partisan
@@ -2568,9 +2710,16 @@ function getPartisanAbonnement(){
   let table = `<table class="table table-striped" id="abonnementStoryTable">
           <thead>
             <tr valign="middle" class="text-center text-sm">
-              <th>Type d'abonnement</th>
-              <th>Montant</th>
-              <th>Date</th>
+              <th>Cotisation CMZ</th>
+              <th>Cotisation Tribu</th>
+              <th>Cotisation bleu</th>
+              <th>Cotisation vert</th>
+              <th>Participation supplémentaire</th>
+              <th>Date codisation CMZ</th>
+              <th>Date codisation Tribu</th>
+              <th>Date codisation bleu</th>
+              <th>Date codisation vert</th>
+              <th>Date Participation supplémentaire</th>
             </tr>
           </thead>
           <tbody>
@@ -2589,9 +2738,16 @@ function getPartisanAbonnement(){
               let typeAbonnement = getTypeAbonnement(abonnement.typeAbonnement)
               // <td>${fullName}</td>
               tr += `<tr valign="middle">
-                      <td>${typeAbonnement}</td>
-                      <td>${abonnement.montant}</td>
-                      <td>${abonnement.dateSoumission}</td>
+                      <td>${abonnement.cotisation_cmz ? abonnement.cotisation_cmz : "0" } €</td>
+                      <td>${abonnement.cotisation_tribu ? abonnement.cotisation_tribu : "0"} €</td>
+                      <td>${abonnement.cotisation_bleu ? abonnement.cotisation_bleu : "0"} €</td>
+                      <td>${abonnement.cotisation_vert ? abonnement.cotisation_vert : "0"} €</td>
+                      <td>${abonnement.participation_suplementaire ? abonnement.participation_suplementaire : "0"} €</td>
+                      <td>${abonnement.date_cotisation_cmz ? abonnement.date_cotisation_cmz : "-"}</td>
+                      <td>${abonnement.date_cotisation_tribu ? abonnement.date_cotisation_tribu : "-"}</td>
+                      <td>${abonnement.date_cotisation_bleu ? abonnement.date_cotisation_bleu : "-"}</td>
+                      <td>${abonnement.date_cotisation_vert ? abonnement.date_cotisation_vert : "-"}</td>
+                      <td>${abonnement.date_supplementaire ? abonnement.date_supplementaire : "-"}</td>
                     </tr>`
             }
             table += tr
@@ -2662,36 +2818,12 @@ function getTypeAbonnement(typeAbonnement){
 }
 
 /**
- * @author Nantenaina a ne pas contacté pendant les congés
+ * @author Nantenaina mise a jour Tomm
  * où: On utilise cette fonction dans l'onglet abonnement de la page Super Admin
  * localisation du fichier: dans account.js,
  * je veux: afficher la liste de tous les abonnements
  */
-function getListeAbonnementSuperAdmin(e){
-  let linkActives = document.querySelectorAll(
-    "#navbarSuperAdmin > ul > li > a"
-  );
-  linkActives.forEach((link) => {
-    if (link.classList.contains("text-primary"))
-      link.classList.remove("text-primary");
-  });
-  if (e) {
-    e.target.classList.add("text-primary");
-  } else {
-    document.querySelector(".addr_faniry_js").classList.add("text-primary");
-  }
-
-  if (document.querySelector("#list-tribu-g"))
-    document.querySelector("#list-tribu-g").style.display = "none";
-  if (document.querySelector("#list-demande-partenaire"))
-    document.querySelector("#list-demande-partenaire").style.display = "none";
-
-  if (document.querySelector("#list-infoAvalider"))
-    document.querySelector("#list-infoAvalider").style.display = "none";
-
-  if (document.querySelector("#list-abonnement-cmz"))
-    document.querySelector("#list-abonnement-cmz").style.display = "block";
-
+function getListeAbonnementSuperAdmin(e) {
   document.querySelector(
     ".content_chargement_liste_abonnement_nanta_js"
   ).innerHTML = `<div class="spinner-border spinner-border text-info" role="status">
@@ -2702,29 +2834,166 @@ function getListeAbonnementSuperAdmin(e){
           <thead>
             <tr valign="middle" class="text-center text-sm">
               <th style="min-width:218px !important;">Nom du partisan</th>
-              <th>Type d'abonnement</th>
-              <th>Montant</th>
-              <th>Date</th>
+              <th>Cotisation CMZ</th>
+              <th>Cotisation Tribu</th>
+              <th>Cotisation bleu</th>
+              <th>Cotisation vert</th>
+              <th>Participation supplémentaire</th>
+              <th>Date codisation CMZ</th>
+              <th>Date codisation Tribu</th>
+              <th>Date codisation bleu</th>
+              <th>Date codisation vert</th>
+              <th>Date Participation supplémentaire</th>
+              <th>Radier</th>
+              <th>Suspendre</th>
+              <th>Relancer</th>
             </tr>
           </thead>
           <tbody>
         `
   
   fetch("/get/all/abonnement/")
-    .then(response=> response.json())
-    .then(result=>{
-      if (result.status === 201) {
+    .then(response => {
+      if (response.status === 200) {
+        response.json().then(result => {
         let tr = ""
-        let abonnements = result.abonnements
-        if(abonnements.length > 0){
-            for (const abonnement of abonnements) {
-              let typeAbonnement = getTypeAbonnement(abonnement.typeAbonnement)
+        let abonnementList = result.abonnementList
+        if(abonnementList.length > 0){
+            for (const abonnement of abonnementList) {
+              console.log(abonnement)
+              let cotisationCMZ,
+                cotisationTribu,
+                cotisationBleu,
+                cotisationVert,
+                participationSuplementaire,
+                isBanished,
+                isSuspendre,
+                btnNotActive = ""
+              
+              let abonnementCMZ = abonnement.abonnement.cotisationCMZ
+              let abonnementTribu = abonnement.abonnement.cotisationTribu
+              let abonnementBleu = abonnement.abonnement.cotisationBleu
+              let abonnementVert = abonnement.abonnement.cotisationVert
+              let abonnementSup = abonnement.abonnement.participationSuplementaire
+
+              let dateCotisationCMZ = abonnement.abonnement.dateCotisationCMZ ? abonnement.abonnement.dateCotisationCMZ.split("T")[0] : "-"
+              let dateCotisationTribu = abonnement.abonnement.dateCotisationTribu ? abonnement.abonnement.dateCotisationTribu.split("T")[0] : "-"
+              let dateCotisationBleu = abonnement.abonnement.dateCotisationBleu ? abonnement.abonnement.dateCotisationBleu.split("T")[0] : "-"
+              let dateCotisationVert = abonnement.abonnement.dateCotisationVert ? abonnement.abonnement.dateCotisationVert.split("T")[0] : "-"
+              let dateSupplementaire = abonnement.abonnement.dateSupplementaire ? abonnement.abonnement.dateSupplementaire.split("T")[0] : "-"
+              
+              if (abonnementCMZ !== null) {
+                cotisationCMZ = abonnementCMZ
+              } else {
+                cotisationCMZ = "0"
+              }
+
+              if (abonnementTribu !== null ) {
+                cotisationTribu = abonnementTribu
+              } else {
+                cotisationTribu = "0"
+              }
+
+              if (abonnementBleu !== null ) {
+                cotisationBleu = abonnementBleu
+              } else {
+                cotisationBleu = "0"
+                btnNotActive = ""
+              }
+
+              if (abonnementVert !== null ) {
+                cotisationVert = abonnementVert
+              } else {
+                cotisationVert = "0"
+              }
+
+              if (abonnementSup !== null ) {
+                participationSuplementaire = abonnementSup
+              } else {
+                participationSuplementaire = "0"
+              }
+
+
+              
+
+              let newDate = new Date()
+              let dateUnAnCmz = new Date(dateCotisationCMZ);
+              dateUnAnCmz.setFullYear(dateUnAnCmz.getFullYear() + 1);
+
+              let dateUnAnTribu = new Date(dateCotisationTribu);
+              dateUnAnTribu.setFullYear(dateUnAnTribu.getFullYear() + 1);
+
+              let dateUnAnBleu = new Date(dateCotisationBleu);
+              dateUnAnBleu.setFullYear(dateUnAnBleu.getFullYear() + 1);
+
+              let dateUnAnVert = new Date(dateCotisationVert);
+              dateUnAnVert.setFullYear(dateUnAnVert.getFullYear() + 1);
+
+              let dateUnAnSup = new Date(dateSupplementaire);
+              dateUnAnSup.setFullYear(dateUnAnSup.getFullYear() + 1);
+
+              if (abonnementCMZ !== null ||
+                abonnementTribu !== null ||
+                abonnementBleu !== null ||
+                abonnementVert !== null ||
+                abonnementSup !== null 
+                ) {
+                btnNotActive = "disabled"
+              }
+            
+              if (dateUnAnCmz.getFullYear() == newDate.getFullYear() || dateUnAnTribu.getFullYear() == newDate.getFullYear()
+                || dateUnAnBleu.getFullYear() == newDate.getFullYear() || dateUnAnVert.getFullYear() == newDate.getFullYear()
+                || dateUnAnSup.getFullYear() == newDate.getFullYear()
+              ) {
+                btnNotActive = ""
+              }
+
+
+              if (abonnement.isBanished == 1) {
+                isBanished = `
+														<button type="button" class="btn btn-danger isRetablir-${abonnement.abonnement.userId}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:4145B77.${abonnement.abonnement.userId}H:bAUoBJQQ-EN6BAhzEAo" onclick="isRetabliBanished(event)">
+															Retablir
+														</button>`
+                
+              } else {
+                isBanished = `
+														<button type="button" class="btn btn-danger isBanished-${abonnement.abonnement.userId}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.${abonnement.abonnement.userId}H:bAUBppJQQ-EN6BAhzEAo" onclick="isBanished(event)" ${btnNotActive}>
+															Radier
+														</button>`
+              }
+
+              if (abonnement.isSuspendre == 1) {
+                isSuspendre = `
+														<button type="button" class="btn btn-danger isRetablir-${abonnement.abonnement.userId}-susp-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:4145B77.${abonnement.abonnement.userId}H:bAUoBJQQ-EN6BAhzEAo" onclick="isRetabliSuspendre(event)">
+															Retablir
+														</button>`
+                
+              } else {
+                isSuspendre = `
+														<button type="button" class="btn btn-warning isSuspendre-${abonnement.abonnement.userId}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.${abonnement.abonnement.userId}H:bAUBppJQQ-EN6BAhzEAo" onclick="isSuspendre(event)" ${btnNotActive}>
+                              Suspendre
+                            </button>`
+              }
 
               tr += `<tr valign="middle">
-                      <td style="min-width:218px !important;"><a href="/user/profil/${abonnement.userId}" class="text-primary">${abonnement.fullName}</a></td>
-                      <td>${typeAbonnement}</td>
-                      <td>${abonnement.montant}</td>
-                      <td>${abonnement.dateSoumission}</td>
+                      <td style="min-width:218px !important;"><a href="/user/profil/${abonnement.abonnement.userId}" class="text-primary">${abonnement.fullName}</a></td>
+                      <td>${cotisationCMZ} €</td>
+                      <td>${cotisationTribu} €</td>
+                      <td>${cotisationBleu} €</td>
+                      <td>${cotisationVert} €</td>
+                      <td>${participationSuplementaire} €</td>
+                      <td>${dateCotisationCMZ}</td>
+                      <td>${dateCotisationTribu}</td>
+                      <td>${dateCotisationBleu}</td>
+                      <td>${dateCotisationVert}</td>
+                      <td>${dateSupplementaire}</td>
+                      <td class="content-is-banished-${abonnement.abonnement.userId}">${isBanished}</td>
+                      <td class="content-is-suspendre-${abonnement.abonnement.userId}">${isSuspendre}</td>
+                      <td>
+                        <button type="button" class="btn btn-success isRelance-${abonnement.abonnement.userId}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.${abonnement.abonnement.userId}H:bAUBppJQQ-EN6BAhzEAo" onclick="relanceMailAbonnement(event, '${abonnement.isEmail}')" ${btnNotActive}>
+                          Relance
+                        </button>
+                      </td>
                     </tr>`
             }
             table += tr
@@ -2746,18 +3015,11 @@ function getListeAbonnementSuperAdmin(e){
                   `
           document.querySelector(".content_chargement_liste_abonnement_nanta_js").innerHTML = table
         }
-      } else if (result.status === 205) {
-        swal({
-          title: "Hors Ligne !",
-          text: "Veuillez vous reconnecter.",
-          icon: "warning",
-          button: "Ok",
-        }).then((ok)=>{
-            location.href = "/connexion"
-        });
+      })
       }
     })
 }
+
 
 function copyAffiliateLink(e) {
   let reflink = document.getElementById("reflink");
@@ -2855,7 +3117,8 @@ function showInvitationsG() {
                                 <tr>
                                     <th>E-mail</th>
                                     <th scope="col">Date</th>
-                                    <th scope="col">Fan</th>
+                                    <th scope="col">Avatar</th>
+<th scope="col">Invité(e) par</th>
                                     <th scope="col">Status</th>
                                 </tr>
                             </thead>
@@ -3417,12 +3680,13 @@ function fetchAllInvitationStoryG() {
                                 ? `<a href="/user/profil/${
                                     item.user.userId.id
                                   }" class="badge text-bg-primary">${
-                                    item.user.firstname +
-                                    " " +
-                                    item.user.lastname
+                                    item.fullNameInvited
                                   }</a>`
                                 : `<span class="badge text-bg-warning">Compte non trouvé</span>`
                             }</td>
+                            <td><a href="${item.sender? "/user/profil/"+item.sender.id :"#"}" class="badge text-bg-primary">${
+                              item.sender? item.fullNameSender :"Fondateur"
+                            }</a>
                             <td>${
                               item.is_valid == 1
                                 ? `<span class="badge text-bg-success">Validé</span>`
@@ -3437,8 +3701,447 @@ function fetchAllInvitationStoryG() {
           },
         });
       } else {
-        tbody_hist.innerHTML = `<tr class="text-center"><td colspan="4">Aucun historique enregistré pour le moment!</td></tr>`;
+        tbody_hist.innerHTML = `<tr class="text-center"><td colspan="5">Aucun historique enregistré pour le moment!</td></tr>`;
       }
     })
     .catch((error) => console.log(error));
+}
+
+function bulleListFans() {
+  let bulleListFans = document.querySelector(".content-bulle-amie-tomm-js")
+  let contentListFans = document.querySelector(".onglet-msg-amie-all-tomm-js")
+  if (bulleListFans) {
+    bulleListFans.addEventListener("click", () => {
+
+      
+      // bulleListFans.classList.toggle("d-none")
+      contentListFans.classList.toggle("d-none")
+      document.querySelector(".onglet-msg-all-tomm-js").classList.toggle("position-msg-onglet")
+      if (document.querySelector(".onglet-list-tomm-js")) {
+        document.querySelector(".onglet-list-tomm-js").remove()
+        
+      } else{
+        let url = `/user/message/onglet/list`;
+        let iframeongletMsg = document.createElement("iframe");
+        iframeongletMsg.src = url;
+        iframeongletMsg.classList = "onglet-msg onglet-list-tomm-js";
+        iframeongletMsg.id = `ongletListMsg`;
+        contentListFans.appendChild(iframeongletMsg);
+        fanBulleMsg()
+        let iframe = window.parent.document.documentElement.querySelector("#ongletListMsg")
+        let iframeDocumentTest = iframe.contentWindow.document.querySelector(".ref_tom_js");
+        let iframeDocumentBody = iframe.contentWindow.document.querySelector("body");
+            console.log(iframeDocumentTest)
+
+        if (iframeDocumentTest === null) {
+          iframeDocumentBody.innerHTML = `
+                              <div class="spinner-border text-primary mx-auto" role="status">
+                                <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>
+                                  <radialGradient id='a7' cx='.66' fx='.66' cy='.3125' fy='.3125' gradientTransform='scale(1.5)'>
+                                      <stop offset='0' stop-color='#0d6efd'></stop><stop offset='.3' stop-color='#0d6efd' stop-opacity='.9'></stop>
+                                      <stop offset='.6' stop-color='#0d6efd' stop-opacity='.6'></stop>
+                                      <stop offset='.8' stop-color='#0d6efd' stop-opacity='.3'></stop>
+                                      <stop offset='1' stop-color='#0d6efd' stop-opacity='0'></stop>
+                                  </radialGradient>
+                                  <circle transform-origin='center' fill='none' stroke='url(#a7)' stroke-width='2' stroke-linecap='round' stroke-dasharray='200 1000' stroke-dashoffset='0' cx='100' cy='100' r='7'>
+                                      <animateTransform type='rotate' attributeName='transform' calcMode='spline' dur='2' values='360;0' keyTimes='0;1' keySplines='0 0 1 1' repeatCount='indefinite'>
+                                      </animateTransform>
+                                  </circle>
+                                  <circle transform-origin='center' fill='none' opacity='.2' stroke='#0d6efd' stroke-width='2' stroke-linecap='round' cx='100' cy='100' r='7'></circle>
+                                </svg>
+                              </div>`;
+        }
+
+      }
+    })
+  }
+  
+}
+bulleListFans()
+
+function closeOngletList() {
+  let windowNoIframe = window.parent.document.documentElement;
+  let elementIframe = windowNoIframe.querySelector(`.content-bulle-amie-tomm-js`);
+  elementIframe.click();
+}
+
+
+window.addEventListener("load", (e) => {
+  if (e.target.location.pathname !== "/user/message/onglet/perso" && e.target.location.pathname !== "/user/message/onglet/list") {
+    let localBulleIdHtml = sessionStorage.getItem("ongletId")
+
+    if (localBulleIdHtml) {
+      let bulleIdHtml = localBulleIdHtml.split(",")
+      bulleIdHtml.forEach((idBulle) => {
+        let htmlIdBulles = sessionStorage.getItem(`ongletMsg${idBulle}`)
+        let windowNoIframe = window.parent.document.documentElement;
+        let contentOngletMsg = windowNoIframe.querySelector(".content-bulle-tomm-js");
+        if (htmlIdBulles !== null) {
+          contentOngletMsg.innerHTML += htmlIdBulles
+        }
+      })
+    }
+    
+  }
+});
+
+function storageBulleList(other_id, imgUrl) { 
+  // let imgUrl = document.querySelector(".image_profil_navbar_msg").getAttribute("src");
+  let ongletId = []
+  
+  // ongletId.push(other_id)
+  if (sessionStorage.getItem("ongletId")) {
+    ongletId.push(sessionStorage.getItem("ongletId"))
+    let verrifIdOther = ongletId.indexOf(other_id)
+    let verrifIdStorage = sessionStorage.getItem("ongletId").indexOf(other_id)
+    if (verrifIdOther === -1 && verrifIdStorage === -1) {
+      ongletId.push(other_id)
+    } 
+  }else {
+    ongletId.push(other_id)
+  }
+  sessionStorage.setItem("ongletId", ongletId)
+  sessionStorage.setItem(`ongletMsg${other_id}`, `<div class="content-bulle content-bulle-tomm-js" id="bulle${other_id}Msg" onclick="bulleMsg(${other_id})">
+      <img src="${imgUrl}" class="content-bulle">
+    </div>`);
+}
+
+function removeOngletSession(other_id) {
+  sessionStorage.removeItem(`ongletMsg${other_id}`)
+  
+  if (sessionStorage.getItem("ongletId") !== null) {
+    let verrifIdStorage = sessionStorage.getItem("ongletId").indexOf(other_id)
+    let idStorage = sessionStorage.getItem("ongletId")
+    let idStorageArray = idStorage.split(",")
+    if (verrifIdStorage > -1) {
+      idStorageArray.splice(verrifIdStorage)
+      
+      // sessionStorage.removeItem("ongletId")
+      // sessionStorage.setItem("ongletId", idStorage)
+    }
+  }
+}
+
+
+/**
+ * @author Tomm
+ * affiche la liste d'amis
+ */
+function fanBulleMsg() {
+  let iframe = window.parent.document.documentElement.querySelector("#ongletListMsg")
+  fetch("/user/get/allfans/bulle").then((r) => {
+    // const ulContainer = document.querySelector(".fan_actif_tom_js");
+    
+    iframe.onload = () => {
+      let iframeDocument = iframe.contentWindow.document;
+      let ulContainer = iframeDocument.documentElement.querySelector(".fan_actif_tom_js")
+      iframeDocument.documentElement.querySelector(".content_list_enligne_tomm_js").classList.remove("d-none")
+      
+      ulContainer.innerHTML = "";
+      ulContainer.innerHTML = `<div class="spinner-border text-primary mx-auto" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                          </div>`;
+
+      if (r.status === 200 && r.ok) {
+        r.json().then((jsons) => {
+          const length = jsons.length;
+          ulContainer.innerHTML = "";
+
+          for (let i = 0; i < length; i++) {
+            //pour les tribu T
+            if (i === 0) {
+              const tribusT = jsons[i];
+              const tribusTLength = tribusT.length;
+
+              for (let j = 0; j < tribusTLength; j++) {
+                console;
+                const amis = tribusT[j].amis;
+                const bigContainer = document.createElement("div");
+                bigContainer.style.background="#efe8e8cc";
+                bigContainer.style.borderTop="2px solid #227BC9";
+                const photoTribuT = tribusT[j]["logo_path"];
+                const title = `Liste des partisans dans votre tribu T ${tribusT[j]["name_tribu_t_muable"]}`;
+                const li = createListTribuBulle(photoTribuT, title);
+                bigContainer.setAttribute(
+                  "class",
+                  "list-group list-group-flush big_container_js d-none"
+                );
+                if(amis.length > 0)
+                  for (let c = 0; c < amis.length; c++) {
+                    const div = createCardPartisanBulle(amis[c]);
+                    bigContainer.appendChild(div);
+                  }
+                else{
+                  const span=document.createElement("span");
+                  span.innerText="Aucun partisan"
+                  bigContainer.appendChild(span);
+                }
+
+                li.appendChild(bigContainer);
+                ulContainer.appendChild(li);
+                hideContainerBulle(li, bigContainer);
+              }
+            } else {
+              //pour tribu G
+              const tribuG = jsons[i];
+              const tribuGLength = tribuG.length;
+              let li = null;
+              const bigContainer = document.createElement("div");
+              bigContainer.style.background="#efe8e8cc";
+              bigContainer.style.borderTop="2px solid #227BC9";
+              bigContainer.setAttribute(
+                "class",
+                "list-group list-group-flush big_container_js d-none"
+              );
+            if(tribuGLength > 0){
+              for (let c = 0; c < tribuGLength; c++) {
+                if (c === 0) {
+                  const photoTribuG = tribuG[c]["avatarTribuG"];
+                  const title = `Liste des partisans dans votre tribu G ${tribuG[c]["nom_tribuG"]}`;
+                  li = createListTribuBulle(photoTribuG, title);
+                }
+                const div = createCardPartisanBulle(tribuG[c]);
+                bigContainer.appendChild(div);
+              }
+            }
+            else{
+                  const span=document.createElement("span");
+                  span.innerText="Aucun partisan"
+                  bigContainer.appendChild(span);
+              }
+
+              li.appendChild(bigContainer);
+              ulContainer.appendChild(li);
+              hideContainerBulle(li, bigContainer);
+            }
+          }
+          updateListFan();
+
+          myMessageWorker.onmessage = (e) => {
+            reRenderPartisanStatus(e.data);
+          };
+        });
+      }
+    }
+  });
+}
+
+/**
+ * @author Tomm
+ * provoque l'effet de dropsown sur la list amis
+ * @param {*} targetElement
+ * @param {*} container
+ */
+function hideContainerBulle(targetElement, container) {
+  const icon = targetElement.querySelector(".superior");
+  targetElement.onclick = (e) => {
+    let targ = e.target;
+    if (
+      targ.classList.contains("listing_fa_js") ||
+      targ.classList.contains("name_tribu_faniry_js") ||
+      targ.classList.contains("superior")
+    ) {
+      targetElement.classList.toggle("active_amis_list_fa_js");
+      if (!targetElement.classList.contains("active_amis_list_fa_js")) {
+        container.classList.toggle("d-none");
+        icon.style.transform = "rotate(0deg)";
+      } else {
+        container.classList.toggle("d-none");
+        icon.style.transform = "rotate(90deg)";
+      }
+    }
+  };
+}
+
+/**
+ * @author Tomm
+ * créé la carte pour le partisan
+ */
+function createCardPartisanBulle(json, isIframe = false) {
+  const photoProfil =
+    json.image_profil != null
+      ? "/public" + json.image_profil
+      : "/public/uploads/users/photos/default_pdp.png";
+  let link = !isIframe
+    ? "/user/message/perso?user_id=" + json.id
+    : "/api/message/perso_iframe?user_id=" + json.id;
+
+  // const fullName = json.firstname + " " + json.lastname;
+
+    let fullName = json.fullname ? json.fullname : json.firstname + " " + json.lastname;
+
+  // last_msg_user_${json.id}_jheo_js
+  //content-message-nanta-css
+  const divContainer = document.createElement("div");
+  divContainer.setAttribute("class", `cg lc mg sh ol rl tq is  mss_fan_js`);
+  divContainer.dataset.rank = cryptageJs((''+json.id));
+
+  const divHeader = document.createElement("div");
+  divHeader.setAttribute("class", `h mb sc yd of th`);
+  const img = document.createElement("img");
+  img.setAttribute("class", `vc yd qk rk elie-pdp-modif image_profil_${json.id}_msg_tomm_js`);   
+  img.src = photoProfil;
+  img.style = "cursor:pointer;";
+  img.dataset.bsToggle = "modal";
+  img.dataset.bsTarget = "#modal_show_photo_mess";
+
+  const span = document.createElement("span");
+  //span.setAttribute("class","onlinestat_fan_js")
+  let isActive = !!json.is_online;
+  if (isActive) {
+    span.setAttribute("class", "g l m jc wc ce th pi ij xj onlinestat_fan_js");
+  } else {
+    span.setAttribute("class", "g l m jc wc ce th pi ij onlinestat_fan_js");
+    span.style.backgroundColor = "gray";
+  }
+
+  img.onclick = function () {
+    setPhotoMessage(this);
+  };
+
+  divHeader.appendChild(img);
+  divHeader.appendChild(span);
+
+  const a = document.createElement("a");
+  a.href = "#";
+  a.setAttribute("onclick", `addOngletMessage(${json.id})`)
+  a.setAttribute("class", "yd");
+  a.innerHTML = `<div class="row">
+					  <div class="col-8">
+						  <h5 class="mn un zn gs">
+							  ${fullName}
+						  </h5>
+					  </div>
+				  </div>`;
+
+  divContainer.appendChild(divHeader);
+  divContainer.appendChild(a);
+  return divContainer;
+}
+
+
+/**
+ * @author Tomm
+ * créé le listing des tribu
+ */
+function createListTribuBulle(photoTribu, title) {
+  const li = document.createElement("li");
+  const img = document.createElement("img");
+  const i = document.createElement("i");
+  const span = document.createElement("span");
+
+  li.style = "cursor:pointer";
+  li.setAttribute("class", "listing_fa_js");
+  li.style.padding = "0.75em";
+  li.style.width = "100%";
+
+  img.src = photoTribu;
+  i.setAttribute("class", "fa-solid fa-chevron-right superior");
+  i.style.float = "right";
+  span.setAttribute("class", "name_tribu_faniry_js");
+  span.textContent = title;
+
+  //li.appendChild(img);
+  span.appendChild(i);
+  li.appendChild(span);
+  // li.appendChild(i);
+
+  i.onclick = (e) => {};
+  return li;
+}
+
+
+/**
+ * @author Tomm
+ * où: On utilise cette fonction dans l'onglet abonnement de la page profil partisan
+ * localisation du fichier: dans account.js,
+ * je veux: soumettre un formulaire d'abonnement
+ */
+function submitSubscription(e,typeAbonnement){
+  
+  let inputNumber = e.target.parentElement.querySelector("input")
+  let inputValue = inputNumber.value
+
+  if(inputValue == ""){
+    swal({
+      title: "Attention !",
+      text: "Veuillez saisir un montant",
+      icon: "warning",
+      button: "Ok",
+    });
+  }else{
+      inputValue = inputValue.replace(",",".")
+      if(isNaN(inputValue)){
+        swal({
+          title: "Attention !",
+          text: "Veuillez saisir un nombre",
+          icon: "warning",
+          button: "Ok",
+        });
+      }else{
+          if(inputValue <= 0){
+            swal({
+              title: "Attention !",
+              text: "Veuillez saisir un montant positif",
+              icon: "warning",
+              button: "Ok",
+            });
+            inputNumber.value = inputValue.replace("-","")
+          }else{
+            e.target.disabled = true
+            e.target.textContent = "Soumission..."
+            e.target.classList = "btn btn-secondary"
+            let data = {
+              montant : inputValue
+            }
+
+            let url = ""
+            if (typeAbonnement == 1) {
+              url = "/user/set/abonnement/cotisation/cmz"
+            }else if (typeAbonnement == 2) {
+              url = "/user/set/abonnement/cotisation/supplementaire"
+            }else if (typeAbonnement == 3) {
+              url = "/user/set/abonnement/cotisation/tribu"
+            }else if (typeAbonnement == 4) {
+              url = "/user/set/abonnement/cotisation/vert"
+            }else if (typeAbonnement == 5) {
+              url = "/user/set/abonnement/cotisation/bleu"
+            }
+            let request = new Request(url, {
+              body: JSON.stringify(data),
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+                "Content-Type": "application/json",
+              },
+            });
+          
+            fetch(request).then((response) => {
+              if (response.status === 200) {
+                swal({
+                  title: "Merci !",
+                  text: "Votre abonnement est prise en compte.",
+                  icon: "success",
+                  button: "Ok",
+                });
+                e.target.disabled = false
+                e.target.textContent = "Soumettre"
+                e.target.classList = "btn btn-primary"
+              } else if (response.status === 205) {
+                swal({
+                  title: "Hors Ligne !",
+                  text: "Veuillez vous reconnecter.",
+                  icon: "warning",
+                  button: "Ok",
+                }).then((result)=>{
+                    location.href = "/connexion"
+                });
+                e.target.disabled = false
+                e.target.textContent = "Soumettre"
+                e.target.classList = "btn btn-primary"
+              }
+            });
+          }
+      }
+  }
 }

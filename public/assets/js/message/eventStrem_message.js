@@ -77,8 +77,9 @@ if(document.querySelector(".content_entete_msg_grp_jheo_js")){
                 const datetime=message.date_message_created
                 const userToFirstname=message.firstname
                 const userToLastname=message.lastname
+                const userFullname=message.fullname
                 createDivMessageGroup(message.id_msg, isForMe, datetime, 
-                    msg, images,userToFirstname,userToLastname);
+                    msg, images,userToFirstname,userToLastname, userFullname);
             }
 
         })
@@ -119,7 +120,7 @@ if(document.querySelector(".content_entete_msg_grp_jheo_js")){
         // })
     }
 }
-function createDivMessageGroup(id,isForMe,date, message,images,userToFirstname,userToLastname) {
+function createDivMessageGroup(id,isForMe,date, message,images,userToFirstname,userToLastname, userToFullname) {
 
     const card_msg= document.createElement("div");
     // if(isForMe== "1"){
@@ -141,7 +142,7 @@ function createDivMessageGroup(id,isForMe,date, message,images,userToFirstname,u
 
     card_msg.innerHTML= `
         <p class="qb mn un">
-            ${userToFirstname} ${userToLastname}
+            ${userToFullname}
         </p>
         <div class="qb vh hi vj yr el yl">
             <p style="color:black">${message}</p>

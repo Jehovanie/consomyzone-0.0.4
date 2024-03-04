@@ -90,7 +90,7 @@ class RequestingService extends PDOConnexionService
         $statement->execute();
     }
 
-    public function getAllRequest($tableName)
+    public function getAllRequest($tableName, $userId, $confidentialityService = null)
     {
         $sql = "SELECT * FROM $tableName t WHERE is_wait = 1";
         $statement = $this->getPDO()->prepare($sql);
@@ -98,23 +98,25 @@ class RequestingService extends PDOConnexionService
         $ts = $statement->fetchAll(PDO::FETCH_ASSOC);
         $result = [];
         // dd($ts);
-
         foreach ($ts as $t) {
             $uPoster = $this->u->find($t["user_post"]);
             $uReceiver = $this->u->find($t["user_received"]);
-
             if($uPoster && $uReceiver ){
-                // $tmp["requesting"] = $t;
-                // $tmp["userReceiving"] = (array)$uReceiver;
-                // $tmp["uPoster"] = (array)$uPoster;
-                $tmp["requesting"] = $t;
                 $tmp["userReceiving"] = (array)$uReceiver;
-                $tmp["fN_userReceiving"] = $this->tribuT->getFullName($t["user_received"]);
+                $otherUserId = $t["user_received"];
+                $tmp["fN_userReceiving"] = $this->tribuT->getFullName($userId, $otherUserId, $confidentialityService);
                 $tmp["pdp_userReceiving"] = $this->tribuT->getPdp($t["user_received"]);
                 $tmp["uPoster"] = (array)$uPoster;
-                $tmp["fN_uPoster"] = $this->tribuT->getFullName($t["user_post"]);
+                $otherUserId_to = $t["user_post"];
+                $tmp["fN_uPoster"] = $this->tribuT->getFullName($userId, $otherUserId_to, $confidentialityService);
                 $tmp["pdp_uPoster"] = $this->tribuT->getPdp($t["user_post"]);
-                
+                $nomTribu = $this->tribuT->getApropos($t["balise"])["name"];
+                if($t["types"] == "invitation"){
+                    $t["content"] = $tmp["fN_uPoster"] . " vous a envoyé une invitation de rejoindre la tribu " . $nomTribu;
+                }else{
+                    $t["content"] = "Vous avez envoyé une invitation à " . $tmp["fN_userReceiving"] . " de rejoindre la tribu " . $nomTribu;
+                }
+                $tmp["requesting"] = $t;
                 array_push($result, $tmp);
             }
         }
@@ -144,7 +146,7 @@ class RequestingService extends PDOConnexionService
      * @author Elie
      * @constructor get All requests from tablerequesting by user
      */
-    public function getAllRequestUser($tableName)
+    public function getAllRequestUser($tableName, $userId, $confidentialityService = null)
     {
         $sql = "SELECT * FROM $tableName ORDER BY id DESC ";
         $statement = $this->getPDO()->prepare($sql);
@@ -158,14 +160,21 @@ class RequestingService extends PDOConnexionService
             $uReceiver = $this->u->find($t["user_received"]);
 
             if($uPoster && $uReceiver ){
-                $tmp["requesting"] = $t;
                 $tmp["userReceiving"] = (array)$uReceiver;
-                $tmp["fN_userReceiving"] = $this->tribuT->getFullName($t["user_received"]);
+                $otherUserId = $t["user_received"];
+                $tmp["fN_userReceiving"] = $this->tribuT->getFullName($userId, $otherUserId, $confidentialityService);
                 $tmp["pdp_userReceiving"] = $this->tribuT->getPdp($t["user_received"]);
                 $tmp["uPoster"] = (array)$uPoster;
-                $tmp["fN_uPoster"] = $this->tribuT->getFullName($t["user_post"]);
+                $otherUserId_to = $t["user_post"];
+                $tmp["fN_uPoster"] = $this->tribuT->getFullName($userId, $otherUserId_to, $confidentialityService);
                 $tmp["pdp_uPoster"] = $this->tribuT->getPdp($t["user_post"]);
-                
+                $nomTribu = $this->tribuT->getApropos($t["balise"])["name"];
+                if($t["types"] == "invitation"){
+                    $t["content"] = $tmp["fN_uPoster"] . " vous a envoyé une invitation de rejoindre la tribu " . $nomTribu;
+                }else{
+                    $t["content"] = "Vous avez envoyé une invitation à " . $tmp["fN_userReceiving"] . " de rejoindre la tribu " . $nomTribu;
+                }
+                $tmp["requesting"] = $t;
                 array_push($result, $tmp);
             }
         }

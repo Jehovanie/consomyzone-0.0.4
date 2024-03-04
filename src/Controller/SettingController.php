@@ -13,10 +13,13 @@ use App\Service\Tribu_T_Service;
 use App\Form\ConfidentialityType;
 use App\Form\SettingProfilConsumerType;
 use App\Form\SettingProfilSupplierType;
+use App\Service\ConfidentialityService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
@@ -40,7 +43,12 @@ class SettingController extends AbstractController
     }
 
     #[Route('/user/setting/account', name: 'account_setting')]
-    public function index(Request $request, Status $status, TributGService $tbg_serv): Response
+    public function index(
+        Request $request, 
+        Status $status, 
+        TributGService $tbg_serv,
+        ConfidentialityService $confidentialityService
+        ): Response
     {
         $userConnected= $status->userProfilService($this->getUser());
 
@@ -50,6 +58,7 @@ class SettingController extends AbstractController
         $profil = null;
         $flushMessage = null;
         $form = null;
+        $pseudo = $user->getPseudo();
 
         $tribugexists = $tbg_serv->getAllTribuGExists();
 
@@ -61,6 +70,8 @@ class SettingController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+                $pseudo = $request->request->get("setting_pseudo");
+                $user->setPseudo($pseudo);
                 $fname = $form->get('firstname')->getData();
                 //dd($new_password);
                 $lname = $form->get('lastname')->getData();
@@ -134,6 +145,8 @@ class SettingController extends AbstractController
             $form->handleRequest($request);
 
             if ($form->isSubmitted() && $form->isValid()) {
+                $pseudo = $request->request->get("setting_pseudo");
+                $user->setPseudo($pseudo);
                 $fname = $form->get('firstname')->getData();
                 //dd($new_password);
                 $lname = $form->get('lastname')->getData();
@@ -217,6 +230,111 @@ class SettingController extends AbstractController
             ->add('password', PasswordType::class)
             ->getForm();
         
+        $allTribus = $confidentialityService->getTribuByIdUser($userId);
+        $i = 0;
+        foreach ($allTribus as $key ) {
+            $isEmailPublic = $confidentialityService->checkIfTrue("confidentiality_tribu_".$userId, $key["table_name"], "is_public_email", true);
+            $allTribus[$i]["isEmailPublic"] = $isEmailPublic;
+            $isFirstNamePublic = $confidentialityService->checkIfTrue("confidentiality_tribu_".$userId, $key["table_name"], "is_public_firstname", true);
+            $allTribus[$i]["isFirstNamePublic"] = $isFirstNamePublic;
+            $isLastNamePublic = $confidentialityService->checkIfTrue("confidentiality_tribu_".$userId, $key["table_name"], "is_public_lastname", true);
+            $allTribus[$i]["isLastNamePublic"] = $isLastNamePublic;
+            $isAdressePublic = $confidentialityService->checkIfTrue("confidentiality_tribu_".$userId, $key["table_name"], "is_public_adresse", true);
+            $allTribus[$i]["isAdressePublic"] = $isAdressePublic;
+            $isPhonePublic = $confidentialityService->checkIfTrue("confidentiality_tribu_".$userId, $key["table_name"], "is_public_phone_number", true);
+            $allTribus[$i]["isPhonePublic"] = $isPhonePublic;
+            $isBadgeFanPublic = $confidentialityService->checkIfTrue("confidentiality_tribu_".$userId, $key["table_name"], "is_public_badge_fan", true);
+            $allTribus[$i]["isBadgeFanPublic"] = $isBadgeFanPublic;
+            $isBadgeDonBleuPublic = $confidentialityService->checkIfTrue("confidentiality_tribu_".$userId, $key["table_name"], "is_public_badge_don_bleu", true);
+            $allTribus[$i]["isBadgeDonBleuPublic"] = $isBadgeDonBleuPublic;
+            $isBadgeDonVertPublic = $confidentialityService->checkIfTrue("confidentiality_tribu_".$userId, $key["table_name"], "is_public_badge_don_vert", true);
+            $allTribus[$i]["isBadgeDonVertPublic"] = $isBadgeDonVertPublic;
+            $isBadgeActionnairePublic = $confidentialityService->checkIfTrue("confidentiality_tribu_".$userId, $key["table_name"], "is_public_badge_actionnaire", true);
+            $allTribus[$i]["isBadgeActionnairePublic"] = $isBadgeActionnairePublic;
+            $i++;
+        }
+
+        // Email confidentiality
+        $confEmail = [];
+        $isEmailPrivate = $confidentialityService->checkIfTrue("confidentiality_".$userId, "email", "is_private");
+        $isEmailPublic = $confidentialityService->checkIfTrue("confidentiality_".$userId, "email", "is_public");
+        $isEmailPublicOnTribu = $confidentialityService->checkIfTrue("confidentiality_".$userId, "email", "is_tribu");
+        $confEmail["isEmailPrivate"] = $isEmailPrivate;
+        $confEmail["isEmailPublic"] = $isEmailPublic;
+        $confEmail["isEmailPublicOnTribu"] = $isEmailPublicOnTribu;
+
+        // FirstName confidentiality
+        $conFirstName = [];
+        $isFirstNamePrivate = $confidentialityService->checkIfTrue("confidentiality_".$userId, "firstname", "is_private");
+        $isFirstNamePublic = $confidentialityService->checkIfTrue("confidentiality_".$userId, "firstname", "is_public");
+        $isFirstNamePublicOnTribu = $confidentialityService->checkIfTrue("confidentiality_".$userId, "firstname", "is_tribu");
+        $conFirstName["isFirstNamePrivate"] =$isFirstNamePrivate;
+        $conFirstName["isFirstNamePublic"] = $isFirstNamePublic;
+        $conFirstName["isFirstNamePublicOnTribu"] = $isFirstNamePublicOnTribu;
+
+        // LastName confidentiality
+        $conLastName = [];
+        $isLastNamePrivate = $confidentialityService->checkIfTrue("confidentiality_".$userId, "lastname", "is_private");
+        $isLastNamePublic = $confidentialityService->checkIfTrue("confidentiality_".$userId, "lastname", "is_public");
+        $isLastNamePublicOnTribu = $confidentialityService->checkIfTrue("confidentiality_".$userId, "lastname", "is_tribu");
+        $conLastName["isLastNamePrivate"] =$isLastNamePrivate;
+        $conLastName["isLastNamePublic"] = $isLastNamePublic;
+        $conLastName["isLastNamePublicOnTribu"] = $isLastNamePublicOnTribu;
+
+        // Adresse confidentiality
+        $confAdresse = [];
+        $isAdressePrivate = $confidentialityService->checkIfTrue("confidentiality_".$userId, "adresse", "is_private");
+        $isAdressePublic = $confidentialityService->checkIfTrue("confidentiality_".$userId, "adresse", "is_public");
+        $isAdressePublicOnTribu = $confidentialityService->checkIfTrue("confidentiality_".$userId, "adresse", "is_tribu");
+        $confAdresse["isAdressePrivate"] = $isAdressePrivate;
+        $confAdresse["isAdressePublic"] = $isAdressePublic;
+        $confAdresse["isAdressePublicOnTribu"] = $isAdressePublicOnTribu;
+
+        // PhoneNumber confidentiality
+        $confPhoneNumber = [];
+        $isPhoneNumberPrivate = $confidentialityService->checkIfTrue("confidentiality_".$userId, "phone_number", "is_private");
+        $isPhoneNumberPublic = $confidentialityService->checkIfTrue("confidentiality_".$userId, "phone_number", "is_public");
+        $isPhoneNumberPublicOnTribu = $confidentialityService->checkIfTrue("confidentiality_".$userId, "phone_number", "is_tribu");
+        $confPhoneNumber["isPhoneNumberPrivate"] = $isPhoneNumberPrivate;
+        $confPhoneNumber["isPhoneNumberPublic"] = $isPhoneNumberPublic;
+        $confPhoneNumber["isPhoneNumberPublicOnTribu"] = $isPhoneNumberPublicOnTribu;
+
+        // Badge Fan confidentiality
+        $confBadgeFan = [];
+        $isBadgeFanPrivate = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeFan", "is_private");
+        $isBadgeFanPublic = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeFan", "is_public");
+        $isBadgeFanPublicOnTribu = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeFan", "is_tribu");
+        $confBadgeFan["isBadgeFanPrivate"] = $isBadgeFanPrivate;
+        $confBadgeFan["isBadgeFanPublic"] = $isBadgeFanPublic;
+        $confBadgeFan["isBadgeFanPublicOnTribu"] = $isBadgeFanPublicOnTribu;
+
+        // Badge Donateur bleu confidentiality
+        $confBadgeDonBleu = [];
+        $isBadgeDonBleuPrivate = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeDonateurBleu", "is_private");
+        $isBadgeDonBleuPublic = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeDonateurBleu", "is_public");
+        $isBadgeDonBleuPublicOnTribu = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeDonateurBleu", "is_tribu");
+        $confBadgeDonBleu["isBadgeDonBleuPrivate"] = $isBadgeDonBleuPrivate;
+        $confBadgeDonBleu["isBadgeDonBleuPublic"] = $isBadgeDonBleuPublic;
+        $confBadgeDonBleu["isBadgeDonBleuPublicOnTribu"] = $isBadgeDonBleuPublicOnTribu;
+
+        // Badge Donateur vert confidentiality
+        $confBadgeDonVert = [];
+        $isBadgeDonVertPrivate = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeDonateurVert", "is_private");
+        $isBadgeDonVertPublic = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeDonateurVert", "is_public");
+        $isBadgeDonVertPublicOnTribu = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeDonateurVert", "is_tribu");
+        $confBadgeDonVert["isBadgeDonVertPrivate"] = $isBadgeDonVertPrivate;
+        $confBadgeDonVert["isBadgeDonVertPublic"] = $isBadgeDonVertPublic;
+        $confBadgeDonVert["isBadgeDonVertPublicOnTribu"] = $isBadgeDonVertPublicOnTribu;
+
+        // Badge Actionnaire confidentiality
+        $confBadgeActionnaire = [];
+        $isBadgeActionnairePrivate = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeActionnaire", "is_private");
+        $isBadgeActionnairePublic = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeActionnaire", "is_public");
+        $isBadgeActionnairePublicOnTribu = $confidentialityService->checkIfTrue("confidentiality_".$userId, "badgeActionnaire", "is_tribu");
+        $confBadgeActionnaire["isBadgeActionnairePrivate"] = $isBadgeActionnairePrivate;
+        $confBadgeActionnaire["isBadgeActionnairePublic"] = $isBadgeActionnairePublic;
+        $confBadgeActionnaire["isBadgeActionnairePublicOnTribu"] = $isBadgeActionnairePublicOnTribu;
+
         return $this->render('setting/index.html.twig', [
             "userConnected" => $userConnected,
             'profil' => $profil,
@@ -224,7 +342,18 @@ class SettingController extends AbstractController
             'form' => $form->createView(),
             "message" => $flushMessage,
             "form_password" =>  $form_password->createView(),
-            "form_email" =>$form_email->createView()
+            "form_email" =>$form_email->createView(),
+            "confEmail"=>$confEmail,
+            "conFirstName"=>$conFirstName,
+            "conLastName"=>$conLastName,
+            "confAdresse"=>$confAdresse,
+            "confPhoneNumber"=>$confPhoneNumber,
+            "confBadgeFan"=>$confBadgeFan,
+            "confBadgeDonBleu"=>$confBadgeDonBleu,
+            "confBadgeDonVert"=>$confBadgeDonVert,
+            "confBadgeActionnaire"=>$confBadgeActionnaire,
+            "allTribus"=> $allTribus,
+            "pseudo"=>$pseudo
         ]);
     }
 
@@ -470,6 +599,92 @@ class SettingController extends AbstractController
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(),$profil[0]->getIsVerifiedTributGAdmin(), $userId),
 
         ]);
+    }
+
+    #[Route("/user/generate/conf/table", name: "app_generate_conf_table", methods: ["GET","POST"])]
+    public function createConfidentialityTable(ConfidentialityService $confidentialityService, TributGService $tributGService){
+        $user = $this->getUser();
+        if(!$user)
+            return $this->redirectToRoute('app_login');
+
+        $userId = $user->getId();
+        $confidentialityService->createConfidentialityTable($userId);
+        $confidentialityService->insertRowInConfidentiality($userId, "email");
+        $confidentialityService->insertRowInConfidentiality($userId, "fullname");
+        $confidentialityService->insertRowInConfidentiality($userId, "adresse");
+        $confidentialityService->insertRowInConfidentiality($userId, "phone_number");
+        $confidentialityService->createSpecificCriteriaConfidTribu($userId);
+        $tableTribuG = $tributGService->getTribuG($userId);
+        $confidentialityService->insertRowInConfTribu($userId, $tableTribuG);
+        $isEmailPublic = $confidentialityService->checkIfTrue("confidentiality_".$userId, "email", "is_public");
+        $isEmailOnTribuGPublic = $confidentialityService->checkIfTrue("confidentiality_tribu_".$userId, $tableTribuG, "is_public_email", true);
+        dd($isEmailPublic, $isEmailOnTribuGPublic);
+        return $this->json(["status"=>true]);
+    }
+
+    #[Route("/user/get/all/tribu", name: "app_get_tribus_table", methods: ["GET","POST"])]
+    public function getAllTribu(
+        ConfidentialityService $confidentialityService
+        )
+    {
+
+        $user = $this->getUser();
+        if(!$user)
+            return $this->redirectToRoute('app_login');
+
+        $userId = $user->getId();
+        $allTribus = $confidentialityService->getTribuByIdUser($userId);
+        dd($confidentialityService->getVisibilityFirstName(3, $userId));
+        return $this->json(["status"=>true, "tribus"=>$allTribus]);
+    }
+
+    #[Route("/user/update/principal/visibility", name: "update_principal_conf", methods: ["POST"])]
+    public function updatePrincipalConfidentiality(ConfidentialityService $confidentialityService, Request $request){
+        $user = $this->getUser();
+        if(!$user)
+            return $this->json(["isConnected"=>false],500);
+
+        $userId = $user->getId();
+        $confidentialityTable = "confidentiality_".$userId;
+        $data = json_decode($request->getContent(), true);
+        extract($data);
+        $confidentialityService->updatePrincipalConfidentiality($confidentialityTable, $cle, $is_private, $is_public, $is_tribu);
+        return $this->json(["isConnected"=>true, "text"=>"A jour"],200);
+    }
+
+    #[Route("/user/update/tribu/visibility", name: "update_tribu_conf", methods: ["POST"])]
+    public function updateTribuConfidentiality(ConfidentialityService $confidentialityService, Request $request){
+        $user = $this->getUser();
+        if(!$user)
+            return $this->json(["isConnected"=>false],500);
+
+        $userId = $user->getId();
+        $confidentialityTribuTable = "confidentiality_tribu_".$userId;
+        $data = json_decode($request->getContent(), true);
+        extract($data);
+        $confidentialityService->updateTribuConfidentiality($confidentialityTribuTable, $tribu, $colonne, $valeur);
+        return $this->json(["isConnected"=>true, "text"=>"A jour"],200);
+    }
+
+    #[Route("/is/available/{pseudo}",name:"check_availability_pseudo", methods:["GET"])]
+    public function isPesudoAvailable(
+        $pseudo,
+        ConfidentialityService $confidentialityService,
+        SerializerInterface $serializer
+    ){
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $response=$serializer->serialize($confidentialityService->isPseudoAvailable($userId, $pseudo),'json');
+        return new JsonResponse($response, Response::HTTP_OK, [], true);
+    }
+
+    #[Route("/alter/conf/tribu", name: "alter_conf_tribu", methods: ["GET","POST"])]
+    public function alterConfTribu(
+        ConfidentialityService $confidentialityService
+        )
+    {
+        $req = $confidentialityService->alterTableConfTribu();
+        return $this->json(["status"=>true, "isDone"=>$req]);
     }
 
 }

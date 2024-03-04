@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface;
+use Scheb\TwoFactorBundle\Model\TrustedDeviceInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -13,7 +15,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass=UserRepository::class)
  * @ORM\Table(name="`user`")
  */
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface,TwoFactorInterface,TrustedDeviceInterface
 {
     /**
      * @ORM\Id
@@ -149,6 +151,67 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     private $idle;
 
+/**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private ?string $authCode="";
+
+
+     /**
+     * @ORM\Column(type="integer")
+     */
+    private int $trustedVersion;
+
+
+    /**
+     * @ORM\Column( name="use_2fa",type="integer")
+     */
+    private int $use2fa;
+
+    /**
+     * @ORM\Column( name="use_2fa_email", type="integer")
+     */
+    private int $use2FaEmail;
+
+    // [...]
+
+    /** Add by Elie */
+    public function setTrustedVersion(string $trustedVersion): void
+    {
+        $this->trustedVersion = $trustedVersion;
+    }
+    /** End Elie */
+
+    public function getTrustedTokenVersion(): int
+    {
+        return $this->trustedVersion;
+    }
+
+    // [...]
+
+    public function isEmailAuthEnabled(): bool
+    {
+        return true; // This can be a persisted field to switch email code authentication on/off
+    }
+
+    public function getEmailAuthRecipient(): string
+    {
+        return $this->email;
+    }
+
+    public function getEmailAuthCode(): string
+    {
+        if (null === $this->authCode) {
+            throw new \LogicException('The email authentication code was not set');
+        }
+
+        return $this->authCode;
+    }
+
+    public function setEmailAuthCode(string $authCode): void
+    {
+        $this->authCode = $authCode;
+    }
 
     public function getId(): ?int
     {
@@ -525,6 +588,46 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setIdle($idle)
     {
         $this->idle = $idle;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of use2fa
+     */ 
+    public function getUse2fa()
+    {
+        return $this->use2fa;
+    }
+
+    /**
+     * Set the value of use2fa
+     *
+     * @return  self
+     */ 
+    public function setUse2fa($use2fa)
+    {
+        $this->use2fa = $use2fa;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of use2FaEmail
+     */ 
+    public function getUse2FaEmail()
+    {
+        return $this->use2FaEmail;
+    }
+
+    /**
+     * Set the value of use2FaEmail
+     *
+     * @return  self
+     */ 
+    public function setUse2FaEmail($use2FaEmail)
+    {
+        $this->use2FaEmail = $use2FaEmail;
 
         return $this;
     }

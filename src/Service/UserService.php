@@ -1,15 +1,17 @@
 <?php
+
 namespace App\Service;
 
 use PDO;
-use PDOException; 
+use PDOException;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\PDOConnexionService;
 use App\Repository\ConsumerRepository;
 use App\Repository\SupplierRepository;
 
-class UserService  extends PDOConnexionService{
+class UserService  extends PDOConnexionService
+{
 
     private $userRepository;
     private $consumerRepository;
@@ -19,95 +21,100 @@ class UserService  extends PDOConnexionService{
         UserRepository $userRepository,
         ConsumerRepository $consumerRepository,
         SupplierRepository $supplierRepository
-    ){
+    ) {
         $this->userRepository = $userRepository;
         $this->consumerRepository = $consumerRepository;
         $this->supplierRepository = $supplierRepository;
     }
 
-    public function getUserFirstName($userId){
+    public function getUserFirstName($userId)
+    {
         $statement = $this->getPDO()->prepare("select * from (select firstname,user_id  from consumer union select firstname,user_id from supplier) as tab where tab.user_id = $userId");
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
-        if($result){
+        if ($result) {
             return $result["firstname"];
-        }else{
+        } else {
             return "Postulant";
         }
     }
 
-    public function getUserLastName($userId){
+    public function getUserLastName($userId)
+    {
         $statement = $this->getPDO()->prepare("select * from (select lastname,user_id  from consumer union select lastname,user_id from supplier) as tab where tab.user_id = $userId");
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
 
-        if($result){
+        if ($result) {
             return $result["lastname"];
-        }else{
+        } else {
             return "non inscrit";
         }
     }
 
-    public function getFullName($userId){
+    public function getFullName($userId)
+    {
         return $this->getUserFirstName($userId) . " " . $this->getUserLastName($userId);
     }
 
 
-    public function getUserProfileFromId( int $userId ){
+    public function getUserProfileFromId(int $userId)
+    {
 
         $user_temp = $this->userRepository->find($userId);
-       
+
         if ($user_temp->getType() === "consumer") {
-            $profil_temp = $this->consumerRepository->findOneBy(["userId" => $user_temp->getId()] );
+            $profil_temp = $this->consumerRepository->findOneBy(["userId" => $user_temp->getId()]);
         } else {
-            $profil_temp = $this->supplierRepository->findOneBy(["userId" => $user_temp->getId()] );
+            $profil_temp = $this->supplierRepository->findOneBy(["userId" => $user_temp->getId()]);
         }
-        
+
         return $profil_temp;
     }
 
-    public function getTribuByIdUser($user_id){
+    public function getTribuByIdUser($user_id)
+    {
 
         $profil_user = $this->userRepository->find($user_id);
 
         $all_tribuT = [];
 
-        $json_tribuT_owned= $profil_user->getTribuT();
+        $json_tribuT_owned = $profil_user->getTribuT();
 
-        if( $json_tribuT_owned ){
-            $decode_tribuT_owned = json_decode($json_tribuT_owned , true);
-            if( !array_key_exists("name", $decode_tribuT_owned['tribu_t']) ){
-                foreach($decode_tribuT_owned["tribu_t"] as $tribuT){
+        if ($json_tribuT_owned) {
+            $decode_tribuT_owned = json_decode($json_tribuT_owned, true);
+            if (!array_key_exists("name", $decode_tribuT_owned['tribu_t'])) {
+                foreach ($decode_tribuT_owned["tribu_t"] as $tribuT) {
 
                     extract($tribuT);  /// $name
-                    array_push($all_tribuT,["table_name" => $name, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "role"=>"Fondateur"] );
+                    array_push($all_tribuT, ["table_name" => $name, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "role" => "Fondateur"]);
                 }
-            }else{
-                array_push($all_tribuT, ["table_name" => $decode_tribuT_owned['tribu_t']['name'], "name_tribu_t_muable" => $decode_tribuT_owned['tribu_t']['name_tribu_t_muable'], "logo_path" => $decode_tribuT_owned['tribu_t']['logo_path'] , "role"=>"Fondateur"] );
+            } else {
+                array_push($all_tribuT, ["table_name" => $decode_tribuT_owned['tribu_t']['name'], "name_tribu_t_muable" => $decode_tribuT_owned['tribu_t']['name_tribu_t_muable'], "logo_path" => $decode_tribuT_owned['tribu_t']['logo_path'], "role" => "Fondateur"]);
             }
         }
 
         $json_tribuT_joined = $profil_user->getTribuTJoined();
 
-        if( $json_tribuT_joined ){
+        if ($json_tribuT_joined) {
 
-            $decode_tribuT_joined = json_decode($json_tribuT_joined , true);
-           
-            if( !array_key_exists("name", $decode_tribuT_joined['tribu_t']) ){
-                foreach($decode_tribuT_joined["tribu_t"] as $tribuT){
+            $decode_tribuT_joined = json_decode($json_tribuT_joined, true);
+
+            if (!array_key_exists("name", $decode_tribuT_joined['tribu_t'])) {
+                foreach ($decode_tribuT_joined["tribu_t"] as $tribuT) {
                     extract($tribuT);  /// $name
-                    array_push($all_tribuT, ["table_name" => $name , "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "role"=>"Membre"] );
+                    array_push($all_tribuT, ["table_name" => $name, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "role" => "Membre"]);
                 }
-            }else{
-                array_push($all_tribuT, ["table_name" => $decode_tribuT_joined['tribu_t']['name'], "name_tribu_t_muable" => $decode_tribuT_joined['tribu_t']['name_tribu_t_muable'], "logo_path" => $decode_tribuT_joined['tribu_t']['logo_path'], "role"=>"Membre" ] );
+            } else {
+                array_push($all_tribuT, ["table_name" => $decode_tribuT_joined['tribu_t']['name'], "name_tribu_t_muable" => $decode_tribuT_joined['tribu_t']['name_tribu_t_muable'], "logo_path" => $decode_tribuT_joined['tribu_t']['logo_path'], "role" => "Membre"]);
             }
-
         }
 
         return $all_tribuT;
     }
 
-    public function getMembreTribuT($table){
+    public function getMembreTribuT($table)
+    {
 
         $statement = $this->getPDO()->prepare("SELECT * FROM $table WHERE status = 1 and user_id IS NOT NULL GROUP BY user_id");
         $statement->execute();
@@ -115,16 +122,18 @@ class UserService  extends PDOConnexionService{
         return $result;
     }
 
-    public function isPseudoExist($pseudo){
+    public function isPseudoExist($pseudo)
+    {
         $statement = $this->getPDO()->prepare("SELECT IF(EXISTS (SELECt * FROM `user` WHERE pseudo=:pseudo),true,false) as result");
-        $statement->bindParam(":pseudo",$pseudo,PDO::PARAM_STR);
+        $statement->bindParam(":pseudo", $pseudo, PDO::PARAM_STR);
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         return $result;
     }
 
-    public function generatePseudo($pseudo){
-        $statement =$this->getPDO()->prepare("CALL generate_randompseudo_from_user_pseudo_v2(?)");
+    public function generatePseudo($pseudo)
+    {
+        $statement = $this->getPDO()->prepare("CALL generate_randompseudo_from_user_pseudo_v2(?)");
         $statement->bindParam(1, $pseudo, PDO::PARAM_STR);
         $statement->execute();
         $result = $statement->fetch(PDO::FETCH_ASSOC);
@@ -185,7 +194,7 @@ class UserService  extends PDOConnexionService{
     /**
      * cette fonction met à jour le idle de l'user courant
      */
-    public function updateUserIDLE($userID,$idle)
+    public function updateUserIDLE($userID, $idle)
     {
         $statement = $this->getPDO()->PREPARE("UPDATE user SET idle = ? WHERE id = ?");
         $statement->bindParam(1, $idle, PDO::PARAM_INT);
@@ -198,8 +207,9 @@ class UserService  extends PDOConnexionService{
     /**
      * cette fonction recherche des fan
      */
-    public function lookForOtherFan($word,$myid){
-        $sql= "SELECT * FROM `consumer` WHERE (firstname like '%$word%' or lastname like '%$word%' or match(firstname) AGAINST(?) or match (lastname) AGAINST(?)) and user_id !=? ;";
+    public function lookForOtherFan($word, $myid)
+    {
+        $sql = "SELECT * FROM `consumer` WHERE (firstname like '%$word%' or lastname like '%$word%' or match(firstname) AGAINST(?) or match (lastname) AGAINST(?)) and user_id !=? ;";
         $statement = $this->getPDO()->PREPARE($sql);
         $statement->bindParam(1, $word, PDO::PARAM_STR);
         $statement->bindParam(2, $word, PDO::PARAM_STR);
@@ -213,7 +223,8 @@ class UserService  extends PDOConnexionService{
      * @author Elie
      * Function insert data into photo_resto
      */
-    public function insertPhotoResto($resto_id, $user_id, $photo_path){
+    public function insertPhotoResto($resto_id, $user_id, $photo_path)
+    {
 
         $sql = "INSERT INTO photo_resto (resto_id, user_id, photo_path) VALUES (?, ? , ? )";
 
@@ -232,7 +243,8 @@ class UserService  extends PDOConnexionService{
      * @author Elie
      * Function insert data into photo_golf
      */
-    public function insertPhotoGolf($golf_id, $user_id, $photo_path){
+    public function insertPhotoGolf($golf_id, $user_id, $photo_path)
+    {
 
         $sql = "INSERT INTO photo_golf (golf_id, user_id, photo_path) VALUES (?, ? , ? )";
 
@@ -335,14 +347,15 @@ class UserService  extends PDOConnexionService{
         return $result;
     }
 
-/**
+    /**
      * @author Nantenaina
      * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
      * Localisation du fichier : UserService.php
      * Je veux : tester si la table abonnement existe
      * 
      */
-    public function checkIfAbonnementTable(){
+    public function checkIfAbonnementTable()
+    {
 
         $db = $_ENV["DATABASENAME"];
 
@@ -362,7 +375,8 @@ class UserService  extends PDOConnexionService{
      * Je veux : créer la table abonnement s'il n'existe pas
      * 
      */
-    public function createAbonnementOldTable(){
+    public function createAbonnementOldTable()
+    {
 
         $sql = "CREATE TABLE  IF NOT EXISTS `abonnement` (
             `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -385,7 +399,8 @@ class UserService  extends PDOConnexionService{
      * Je veux : créer la table abonnement s'il n'existe pas
      * 
      */
-    public function createAbonnementTable(){
+    public function createAbonnementTable()
+    {
 
         $sql = "CREATE TABLE  IF NOT EXISTS `abonnement` (
             `id` int(11) NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -410,7 +425,8 @@ class UserService  extends PDOConnexionService{
      * @param float $fourthOption : Participation verte 
      * @param float $fifthOption : Participation bleue
      */
-    public function saveAbonnement($userId, $firstOption, $secondOption, $thirdOption, $fourthOption, $fifthOption){
+    public function saveAbonnement($userId, $firstOption, $secondOption, $thirdOption, $fourthOption, $fifthOption)
+    {
 
         $statement = $this->getPDO()->prepare("INSERT INTO abonnement (userId, firstOption, secondOption, thirdOption, fourthOption, fifthOption) values (:userId, :firstOption, :secondOption, :thirdOption, :fourthOption, :fifthOption)");
 
@@ -437,8 +453,9 @@ class UserService  extends PDOConnexionService{
      * @param int $userId : identifiant de l'utilisateur connecté
      * @param int $typeAbonnement : Cotisations => 1, Participation supplémentaire => 2, Cotisation tribu => 3, Participation verte => 4, Participation bleue => 5
      * @param float $montant : le montant saisi
-    */
-    public function saveOneAbonnement($userId, $typeAbonnement, $montant){
+     */
+    public function saveOneAbonnement($userId, $typeAbonnement, $montant)
+    {
 
         $statement = $this->getPDO()->prepare("INSERT INTO abonnement (userId, typeAbonnement, montant) values (:userId, :typeAbonnement, :montant)");
 
@@ -451,6 +468,25 @@ class UserService  extends PDOConnexionService{
         $statement->execute();
     }
 
+
+
+    /**
+     * @author Tommy
+     * Où : On utilise cette fonction dans l'onglet abonnementHistorique de la page profil utilisateur
+     * Localisation du fichier : UserService.php
+     * Je veux : afficher l'historique d'abonnementHistorique par utilisateur
+     * @param int $userId : identifiant de l'utilisateur connecté
+     * @return array $result : Tableau associatif
+     */
+    public function getAbonnementByUserHistorique($userId)
+    {
+        $statement = $this->getPDO()->prepare("SELECT * FROM historique_abonnement WHERE user_id = :userId ORDER BY id DESC");
+        $statement->bindParam(':userId', $userId);
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
     /**
      * @author Nantenaina
      * Où : On utilise cette fonction dans l'onglet abonnement de la page profil utilisateur
@@ -458,9 +494,10 @@ class UserService  extends PDOConnexionService{
      * Je veux : afficher l'historique d'abonnement par utilisateur
      * @param int $userId : identifiant de l'utilisateur connecté
      * @return array $result : Tableau associatif
-    */
-    public function getAbonnementByUser($userId){
-        $statement = $this->getPDO()->prepare("SELECT * FROM abonnement WHERE userId = :userId ORDER BY id DESC");
+     */
+    public function getAbonnementByUser($userId)
+    {
+        $statement = $this->getPDO()->prepare("SELECT * FROM abonnement WHERE user_id = :userId ORDER BY id DESC");
         $statement->bindParam(':userId', $userId);
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -473,15 +510,16 @@ class UserService  extends PDOConnexionService{
      * Localisation du fichier : UserService.php
      * Je veux : afficher l'historique de tous les abonnements
      * @return array $result : Tableau associatif
-    */
-    public function getAllAbonnement(){
+     */
+    public function getAllAbonnement()
+    {
         $statement = $this->getPDO()->prepare("SELECT * FROM abonnement ORDER BY id DESC");
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         return $result;
     }
 
-/**
+    /**
      * @author Nantenaina
      * Où : On utilise cette fonction pour l'ajout d'un parain ou filleuil
      * Localisation du fichier : UserService.php
@@ -491,8 +529,9 @@ class UserService  extends PDOConnexionService{
      * @param string $tribu : table tribu
      * @param int $isParent : parain => 1, filleuil => 0
      * @param int $status : terminé => 1, non terminé => 0
-    */
-    public function saveOneParainOrFilleuil($tableParrainage, $user_id, $tribu, $isParent, $status){
+     */
+    public function saveOneParainOrFilleuil($tableParrainage, $user_id, $tribu, $isParent, $status)
+    {
 
         $statement = $this->getPDO()->prepare("INSERT INTO " . $tableParrainage . " (user_id, tribu, isParent, status) VALUES (:user_id, :tribu, :isParent, :status)");
 
@@ -501,7 +540,7 @@ class UserService  extends PDOConnexionService{
         $statement->bindParam(':tribu', $tribu);
 
         $statement->bindParam(':isParent', $isParent);
-        
+
         $statement->bindParam(':status', $status);
 
         $statement->execute();
@@ -515,34 +554,43 @@ class UserService  extends PDOConnexionService{
      * @param string $tableParrainage : table parrainage
      * @param object $userRepo : UserRepository
      * @return array $result : Tableau associatif
-    */
-    public function getAllFilleuils($tableParrainage, $userRepo=null){
+     */
+    public function getAllFilleuils($tableParrainage, $userRepo = null, $userIdC, $confidentialityService)
+    {
         $statement = $this->getPDO()->prepare("SELECT * FROM " . $tableParrainage . " WHERE isParent = 1 AND status = 1 ORDER BY id DESC");
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         $tabs = [];
-        if(count($result) > 0){
+        if (count($result) > 0) {
             foreach ($result as $key) {
-                $key["fullName"] = $this->getFullName($key["user_id"]);
+                
+
                 $tribuTable = $key["tribu"];
-                $isTribuG = explode("_",$tribuTable)[0] === "tribug" ? true : false;
+                $isTribuG = explode("_", $tribuTable)[0] === "tribug" ? true : false;
                 $user = $userRepo->findOneById($key["user_id"]);
+$publication_user_id = $key["user_id"];
+                $key["fullName"] = $confidentialityService->getConfFullname(intval($publication_user_id), $userIdC);
+                if (intval($publication_user_id) == $userIdC) {
                 $key["email"] = $user->getEmail();
-                if($isTribuG){
+} else {
+                    $key["email"] = $confidentialityService->getVisibilityEmail(intval($publication_user_id), $userIdC) ? $user->getEmail() : "Confidentiel";
+                }
+
+                if ($isTribuG) {
                     $key["tribuName"] = $this->getTribuGName($tribuTable);
                     $key["isTribuG"] = true;
-                }else{
+                } else {
                     $key["isTribuG"] = false;
-                    $userId = explode("_",$tribuTable)[2];
+                    $userId = explode("_", $tribuTable)[2];
                     $user = $userRepo->findOneById(intval($userId));
                     $tribuTOwned = $user->getTribuT();
                     $tribuTable = strtolower($tribuTable);
                     if (isset($tribuTOwned)) {
 
                         $jsonInitial = json_decode($tribuTOwned, true);
-            
+
                         $array1 = $jsonInitial["tribu_t"];
-            
+
                         if (array_key_exists("name", $array1)) {
                             $table = strtolower($array1["name"]);
                             if ($tribuTable == $table) {
@@ -556,7 +604,6 @@ class UserService  extends PDOConnexionService{
                                 }
                             }
                         }
-            
                     }
                 }
                 array_push($tabs, $key);
@@ -573,32 +620,38 @@ class UserService  extends PDOConnexionService{
      * @param string $tableParrainage : table parrainage
      * @param object $userRepo : UserRepository
      * @return array $result : Tableau associatif
-    */
-    public function getAllParains($tableParrainage, $userRepo=null){
+     */
+    public function getAllParains($tableParrainage, $userRepo = null, $userIdC, $confidentialityService)
+    {
         $statement = $this->getPDO()->prepare("SELECT * FROM " . $tableParrainage . " WHERE isParent = 0 AND status = 1 ORDER BY id DESC");
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
         $tabs = [];
-        if(count($result) > 0){
+        if (count($result) > 0) {
             foreach ($result as $key) {
-                $key["fullName"] = $this->getFullName($key["user_id"]);
-                $tribuTable = $key["tribu"];
-                $isTribuG = explode("_",$tribuTable)[0] === "tribug" ? true : false;
+                                $tribuTable = $key["tribu"];
+                $isTribuG = explode("_", $tribuTable)[0] === "tribug" ? true : false;
                 $user = $userRepo->findOneById($key["user_id"]);
+                $publication_user_id = $key["user_id"];
+                $key["fullName"] = $confidentialityService->getConfFullname(intval($publication_user_id), $userIdC);
+                if (intval($publication_user_id) == $userIdC) {
                 $key["email"] = $user->getEmail();
-                if($isTribuG){
+} else {
+                    $key["email"] = $confidentialityService->getVisibilityEmail(intval($publication_user_id), $userIdC) ? $user->getEmail() : "Confidentiel";
+                }
+                if ($isTribuG) {
                     $key["tribuName"] = $this->getTribuGName($tribuTable);
                     $key["isTribuG"] = true;
-                }else{
+                } else {
                     $key["isTribuG"] = false;
                     $tribuTOwned = $user->getTribuT();
                     $tribuTable = strtolower($tribuTable);
                     if (isset($tribuTOwned)) {
 
                         $jsonInitial = json_decode($tribuTOwned, true);
-            
+
                         $array1 = $jsonInitial["tribu_t"];
-            
+
                         if (array_key_exists("name", $array1)) {
                             $table = strtolower($array1["name"]);
                             if ($tribuTable == $table) {
@@ -612,7 +665,6 @@ class UserService  extends PDOConnexionService{
                                 }
                             }
                         }
-            
                     }
                 }
                 array_push($tabs, $key);
@@ -628,8 +680,9 @@ class UserService  extends PDOConnexionService{
      * Je veux : afficher la liste de filleuils et parains
      * @param string $tableParrainage : table parrainage
      * @return array $result : Tableau associatif
-    */
-    public function getAllFilleuilsAndParains($tableParrainage){
+     */
+    public function getAllFilleuilsAndParains($tableParrainage)
+    {
         $statement = $this->getPDO()->prepare("SELECT * FROM " . $tableParrainage . " WHERE status = 1 ORDER BY id DESC");
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -643,8 +696,9 @@ class UserService  extends PDOConnexionService{
      * Je veux : afficher la liste de parains
      * @param string $tableParrainage : table parrainage
      * @return array $result : Tableau associatif
-    */
-    public function getAllParainsWithStatusNull($tableParrainage){
+     */
+    public function getAllParainsWithStatusNull($tableParrainage)
+    {
         $statement = $this->getPDO()->prepare("SELECT * FROM " . $tableParrainage . " WHERE isParent = 0 AND status = 0 ORDER BY id DESC");
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -658,29 +712,27 @@ class UserService  extends PDOConnexionService{
      * Je veux : modifier la table parrainage
      * @param string $tableParrainage : table parrainage
      * @param int $userId : identifiant de l'utilisateur connecté
-    */
-    public function updateTableParrainage($tableParrainage, $userId){
+     */
+    public function updateTableParrainage($tableParrainage, $userId)
+    {
 
         $allRows = $this->getAllParainsWithStatusNull($tableParrainage);
 
-        if(count($allRows) > 0){
+        if (count($allRows) > 0) {
 
             foreach ($allRows as $key) {
 
                 $statement = $this->getPDO()->prepare("UPDATE " . $tableParrainage . " SET status = 1 WHERE id = :id");
-        
+
                 $statement->bindParam(':id', $key["id"]);
-        
+
                 $statement->execute();
 
-                $tableParrainageParent = "tableparrainage_".$key["user_id"];
+                $tableParrainageParent = "tableparrainage_" . $key["user_id"];
 
                 $this->saveOneParainOrFilleuil($tableParrainageParent, $userId, $key["tribu"], 1, 1);
-
             }
-            
         }
-
     }
 
     /**
@@ -752,8 +804,9 @@ class UserService  extends PDOConnexionService{
      * Je veux : vérifier si on a un parain pour la tribu G
      * @param string $tableParrainage : table parrainage
      * @return array $result : Tableau associatif
-    */
-    public function getParainG($tableParrainage){
+     */
+    public function getParainG($tableParrainage)
+    {
         $statement = $this->getPDO()->prepare("SELECT * FROM " . $tableParrainage . " WHERE isParent = 0 AND status = 0 AND tribu LIKE 'tribug_%'");
         $statement->execute();
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -767,8 +820,9 @@ class UserService  extends PDOConnexionService{
      * Je veux : afficher les infos relatives aux adresses d'une tribu G
      * @param int $userId : identifiant du parain
      * @return array $result : Tableau associatif
-    */
-    public function getTribuGParainInfo($userId){
+     */
+    public function getTribuGParainInfo($userId)
+    {
         $statement = $this->getPDO()->prepare("SELECT * from (SELECT user_id, tributg as tributg, commune as commune, num_rue as num_rue, code_postal as code_postal, pays as pays, quartier as quartier from consumer union SELECT user_id, tributg as tributg, commune as commune, num_rue as num_rue, code_postal as code_postal, pays as pays, quartier as quartier from supplier) as tab where tab.user_id=:user_id");
         $statement->bindParam(':user_id', $userId);
         $statement->execute();
@@ -969,12 +1023,13 @@ class UserService  extends PDOConnexionService{
      * 
      * @return {boolean} true : already in, false: not 
      */
-    public function checkIsAlreadyInFavory($userId, $etablismentId){
-        $table_favori_folder= "favori_folder_" . $userId;
-        $table_favori_etablisment= "favori_etablisment_" . $userId;
+    public function checkIsAlreadyInFavory($userId, $etablismentId)
+    {
+        $table_favori_folder = "favori_folder_" . $userId;
+        $table_favori_etablisment = "favori_etablisment_" . $userId;
 
         ///check if the table is already exist
-        if( !$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment) ){
+        if (!$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment)) {
             $this->createTableFavori($userId);
         }
 
@@ -985,7 +1040,7 @@ class UserService  extends PDOConnexionService{
 
         $result = $request_check_favory->fetch(PDO::FETCH_ASSOC);
 
-        return $result ? true: false;
+        return $result ? true : false;
     }
 
     /**
@@ -999,12 +1054,13 @@ class UserService  extends PDOConnexionService{
      * 
      * @return {array_associative}: [...]
      */
-    public function getInformationEtablismentFavory($userId, $etablismentId){
-        $table_favori_folder= "favori_folder_" . $userId;
-        $table_favori_etablisment= "favori_etablisment_" . $userId;
+    public function getInformationEtablismentFavory($userId, $etablismentId)
+    {
+        $table_favori_folder = "favori_folder_" . $userId;
+        $table_favori_etablisment = "favori_etablisment_" . $userId;
 
         ///check if the table is already exist
-        if( !$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment) ){
+        if (!$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment)) {
             $this->createTableFavori($userId);
         }
 
@@ -1150,8 +1206,7 @@ class UserService  extends PDOConnexionService{
             );
             $request_check_favory->bindParam(':livel_parent', $livel_parent);
             $request_check_favory->bindParam(':idFolderParent', $favoriFolder_id);
-        
-        }else{
+        } else {
             $request_check_favory = $this->getPDO()->prepare(
                 "SELECT DISTINCT name, id, datetime FROM $table_favori_folder WHERE livel_parent = :livel_parent ORDER BY datetime"
             );
@@ -1175,19 +1230,20 @@ class UserService  extends PDOConnexionService{
      * 
      * @return {array_associative}: []
      */
-    public function getEtablismentInFolder($userId, $favoriFolder_id){
-        $table_favori_folder= "favori_folder_" . $userId;
-        $table_favori_etablisment= "favori_etablisment_" . $userId;
+    public function getEtablismentInFolder($userId, $favoriFolder_id)
+    {
+        $table_favori_folder = "favori_folder_" . $userId;
+        $table_favori_etablisment = "favori_etablisment_" . $userId;
 
-        $rubriqueType= "resto";
+        $rubriqueType = "resto";
 
         ///check if the table is already exist
-        if( !$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment) ){
+        if (!$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment)) {
             $this->createTableFavori($userId);
         }
 
-        $one_favori_folder= $this->getOneFavoryFolder($userId, $favoriFolder_id);
-        $livel_parent= intval($one_favori_folder["livel_parent"]) +1;
+        $one_favori_folder = $this->getOneFavoryFolder($userId, $favoriFolder_id);
+        $livel_parent = intval($one_favori_folder["livel_parent"]) + 1;
 
         $request_check_favory = $this->getPDO()->prepare(
             "SELECT id, idRubrique, idFolder, datetime FROM $table_favori_etablisment WHERE idFolder= :idFolder AND rubriqueType= :rubriqueType"
@@ -1214,12 +1270,13 @@ class UserService  extends PDOConnexionService{
      * 
      * @return {boolean}: exist -> true if not false
      */
-    public function checkIsAlreadyExistFavoryFolder($userId, $favory_folder_name){
-        $table_favori_folder= "favori_folder_" . $userId;
-        $table_favori_etablisment= "favori_etablisment_" . $userId;
+    public function checkIsAlreadyExistFavoryFolder($userId, $favory_folder_name)
+    {
+        $table_favori_folder = "favori_folder_" . $userId;
+        $table_favori_etablisment = "favori_etablisment_" . $userId;
 
         ///check if the table is already exist
-        if( !$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment) ){
+        if (!$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment)) {
             $this->createTableFavori($userId);
         }
 
@@ -1245,12 +1302,13 @@ class UserService  extends PDOConnexionService{
      * @param {string} $favory_folder_name: id of the etablisement
      * 
      */
-    public function createFavoryFolder($userId, $folder){
-        $table_favori_folder= "favori_folder_" . $userId;
-        $table_favori_etablisment= "favori_etablisment_" . $userId;
+    public function createFavoryFolder($userId, $folder)
+    {
+        $table_favori_folder = "favori_folder_" . $userId;
+        $table_favori_etablisment = "favori_etablisment_" . $userId;
 
         ///check if the table is already exist
-        if( !$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment) ){
+        if (!$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment)) {
             $this->createTableFavori($userId);
         }
 
@@ -1334,12 +1392,13 @@ class UserService  extends PDOConnexionService{
      * @return {boolean} true if inside, false otherwise
      * 
      */
-    public function checkIfEtablismentInFavoryFolder($userId, $etablisementId, $favoryFolderId ){
-        $table_favori_folder= "favori_folder_" . $userId;
-        $table_favori_etablisment= "favori_etablisment_" . $userId;
+    public function checkIfEtablismentInFavoryFolder($userId, $etablisementId, $favoryFolderId)
+    {
+        $table_favori_folder = "favori_folder_" . $userId;
+        $table_favori_etablisment = "favori_etablisment_" . $userId;
 
         ///check if the table is already exist
-        if( !$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment) ){
+        if (!$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment)) {
             $this->createTableFavori($userId);
         }
 
@@ -1367,12 +1426,13 @@ class UserService  extends PDOConnexionService{
      * @param {array} $folder: [ "new_favory_folder" => ... ]
      * 
      */
-    public function changeFolderFavoryFolder($userId, $etablisment, $folder ){
-        $table_favori_folder= "favori_folder_" . $userId;
-        $table_favori_etablisment= "favori_etablisment_" . $userId;
+    public function changeFolderFavoryFolder($userId, $etablisment, $folder)
+    {
+        $table_favori_folder = "favori_folder_" . $userId;
+        $table_favori_etablisment = "favori_etablisment_" . $userId;
 
         ///check if the table is already exist
-        if( !$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment) ){
+        if (!$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment)) {
             $this->createTableFavori($userId);
         }
 
@@ -1406,12 +1466,13 @@ class UserService  extends PDOConnexionService{
      * @param {integer} $parent_favori_folder_id: id of  the parent favori folder
      * 
      */
-    public function getAllSubFavoriFolder($userId, $parent_favori_folder_id){
-        $table_favori_folder= "favori_folder_" . $userId;
-        $table_favori_etablisment= "favori_etablisment_" . $userId;
+    public function getAllSubFavoriFolder($userId, $parent_favori_folder_id)
+    {
+        $table_favori_folder = "favori_folder_" . $userId;
+        $table_favori_etablisment = "favori_etablisment_" . $userId;
 
         ///check if the table is already exist
-        if( !$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment) ){
+        if (!$this->isTableExist($table_favori_folder) || !$this->isTableExist($table_favori_etablisment)) {
             $this->createTableFavori($userId);
         }
 
@@ -1425,10 +1486,11 @@ class UserService  extends PDOConnexionService{
     }
 
 
-    public function removeFavoriteEtablisment($userId, $etablisment_id){
-        $table_favori_etablisment= "favori_etablisment_" . $userId;
-        
-        $etablisment_id= intval($etablisment_id);
+    public function removeFavoriteEtablisment($userId, $etablisment_id)
+    {
+        $table_favori_etablisment = "favori_etablisment_" . $userId;
+
+        $etablisment_id = intval($etablisment_id);
 
         $request_check_favory = $this->getPDO()->prepare(
             "SELECT id FROM $table_favori_etablisment WHERE id= :id"
@@ -1437,16 +1499,16 @@ class UserService  extends PDOConnexionService{
         $request_check_favory->execute();
         $result = $request_check_favory->fetch(PDO::FETCH_ASSOC);
 
-        if( !$result ){
+        if (!$result) {
             return false;
         }
-        
+
         $request_delete_favory = $this->getPDO()->prepare(
             "DELETE FROM $table_favori_etablisment WHERE id= :id"
         );
         $request_delete_favory->bindParam(':id', $etablisment_id);
         $result = $request_delete_favory->execute();
- 
+
         return true;
     }
 
@@ -1463,5 +1525,800 @@ class UserService  extends PDOConnexionService{
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
 
         return $result;
+    }
+
+    /**
+     * @author Elie
+     * Function creation d'une nouvelle réaction
+     */
+    public function pushReactionAvis($table, $user_id, $avis_id, $reaction)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM $table WHERE user_id = $user_id AND avis_id = $avis_id");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $jaime = 0;
+
+        if ($result) {
+            if ($result["reaction"] == 1) {
+                //update reaction value = 0
+                $jaime = 0;
+            } else {
+                //update reaction value = 1
+                $jaime = 1;
+            }
+
+            $statement = $this->getPDO()->PREPARE("UPDATE $table SET reaction = ? WHERE user_id = ? AND avis_id = ?");
+
+            $statement->bindParam(1, $jaime, PDO::PARAM_INT);
+            $statement->bindParam(2, $user_id, PDO::PARAM_INT);
+            $statement->bindParam(3, $avis_id, PDO::PARAM_INT);
+
+            $statement->execute();
+        } else {
+
+            $sql = "INSERT INTO $table (user_id, avis_id, reaction) VALUES (?,?,?)";
+
+            $stmt = $this->getPDO()->prepare($sql);
+
+            $stmt->bindParam(1, $user_id);
+            $stmt->bindParam(2, $avis_id);
+            $stmt->bindParam(3, $reaction);
+
+            $stmt->execute();
+        }
+    }
+
+    /**
+     * @author Elie
+     * Function creation d'une nouvelle réaction reponse avis
+     */
+    public function pushReactionResponseAvis($table, $user_id, $response_id, $reaction)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM $table WHERE user_id = $user_id AND response_id = $response_id");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $jaime = 0;
+
+        if ($result) {
+            if ($result["reaction"] == 1) {
+                //update reaction value = 0
+                $jaime = 0;
+            } else {
+                //update reaction value = 1
+                $jaime = 1;
+            }
+
+            $statement = $this->getPDO()->PREPARE("UPDATE $table SET reaction = ? WHERE user_id = ? AND response_id = ?");
+
+            $statement->bindParam(1, $jaime, PDO::PARAM_INT);
+            $statement->bindParam(2, $user_id, PDO::PARAM_INT);
+            $statement->bindParam(3, $response_id, PDO::PARAM_INT);
+
+            $statement->execute();
+        } else {
+
+            $sql = "INSERT INTO $table (user_id, response_id, reaction) VALUES (?,?,?)";
+
+            $stmt = $this->getPDO()->prepare($sql);
+
+            $stmt->bindParam(1, $user_id);
+            $stmt->bindParam(2, $response_id);
+            $stmt->bindParam(3, $reaction);
+
+            $stmt->execute();
+        }
+    }
+
+    /**
+     * @author Elie
+     * Function creation d'un nouveau reponse d'un avis rubrique
+     */
+    public function pushNewResponseAvis($table, $user_id, $avis_id, $commentaire, $type = 'text')
+    {
+
+        $sql = "INSERT INTO $table (user_id, avis_id, commentaire, type) VALUES (?, ?, ?, ?)";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $user_id);
+
+        $stmt->bindParam(2, $avis_id);
+
+        $stmt->bindParam(3, $commentaire);
+
+        $stmt->bindParam(4, $type);
+
+        $stmt->execute();
+
+        $statement = $this->getPDO()->PREPARE("SELECT MAX(id) as id FROM $table");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result["id"];
+    }
+
+    /**
+     * @author Elie
+     * Function creation d'un nouveau reponse d'un avis rubrique
+     */
+    public function pushNewSubResponseAvis($table, $user_id, $response_id, $level_response = 1, $commentaire, $type = 'text')
+    {
+
+        $sql = "INSERT INTO $table (user_id, response_id, level_response, commentaire, type) VALUES (?, ?, ?, ?, ?)";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $user_id);
+
+        $stmt->bindParam(2, $response_id);
+
+        $stmt->bindParam(3, $level_response);
+
+        $stmt->bindParam(4, $commentaire);
+
+        $stmt->bindParam(5, $type);
+
+        $stmt->execute();
+
+        $statement = $this->getPDO()->PREPARE("SELECT MAX(id) as id, response_id FROM $table");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * Function creation d'un nouveau reponse d'un avis rubrique
+     */
+    public function pushNewSubResponseAvisV2($table, $user_id, $parent_id, $commentaire, $type = 'text')
+    {
+
+
+        $sql = "INSERT INTO $table (user_id, commentaire, type) VALUES (?, ?, ?)";
+
+        $stmt = $this->getPDO()->prepare($sql);
+
+        $stmt->bindParam(1, $user_id);
+
+        $stmt->bindParam(2, $commentaire);
+
+        $stmt->bindParam(3, $type);
+
+        $stmt->execute();
+
+        $statement = $this->getPDO()->PREPARE("SELECT MAX(id) as id FROM $table");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $statement_up = $this->getPDO()->PREPARE("SELECT * FROM $table WHERE id = $parent_id");
+
+        $statement_up->execute();
+
+        $result_up = $statement_up->fetch(PDO::FETCH_ASSOC);
+
+        $responses_id = json_decode($result_up['response_id']);
+
+        $new_responses_id = json_encode($responses_id . $result['id'] . ",");
+
+        $update = $this->getPDO()->PREPARE("UPDATE $table SET response_id = ? WHERE id = ?");
+
+        $update->bindParam(1, $new_responses_id, PDO::PARAM_STR);
+
+        $update->bindParam(2, $parent_id, PDO::PARAM_INT);
+
+        $update->execute();
+
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * Fetch reaction from avis d'un rubrique
+     */
+    public function fetchAllReactionAvis($table, $avis_id)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM $table WHERE avis_id = $avis_id AND reaction = 1");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * Fetch reaction from avis d'un rubrique
+     */
+    public function fetchAllReactionResponseAvis($table, $response_id)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM $table WHERE response_id = $response_id AND reaction = 1");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
+
+    /**
+     * @author Elie
+     * Fetch reaction from avis d'un rubrique
+     */
+    public function fetchOneReactionAvis($table, $avis_id, $user_id)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT reaction FROM $table WHERE avis_id = $avis_id AND user_id = $user_id");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            return $result["reaction"];
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * @author Elie
+     * Fetch reaction from reponse avis d'un rubrique
+     */
+    public function fetchOneReactionResponseAvis($table, $response_id, $user_id)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT reaction FROM $table WHERE response_id = $response_id AND user_id = $user_id");
+
+        $statement->execute();
+
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+
+        if ($result) {
+            return $result["reaction"];
+        } else {
+            return 0;
+        }
+    }
+
+    /**
+     * @author Elie
+     * Fetch all respona from avis d'un rubrique
+     */
+    public function fetchAllResponseAvis($table, $avis_id, $user_id)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM $table 
+        INNER JOIN (SELECT user_id, firstname, lastname, photo_profil FROM consumer 
+        UNION SELECT user_id, firstname, lastname, photo_profil FROM supplier) as usr ON $table.user_id = usr.user_id
+        WHERE avis_id = $avis_id order by id desc;
+        ");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $table = "avisrestaurant_subresponse";
+
+        $new_res = [];
+
+        foreach ($result as $res) {
+            $array = [
+                "id" => $res["id"],
+                "user_id" => $res["user_id"],
+                "avis_id" => $res["avis_id"],
+                "level_response" => $res["level_response"],
+                "commentaire" => json_decode($res["commentaire"]),
+                "type" => $res["type"],
+                "datetime" => $res["datetime"],
+                "firstname" => $res["firstname"],
+                "lastname" => $res["lastname"],
+                "photo_profil" => $res["photo_profil"],
+                "all_subresponse" => $this->fetchAllSubResponseAvis($table, $res["id"], $user_id),
+                "my_reaction" => $this->fetchOneReactionResponseAvis("avisrestaurant_response_reaction", $res["id"], $user_id),
+                "all_reaction" => $this->fetchAllReactionResponseAvis("avisrestaurant_response_reaction", $res["id"])
+            ];
+
+            array_push($new_res, $array);
+        }
+
+        return $new_res;
+    }
+
+    /**
+     * @author Elie
+     * Fetch all sous_response from avis d'un rubrique
+     */
+    public function fetchAllSubResponseAvis($table, $response_id, $user_id)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM $table 
+        INNER JOIN (SELECT user_id, firstname, lastname, photo_profil FROM consumer 
+        UNION SELECT user_id, firstname, lastname, photo_profil FROM supplier) as usr ON $table.user_id = usr.user_id
+        WHERE response_id = $response_id order by id desc;
+        ");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $table = "avisrestaurant_subresponse";
+
+        $new_res = [];
+
+        foreach ($result as $res) {
+            $array = [
+                "id" => $res["id"],
+                "user_id" => $res["user_id"],
+                "response_id" => $res["response_id"],
+                "level_response" => $res["level_response"],
+                "commentaire" => json_decode($res["commentaire"]),
+                "type" => $res["type"],
+                "datetime" => $res["datetime"],
+                "firstname" => $res["firstname"],
+                "lastname" => $res["lastname"],
+                "photo_profil" => $res["photo_profil"],
+                "my_reaction" => $this->fetchOneReactionResponseAvis("avisrestaurant_subresponse_reaction", $res["id"], $user_id),
+                "all_reaction" => $this->fetchAllReactionResponseAvis("avisrestaurant_subresponse_reaction", $res["id"])
+            ];
+
+            array_push($new_res, $array);
+        }
+
+        return $new_res;
+    }
+
+    /**
+     * @author Elie
+     * Fetch all respona from avis d'un golf
+     */
+    public function fetchAllResponseAvisGolf($table, $avis_id, $user_id)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM $table 
+        INNER JOIN (SELECT user_id, firstname, lastname, photo_profil FROM consumer 
+        UNION SELECT user_id, firstname, lastname, photo_profil FROM supplier) as usr ON $table.user_id = usr.user_id
+        WHERE avis_id = $avis_id order by id desc;
+        ");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $table = "avisgolf_subresponse";
+
+        $new_res = [];
+
+        foreach ($result as $res) {
+            $array = [
+                "id" => $res["id"],
+                "user_id" => $res["user_id"],
+                "avis_id" => $res["avis_id"],
+                "level_response" => $res["level_response"],
+                "commentaire" => json_decode($res["commentaire"]),
+                "type" => $res["type"],
+                "datetime" => $res["datetime"],
+                "firstname" => $res["firstname"],
+                "lastname" => $res["lastname"],
+                "photo_profil" => $res["photo_profil"],
+                "all_subresponse" => $this->fetchAllSubResponseAvisGolf($table, $res["id"], $user_id),
+                "my_reaction" => $this->fetchOneReactionResponseAvis("avisgolf_response_reaction", $res["id"], $user_id),
+                "all_reaction" => $this->fetchAllReactionResponseAvis("avisgolf_response_reaction", $res["id"])
+            ];
+
+            array_push($new_res, $array);
+        }
+
+        return $new_res;
+    }
+
+    /**
+     * @author Elie
+     * Fetch all sous_response from avis d'un golf
+     */
+    public function fetchAllSubResponseAvisGolf($table, $response_id, $user_id)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM $table 
+        INNER JOIN (SELECT user_id, firstname, lastname, photo_profil FROM consumer 
+        UNION SELECT user_id, firstname, lastname, photo_profil FROM supplier) as usr ON $table.user_id = usr.user_id
+        WHERE response_id = $response_id order by id desc;
+        ");
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $table = "avisgolf_subresponse";
+
+        $new_res = [];
+
+        foreach ($result as $res) {
+            $array = [
+                "id" => $res["id"],
+                "user_id" => $res["user_id"],
+                "response_id" => $res["response_id"],
+                "level_response" => $res["level_response"],
+                "commentaire" => json_decode($res["commentaire"]),
+                "type" => $res["type"],
+                "datetime" => $res["datetime"],
+                "firstname" => $res["firstname"],
+                "lastname" => $res["lastname"],
+                "photo_profil" => $res["photo_profil"],
+                "my_reaction" => $this->fetchOneReactionResponseAvis("avisgolf_subresponse_reaction", $res["id"], $user_id),
+                "all_reaction" => $this->fetchAllReactionResponseAvis("avisgolf_subresponse_reaction", $res["id"])
+            ];
+
+            array_push($new_res, $array);
+        }
+
+        return $new_res;
+    }
+
+    /**
+     * @author Elie
+     * Fetch all respona from avis d'un rubrique
+     */
+    public function fetchAllResponseAvisV2($table, $avis_id, $my_id, $type, $confidentialityService)
+    {
+
+        $sql = "SELECT * FROM $table 
+            INNER JOIN (SELECT user_id, firstname, lastname, photo_profil FROM consumer 
+            UNION SELECT user_id, firstname, lastname, photo_profil FROM supplier) as usr ON $table.user_id = usr.user_id
+            WHERE avis_id = $avis_id order by id desc;
+        ";
+
+        $statement = $this->getPDO()->PREPARE($sql);
+
+
+        $statement->execute();
+
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $new_res = [];
+
+        foreach ($result as $res) {
+
+            $id_responses = json_decode($res['response_id']);
+
+            $new_instance = [];
+
+            if ($id_responses) {
+
+                $list_response_id = explode(',', $id_responses);
+
+                if (count($list_response_id) > 0) {
+
+                    for ($b = 0; $b < count($list_response_id) - 1; $b++) {
+
+                        $new_id_resp = $list_response_id[$b];
+
+                        array_push($new_instance, $this->fetchAllResponseOfReponse($table, $new_id_resp, $my_id, $type, $confidentialityService));
+                    }
+                }
+            }
+
+            $table_reaction = "";
+
+            if ($type == "golf") {
+                $table_reaction = "avisgolf_response_reaction";
+            }
+
+            if ($type == "restaurant") {
+                $table_reaction = "avisrestaurant_response_reaction";
+            }
+            $fullname = $confidentialityService->getConfFullname($res["user_id"], $my_id);
+            $array = [
+                "id" => $res["id"],
+                "user_id" => $res["user_id"],
+                "avis_id" => $res["avis_id"],
+                "response_id" => $res["response_id"],
+                "commentaire" => json_decode($res["commentaire"]),
+                "type" => $res["type"],
+                "datetime" => $res["datetime"],
+                "firstname" => $res["firstname"],
+                "lastname" => $res["lastname"],
+                "fullname" => $fullname,
+                "photo_profil" => $res["photo_profil"],
+                "all_response" => $new_instance,
+                "my_reaction" => $this->fetchOneReactionResponseAvis($table_reaction, $res["id"], $my_id),
+                "all_reaction" => $this->fetchAllReactionResponseAvis($table_reaction, $res["id"])
+            ];
+
+            array_push($new_res, $array);
+        }
+
+        // dd($new_res);
+
+        return $new_res;
+    }
+
+    /**
+     * @author Elie
+     * Fetch all respona from avis d'un rubrique
+     */
+    public function fetchAllResponseOfReponse($table, $response_id, $my_id, $type, $confidentialityService)
+    {
+
+        $statement = $this->getPDO()->PREPARE("SELECT * FROM $table 
+        INNER JOIN (SELECT user_id, firstname, lastname, photo_profil FROM consumer 
+        UNION SELECT user_id, firstname, lastname, photo_profil FROM supplier) as usr ON $table.user_id = usr.user_id
+        WHERE id = $response_id order by id desc;
+        ");
+
+        $statement->execute();
+
+        $res = $statement->fetch(PDO::FETCH_ASSOC);
+
+        $new_res = [];
+
+        $id_responses = json_decode($res['response_id']);
+
+        $new_instance = [];
+
+        if ($id_responses) {
+
+            $list_response_id = explode(',', $id_responses);
+
+            if (count($list_response_id) > 0) {
+
+                for ($b = 0; $b < count($list_response_id) - 1; $b++) {
+
+                    $new_id_resp = $list_response_id[$b];
+
+                    array_push($new_instance, $this->fetchAllResponseOfReponse($table, $new_id_resp, $my_id, $type, $confidentialityService));
+                }
+            }
+        }
+
+        $table_reaction = "";
+
+        if ($type == "golf") {
+            $table_reaction = "avisgolf_response_reaction";
+        }
+
+        if ($type == "restaurant") {
+            $table_reaction = "avisrestaurant_response_reaction";
+        }
+
+        $fullname = $confidentialityService->getConfFullname($res["user_id"], $my_id);
+
+        $array = [
+            "id" => $res["id"],
+            "user_id" => $res["user_id"],
+            "avis_id" => $res["avis_id"],
+            "response_id" => $res["response_id"],
+            "commentaire" => json_decode($res["commentaire"]),
+            "type" => $res["type"],
+            "datetime" => $res["datetime"],
+            "firstname" => $res["firstname"],
+            "lastname" => $res["lastname"],
+            "fullname" => $fullname,
+            "photo_profil" => $res["photo_profil"],
+            "all_response" => $new_instance,
+            "my_reaction" => $this->fetchOneReactionResponseAvis($table_reaction, $res["id"], $my_id),
+            "all_reaction" => $this->fetchAllReactionResponseAvis($table_reaction, $res["id"])
+        ];
+
+        array_push($new_res, $array);
+
+        return $array;
+    }
+
+    /**
+     * @author Tomm
+     * update si le fan est plus de 2
+     */
+    public function updateUserFan($user_id)
+    {
+        $statement = $this->getPDO()->PREPARE("UPDATE user SET fan = 1 WHERE id = :id");
+        $statement->bindParam(':id', $user_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Tomm
+     * get si le fan est plus de 2
+     */
+    public function getUserFan($user_id)
+    {
+        $sql = "SELECT fan FROM user  WHERE id = :id";
+        $statement = $this->getPDO()->PREPARE($sql);
+        $statement->bindParam(':id', $user_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Tomm
+     * update si le donateur vert est plus de 1
+     */
+    public function updateUserDonateurVert($user_id)
+    {
+        $statement = $this->getPDO()->PREPARE("UPDATE user SET donateur_vert = 1 WHERE id = :id");
+        $statement->bindParam(':id', $user_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Tomm
+     * get si le donateur vert est plus de 1
+     */
+    public function getUserDonateurVert($user_id)
+    {
+        $statement = $this->getPDO()->PREPARE("SELECT donateur_vert FROM user WHERE id = :id");
+        $statement->bindParam(':id', $user_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Tomm
+     * update si le donateur bleu est plus de 1
+     */
+    public function updateUserDonateurBleu($user_id)
+    {
+        $statement = $this->getPDO()->PREPARE("UPDATE user SET donateur_bleu = 1 WHERE id = :id");
+        $statement->bindParam(':id', $user_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Tomm
+     * get si le donateur bleu est plus de 1
+     */
+    public function getUserDonateurBleu($user_id)
+    {
+        $statement = $this->getPDO()->PREPARE("SELECT donateur_bleu FROM user WHERE id = :id");
+        $statement->bindParam(':id', $user_id);
+        $statement->execute();
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Tomm
+     * get all id user
+     */
+    public function getAllIdUser()
+    {
+        $statement = $this->getPDO()->PREPARE("SELECT id FROM user WHERE 1");
+        $statement->execute();
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    /**
+     * @author Faniry
+     * liste les fichier disponible dans le drop box du partisan
+     * @param integer int id du partisan
+     */
+    public function getAllFileInDropBox($id){
+        $tableName="dropbox_".$id;
+        $sql="SELECT * FROM ". $tableName ." WHERE isdeleted = 0";
+        $statement=$this->getPDO()->prepare($sql);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach($results as &$result){
+            $result["file_name"]=mb_convert_encoding(
+                ($this->convertUnicodeToUtf8(json_decode($result["file_name"]))),'UTF-8','UTF-8');
+        }
+
+        return $results;
+
+    }
+
+    /**
+     * @author faniry
+     * recupère un fichier spécifique dans le box du partisan
+     * @param integer int id du partisan
+     * @param string shortlink cle unique du fichier
+     */
+    public function getSpecificFileINDropBox($id,$shortLink){
+        $tableName="dropbox_".$id;
+        $sql="SELECT * FROM ".$tableName." WHERE short_link = :short_link and isdeleted = 0";
+        $statement=$this->getPDO()->prepare($sql);
+        $statement->bindParam(":short_link",$shortLink, PDO::PARAM_STR);
+        $statement->execute();
+        $results = $statement->fetchAll(PDO::FETCH_ASSOC);
+        foreach($results as &$result){
+            $result["file_name"]=mb_convert_encoding(
+                ($this->convertUnicodeToUtf8(json_decode($result["file_name"]))),'UTF-8','UTF-8');
+            $result["file_path"]=mb_convert_encoding(
+                ($this->convertUnicodeToUtf8(json_decode($result["file_path"]))),'UTF-8','UTF-8');
+        }
+        return $results;
+    }
+
+     /**
+     * @author faniry
+     * supprime  un fichier spécifique dans le box du partisan
+     * @param integer int id du partisan
+     * @param string shortlink cle unique du fichier
+     */
+    public function deleteFileFromDropBox($id,$shortLink){
+        $isDeleted=1;
+        $tableName="dropbox_".$id;
+        $sql="UPDATE ".$tableName ." SET isdeleted = :isdeleted WHERE short_link= :short_link";
+        $statement=$this->getPDO()->prepare($sql);
+        $statement->bindParam(":short_link",$shortLink,PDO::PARAM_STR);
+        $statement->bindParam(":isdeleted",$isDeleted,PDO::PARAM_INT);
+        $statement->execute();
+    }
+
+    /**
+     * @author faniry
+     * renommer  un fichier spécifique dans le box du partisan
+     * @param integer int id du partisan
+     * @param string shortlink cle unique du fichier
+     * @param string newFileName le nouveau nom du fichier
+     */
+    public function renameFile($id,$shortLik,$newFileName){
+        
+        $tableName="dropbox_".$id;
+        $sql="UPDATE ".$tableName ." SET file_name = :file_name WHERE short_link= :short_link";
+        $statement=$this->getPDO()->prepare($sql);
+        $statement->bindParam(":file_name",$newFileName,PDO::PARAM_STR);
+        $statement->bindParam(":short_link",$shortLik,PDO::PARAM_STR);
+        $statement->execute();
+
+    }
+   
+    /**
+     * @author faniry
+     * Ajoute  un fichier spécifique dans le box du partisan
+     * @param integer int id du partisan
+     * @param string fileName nom du fichier
+     * @param string filePath le chemin d'enregistrement du fichier
+     * @param string fileSize taille du fichier
+     * @param string fileExtension type du fichier
+     * @param string $shortLink unique id
+     */
+    public function setFileInDropBox( 
+    int $id,
+    string $fileName,
+    string $filePath,
+    int $fileSize, 
+    string $fileExtension,
+    string $shortLink){
+        $tableName="dropbox_".$id;
+        $sql ="INSERT INTO ". $tableName ." (".
+            "file_name,file_path, file_extension,file_size, short_link) ".
+            "VALUES(:file_name,:file_path, :file_extension, :file_size, :short_link)";
+        
+        $statement=$this->getPDO()->prepare($sql);
+        $statement->bindParam(':file_name', $fileName,PDO::PARAM_STR);
+        $statement->bindParam(':file_path', $filePath,PDO::PARAM_STR);
+        $statement->bindParam(':file_extension', $fileExtension,PDO::PARAM_STR);
+        $statement->bindParam(':file_size', $fileSize,PDO::PARAM_INT);
+        $statement->bindParam(':short_link', $shortLink,PDO::PARAM_STR);
+
+        $statement->execute();
+
     }
 }

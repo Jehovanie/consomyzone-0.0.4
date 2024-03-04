@@ -2681,14 +2681,14 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
           if(contentMessage.text != ""){
             if(contentMessage.text.includes("joinMeet(")){
               messageText = `Visioconférence entrant <i class="fa-solid fa-phone-volume" style="color: #1bff0a;"></i>`
-              spanVisio += `<span style="display:flex;"><img src="${pdprofil}" style="width:40px;clip-path: circle(40%);"><span class="ms-2">${item.lastname + " " + item.firstname}<br><span style="color:#FFC107;">${messageText}</span></span></span>`
+              spanVisio += `<span style="display:flex;"><img src="${pdprofil}" style="width:40px;clip-path: circle(40%);"><span class="ms-2">${item.fullname}<br><span style="color:#FFC107;">${messageText}</span></span></span>`
               countVisio++;
             }else{
               messageText = contentMessage.text
             }
-            span += `<span style="display:flex;"><img src="${pdprofil}" style="width:40px;clip-path: circle(40%);"><span class="ms-2">${item.lastname + " " + item.firstname}<br><span style="color:#FFC107;">${messageText}</span></span></span>`
+            span += `<span style="display:flex;"><img src="${pdprofil}" style="width:40px;clip-path: circle(40%);"><span class="ms-2">${item.fullname}<br><span style="color:#FFC107;">${messageText}</span></span></span>`
           }else{
-            span += `<span style="display:flex;"><img src="${pdprofil}" style="width:40px;clip-path: circle(40%);"><span class="ms-2">${item.lastname + " " + item.firstname}<br><span style="color:#FFC107;">Le message contient de(s) fichiers</span></span></span>`
+            span += `<span style="display:flex;"><img src="${pdprofil}" style="width:40px;clip-path: circle(40%);"><span class="ms-2">${item.fullname}<br><span style="color:#FFC107;">Le message contient de(s) fichiers</span></span></span>`
           }
         }
         height = height * i + 40

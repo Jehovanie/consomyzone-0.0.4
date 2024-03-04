@@ -2015,4 +2015,162 @@ TributGService $tributGService,
             ]
         ]);
     }
+
+    /**
+    * @author Elie
+    */
+   #[Route("/restaurant/avis/push-reaction/{avis_id}", name: "app_push_reaction_avis_resto", methods: ["POST","GET"])]
+   public function pushReaction($avis_id, Request $request,UserService $userService
+   ){
+       $user = $this->getUser();
+       $user_id = $user->getId();
+       $table = "avisrestaurant_reaction";
+       $reaction = 1;
+
+       $userService->pushReactionAvis($table, $user_id, $avis_id, $reaction);
+
+       return $this->json([
+
+           "result" => "success"
+
+       ], 201);
+   }
+
+   /**
+   * @author Elie
+   */
+   #[Route("/restaurant/avis/push-reaction-response/{response_id}", name: "app_push_reaction_response_avis_resto", methods: ["POST"])]
+   public function pushReactionResponse($response_id, Request $request,UserService $userService
+   ){
+       $user = $this->getUser();
+       $user_id = $user->getId();
+       $table = "avisrestaurant_response_reaction";
+       $reaction = 1;
+
+       $userService->pushReactionResponseAvis($table, $user_id, $response_id, $reaction);
+
+       return $this->json([
+
+           "result" => "success"
+
+       ], 201);
+   }
+
+   /**
+   * @author Elie
+   */
+   #[Route("/restaurant/avis/push-reaction-subresponse/{response_id}", name: "app_push_reaction_subresponse_avis_resto", methods: ["POST","GET"])]
+   public function pushReactionSubResponse($response_id, Request $request,UserService $userService
+   ){
+       $user = $this->getUser();
+       $user_id = $user->getId();
+       $table = "avisrestaurant_subresponse_reaction";
+       $reaction = 1;
+
+       $userService->pushReactionResponseAvis($table, $user_id, $response_id, $reaction);
+
+       return $this->json([
+
+           "result" => "success"
+
+       ], 201);
+   }
+
+   /**
+   * @author Elie
+   */
+   #[Route("/restaurant/avis/get-reaction/{avis_id}", name: "app_get_reaction_avis_resto")]
+   public function getReaction($avis_id, Request $request,UserService $userService
+   ){
+       $user = $this->getUser();
+       $user_id = $user->getId();
+       $table = "avisrestaurant_reaction";
+
+       $res = $userService->fetchOneReactionAvis($table, $avis_id, $user_id);
+
+       return $this->json($res);
+   }
+
+   /**
+   * @author Elie
+   */
+   #[Route("/restaurant/avis/push-response", name: "app_response_avis_resto", methods: ["POST","GET"])]
+   public function pushResponse(Request $request,UserService $userService
+   ){
+       $user = $this->getUser();
+       $user_id = $user->getId();
+       $table = "avisrestaurant_response";
+
+       $reqContent = json_decode($request->getContent(), true);
+
+       $avis_id = $reqContent["avis_id"];
+       $commentaire = json_encode($reqContent["commentaire"]);
+
+       $last_id = $userService->pushNewResponseAvis($table, $user_id, $avis_id, $commentaire, 'text');
+
+       $user_profile = $userService->getUserProfileFromId($user_id);
+
+       return $this->json([
+
+           "result" => "success",
+           "user"=>$user_profile,
+           "last_id" => $last_id,
+
+       ], 201);
+   }
+
+   /**
+   * @author Elie
+   */
+   #[Route("/restaurant/avis/push-subresponse", name: "app_subresponse_avis_resto", methods: ["POST","GET"])]
+   public function pushSubResponse(Request $request,UserService $userService
+   ){
+       $user = $this->getUser();
+       $user_id = $user->getId();
+       $table = "avisrestaurant_subresponse";
+
+       $reqContent = json_decode($request->getContent(), true);
+
+       $response_id = $reqContent["response_id"];
+       $commentaire = json_encode($reqContent["commentaire"]);
+
+       $last_data = $userService->pushNewSubResponseAvis($table, $user_id, $response_id, 1, $commentaire, 'text');
+
+       $user_profile = $userService->getUserProfileFromId($user_id);
+
+       return $this->json([
+
+           "result" => "success",
+           "user"=>$user_profile,
+           "last_id"=>$last_data
+
+       ], 201);
+   }
+   /**
+   * @author Elie
+   */
+   #[Route("/restaurant/avis/push-subresponse-v2", name: "app_subresponse_avis_resto_v2", methods: ["POST","GET"])]
+   public function pushSubResponseV2(Request $request,UserService $userService
+   ){
+       $user = $this->getUser();
+       $user_id = $user->getId();
+       $table = "avisrestaurant_response";
+
+       $reqContent = json_decode($request->getContent(), true);
+
+       $response_id = $reqContent["response_id"];
+       $commentaire = json_encode($reqContent["commentaire"]);
+
+       $last_data = $userService-> pushNewSubResponseAvisV2($table, $user_id, $response_id, $commentaire, $type='text');
+
+       $user_profile = $userService->getUserProfileFromId($user_id);
+
+       return $this->json([
+
+           "result" => "success",
+           "user"=>$user_profile,
+           "last_id"=>$last_data
+
+       ], 201);
+   }
 }

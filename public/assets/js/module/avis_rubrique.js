@@ -1,4 +1,5 @@
 let currentUserId = 0;
+let INSTANCE_RESPONSE_AVIS = null;
 window.addEventListener("load", () => {
 	////controle text...
 	document.querySelector("#text-note").onkeyup = (e) => {
@@ -293,8 +294,12 @@ function showListAvie(idItem = null) {
 		let details = document.querySelector("#details-coord");
 		if (details.getAttribute("data-toggle-id-golf")) {
 			newIdItem = details.getAttribute("data-toggle-id-golf");
+			// Initialisation de la classe ResponseAvis dans la rubrique golf
+			INSTANCE_RESPONSE_AVIS = new ResponseAvis("golf")
 		} else if (details.getAttribute("data-toggle-id-resto")) {
 			newIdItem = details.getAttribute("data-toggle-id-resto");
+			// Initialisation de la classe ResponseAvis dans la rubrique restaurant
+			INSTANCE_RESPONSE_AVIS = new ResponseAvis("restaurant")
 		}
 	}
 	newIdItem = idItem != null ? idItem : newIdItem;
@@ -359,7 +364,7 @@ function showModifArea(idItem, currentUserId) {
 /*
  *show comment without btn modification
  */
-function createShowAvisAreas(json, currentUserId, idItem = 0, rubrique_type = null) {
+function createShowAvisAreasOld(json, currentUserId, idItem = 0, rubrique_type = null) {
 	let startIcon = "";
 	let rate = parseFloat(json.note) - Math.trunc(parseFloat(json.note));
 	let rateYellow = rate * 100;
@@ -451,6 +456,147 @@ function createShowAvisAreas(json, currentUserId, idItem = 0, rubrique_type = nu
 	document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
 }
 
+/*
+ *@author Elie
+ *show comment without btn modification
+ */
+ function createShowAvisAreas(json, currentUserId, idItem = 0, rubrique_type = null) {
+	let startIcon = "";
+	let rate = parseFloat(json.note) - Math.trunc(parseFloat(json.note));
+	let rateYellow = rate * 100;
+	let rateBlack = 100 - rateYellow;
+
+	// console.log(json);
+	let avis_id = json.id
+
+	let modalebtnModife = "";
+
+	let avis_template = ""
+
+	if (json.type == "audio") {
+		avis_template = ` <audio controls src="${json.avis}">
+	  					</audio>`
+	} else if (json.type == "image") {
+		avis_template = ` <img src="${json.avis}"/>`
+	} else if (json.type == "video") {
+		avis_template = ` <video height="100" class="show-avis-media" controls src="${json.avis}">
+	  					</video>`
+	} else {
+		avis_template = json.avis
+	}
+
+	// console.log(json);
+	// Initialisation de nombre de reaction et nombre reponse par avis
+
+	let col_react = json.reaction == 1? "text-primary" :""
+	let title_react = json.reaction == 1? "Je n'aime pas" :"J'aime"
+	let nb_reaction= ` . <i class="fa-regular fa-thumbs-up ${col_react}" ></i> <small class="${col_react} avis_elie_js_${json.id}"> ${json.all_reaction.length}</small>`
+
+	let nb_reponse= ` . <span class="btn_event rounded-pill text-bg-light cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapseResponseData${json.id}"><i class="fa-solid fa-reply-all text-secondary"></i> <small class="text-primary avis_response_elie_js_${json.id}"> ${json.all_response.length} réponse(s)</small></span>`
+
+	// console.log(json.all_response);
+
+	let li = ""
+	let iter = 0
+	
+	// Affichage des reponse d'un rubrique;
+
+	if(json.all_response.length > 0){
+
+		li = INSTANCE_RESPONSE_AVIS.showResponseAvis(json.all_response)
+
+	}
+
+	let old_avis = json.avis.replaceAll("\n", "").replaceAll("'", "\\'").replaceAll('"', '\\"')
+
+	modalebtnModife = `
+		<div class="content_action">
+			<button type="button" class="btn btn-outline-primary edit_avis" data-bs-dismiss="modal" data-bs-toggle="modal" data-bs-target="#modalAvis" onclick="settingAvis('${json.id
+		}' ,'${json.note}' , '${old_avis}', '${idItem}', '${rubrique_type}', '${json.type}')">
+				<i class="fa-solid fa-pen-to-square"></i>
+			</button>
+		</div>
+	`;
+
+	for (let i = 0; i < 4; i++) {
+		if (i < parseInt(json.note)) {
+			startIcon += `<i class="fa-solid fa-star checked" style="color: rgb(245, 209, 101);"></i>`;
+		} else {
+			if (rate != 0) {
+				startIcon += `<i class="fa-solid fa-star" data-rank="1" style ="background: linear-gradient(90deg, #F5D165 ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" }}"></i>`;
+				rate = 0;
+			} else {
+				startIcon += `<i class="fa-solid fa-star" data-rank="1"></i>`;
+			}
+		}
+	}
+
+
+	const spec_selector = currentUserId == json.user.id && currentUserId != null ? "my_comment_jheo_js" : "";
+	const editHTMl = modalebtnModife;
+	const isOwnComment = currentUserId == json.user.id ? editHTMl : "";
+
+	let user_profil = json.user.photo ? json.user.photo : "/uploads/users/photos/default_pdp.png";
+	user_profil = IS_DEV_MODE ? user_profil : "/public" + user_profil;
+
+	const singleAvisHtml = `
+        <div class="card mb-2 card_avis_resto_jheo_js ${spec_selector}" 
+		     data-avis-note="${json.note}" data-avis-text="${json.avis}">
+            <div class="card-body">
+                <div class="avis_content">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div class="content_profil_image me-2">
+                                    <img class="profil_image" src="${user_profil}" alt="User">
+                                </div>
+                                <div class="content_info">
+                                    <h5 class="text-point-9"> <small class="fw-bolder text-black"> ${json.user.fullname
+										}</small></h5>
+                                    <cite class="font-point-6"> ${settingDateToStringMonthDayAndYear(
+										json.datetime
+									)}</cite>
+                                </div>
+                            </div>
+                            <div class="content_start">
+                                <p class="mb-2"> ${startIcon}</p>
+                                ${isOwnComment}
+                            </div>
+                        </div>
+
+                        <div class="mt-2">
+                            <p class="text-point-9"> ${avis_template} </p>
+                        </div>
+						<div class="">
+							<span title="${title_react}" data-id="${json.id}" class="btn_event badge rounded-pill text-bg-light cursor-pointer ${col_react}" onclick="reagirAvis(this)"><i class="fa-solid fa-thumbs-up"></i> J'aime</span>
+							${nb_reaction}
+							|
+							<span class="btn_event badge rounded-pill text-bg-light cursor-pointer" data-bs-toggle="collapse" data-bs-target="#collapseResponseInput${json.id}"><i class="fa-solid fa-reply"></i> Répondre</span>
+							${nb_reponse}
+							<div class="collapse" id="collapseResponseInput${json.id}">
+								<div class="d-flex mt-2 input-group">
+									<input class="form-control" id="input_response_${json.id}" placeholder="Ajouter une réponse...">
+									<button data-id="${json.id}" class="btn btn-outline-primary btn-sm" onclick="sendResponseAvis(this)"><i class="fa-solid fa-paper-plane"></i></button>
+								</div>
+							</div>
+							<div class="mt-2 collapse" id="collapseResponseData${json.id}">
+								<h5 class="badge rounded-pill text-bg-light">${json.all_response.length} ${json.all_response.length>1?" Réponses":" Réponse"}</h5>
+								<ul class="wtree">
+									${li}
+								
+								</ul>
+							</div>
+						</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+	document.querySelector(`.all_avis_jheo_js`).innerHTML += singleAvisHtml;
+
+}
+
 /**
  *  Update text content in parent element (ex: 12 avis)
  * @param {*} parent
@@ -484,8 +630,12 @@ function showNoteGlobale(idItem, globalNote = 0) {
 	let path_link = "";
 	if (type === "golf") {
 		path_link = `/avis/golf/global/${idItem}`;
+		// Initialisation de la classe ResponseAvis dans la rubrique golf
+		INSTANCE_RESPONSE_AVIS = new ResponseAvis("golf")
 	} else if (type === "resto") {
 		path_link = `/avis/restaurant/global/${idItem}`;
+		// Initialisation de la classe ResponseAvis dans la rubrique restaurant
+		INSTANCE_RESPONSE_AVIS = new ResponseAvis("restaurant")
 	}
 
 	fetch(path_link, {
@@ -776,6 +926,7 @@ function createGlobalNote(globalNote, idItem = null) {
 	}
 }
 
+
 function settingAvisCarrousel(idItem) {
 	if (document.querySelector(".send_avis_jheo_js")) {
 		const btn = document.querySelector(".send_avis_jheo_js");
@@ -811,9 +962,13 @@ function fetchListAvisInTribuT(idItem, rubrique_type) {
 	if (type === "golf") {
 		path_link = `/avis/golf/global/${idItem}`;
 		rubrique_name = "Golf";
+		//Instaciation de la classe ResponseAvis pour golf
+		INSTANCE_RESPONSE_AVIS = new ResponseAvis("golf")
 	} else if (type === "resto") {
 		path_link = `/avis/restaurant/global/${idItem}`;
 		rubrique_name = "Restaurant";
+		//Instaciation de la classe ResponseAvis pour golf
+		INSTANCE_RESPONSE_AVIS = new ResponseAvis("resto")
 	}
 
 	fetch(path_link, {
@@ -2334,4 +2489,76 @@ if(document.getElementById("star_faniry_audio_record_js")){
 			//verifier si on est dans les tribuT
 		}
 	}
+}
+
+/**
+ * @author Elie
+ * @constructor Fonction de réaction d' un avis
+ */
+function reagirAvis(elem){
+
+	INSTANCE_RESPONSE_AVIS.reagirAvis(elem)
+	
+}
+
+/**
+ * @author Elie
+ * Envoie d'une réponse d'un avis rubrique
+ * @param {*} elem 
+ */
+function sendResponseAvis(elem){
+
+	INSTANCE_RESPONSE_AVIS.sendResponseAvis(elem)
+
+}
+
+/**
+ * @author Elie
+ * @constructor Affichage plus des responses de la list d'avis
+ * @param {*} elem 
+ */
+function showMoreResponseAvis(elem){
+
+	INSTANCE_RESPONSE_AVIS.showMoreResponseAvis(elem)
+	
+}
+
+
+function showMinusResponseAvis(elem){
+
+	INSTANCE_RESPONSE_AVIS.showMinusResponseAvis(elem)
+
+}
+
+/**
+ * @author Elie
+ * @constructor Envoie d'une réaction de la reponse
+ * @param {*} elem 
+ */
+function reagirResponse(elem){
+
+	INSTANCE_RESPONSE_AVIS.reagirResponse(elem)
+
+}
+
+/**
+ * @author Elie
+ * @constructor Envoie de la réaction de sous reponse
+ * @param {*} elem 
+ */
+function reagirSubResponse(elem){
+
+	INSTANCE_RESPONSE_AVIS.reagirSubResponse(elem)
+
+}
+
+/**
+ * @author Elie
+ * @constructor Envoi de la reponse d'une reponse dans un avis
+ * @param {*} elem 
+ */
+function sendResponseForResponseAvis(elem){
+
+	INSTANCE_RESPONSE_AVIS.sendResponseForResponseAvis(elem)
+
 }

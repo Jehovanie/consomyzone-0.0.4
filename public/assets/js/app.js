@@ -2343,3 +2343,505 @@ function setViewTribu(a, b) {
 		document.querySelector(".content_list_resto_js_g").classList.remove("d-none");
 	}
 }
+
+// bloc double authentification @author Faniry//
+
+if(document.getElementById("doitmail")){
+	document.getElementById("doitmail").onclick =()=>{
+		const param={
+			v:1
+		}
+		const request = new Request("/user/set/2fa/useMail",{
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(param),
+		})
+		fetch(request).then(r=>{
+			if(r.status===200 && r.ok){
+				r.json().then(j=>{
+					if(j){
+						new swal("Merci", "Vous avez choisi d'utiliser la double authentification par e-mal","info")
+					}else{
+						new swal("Merci", "Vous avez choisi d'utiliser la double authentification par sms","info")
+
+					}
+				})
+				
+			}
+		})
+
+	}
+	
+}
+
+if(document.getElementById("doitsms")){
+	document.getElementById("doitsms").onclick =()=>{
+		new swal("Merci de votre compréhension.", 
+		"Fonctionnalité en cours de développement","info")
+		// const param={
+		// 	v:0
+		// }
+		// const request = new Request("/user/set/2fa/useMail",{
+		// 	method: "POST",
+		// 	headers: {
+		// 		Accept: "application/json",
+		// 		"Content-Type": "application/json",
+		// 	},
+		// 	body: JSON.stringify(param),
+		// })
+		//  fetch(request).then(r=>{
+		// 	if(r.status===200 && r.ok){
+		// 		r.json().then(j=>{
+		// 			if(j){
+		// 				new swal("Merci", "Vous avez choisi d'utiliser la double authentification par e-mal","info")
+		// 			}else{
+		// 				new swal("Merci", "Vous avez choisi d'utiliser la double authentification par sms","info")
+
+		// 			}
+		// 		})
+				
+		// 	}
+		// })
+	}
+}
+
+if(document.querySelector(".doublefa")){
+	fetch("/user/isuse/2fact").then((r)=>{
+		if(r.status === 200 && r.ok){
+			r.json().then(value=>{
+			
+				const isUse2fac=(!!value.response);
+				if(isUse2fac){
+					//utiliser la double auth
+					document.getElementById("yes2fa").checked=false;
+					document.getElementById("no2fa").checked=true;
+				}else{
+					// ne pas utiliser la double auth
+					document.getElementById("no2fa").checked=false;
+					document.getElementById("yes2fa").checked=true;
+				}
+			})
+		}
+	})
+
+	Array.from(document.getElementsByClassName("doublefa_js_fa")).
+	forEach(item=>{
+		
+		item.onclick=(e)=>{
+			let param={
+				v:1
+			}
+			if(e.target.id=="yes2fa"){
+				param.v=0;
+				document.getElementById("no2fa").checked=false;
+			}else{
+				param.v=1;
+				document.getElementById("yes2fa").checked=false;
+			}
+			const request = new Request("/user/set/isuse2fact",{
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(param),
+			})
+			fetch(request).then(r=>{
+				if(r.status===200 && r.ok){
+					r.json().then(j=>{
+						
+						if(j.response){
+							new swal("Merci", 
+							"Vous avez choisi d'utiliser la double authentification.",
+							"info")
+						}else{
+							new swal("Merci", 
+							"Vous avez choisi de désactiver la double authentification.",
+							"info")
+						}
+					})
+					
+				}
+			})
+		}
+	})
+}
+
+if(document.querySelector(".method_2fa")){
+	fetch("/user/isuse/famail").then(r=>{
+		if(r.status == 200 && r.ok){
+			r.json().then(v=>{
+				if(v.response){
+					document.querySelector(".message_2fa").innerHTML=`
+					<div class="alert alert-warning alert-dismissible fade show w-25" role="alert">
+						<strong>Information:</strong> Vous Utilisez la méthode par e-mail.
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				  	</div>`
+				}else{
+					document.querySelector(".message_2fa").innerHTML=`
+					<div class="alert alert-warning alert-dismissible fade show w-25" role="alert">
+						<strong>Information:</strong> Vous Utilisez la méthode par texto.
+						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+				  	</div>`
+				}
+			})
+		}
+	})
+}
+
+//endblock
+//block drop box author faniry
+
+//render drop list
+const rows = Array.from(document.getElementsByClassName("drop-box file-name"));
+if (rows.length > 0) {
+  initCKEditor("exampleFormControlTextareaDropBox", emailShareDropContent);
+  rows.forEach((item) => {
+    item.onmouseenter = (event) => {
+      const container = item.querySelector(".drop-action-fa-js");
+      const fileName = item.querySelector(".file_name").textContent;
+      const fileExtension = item.querySelector(".file_extension").textContent;
+      const idUser = parseInt(atob(container.dataset.rank), 10);
+      const shortLink = container.dataset.short;
+      if (
+        !container.querySelector(".fa-link") &&
+        !container.querySelector(".fa-readme") &&
+        !container.querySelector(".fa-download") &&
+        !container.querySelector(".fa-pen") &&
+        !container.querySelector(".fa-trash") &&
+        !container.querySelector(".fa-share-nodes")
+      ) {
+        //data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tooltip on bottom"
+        const iconLink = document.createElement("i");
+        iconLink.setAttribute("class", "fa-solid fa-link p-2");
+        iconLink.dataset.bsToggle = "tooltip";
+        iconLink.dataset.bsPlacement = "bottom";
+        iconLink.setAttribute("title", "Copier le lien");
+        iconLink.onclick = () => {
+          copyTextToClipBoard(idUser, shortLink);
+        };
+
+        const iconView = document.createElement("i");
+        iconView.setAttribute("class", "fa-brands fa-readme p-2");
+        iconView.dataset.bsToggle = "tooltip";
+        iconView.dataset.bsPlacement = "bottom";
+        iconView.setAttribute("title", "Lire");
+        iconView.onclick = () => {
+          readFile(idUser, shortLink);
+        };
+
+        const iconDownload = document.createElement("i");
+        iconDownload.setAttribute("class", "fa-solid fa-download p-2");
+        iconDownload.dataset.bsToggle = "tooltip";
+        iconDownload.dataset.bsPlacement = "bottom";
+        iconDownload.setAttribute("title", "Télécharger");
+        iconDownload.onclick = () => {
+          downloadFleInDropBox(idUser, shortLink);
+        };
+
+        const iconRename = document.createElement("i");
+        iconRename.setAttribute("class", "fa-solid fa-pen p-2");
+        iconRename.dataset.bsToggle = "tooltip";
+        iconRename.dataset.bsPlacement = "bottom";
+        iconRename.dataset.bsToggle = "modal";
+        iconRename.dataset.bsTarget = "#rnmFileInDp";
+        iconRename.setAttribute("title", "Renommer");
+        iconRename.onclick = () => {
+          document.getElementById("inputFileInDpFajs").value = fileName.trim();
+          document.getElementById("rnmFileInDpFajs").dataset.rank =
+            container.dataset.rank;
+          document.getElementById("rnmFileInDpFajs").dataset.short =
+            container.dataset.short;
+        };
+
+        const iconDelete = document.createElement("i");
+        iconDelete.setAttribute("class", "fa-solid fa-trash p-2");
+        iconDelete.dataset.bsToggle = "tooltip";
+        iconDelete.dataset.bsPlacement = "bottom";
+        iconDelete.setAttribute("title", "Supprimer");
+        iconDelete.onclick = () => {
+          deleteFile(idUser, shortLink);
+        };
+
+        const iconShare = document.createElement("i");
+        iconShare.setAttribute("class", "fa-solid fa-share-nodes p-2");
+        iconShare.dataset.bsToggle = "tooltip";
+        iconShare.dataset.bsPlacement = "bottom";
+        iconShare.dataset.bsToggle = "modal";
+        iconShare.dataset.bsTarget = "#shareFileInDp";
+        iconShare.setAttribute("title", "Partager le fichier");
+        iconShare.onclick = () => {
+          shareFile(idUser, shortLink, fileName, fileExtension);
+        };
+
+        if (container.classList.contains("action-super-admin-dropfa-js")) {
+          const uploadFirstTake = document.createElement("i");
+          uploadFirstTake.style.color = "#3AA6B9";
+          uploadFirstTake.setAttribute("class", "fa-solid fa-upload");
+          uploadFirstTake.dataset.bsToggle = "tooltip";
+          uploadFirstTake.dataset.bsPlacement = "bottom";
+          uploadFirstTake.setAttribute(
+            "title",
+            "Envoyer dans les fichiers prise en main"
+          );
+          container.appendChild(uploadFirstTake);
+        }
+
+        container.appendChild(iconView);
+        container.appendChild(iconLink);
+        container.appendChild(iconDownload);
+        container.appendChild(iconRename);
+        container.appendChild(iconDelete);
+        container.appendChild(iconShare);
+      } else {
+        container.querySelector(".fa-link").style.display = "inline";
+        container.querySelector(".fa-readme").style.display = "inline";
+        container.querySelector(".fa-download").style.display = "inline";
+        container.querySelector(".fa-pen").style.display = "inline";
+        container.querySelector(".fa-trash").style.display = "inline";
+        container.querySelector(".fa-share-nodes").style.display = "inline";
+        if (container.classList.contains("action-super-admin-dropfa-js"))
+          container.querySelector(".fa-upload").style.display = "inline";
+      }
+      item.onmouseleave = (event) => {
+        if (
+          container.querySelector(".fa-link") &&
+          container.querySelector(".fa-readme") &&
+          container.querySelector(".fa-download") &&
+          container.querySelector(".fa-pen") &&
+          container.querySelector(".fa-trash") &&
+          container.querySelector(".fa-share-nodes")
+        ) {
+          container.querySelector(".fa-link").style.display = "none";
+          container.querySelector(".fa-readme").style.display = "none";
+          container.querySelector(".fa-download").style.display = "none";
+          container.querySelector(".fa-pen").style.display = "none";
+          container.querySelector(".fa-trash").style.display = "none";
+          container.querySelector(".fa-share-nodes").style.display = "none";
+          if (container.classList.contains("action-super-admin-dropfa-js"))
+            container.querySelector(".fa-upload").style.display = "none";
+        }
+      };
+    };
+  });
+}
+
+//upload file
+const inputFile = document.getElementById("choose-file-drop");
+if (inputFile) {
+  inputFile.onchange = (e) => {
+    document.getElementById("drop-box-loader-js").classList.toggle("d-none");
+    files = e.target.files[0];
+    let param = {};
+    const reader = new FileReader();
+    reader.readAsDataURL(files);
+    reader.onload = (e) => {
+      const base64Data = reader.result;
+	  const fileExtensions=files.name.split(".");
+	  const fileType=fileExtensions[(fileExtensions.length-1)];
+      param = {
+        fileName: files.name,
+        fileSize: (files.size/1024),
+        fileExtension: fileType,
+        file: base64Data,
+      };
+
+
+      const request = new Request("/user/add/drop/box", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(param),
+      });
+
+      fetch(request).then((response) => {
+        if (response.status === 200 && response.ok) {
+			document.getElementById("drop-box-loader-js").classList.toggle("d-none");
+          	window.location.reload();
+				
+        } else if (response.status === 500) {
+          new swal("Erreur", `Erreur 500`, "error");
+		  document.getElementById("drop-box-loader-js").classList.toggle("d-none");
+        }
+      });
+    };
+  };
+}
+
+const btnRenameFileInDropBox = document.getElementById("rnmFileInDpFajs");
+if (btnRenameFileInDropBox) {
+  btnRenameFileInDropBox.onclick = (event) => {
+    const container = event.target;
+    const newFileName = document
+      .getElementById("inputFileInDpFajs")
+      .value.trim();
+    const idUser = parseInt(atob(container.dataset.rank), 10);
+    const shortLink = container.dataset.short;
+	btnRenameFileInDropBox.disabled=true
+	btnRenameFileInDropBox.textContent="En cours..."
+    renameFile(idUser, shortLink, newFileName,btnRenameFileInDropBox);
+  };
+  document.getElementById("inputFileInDpFajs").addEventListener("keypress", (event)=> {
+		if (event.key === "Enter") {
+			const container = btnRenameFileInDropBox;
+			const newFileName = document
+			.getElementById("inputFileInDpFajs")
+			.value.trim();
+			const idUser = parseInt(atob(container.dataset.rank), 10);
+			const shortLink = container.dataset.short;
+			btnRenameFileInDropBox.disabled=true
+			btnRenameFileInDropBox.textContent="En cours..."
+			renameFile(idUser, shortLink, newFileName,btnRenameFileInDropBox);
+		}
+  });
+}
+function copyTextToClipBoard(id, shortLink) {
+  const text = window.location.origin + `/drop/get/${id}/${shortLink}`;
+  navigator.clipboard.writeText(text).then((e) => {
+    new swal(
+      "Copier",
+      `Le lien ${text}, a bien été copié dans le presse papier`,
+      "success"
+    );
+  });
+}
+
+function readFile(id, shortLink) {
+  const URL = `/user/drop/read/${id}/${shortLink}`;
+  window.open(URL, "_blank");
+}
+
+function downloadFleInDropBox(id, shortLink) {
+  const URL = `/drop/get/${id}/${shortLink}`;
+  window.open(URL, "_blank");
+}
+
+function renameFile(id, shortLink, newFileName,btnRenameFileInDropBox) {
+	fetch(`/user/drop/rename/${id}/${shortLink}/${newFileName}`).then(
+		(response) => {
+		  if (response.status === 200 && response.ok) {
+				btnRenameFileInDropBox.disabled=false
+				btnRenameFileInDropBox.textContent="Renommer"	
+			  	new swal("Information", "Fichier renommé", "info")
+				window.location.reload();
+		  }
+	});
+  
+	
+}
+
+function deleteFile(idUser, shortLink) {
+	new swal("Voulez-vous vraiment supprimer le fichier ?",{
+		buttons:{
+		   cancel: "Non",
+		   valider:"Oui"
+		}
+	 }).then(value => {
+		   switch(value){
+			   case "cancel":{
+				   new swal("Information", "Vous avez choisi de ne pas supprimer le fichier.", "info");
+				   break;
+			   }
+			   case "valider":{
+					fetch(`/user/drop/delete/${idUser}/${shortLink}`).then((response) => {
+						if (response.status === 200 && response.ok) {
+							window.location.reload();
+						}
+					});
+				   break;
+			   }
+   
+			   default: new swal("Information", "Vous avez choisi de ne pas supprimer le fichier.", "info")
+		   }
+	 })
+  
+}
+
+function shareFile(id, shortLink, fileName, fileExtension) {
+  const input_principal = document.querySelector(".destinaire_drop_box");
+  controlInputEmailToMultiple([input_principal]);
+  let dataTmp = editor.getData();
+  const link = window.location.origin + `/drop/get/${id}/${shortLink}`;
+  let userSender = "";
+  if (document.querySelector(".information_user_conected_jheo_js"))
+    userSender = document.querySelector(".information_user_conected_jheo_js")
+      .dataset.userfullname;
+  dataTmp = `<span>Bonjour,</span>
+          <p> j'ai le plaisir de vous partager le lien suivant :</p>
+          <a href="#" id="droplink" style="text-decoration:underline;color:blue; cursor:pointer">
+            <span id="dropFileName">Lien partagé.</span>
+          </a>
+          <p>Cordialement </p>
+          <p>${userSender}</p>
+  `;
+  let tmpDiv = document.createElement("div");
+  tmpDiv.innerHTML = dataTmp;
+  console.log(tmpDiv);
+  tmpDiv.querySelector("#droplink").href = link;
+  tmpDiv.querySelector("#dropFileName").textContent =
+    fileName + "." + fileExtension;
+  editor.setData(tmpDiv.innerHTML);
+  document.getElementById("shareFileInDpFajs").onclick = (e) => {
+    const tmpBtn=e.target
+    tmpBtn.disabled=true
+    tmpBtn.innerHTML="Partage en cours..."
+    const mailContent = editor.getData();
+    const strObject = document.getElementById("objet_area_object_drop").value;
+    const receivers = document
+      .getElementById("dest_area_drop_box")
+      .value.split(",");
+    const datas = {
+      object: strObject,
+      receivers: receivers,
+      mailContent: mailContent,
+    };
+    const request = new Request("/user/share/file", {
+      method: "POST",
+      headers: {
+        Accept: "application/json",
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(datas),
+    });
+    fetch(request).then((response) => {
+      if (response.status === 200 && response.ok) {
+        response.json().then((data) => {
+            const emailNotSend = data.mailNotSends;
+            const emailSend = data.mailSends;
+            
+            let responseContent= emailNotSend.length === 1 ? "Le lien n'a pas pu être envoyé à l'email suivant : " : 
+            "Le lien n'a pas pu être envoyé aux emails suivant: ";
+            emailNotSend.forEach(item => {responseContent+=item+","})
+            responseContent=responseContent.substring(-1);
+
+			if(emailNotSend.length > 0)
+            	new swal("Information ",responseContent, "info");
+
+            tmpBtn.disabled=false;
+            tmpBtn.innerHTML="Partager";
+        });
+      }
+    }).catch((error) =>{
+
+      new swal("Erreur","Erreur 500","error")
+      tmpBtn.disabled=false;
+      tmpBtn.innerHTML="Partager";
+    });
+  };
+}
+
+/**
+ * @author faniry
+ * edit le contenu de l'email de relance  à envoyer
+ * @returns  String html
+ */
+function emailShareDropContent() {
+  return `<p>Écrivez votre message ici.</p>`;
+}
+
+//end block drop box author faniry

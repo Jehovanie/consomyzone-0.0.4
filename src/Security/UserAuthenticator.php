@@ -17,7 +17,7 @@ use App\Service\TributGService;
 use Doctrine\ORM\EntityManagerInterface;
 
 use RuntimeException;
-
+use App\Service\ConfidentialityService;
 use Symfony\Component\HttpFoundation\Request;
 
 use Symfony\Component\Security\Core\Security;
@@ -65,22 +65,25 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
 
     private UrlGeneratorInterface $urlGenerator;
-private $entityManager;
+    private $entityManager;
     private $trib;
     private $passwordHasher;
     private $userRepository;
     private $userService;
+    private $confidentialityService;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator, 
+    public function __construct(
+        UrlGeneratorInterface $urlGenerator,
 
-    EntityManagerInterface $em, 
+        EntityManagerInterface $em,
 
-    TributGService $trib,
+        TributGService $trib,
 
-    UserPasswordHasherInterface $passwordHasher,
+        UserPasswordHasherInterface $passwordHasher,
         UserRepository $userRepository,
 
-    UserService $userService
+        UserService $userService,
+        ConfidentialityService $confidentialityService
     ) {
 
         $this->urlGenerator = $urlGenerator;
@@ -91,9 +94,10 @@ private $entityManager;
 
         $this->passwordHasher = $passwordHasher;
 
-$this->userRepository = $userRepository;
+        $this->userRepository = $userRepository;
 
         $this->userService = $userService;
+        $this->confidentialityService = $confidentialityService;
     }
 
 
@@ -108,74 +112,80 @@ $this->userRepository = $userRepository;
 
         $request->getSession()->set(Security::LAST_USERNAME, $email);
 
-       
 
-       
+
+
 
         return new Passport(
 
-            new UserBadge($email, function($userIdentifier) use (&$request){
+            new UserBadge($email, function ($userIdentifier) use (&$request) {
 
-                
 
-                    $isBanished=false;
 
-                    $user = $this->entityManager
+                $isBanished = false;
+                $isSuspendre = false;
+
+                $user = $this->entityManager
 
                     ->getRepository(User::class)
 
                     ->findOneBy(['email' => $userIdentifier]);
 
-                    
 
-                    
 
-                    if($user!=null){
 
-                        $userType = $user->getType();
 
-                        $userId = $user->getId();
+                if ($user != null) {
 
-                        if ($userType == "consumer") {
+                    $userType = $user->getType();
 
-                            $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+                    $userId = $user->getId();
 
-                        } else {
+                    if ($userType == "consumer") {
 
-                            $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
+                        $profil = $this->entityManager->getRepository(Consumer::class)->findByUserId($userId);
+                    } else {
 
-                        }
-                        
-                        if( count($profil) !== 0 ){
-                            $tribuG = $profil[0]->getTributG();
-                            $isBanished = (bool)$this->trib->getBanishedStatus($tribuG, $userId);
-                        }
-
+                        $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
                     }
 
-                   
-
-                  
-
-                    if (!$user) {
-
-                        throw new CustomUserMessageAuthenticationException("Votre email n'est pas encore enregistré.");
-
-                    }else if(!$user->isVerifiedMail()){
-
-                        throw new CustomUserMessageAuthenticationException("e-mail non vérifié");
-
-                    }else if ($isBanished ) {
-
-                        throw new CustomUserMessageAuthenticationException("Vous avez été banni de votre tribu, veuillez contacter votre administrateur.");
-
-                    }else if(!$this->passwordHasher->isPasswordValid($user, $request->request->get('password'))){
-
-                         throw new CustomUserMessageAuthenticationException("Mot de passe incorrecte");
+                    if (count($profil) !== 0) {
+                        $tribuG = $profil[0]->getTributG();
+                        $isBanished = (bool)$this->trib->getBanishedStatus($tribuG, $userId);
+                        $isSuspendre = (bool)$this->trib->getSuspenduStatus($tribuG, $userId);
+                        $isValidAdmin = (bool)$this->trib->isValidParAdmin($tribuG);
+                        $isValidFondateur = (bool)$this->trib->isValidParFondateur($tribuG, $userId);
                     }
+                }
+
+
+
+
+
+                if (!$user) {
+
+                    throw new CustomUserMessageAuthenticationException("Votre email n'est pas encore enregistré.");
+                } else if (!$user->isVerifiedMail()) {
+
+                    throw new CustomUserMessageAuthenticationException("e-mail non vérifié");
+                } else if ($isBanished) {
+
+                    throw new CustomUserMessageAuthenticationException("Vous avez été radié de votre tribu, veuillez contacter votre administrateur.");
+                } else if ($isSuspendre) {
+
+                    throw new CustomUserMessageAuthenticationException("Vous avez été suspendu de votre tribu, veuillez contacter votre administrateur.");
+                } else if (!$this->passwordHasher->isPasswordValid($user, $request->request->get('password'))) {
+
+                    throw new CustomUserMessageAuthenticationException("Mot de passe incorrecte");
+                } else if(!$isValidAdmin){
+
+                    throw new CustomUserMessageAuthenticationException("Votre tribu G n'est pas encore validée, veuillez contacter l'administrateur pour approuver votre demande.");
+                } else if(!$isValidFondateur){
+                    
+                    throw new CustomUserMessageAuthenticationException("Vous n'êtes pas encore validé dans votre tribu G, veuillez contacter le fondateur pour approuver votre demande.");
+                }
 
                 return $user;
-
             }),
 
             new PasswordCredentials($request->request->get('password')),
@@ -189,7 +199,6 @@ $this->userRepository = $userRepository;
             ]
 
         );
-
     }
 
 
@@ -211,52 +220,52 @@ $this->userRepository = $userRepository;
         $canGenerateTribuTAmie = $tribu_T_Service->checkIfDefaultTribuTExist($userId, "A") > 0 ? false : true;
         $canGenerateTribuTFamille = $tribu_T_Service->checkIfDefaultTribuTExist($userId, "F") > 0 ? false : true;
 
-        if($canGenerateTribuTAmie && $canGenerateTribuTFamille){
+        if ($canGenerateTribuTAmie && $canGenerateTribuTFamille) {
             $suffixeTableTribuTAmie = "A";
             $suffixeTableTribuTFamille = "F";
-            $tableTribuTAmie = "tribu_t_" . $userId . "_" .$suffixeTableTribuTAmie;
-            $tableTribuTFamille = "tribu_t_" . $userId . "_" .$suffixeTableTribuTFamille;
+            $tableTribuTAmie = "tribu_t_" . $userId . "_" . $suffixeTableTribuTAmie;
+            $tableTribuTFamille = "tribu_t_" . $userId . "_" . $suffixeTableTribuTFamille;
             $nomTribuTAmie = "Tribu A";
             $descriptionTribuTAmie = "Tribu T pour mes amis";
             $nomTribuTFamille = "Tribu F";
             $descriptionTribuTFamille = "Tribu T pour ma famille";
             $tribu_T_Service->createTribuTable($suffixeTableTribuTAmie, $userId, $nomTribuTAmie, $descriptionTribuTAmie);
             $tribu_T_Service->createTribuTable($suffixeTableTribuTFamille, $userId, $nomTribuTFamille, $descriptionTribuTFamille);
-    
+
             $extension = [];
-    
+
             $extension["restaurant"] = 1;
-    
+
             $extension["golf"] = 1;
-    
+
             $tribu_T_Service->setTribuT($tableTribuTAmie, $descriptionTribuTAmie, "", $extension, $userId, "tribu_t_owned", $nomTribuTAmie);
-            
+
             $tribu_T_Service->setTribuT($tableTribuTFamille, $descriptionTribuTFamille, "", $extension, $userId, "tribu_t_owned", $nomTribuTFamille);
-    
+
             if ($extension["restaurant"] == 1) {
-    
+
                 $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "restaurant");
-    
+
                 $tribu_T_Service->createTableComment($tableTribuTAmie, "restaurant_commentaire");
-    
+
                 $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "restaurant");
-    
+
                 $tribu_T_Service->createTableComment($tableTribuTFamille, "restaurant_commentaire");
             }
-    
+
             if ($extension["golf"] == 1) {
-    
+
                 $tribu_T_Service->createExtensionDynamicTable($tableTribuTAmie, "golf");
-    
+
                 $tribu_T_Service->createTableComment($tableTribuTAmie, "golf_commentaire");
-    
+
                 $tribu_T_Service->createExtensionDynamicTable($tableTribuTFamille, "golf");
-    
+
                 $tribu_T_Service->createTableComment($tableTribuTFamille, "golf_commentaire");
             }
-    
+
             $tribu_T_Service->creaTableTeamMessage($tableTribuTAmie);
-    
+
             $tribu_T_Service->creaTableTeamMessage($tableTribuTFamille);
         }
 
@@ -265,25 +274,27 @@ $this->userRepository = $userRepository;
         if ($user->getType() != "Type") {
             $tribu_G_Service->createInvitationTableG($userId);
 
-$user = $this->userRepository->findOneById($userId);
+            $user = $this->userRepository->findOneById($userId);
             $tibutTOwneds = json_decode($user->getTribuT($userId), true);
             $tibutTJoineds = json_decode($user->getTribuTJoined($userId), true);
-        
+
             // dump( $tibutTOwneds);
             // dd($tibutTJoineds);
             $tribu_T_Service->createTableAlbumNotExists($tibutTOwneds);
             $tribu_T_Service->createTableAlbumNotExists($tibutTJoineds);
             // $tibutTJoined
+            $this->confidentialityService->generateConfidentiality($userId);
+
+            $tribu_T_Service->createTableDropBox($userId);
         }
 
         // return new RedirectResponse($this->urlGenerator->generate('app_account'));
         $session = $request->getSession();
-        if($session->get("demande-partenariat")){
+        if ($session->get("demande-partenariat")) {
             return new RedirectResponse($this->urlGenerator->generate('inscription_partenaire'));
-        }else{
+        } else {
             return new RedirectResponse($this->urlGenerator->generate('app_account'));
         }
-        
     }
 
 
@@ -293,9 +304,5 @@ $user = $this->userRepository->findOneById($userId);
     {
 
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
-
     }
-    
-
 }
-

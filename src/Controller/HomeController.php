@@ -84,13 +84,19 @@ class HomeController extends AbstractController
         if($nom == "3"){
             $path =$this->getParameter('kernel.project_dir'). "/public/uploads/ConsoMYzone_Slidedoc_2024_01_15_Prise_en_main_rapide.pdf";
             $name="ConsoMYzone_Slidedoc_2024_01_15_Prise_en_main_rapide.pdf";
+}
+             
+        if($nom == "4"){
+            $path =$this->getParameter('kernel.project_dir'). "/public/uploads/ConsoMYzone_Slidedoc_2024_02_15_INTRO_pour_site_web_version_courte.pdf";
+            $name="ConsoMYzone_Slidedoc_2024_02_15_INTRO_pour_site_web_version_courte.pdf";
         }
              
         $file = $path; // Path to the file on the server
         $response = new BinaryFileResponse($file);
  
         // Give the file a name:
-        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,$name);
+        //$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT,$name);
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE,$name);
 
         return $response;
     }

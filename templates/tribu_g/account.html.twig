@@ -25,7 +25,8 @@
 	<script src="{{ asset('assets/js/account/fetchRestoTributG.js') }}" defer></script>
 	<script src="{{ asset('assets/js/account/fetchGolfTributG.js') }}" defer></script>
     <script src="{{ asset('assets/js/account/fetchNewLetterTribuG.js') }}" defer></script>
-<script src="{{ asset('assets/js/module/avis_rubrique.js')}}" defer></script>
+	<script src="{{ asset('assets/js/account/fetchAdhesionTribuG.js') }}" defer></script>
+	<script src="{{ asset('assets/js/module/avis_rubrique.js')}}" defer></script>
 
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer=""></script>
@@ -104,8 +105,17 @@
 											<a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Communiquer</a>
 										</li>
 									{% endif %}
+									{% if tributG.profil.roles is same as("fondateur") %}
+										<li class="listNavBarTribu">
+											<a style="cursor:pointer;" href="#" id="fetch_adhesion_tribug_elie_js">Adhésions
+											{% if len_adhesion_tribug > 0  %}
+												<span class="badge rounded-pill text-bg-danger" id="nb_adhesion_tg">{{len_adhesion_tribug}}</span>
+											{% endif %}
+											</a>
+										</li>
+									{% endif %}
 								</ul>
-{# <div class="dropdown setting-nav-tribu-g">
+								{# <div class="dropdown setting-nav-tribu-g">
 									<a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
 										<i class="fa-solid fa-bars"></i>
 									</a>

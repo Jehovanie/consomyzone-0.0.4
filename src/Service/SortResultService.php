@@ -182,6 +182,7 @@ class SortResultService extends StringTraitementService
                     $tmp = $array[$i];
                     $array[$i] = $array[$j];
                     $array[$j] = $tmp;
+                    $firstValue = $secondValue;
                 }
             }
         }

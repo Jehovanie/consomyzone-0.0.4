@@ -4,8 +4,10 @@ namespace App\Repository;
 
 use App\Entity\AvisRestaurant;
 use App\Service\UserService;
+use App\Service\ConfidentialityService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Symfony\Component\Security\Core\Security;
 
 /**
  * @extends ServiceEntityRepository<AvisRestaurant>
@@ -17,10 +19,15 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class AvisRestaurantRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry, UserService $userService)
+    private $userService;
+    private $security;
+    private $confidentialityService;
+    public function __construct(ManagerRegistry $registry, UserService $userService, Security $security, ConfidentialityService $confidentialityService)
     {
         parent::__construct($registry, AvisRestaurant::class);
         $this->userService = $userService;
+        $this->security = $security;
+        $this->confidentialityService = $confidentialityService;
     }
 
     public function add(AvisRestaurant $entity, bool $flush = false): void
@@ -85,10 +92,15 @@ class AvisRestaurantRepository extends ServiceEntityRepository
 
         $results = [];
 
+        $me = $this->security->getUser();
+
         foreach ($all_avis as $avis){
             $user_id = $avis->getUser()->getId();
             $user_item = $this->userService->getUserProfileFromId($user_id);
             $resto_id= $avis->getRestaurant()->getId();
+            $fullname = "";
+            if($me)
+                $fullname = $this->confidentialityService->getConfFullname($user_id, $me->getId());
             $data = [
                 "id" => $avis->getId(),
                 "note" => $avis->getNote(),
@@ -102,9 +114,13 @@ class AvisRestaurantRepository extends ServiceEntityRepository
                     "id" => $user_id,
                     "email" => $avis->getUser()->getEmail(),
                     "pseudo" => $avis->getUser()->getPseudo(),
-                    "fullname" => $user_item->getFirstname() . " " . $user_item->getLastname(),
+                    "fullname" => $fullname,
                     "photo" => $user_item->getPhotoProfil(),
-                ]
+                ],
+                //Add by Elie
+                "reaction" => $me ? $this->userService->fetchOneReactionAvis("avisrestaurant_reaction", $avis->getId(), $me->getId()):0,
+                "all_reaction" => $this->userService->fetchAllReactionAvis("avisrestaurant_reaction", $avis->getId()),
+                "all_response" => $me ? $this->userService->fetchAllResponseAvisV2("avisrestaurant_response", $avis->getId(), $me->getId(), 'restaurant', $this->confidentialityService):[],
             ];
 
             array_push($results, $data);

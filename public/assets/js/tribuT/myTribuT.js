@@ -318,7 +318,7 @@ async function showBlockPubV2(type, tribu_t_name, id_c_u) {
         <a href="/user/account" style="text-decoration:underline; color:blue">Revenir à la page d'accueil.</a>
       </div>
     </div>
-    `
+    `;
   }
 
   /**end */
@@ -452,7 +452,7 @@ function showPartisan() {
                     <thead>
                         <tr>
                             <th>Profil</th>
-                            <th>Nom du fan</th>
+                            <th>Avatar</th>
                             <th>Tribu G</th>
                         </tr>
                     </thead>
@@ -474,6 +474,7 @@ function showPartisan() {
             let lastName = profilInfo.lastName;
             let firstName = profilInfo.firstName;
             let tribuG = profilInfo.tribuG.replace("tribug_01_", "");
+let fullNamePart = json.fullname;
 
             body_table += `
                             <tr>
@@ -483,7 +484,7 @@ function showPartisan() {
                                 <td>
                                     <a target="_blank" href="/user/profil/${
                                       profilInfo.user_id
-                                    }" class="text-decoration-none">${lastName} <span> ${firstName}</span></a>
+                                    }" class="text-decoration-none">${fullNamePart}</a>
                                 </td>
                                 <td>
                                     TribuG ${tribuG.replaceAll("_", " ")}
@@ -970,19 +971,30 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
         ? data[i].nbr_reaction +
           (data[i].nbr_reaction > 1 ? " réactions" : " réaction")
         : "0 réaction";
+
+      let publication_photo = data[i].photo ? data[i].photo : "";
+			publication_photo = IS_DEV_MODE ? publication_photo.replace("/public", "") : publication_photo;
+
       let pub_photo = data[i].photo
         ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${
-            data[i].photo /*.replace("/public","")*/
+            publication_photo /*.replace("/public","")*/
           }" alt="">`
         : `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;display:none;" onclick="setPhotoTribu(this)" src="" alt="">`;
 
       let confidentiality = parseInt(data[i].confidentiality, 10);
       let contentPublication = "";
-      let _fullName =
-        data[i].user_profil.firstname + " " + data[i].user_profil.lastname;
+      /*let _fullName =
+        data[i].user_profil.firstname + " " + data[i].user_profil.lastname;*/
+			let _fullName = data[i].userfullname;
+			
       let _profilImg = data[i].user_profil.photo_profil
         ? "/public" + data[i].user_profil.photo_profil
         : "/public/assets/image/img_avatar3.png";
+
+      _profilImg = IS_DEV_MODE ? _profilImg.replace("/public", "") : _profilImg;
+
+			let name_muable_tribu_T = data[i].tribu_apropos.name;
+			let table_tribu_T_name = data[i].table_name;
 
       if (confidentiality === 1) {
         //public
@@ -1392,6 +1404,12 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                 ? dataG.nbr_reaction +
                   (dataG.nbr_reaction > 1 ? " réactions" : " réaction")
                 : "0 réaction";
+
+							let photo_publication = dataG.photo ? dataG.photo : "";
+							photo_publication = IS_DEV_MODE
+								? photo_publication.replace("/public", "")
+								: photo_publication;
+
               let pub_photo = dataG.photo
                 ? `<img class="publication-picture" data-bs-toggle="modal" data-bs-target="#modal_show_photo" style="cursor:pointer;" onclick="setPhotoTribu(this)" src="${
                     dataG.photo /*.replace("/public","")*/
@@ -1400,12 +1418,21 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 
               let confidentiality = parseInt(dataG.confidentiality, 10);
 
-              let _fullName =
-                dataG.user_profil.firstname + " " + dataG.user_profil.lastname;
+              /*let _fullName =
+                dataG.user_profil.firstname + " " + dataG.user_profil.lastname;*/
+							let _fullName = dataG.userfullname;
+							
               let _profilImg = dataG.user_profil.photo_profil
                 ? "/public" + dataG.user_profil.photo_profil
                 : "/public/assets/image/img_avatar3.png";
-              lastIdf = dataG?.id;
+              
+							_profilImg = IS_DEV_MODE ? _profilImg.replace("/public", "") : _profilImg;
+
+							let name_muable_tribu_T = dataG.tribu_apropos.name;
+							let table_tribu_T_name = dataG.table_name;
+
+							// lastIdf = dataG?.id; we don't need to use the last id element we mast to change in the next...
+
               new_reaction_show = dataG.nbr_reaction
                 ? dataG.nbr_reaction +
                   (dataG.nbr_reaction > 1 ? " réactions" : " réaction")
@@ -2619,7 +2646,7 @@ function showInvitations() {
                         <table class="table">
                             <thead>
                                 <tr>
-                                    <th scope="col">Nom</th>
+                                    <th scope="col">Avatar</th>
                                     <th>E-mail</th>
                                     <th scope="col">Tribu G</th>
                                     <th scope="col">Action</th>
@@ -2637,7 +2664,7 @@ function showInvitations() {
                                 <tr>
                                     <th>E-mail</th>
                                     <th scope="col">Date</th>
-                                    <th scope="col">Fan</th>
+                                    <th scope="col">Avatar</th>
                                     <th scope="col">Invité(e) par </th>
                                     <th scope="col">Status</th>
                                     <th scope="col">Action</th>
@@ -3984,18 +4011,12 @@ function fetchAllInvitationStory() {
                             <td class="">${item.date}</td>
                             <td class="">${
                               item.user
-                                ? `<a href="/user/profil/${
-                                    item.user.userId.id
-                                  }" class="badge text-bg-primary">${
-                                    item.user.firstname +
-                                    " " +
-                                    item.user.lastname
-                                  }</a>`
+                                ? `<a href="/user/profil/${item.user.userId.id}" class="badge text-bg-primary">${item.fullNameInvited}</a>`
                                 : `<span class="badge text-bg-warning">Compte non trouvé</span>`
                             }</td>
-                            <td><a href="${item.sender? "/user/profil/"+item.sender.id :"#"}" class="badge text-bg-primary">${
-                              item.sender? item.sender.firstname + " " + item.sender.lastname :"Fondateur"
-                            }</a>
+                            <td><a href="${
+								item.sender ? "/user/profil/" + item.sender.id : "#"
+							}" class="badge text-bg-primary">${item.sender ? item.fullNameSender : "Fondateur"}</a>
                             </td>
                             <td>${
                               item.is_valid == 1

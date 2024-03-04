@@ -18,7 +18,8 @@
         <div class="row">
             <div class="col-8">
                 <h5 class="mn un zn gs">
-                    {{firstname ~ " " ~ lastname }}
+                    {# {{firstname ~ " " ~ lastname }}<br> #}
+                    {{ fullname }}
                 </h5>
             
                 {% if last_message.message_type is defined %}

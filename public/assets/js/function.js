@@ -8006,7 +8006,8 @@ function createCardPartisan(json, isIframe = false) {
 		? "/user/message/perso?user_id=" + json.id
 		: "/api/message/perso_iframe?user_id=" + json.id;
 
-	const fullName = json.firstname + " " + json.lastname;
+	//const fullName = json.firstname + " " + json.lastname;
+	const fullName = json.fullname;
 
 	// last_msg_user_${json.id}_jheo_js
 	//content-message-nanta-css

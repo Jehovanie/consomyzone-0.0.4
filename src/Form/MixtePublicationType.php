@@ -31,7 +31,7 @@ class MixtePublicationType extends AbstractType
                 ])
             ->add('confidentiality', ChoiceType::class,[
                 'choices'  => [
-                    'Tous le monde' => 1,
+                    'Tout le monde' => 1,
                     'Moi uniquement' => 0,
                 ],
                 'label' => false,

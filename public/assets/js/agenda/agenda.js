@@ -1954,8 +1954,7 @@ function showPartisanAgenda(tribu_t_name) {
                         <thead>
                             <tr>
                                 <th scope="col">Profil</th>
-                                <th scope="col">Nom</th>
-                                <th scope="col">Prénom</th>
+                                <th scope="col">Avatar</th>
                                 <th scope="col">Email</th>
                                 <th scope="col">Rôle</th>
                                 <th scope="col">
@@ -1985,19 +1984,19 @@ function showPartisanAgenda(tribu_t_name) {
 					if (jsons["curent_user"] != json.id) {
 						profilInfo = JSON.parse(json.infos_profil);
 						let profil =
-							profilInfo.photo_profil != null
+							profilInfo ? (profilInfo.photo_profil != null
 								? "/public" + profilInfo.photo_profil
-								: "/public/assets/image/img_avatar3.png";
-						let lastName = profilInfo.lastName;
-						let firstName = profilInfo.firstName;
-						let tribuG = profilInfo.tribuG.replace("tribug_01_", "");
+								: "/public/assets/image/img_avatar3.png"):"/public/assets/image/img_avatar3.png";
+						let lastName = profilInfo?.lastName;
+						let firstName = profilInfo?.firstName;
+						let fullname = json.fullname;
+						let tribuG = profilInfo?.tribuG.replace("tribug_01_", "");
 
 						document.querySelector("#list-partisans-tribu-t-agenda").innerHTML += `
                             <tr class="table-partisans-${tribu_t_name}-${lastName}">
                                 <td><img class="pdp-agenda-tribu-t" src="${profil}" alt=""></td>
-                                <td data-id="${json.user_id}" class="lastname">${firstName}</td>
-                                <td class="firstname">${lastName}</td>
-                                <td class="content-checkbox email">${profilInfo.email}</td>
+                                <td data-id="${json.user_id}" class="fullname">${fullname}</td>
+                                <td data-email="${profilInfo?.email}" class="content-checkbox email">${json.email}</td>
                                 <td>${json.roles}</td>
                                 <td>
                                     <input type="checkbox" name="selectOui" class="select-tribu-t-oui" 

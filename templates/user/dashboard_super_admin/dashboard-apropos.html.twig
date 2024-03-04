@@ -10,8 +10,8 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script  src="{{ asset('assets/js/dashboard/apropos.js') }}" defer></script>
-    <script  src="{{ asset('assets/js/account/account.js') }}" defer></script>
+    <script src="{{ asset('assets/js/dashboard/apropos.js') }}" defer></script>
+    <script src="{{ asset('assets/js/account/account.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}
@@ -30,7 +30,7 @@
 						</h1>
 					</center>
 					<a href="{{ path("app_dashboardmembre") ~ '?table=' ~ apropos.tributg}}">
-						<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="4vw" height="4vh" viewBox="0 0 128.000000 128.000000" preserveAspectRatio="xMidYMid meet">
+						<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="4vw" height="4vh" viewbox="0 0 128.000000 128.000000" preserveaspectratio="xMidYMid meet">
 
 							<g transform="translate(0.000000,128.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
 								<path d="M215 835 c-94 -69 -170 -130 -170 -137 0 -15 335 -257 358 -258 15 0
@@ -51,8 +51,16 @@
 												<i class="fa-solid fa-solid-admin fa-user"></i>
 											</div>
 											<div class="col-12 mt-3">
-												<h5><strong> Nom : </strong>{{apropos.firstname}}</h5>
-												<h5><strong> Prenom : </strong>{{apropos.lastname}}</h5>
+												<h5>
+													<strong>
+														Nom :
+													</strong>
+													{{apropos.firstname}}</h5>
+												<h5>
+													<strong>
+														Prenom :
+													</strong>
+													{{apropos.lastname}}</h5>
 											</div>
 											<div class="col-12 mt-3">
 												
@@ -78,10 +86,26 @@
 												<i class="fa-solid fa-solid-admin fa-envelope"></i>
 											</div>
 											<div class="col-12 mt-3">
-												<p><strong> Code Postal : </strong>{{apropos.codepostal}}</p>
-												<p><strong> Tel : </strong>{{apropos.tel}}</p>
-												<p><strong> Tel Fixe : </strong>{{apropos.telFixe}}</p>
-												<p><strong> Email : </strong>{{apropos.email}}</p>
+												<p>
+													<strong>
+														Code Postal :
+													</strong>
+													{{apropos.codepostal}}</p>
+												<p>
+													<strong>
+														Tel :
+													</strong>
+													{{apropos.tel}}</p>
+												<p>
+													<strong>
+														Tel Fixe :
+													</strong>
+													{{apropos.telFixe}}</p>
+												<p>
+													<strong>
+														Email :
+													</strong>
+													{{apropos.email}}</p>
 											</div>
 										</div>
 									</div>
@@ -94,10 +118,26 @@
 												<i class="fa-solid fa-solid-admin fa-address-card"></i>
 											</div>
 											<div class="col-12 mt-3">
-												<p> <strong> Rue : </strong> {{apropos.numRue}}</p>
-												<p> <strong> Commune : </strong> {{apropos.commune}}</p>
-												<p> <strong> Quartier : </strong> {{apropos.quartier}}</p>
-												<p> <strong> Pays : </strong> {{apropos.pays}}</p>
+												<p>
+													<strong>
+														Rue :
+													</strong>
+													{{apropos.numRue}}</p>
+												<p>
+													<strong>
+														Commune :
+													</strong>
+													{{apropos.commune}}</p>
+												<p>
+													<strong>
+														Quartier :
+													</strong>
+													{{apropos.quartier}}</p>
+												<p>
+													<strong>
+														Pays :
+													</strong>
+													{{apropos.pays}}</p>
 											</div>
 										</div>
 									</div>
@@ -138,11 +178,12 @@
 
 							<div class="card-apropos-admin-tribut">
 								<div class="row">
-									<div class="col-md-12 col-sm-12 mx-auto my-2">
-										<div class="card p-3">
-											<h3 class="mt-4 mx-auto"> Tribu G</h3>
+									<div class="col-md-12 col-sm-12 mx-auto my-2 row">
+										<div class="card p-3 col-6">
+											<h3 class="mt-4 mx-auto">
+												Tribu G</h3>
 											<h5>Nom de tribu:</h3>
-											<p class="display-6">{{apropos.tributg}}</p>
+											<p class="h4 text-primary">{{apropos.tributg}}</p>
 											<h5>Rôles :</h5>
 											<p>
 
@@ -169,32 +210,52 @@
 												<h4>Validé le rôle</h4>
 												<div class="row mx-auto">
 													<div class="col-2">
-														<button 
-															id="0"
-															class="btn btn-danger validating_super_admin_tributG_js_jheo"
-															data-toggle-id={{apropos.id}}
-															data-toggle-categories={{apropos.categories}}
-
-															{{apropos.isVerified is same as(false) ? "disabled": ""}}
-														>
+														<button id="0" class="btn btn-danger validating_super_admin_tributG_js_jheo" data-toggle-id={{apropos.id}} data-toggle-categories={{apropos.categories}} {{apropos.isVerified is same as(false) ? "disabled": ""}}>
 															Non
 														</button>
 													</div>
 													<div class="col-2 mx-3">
-														<button 
-															id="1"
-															class="btn btn-success validating_super_admin_tributG_js_jheo"
-															data-toggle-id={{apropos.id}}
-															data-toggle-categories={{apropos.categories}}
-
-															{{apropos.isVerified is same as(true) ? "disabled": ""}}
-														>
+														<button id="1" class="btn btn-success validating_super_admin_tributG_js_jheo" data-toggle-id={{apropos.id}} data-toggle-categories={{apropos.categories}} {{apropos.isVerified is same as(true) ? "disabled": ""}}>
 															Oui
 														</button>
 													</div>
 												</div>
 											{% endif %}
 
+</div>
+										<div class="card col-6">
+											<h4>Suspendre ou radier un partisan</h4>
+											<div class="row mt-3 btn-admin-banished-tomm-js">
+												{% if apropos.isBanned == 1 %}
+													<p>Vous avez radié ce partisan.</p>
+													<div class="col-3">
+														<button type="button" class="btn btn-danger isRetablir-{{apropos.id}}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:4145B77.{{apropos.id}}H:bAUoBJQQ-EN6BAhzEAo" onclick="isRetabliBanished(event)">
+															Retablir
+														</button>
+													</div>
+												{% elseif apropos.isSuspendre == 1 %}
+													<p>Vous avez suspendu ce partisan.</p>
+													<div class="col-3">
+														<button type="button" class="btn btn-danger isRetablir-{{apropos.id}}-susp-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:4145B77.{{apropos.id}}H:bAUoBJQQ-EN6BAhzEAo" onclick="isRetabliSuspendre(event)">
+															Retablir
+														</button>
+													</div>
+												{% else %}
+													<div class="col-3">
+														<button type="button" class="btn btn-danger isBanished-{{apropos.id}}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.{{apropos.id}}H:bAUBppJQQ-EN6BAhzEAo" onclick="isBanished(event)">
+															Radier
+														</button>
+													</div>
+													<div class="col-3">
+														<button type="button" class="btn btn-warning isSuspendre-{{apropos.id}}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.{{apropos.id}}H:bAUBppJQQ-EN6BAhzEAo" onclick="isSuspendre(event)">Suspendre</button>
+</div>
+													<div class="col-3">
+														<button type="button" class="btn btn-success isRelance-{{apropos.id}}-tomm-js" data-token="2ahUK:Ewip3tqU6Ob7AhW3gc:77B12.{{apropos.id}}H:bAUBppJQQ-EN6BAhzEAo" onclick="relanceMailAbonnement(event, '{{apropos.email}}')">
+															Relance
+														</button>
+													</div>
+												{% endif %}
+											</div>
 										</div>
 									</div>
 								

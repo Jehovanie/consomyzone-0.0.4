@@ -252,8 +252,7 @@ function showTextInformationFans(showTextOption) {
                     <figcaption class="figure-caption">${
 						apropos_tribuT.description ? apropos_tribuT.description : ""
 					}</figcaption>
-                    <figcaption class="figure-caption">${user_profil.lastname} ${user_profil.firstname} </figcaption>
-                    <figcaption class="figure-caption">${user_profil.email}</figcaption>
+                    <figcaption class="figure-caption">${user_profil.fullname}</figcaption>
                 </figure>
             `);
 }

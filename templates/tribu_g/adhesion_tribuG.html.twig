@@ -1,0 +1,37 @@
+<div class="content_list_p_tG" data-length="{{adhesion_length}}" id="data_adhesion">
+    <div class="card mb-2">
+        <div class="card-body" style="overflow-x:auto;">
+            <table class="table table-responsive">
+                <thead>
+                    <tr>
+                        <th scope="col">Partisans</th>
+                        {# <th scope="col">Email</th> #}
+                        <th scope="col">Status</th>
+                        <th scope="col">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in membersTributG %}
+                        <tr>
+                            {# <td>{{item.pseudo}}</td> #}
+                            {# <td>{{item.email}}</td> #}
+                            <td><b class="text-primary">{{item.nameConfid}}</b><br>
+                            {% if item.parrains %}
+                                <i>Parrainé par :</i> <span class="badge text-bg-info">{{item.parrains[0].fullName}}</span>
+                            {% else %}
+                                <i>Parrainé par :</i> <span class="badge text-bg-info">Aucun parrain</span>
+                            {% endif %}
+                            </td>
+                            
+                            {# <td class="text-primary">{{item.status|upper }}</td> #}
+                            <td class="text-primary">{{item.is_valid == 0 ? '<span class="badge text-bg-warning">En attente</span>' :'<span class="badge text-bg-danger">Réfusé</span>' }}</td>
+                            {# <td> <button data-email="{{item.email}}" data-user="{{item.id}}" onclick="validateAdhesion(this)"class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> {{item.is_valid == 0?'Valider':'Revalider'}}</button> <button onclick="{{item.is_valid == 0 ? 'refuseAdhesion(this)':'removeAdhesion(this)'}}" data-email="{{item.email}}" data-user="{{item.id}}" class="btn btn-danger btn-sm"><i class="fa-solid {{item.is_valid == 0 ? 'fa-ban':'fa-trash'}}"></i> {{item.is_valid == 0 ? 'Refuser':'Supprimer'}}</button>  </td> #}
+                            <td> <button data-email="{{item.email}}" data-user="{{item.id}}" onclick="validateAdhesion(this)"class="btn btn-primary btn-sm"><i class="fa-solid fa-check"></i> Valider </button> <button onclick="refuseAdhesion(this)" data-email="{{item.email}}" data-user="{{item.id}}" class="btn btn-danger btn-sm {{item.is_valid == 0?'':'d-none'}}"><i class="fa-solid fa-ban"></i> Refuser</button>  </td>
+                            {# <td> <a class="btn btn-primary" href={{path("user_profil", { user_id : item.id })}}> Profil</a> </td> #}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

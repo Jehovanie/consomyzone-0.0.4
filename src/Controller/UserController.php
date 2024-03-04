@@ -4,12 +4,12 @@
 
 namespace App\Controller;
 
-
-
+use App\Entity\Abonnement;
+use App\Entity\AbonnementHistorique;
 use PDO;
 use App\Service\Status;
 
-use App\Entity\Consumer;
+use App\Entity\Consumer;  
 
 use App\Entity\Supplier;
 
@@ -26,6 +26,7 @@ use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
 use App\Entity\BddRestoUserModif;
 use App\Form\MixtePublicationType;
+use App\Repository\AbonnementRepository;
 use App\Repository\UserRepository;
 
 use App\Service\RequestingService;
@@ -59,7 +60,7 @@ use Symfony\Component\Routing\RouterInterface;
 
 use App\Repository\BddRestoUserModifRepository;
 use App\Repository\ValidationStoryRepository;
-
+use App\Service\ConfidentialityService;
 use Symfony\Component\Routing\Annotation\Route;
 
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -72,6 +73,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Service\MailService;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class UserController extends AbstractController
 {
@@ -83,22 +86,23 @@ class UserController extends AbstractController
     private $filesyst;
 
 
-    public function __construct(EntityManagerInterface $entityManager,KernelInterface $appKernel, Filesystem $filesyst){
+    public function __construct(EntityManagerInterface $entityManager, KernelInterface $appKernel, Filesystem $filesyst)
+    {
 
         $this->entityManager = $entityManager;
         $this->appKernel = $appKernel;
         $this->filesyst = $filesyst;
+    }
+    #[Route("/info/verif/{id}", name: "userInfo")]
+    public function getUserInfo($id)
+    {
 
-}
-    #[Route("/info/verif/{id}",name:"userInfo")]
-    public function getUserInfo($id){
-
-        $data=$this->entityManager->getRepository(User::class)->findBy(["id"=>$id]);
-        return $this->json(["email"=>$data[0]->getEmail()]);
-
+        $data = $this->entityManager->getRepository(User::class)->findBy(["id" => $id]);
+        return $this->json(["email" => $data[0]->getEmail()]);
     }
     #[Route("/user", name: "home")]
-    public function home(){
+    public function home()
+    {
         return $this->redirectToRoute('app_actualite');
     }
 
@@ -110,58 +114,61 @@ class UserController extends AbstractController
         Tribu_T_Service $tribuTService,
         UserRepository $userRepository,
         SortResultService $sortResultService,
-        NotificationService $notificationService
-    ): Response
-    {
-        $userConnected= $status->userProfilService($this->getUser());
-        
-        if($this->getUser()->getType() === "Type"){
+        NotificationService $notificationService,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
+    ): Response {
+        $userConnected = $status->userProfilService($this->getUser());
+
+        if ($this->getUser()->getType() === "Type") {
             return $this->redirectToRoute('app_actu_non_active');
         }
 
-        $userId= $this->getUser()->getId();
-        $tribuG= $userConnected['tableTribuG'];
+        $userId = $this->getUser()->getId();
+        $tribuG = $userConnected['tableTribuG'];
         $publications = [];
 
         //// ALL PUBLICATION TRIBU G /////
-        $pub_tribuG= $tribuGService->getAllPublicationsUpdate($tribuG);
+        $pub_tribuG = $tribuGService->getAllPublicationsUpdate($tribuG, $userId, $confidentialityService, $userService);
+        
         $publications= array_merge($publications, $pub_tribuG);
 
         //// ALL PUBLICATION FOR ALL TRIBU T /////
-        $all_tribuT= $userRepository->getListTableTribuT(); /// tribu T owned and join
-      
-       
-        if(count($all_tribuT) > 0 ){
-            $all_pub_tribuT= [];
-            foreach($all_tribuT as $tribuT){
-                $temp_pub= $tribuTService->getAllPublicationsUpdate($tribuT['table_name']);
-                $all_pub_tribuT= array_merge($all_pub_tribuT, $temp_pub);
+        $all_tribuT = $userRepository->getListTableTribuT(); /// tribu T owned and join
+
+
+        if (count($all_tribuT) > 0) {
+            $all_pub_tribuT = [];
+            foreach ($all_tribuT as $tribuT) {
+                $temp_pub = $tribuTService->getAllPublicationsUpdate($tribuT['table_name'], $userId, $confidentialityService, $userService);
+                $all_pub_tribuT = array_merge($all_pub_tribuT, $temp_pub);
             }
-            $publications= array_merge($publications, $all_pub_tribuT);
+            $publications = array_merge($publications, $all_pub_tribuT);
         }
-        
+
 
         //// SORTED PUBLICATION BY DATE CREATED AT TIME OF UPDATE
-        $publicationSorted= (count($publications) > 0 ) ? $sortResultService->sortTapByKey($publications, "publication", "createdAt") : $publications;
+        $publicationSorted = (count($publications) > 0) ? $sortResultService->sortTapByKey($publications, "publication", "createdAt") : $publications;
         // dd($publicationSorted);
 
         ///all publication on tribu T use for new publications
-        $choiceTribuT= [];
-        if(count($all_tribuT) > 0 ){
-            foreach($all_tribuT as $key => $tribuT){
-                $n= "Tribu T " . ucfirst(explode("_",$tribuT["table_name"])[count(explode("_",$tribuT["table_name"]))-1]);
+        $choiceTribuT = [];
+        if (count($all_tribuT) > 0) {
+            foreach ($all_tribuT as $key => $tribuT) {
+                // $n = "Tribu T " . ucfirst(explode("_", $tribuT["table_name"])[count(explode("_", $tribuT["table_name"])) - 1]);
+                $n= $tribuT["name_tribu_t_muable"];
                 $choiceTribuT[$n] = $tribuT["table_name"];
             }
         }
 
         // dd($choiceTribuT);
-        $new_publication = $this->createForm(MixtePublicationType::class,[ "tribuTList" => $choiceTribuT ],[]);
-        
+        $new_publication = $this->createForm(MixtePublicationType::class, ["tribuTList" => $choiceTribuT], []);
+
         $flash = [];
-        
+
         $new_publication->handleRequest($request);
         if ($new_publication->isSubmitted() && $new_publication->isValid()) {
-            
+
             // dd($new_publication->getData());
             $type_tribu = $new_publication['type']->getData();
 
@@ -172,28 +179,27 @@ class UserController extends AbstractController
             $photo = $new_publication['photo']->getData();
             $capture = $new_publication['capture']->getData();
             // dd($photo);
-            if( $photo ){
-                $destination = $this->getParameter('kernel.project_dir'). "/public/uploads";
+            if ($photo) {
+                $destination = $this->getParameter('kernel.project_dir') . "/public/uploads";
                 $newFilename = "/public/uploads";
 
                 $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
 
-                if( $type_tribu === "Tribu G"){
-                    $destination .= '/tribu_g/photos/'.$tribuG.'/';
-                    $newFilename .= '/tribu_g/photos/' . $tribuG. "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
-
-                }else{
+                if ($type_tribu === "Tribu G") {
+                    $destination .= '/tribu_g/photos/' . $tribuG . '/';
+                    $newFilename .= '/tribu_g/photos/' . $tribuG . "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
+                } else {
                     $tribu = $new_publication['tribu']->getData();
-                    $destination .= '/tribu_t/photos/'.$tribu.'/';
+                    $destination .= '/tribu_t/photos/' . $tribu . '/';
                     $newFilename .= '/tribu_t/photos/' . $tribu . "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
                 }
 
                 $dir_exist = $this->filesyst->exists($destination);
-                if($dir_exist===false){
+                if ($dir_exist === false) {
                     $this->filesyst->mkdir($destination, 0777);
                 }
-                
-                $photo->move($destination,$newFilename);
+
+                $photo->move($destination, $newFilename);
             }
 
             /**
@@ -205,7 +211,7 @@ class UserController extends AbstractController
 
                 // Function to write image into file
 
-                $destination = $this->getParameter('kernel.project_dir'). "/public/uploads";
+                $destination = $this->getParameter('kernel.project_dir') . "/public/uploads";
                 $newFilename = "/public/uploads";
 
                 $temp = explode(";", $capture);
@@ -214,32 +220,30 @@ class UserController extends AbstractController
 
                 $imagename = md5($userId) . '-' . uniqid() . "." . $extension;
 
-                if( $type_tribu === "Tribu G"){
-                    $destination .= '/tribu_g/photos/'.$tribuG.'/';
-                    $newFilename .= '/tribu_g/photos/' . $tribuG. "/" . $imagename;
-
-                }else{
+                if ($type_tribu === "Tribu G") {
+                    $destination .= '/tribu_g/photos/' . $tribuG . '/';
+                    $newFilename .= '/tribu_g/photos/' . $tribuG . "/" . $imagename;
+                } else {
                     $tribu = $new_publication['tribu']->getData();
-                    $destination .= '/tribu_t/photos/'.$tribu.'/';
+                    $destination .= '/tribu_t/photos/' . $tribu . '/';
                     $newFilename .= '/tribu_t/photos/' . $tribu . "/" . $imagename;
                 }
 
                 $dir_exist = $this->filesyst->exists($destination);
-                if($dir_exist===false){
+                if ($dir_exist === false) {
                     $this->filesyst->mkdir($destination, 0777);
                 }
 
-                file_put_contents($destination .'/'. $imagename, file_get_contents($capture));
-
+                file_put_contents($destination . '/' . $imagename, file_get_contents($capture));
             }
 
             if ($legend || $photo) {
-                if( $type_tribu === "Tribu G"){
-                    $tribu= $tribuG;
-                    $tribuGService->createOnePub($tribuG. "_publication", $userId, $legend, intval($confid), $newFilename);
-                }else{
+                if ($type_tribu === "Tribu G") {
+                    $tribu = $tribuG;
+                    $tribuGService->createOnePub($tribuG . "_publication", $userId, $legend, intval($confid), $newFilename);
+                } else {
                     $tribu = $new_publication['tribu']->getData();
-                    $legend=json_encode($legend);
+                    $legend = json_encode($legend);
                     $tribuTService->createOnePub($tribu . '_publication', $userId, $legend, intval($confid), $newFilename);
                 }
             }
@@ -248,13 +252,13 @@ class UserController extends AbstractController
             $notificationService->sendNotificationForOne($userId, $userId, "/user/actualite", "Votre publication est publiée.");
 
             ///send notification for all partisant in tribu.
-            
+
 
             return $this->redirect($request->getUri());
         }
 
 
-        $test= $tribuTService->getAllTribuTJoinedAndOwned($this->getUser()->getId());
+        $test = $tribuTService->getAllTribuTJoinedAndOwned($this->getUser()->getId());
         return $this->render("user/actualite.html.twig", [
             "userConnected" => $userConnected,
             "publications" => $publicationSorted,
@@ -263,7 +267,7 @@ class UserController extends AbstractController
     }
 
 
- 
+
     #[Route("/user/account", name: "app_account")]
 
     public function Account(
@@ -278,13 +282,17 @@ class UserController extends AbstractController
 
         UserRepository $userRepository,
 
-        UserService $userService
+        UserService $userService,
+        
+        ConfidentialityService $confidentialityService,
+
+        AbonnementRepository $abonnementRepository,
 
     ): Response {
-        $userConnected= $status->userProfilService($this->getUser());
-        
+        $userConnected = $status->userProfilService($this->getUser());
+
         $user = $this->getUser();
-        if($this->getUser()->getType() === "Type"){
+        if ($this->getUser()->getType() === "Type") {
             return $this->redirectToRoute('app_actu_non_active');
         }
         $userType = $user->getType();
@@ -293,6 +301,18 @@ class UserController extends AbstractController
 
         $profil = "";
 
+        /** Add by Elie */
+        $user_trg = $userConnected['tableTribuG'];
+
+        $all_adhesion_tribug = $tributGService->getAttenteAdhesionTribuG($user_trg);
+
+        $is_valid = $tributGService->isValid($user_trg, $userId);
+
+        // Redirect to account page not member
+        if($is_valid != 1){
+            return $this->redirectToRoute('app_disconnect');
+        }
+
         if ($userType == "consumer") {
 
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
@@ -300,8 +320,8 @@ class UserController extends AbstractController
 
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
-        
-        $all_TribuT= $userRepository->getListTableTribuT();
+
+        $all_TribuT = $userRepository->getListTableTribuT();
         $tibu_T_data_owned = json_decode($user->getTribuT(), true);
         $tibu_T_data_joined = json_decode($user->getTribuTJoined(), true);
 
@@ -334,14 +354,13 @@ class UserController extends AbstractController
 
             $newFilename = "";
 
-            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/'.$profil[0]->getTributg().'/';
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/' . $profil[0]->getTributg() . '/';
 
             $dir_exist = $this->filesyst->exists($destination);
 
-            if($dir_exist==false){
+            if ($dir_exist == false) {
 
                 $this->filesyst->mkdir($destination, 0777);
-
             }
 
             if ($publication || $confid) {
@@ -379,10 +398,9 @@ class UserController extends AbstractController
 
                     $imagename = md5($userId) . '-' . uniqid() . "." . $extension;
 
-                    $newFilename =  '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG() . "/" .$imagename;
+                    $newFilename =  '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG() . "/" . $imagename;
 
-                    file_put_contents($destination .'/'. $imagename, file_get_contents($capture));
-
+                    file_put_contents($destination . '/' . $imagename, file_get_contents($capture));
                 }
 
                 $tributGService->createOnePub($profil[0]->getTributG() . "_publication", $userId, $publication, $confid, $newFilename);
@@ -393,8 +411,41 @@ class UserController extends AbstractController
             return $this->redirect($request->getUri());
         }
 
-        // dd($tributGService->getAllPublicationsUpdate($profil[0]->getTributg()));
         
+        $allFilleuils = $userService->getAllFilleuils("tableparrainage_" . $userId, $userRepository, $userId, $confidentialityService);
+        if (count($allFilleuils) >= 2) {
+            $userService->updateUserFan($userId);
+        }
+
+
+        $allAbonnement = $userService->getAllAbonnement();
+        foreach ($allAbonnement as $abonnement) {
+            $idUserDonateur = $abonnement["user_id"];
+            $cotisationBleu = $abonnement["cotisation_bleu"];
+            $codisationVert = $abonnement["cotisation_vert"];
+            if ($idUserDonateur == $userId) {
+                if ($cotisationBleu >= "1.000") {
+                        $userService->updateUserDonateurVert($userId);
+                }
+
+                if ($codisationVert >= "1.000") {
+                        $userService->updateUserDonateurBleu($userId);
+                    }
+                }
+            }
+        
+        $allIdUser = $userService->getAllIdUser();
+
+        foreach ($allIdUser as $id) {
+            if (!$abonnementRepository->findBy(['userId' => $id['id']])) {
+                $abonnementEntity = new Abonnement();
+
+                $abonnementEntity->setUserId($id['id']);
+                $entityManager->persist($abonnementEntity);
+                $entityManager->flush();
+            }
+        }
+
         return $this->render("tribu_g/account.html.twig", [
             "userConnected" => $userConnected,
 
@@ -402,7 +453,7 @@ class UserController extends AbstractController
 
             "table_tribu" => $profil[0]->getTributg(),
 
-            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(),$profil[0]->getIsVerifiedTributGAdmin(), $userId),
+            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
 
             "tributG" => [
                 "table" => $profil[0]->getTributg(),
@@ -414,13 +465,14 @@ class UserController extends AbstractController
                     $userId
 
                 ),
-                "publications" => $tributGService->getAllPublicationsUpdate($profil[0]->getTributg()),
+                "publications" => $tributGService->getAllPublicationsUpdate($profil[0]->getTributg(), $userId, $confidentialityService, $userService),
                 "count_publications" => $tributGService->getCountAllPublications($profil[0]->getTributg()),
             ],
 
             "new_publication" => $new_publication->createView(),
             "tribu_T_owned" => $tribu_t_owned,
-            "tribu_T_joined" => $tribu_t_joined
+            "tribu_T_joined" => $tribu_t_joined,
+            "len_adhesion_tribug"=>count($all_adhesion_tribug)
         ]);
     }
 
@@ -527,16 +579,13 @@ class UserController extends AbstractController
 
             // $content = $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . "<a href='/ferme/departement/" . $req["departeName"] .
             //     "/" . $req["numDeparte"] . "/details/" . $req["id"] . "'>vient de modifier des informations sur son établissement</a>";
-            $content= $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . " vient de modifier des informations sur son établissement.";
-
-
+            $content = $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . " vient de modifier des informations sur son établissement.";
         } else if ($req["ask"] == "create") {
 
             // $content = $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . "<a href='/ferme/departement/" . $req["departeName"] .
             //     "/" . $req["numDeparte"] . "/details/" . $req["id"] . "'>vient de créer une nouvelle établissement</a>";
 
-            $content= $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . " vient de créer une nouvelle établissement.";
-
+            $content = $profil[0]->getFirstName() . " " . $profil[0]->getLastName() . " vient de créer une nouvelle établissement.";
         }
 
         $notificationService->sendNotificationForMany($userId, $allUsers, "/user/account", $content);
@@ -752,11 +801,11 @@ class UserController extends AbstractController
 
     ): Response {
 
-        if ( !$this->getUser()) {
+        if (!$this->getUser()) {
             return $this->redirectToRoute("app_connexion");
         }
 
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
 
         if ($this->getUser()->getType() === "consumer") {
             $profil = $consumerRepository->findOneBy(["user" => $this->getUser()->getId()]);
@@ -803,9 +852,10 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         UserService $userService,
         Tribu_T_Service $tributTService,
-    ){
-        $userConnected= $status->userProfilService($this->getUser());
-        
+        ConfidentialityService $confidentialityService
+    ) {
+        $userConnected = $status->userProfilService($this->getUser());
+
         $user = $this->getUser();
         $userId = $user->getId();
         $myuserType = $user->getType();
@@ -828,12 +878,12 @@ class UserController extends AbstractController
 
             $type = "Partisan";
             $profil = $entityManager->getRepository(Consumer::class)->findByUserId($user_id);
-        }elseif ($userType == "supplier") {
+        } elseif ($userType == "supplier") {
 
             $type = "Partenaire";
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($user_id);
-        }else{
-            return $this->redirect("/user/profil/".$userId);
+        } else {
+            return $this->redirect("/user/profil/" . $userId);
         }
 
         $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/photo_user_' . $user_id . "/";
@@ -846,10 +896,10 @@ class UserController extends AbstractController
         }
 
         $nombre_partisant = $tributGService->getCountPartisant($profil[0]->getTributG());
-        $status_tribuT_autre_profil= strtoupper($tributGService->getStatus($profil[0]->getTributG(),$user_id));
+        $status_tribuT_autre_profil = strtoupper($tributGService->getStatus($profil[0]->getTributG(), $user_id));
 
         //Editing by Elie for a tribu g and t partisans
-        
+
         $partisansG = [];
         $partisansT = [];
 
@@ -859,55 +909,84 @@ class UserController extends AbstractController
 
         foreach ($all_user_id_tribug as $user_id_tribu_g) {
             $friend = $userRepository->find(intval($user_id_tribu_g["user_id"]));
-            
-            if( $tributGService->getCurrentStatus($tributG_name, $friend->getId())){
 
+            if ($tributGService->getCurrentStatus($tributG_name, $friend->getId())) {
+                $name = $confidentialityService->getConfFullname(intval($friend->getId()), $userId);
+                if (intval($friend->getId()) != $userId) {
+                    $email = $confidentialityService->getVisibilityEmail(intval($friend->getId()), $userId) ? $friend->getEmail() : "Confidentiel";
+                } else {
+                    $email = $friend->getEmail();
+                }
                 $single_user = [
                     "id" => intval($friend->getId()),
-                    "email" => $friend->getEmail(),
+                    "email" => $email,
                     "firstname" => $userService->getUserFirstName(intval($friend->getId())),
                     "lastname" => $userService->getUserLastName(intval($friend->getId())),
+                    "name" => $name,
                     "status" => $tributGService->getCurrentStatus($tributG_name, $friend->getId()),
                 ];
-    
-                array_push($partisansG, $single_user);
 
+                array_push($partisansG, $single_user);
             }
         }
 
         $all_tribuT = $userService->getTribuByIdUser($user_id);
 
-        for($i=0; $i < count($all_tribuT); $i++ ){
+        for ($i = 0; $i < count($all_tribuT); $i++) {
 
-            $tribut= $all_tribuT[$i];
+            $tribut = $all_tribuT[$i];
 
-            $tribuT_apropos= $tributTService->getApropos($tribut["table_name"]);
+            $tribuT_apropos = $tributTService->getApropos($tribut["table_name"]);
 
             $membres = $userService->getMembreTribuT($tribut["table_name"]);
-            for($j=0; $j< count($membres); $j++ ){
+            for ($j = 0; $j < count($membres); $j++) {
 
-                $partisant= $membres[$j];
+                $partisant = $membres[$j];
                 $friendT = $userRepository->find(intval($partisant["user_id"]));
 
-                if( $friendT ){
+                if ($friendT) {
+
+                    $name = $confidentialityService->getConfFullname(intval($friendT->getId()), $userId);
+
+                    if (intval($friendT->getId()) != $userId) {
+                        $email = $confidentialityService->getVisibilityEmail(intval($friendT->getId()), $userId) ? $friendT->getEmail() : "Confidentiel";
+                    } else {
+                        $email = $friendT->getEmail();
+                    }
+
                     $single_user = [
                         "id" => intval($friendT->getId()),
-                        "email" => $friendT->getEmail(),
+                        "email" => $email,
                         "firstname" => $userService->getUserFirstName($friendT->getId()),
                         "lastname" => $userService->getUserLastName($friendT->getId()),
+                        "name" => $name,
                         "status" => $tributGService->getCurrentStatus($tributG_name, $friendT->getId()),
-                        "role" =>$partisant["roles"],
+                        "role" => $partisant["roles"],
                     ];
-        
-                    array_push($partisansT, ["user"=>$single_user, "tribuT"=>$tribuT_apropos]);
+
+                    array_push($partisansT, ["user" => $single_user, "tribuT" => $tribuT_apropos]);
                 }
             }
-
         }
+        
+        $otherId = intval($user_id);
+
+        $fullName = $confidentialityService->getConfFullname($otherId, $userId);
+
+        $badgeFan = $userService->getUserFan($user_id);
+        $badgeDonateurVert = $userService->getUserDonateurVert($user_id);
+        $badgeDonateurBleu = $userService->getUserDonateurBleu($user_id);
 
         return $this->render('user/profil.html.twig', [
             "userConnected" => $userConnected,
             "profil" => $myProfil,
+            "fullName" => $fullName,
+            "isAdresseVisible" => $confidentialityService->getVisibilityAdresse($otherId, $userId),
+            "isPhoneNumberVisible" => $confidentialityService->getVisibilityPhoneNumber($otherId, $userId),
+            "isBadgeFanPublic" => $confidentialityService->getVisibilityBadgeFan($otherId, $userId),
+            "isBadgeDonBleuPublic" => $confidentialityService->getVisibilityBadgeDonBleu($otherId, $userId),
+            "isBadgeDonVertPublic" => $confidentialityService->getVisibilityBadgeDonVert($otherId, $userId),
+            "isBadgeActionnairePublic" => $confidentialityService->getVisibilityBadgeActionnaire($otherId, $userId),
             "autre_profil" => $profil,
             "type" => $type,
             "images" => $images_trie,
@@ -927,9 +1006,12 @@ class UserController extends AbstractController
             ],
 
             "nombre_partisant" => $nombre_partisant,
-            "status_tribuT_autre_profil" =>$status_tribuT_autre_profil,
+            "status_tribuT_autre_profil" => $status_tribuT_autre_profil,
             "tribu_g_friend" => $partisansG,
             "tribu_t_friend" => $partisansT,
+            "badge_fan" => $badgeFan,
+            "badge_donateur_vert" => $badgeDonateurVert,
+            "badge_donateur_bleu" => $badgeDonateurBleu
 
         ]);
     }
@@ -944,8 +1026,10 @@ class UserController extends AbstractController
         UserRepository $userRepository,
 
         SupplierRepository $supplierRepository,
+UserService $userService,
+        AbonnementRepository $abonnementRepository,
     ): Response {
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
 
         $user = $this->getUser();
         $userType = $user->getType();
@@ -996,6 +1080,17 @@ class UserController extends AbstractController
             array_push($results, $result);
         }
 
+$allIdUser = $userService->getAllIdUser();
+
+        foreach ($allIdUser as $id) {
+            if (!$abonnementRepository->findBy(['userId' => $id['id']])) {
+                $abonnementEntity = new Abonnement();
+
+                $abonnementEntity->setUserId($id['id']);
+                $entityManager->persist($abonnementEntity);
+                $entityManager->flush();
+            }
+        }
 
         return $this->render("user/dashboard_super_admin/dashboard.html.twig", [
             "userConnected" => $userConnected,
@@ -1010,12 +1105,12 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route("/user/dashboard/tribug_json", name:"app_dashboard_tribug_json")]
+    #[Route("/user/dashboard/tribug_json", name: "app_dashboard_tribug_json")]
     public function app_dashboard_tribug_json(
         TributGService $tributGService
-    ){
+    ) {
         return $this->json(
-            ["allTribuG" => $tributGService->getAllTableTribuG()]
+            ["allTribuG" => $tributGService->getAllTribuGforDashBoard()]
         );
     }
 
@@ -1044,7 +1139,7 @@ class UserController extends AbstractController
         SupplierRepository $supplierRepository
     ): Response {
 
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
 
         $table_name = $request->query->get("table");
         // dd($table_name);
@@ -1129,7 +1224,7 @@ class UserController extends AbstractController
 
     ): Response {
 
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
 
         ///get param from the url
         ///user to validate.
@@ -1158,6 +1253,8 @@ class UserController extends AbstractController
         $table_tribut = $user_to_control_profil->getTributG();
         $tribut = $tributGService->getStatus($table_tribut, $user_id_to_control);
 
+        $isBanished = $tributGService->getBanishedStatus($table_tribut, $user_id_to_control);
+        $isSuspendre = $tributGService->getSuspenduStatus($table_tribut, $user_id_to_control);
         $apropos = [
 
             "id" => $user_to_control->getId(),
@@ -1188,7 +1285,11 @@ class UserController extends AbstractController
 
             "isVerified" => $user_to_control_profil->getIsVerifiedTributGAdmin(),
 
-            "categories" => $user_to_control->getType()
+            "categories" => $user_to_control->getType(),
+
+            "isBanned" => $isBanished,
+
+            "isSuspendre" => $isSuspendre
 
         ];
 
@@ -1262,7 +1363,7 @@ class UserController extends AbstractController
 
             $message_notification = "Nous vous informons que l'administrateur de cette plateforme a valider que votre rôle en tant qu'administrateur dans notre tribu G.";
 
-                // "<br/> <a class='d-block w-50 mx-auto mt-3 btn btn-primary text-center' href='/user/dashboard-fondateur' alt='Administration tributG'>Voir</a>";
+            // "<br/> <a class='d-block w-50 mx-auto mt-3 btn btn-primary text-center' href='/user/dashboard-fondateur' alt='Administration tributG'>Voir</a>";
         }
 
         $entityManagerInterface->persist($profil);
@@ -1299,7 +1400,7 @@ class UserController extends AbstractController
         UserService $userService
     ): Response {
 
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
         $user = $this->getUser();
         $userType = $user->getType();
         $userId = $user->getId();
@@ -1379,7 +1480,7 @@ class UserController extends AbstractController
         TributGService $tributGService
 
     ): Response {
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
         $user = $this->getUser();
 
         $userType = $user->getType();
@@ -1447,6 +1548,46 @@ class UserController extends AbstractController
     }
 
 
+    #[Route("/set/suspendre", name: "app_set_part_suspendre", methods: ["POST"])]
+
+    public function SetSuspendre(
+
+        Request $request,
+
+        EntityManagerInterface $entityManager,
+
+        TributGService $tributGService,
+
+        UserRepository $userRepository,
+
+        ConsumerRepository $consumerRepository,
+
+        SupplierRepository $supplierRepository
+
+    ): Response {
+
+        $user_id_to_control = $request->request->get("id");
+
+        //dump($user_id_to_control);
+
+        $user_to_control = $userRepository->find($user_id_to_control);
+
+        if ($user_to_control->getType() === "consumer") {
+
+            $user_to_control_profil = $consumerRepository->findOneBy(['userId' => $user_id_to_control]);
+        } else {
+
+            $user_to_control_profil = $supplierRepository->findOneBy(['userId' => $user_id_to_control]);
+        }
+
+        $table_tribut = $user_to_control_profil->getTributG();
+
+        $r = $tributGService->setSuspenduPartisant($table_tribut, $user_id_to_control);
+
+        return $this->json(["success" => $r], 200);
+    }
+
+
 
 
 
@@ -1466,7 +1607,7 @@ class UserController extends AbstractController
 
         SupplierRepository $supplierRepository
 
-    ){
+    ) {
 
         $user_id_to_control = $request->request->get("id");
 
@@ -1485,6 +1626,45 @@ class UserController extends AbstractController
         $table_tribut = $user_to_control_profil->getTributG();
 
         $r = $tributGService->undoBanishePartisant($table_tribut, $user_id_to_control);
+
+        return $this->json(["success" => $r], 200);
+    }
+
+    #[Route("/undo/suspendre", name: "app_undo_part_suspendre")]
+
+    public function UndoSuspendre(
+
+        Request $request,
+
+        EntityManagerInterface $entityManager,
+
+        TributGService $tributGService,
+
+        UserRepository $userRepository,
+
+        ConsumerRepository $consumerRepository,
+
+        SupplierRepository $supplierRepository
+
+    ) {
+
+        $user_id_to_control = $request->request->get("id");
+
+        //dump($user_id_to_control);
+
+        $user_to_control = $userRepository->find($user_id_to_control);
+
+        if ($user_to_control->getType() === "consumer") {
+
+            $user_to_control_profil = $consumerRepository->findOneBy(['userId' => $user_id_to_control]);
+        } else {
+
+            $user_to_control_profil = $supplierRepository->findOneBy(['userId' => $user_id_to_control]);
+        }
+
+        $table_tribut = $user_to_control_profil->getTributG();
+
+        $r = $tributGService->undoSuspendrePartisant($table_tribut, $user_id_to_control);
 
         return $this->json(["success" => $r], 200);
     }
@@ -1509,7 +1689,7 @@ class UserController extends AbstractController
         SupplierRepository $supplierRepository,
 
     ): Response {
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
 
         $user_id_to_control = intval($request->query->get("user_id"));
 
@@ -1610,7 +1790,7 @@ class UserController extends AbstractController
     public function setNotificationToShow(
         Request $request,
         NotificationService $notificationService
-    ){
+    ) {
         /// [ { "notif_id": "1"}, { "user_id":2 } , ... ]
         $data = json_decode($request->getContent(), true);
 
@@ -1629,7 +1809,7 @@ class UserController extends AbstractController
     public function setNotificationToReadAll(
         Request $request,
         NotificationService $notificationService
-    ){
+    ) {
         /// [ { "notif_id": "1"}, { "user_id":2 } , ... ]
         $data = json_decode($request->getContent(), true);
 
@@ -1650,7 +1830,7 @@ class UserController extends AbstractController
         Request $request,
         NotificationService $notificationService,
         UserRepository $userRepository
-    ){
+    ) {
         $notification_id = $request->query->get("notif_id");
         $table = $this->getUser()->getTablenotification();
         $singleNotification = $notificationService->updateNotificationIsread($notification_id, $this->getUser()->getId());
@@ -1674,7 +1854,7 @@ class UserController extends AbstractController
 
         TributGService $tributGService
     ): Response {
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
         $user = $this->getUser();
 
         $userType = $user->getType();
@@ -1745,7 +1925,7 @@ class UserController extends AbstractController
                 $userId
 
             ),
-          
+
             "results" => $results
 
         ]);
@@ -1755,11 +1935,11 @@ class UserController extends AbstractController
 
     #[Route("/user/account/dashboard-fondateur/setting/validation", name: "app_setting_fondateur_setting")]
 
-    public function dashboardSettingValidation(Request $request ,   Status $status)
+    public function dashboardSettingValidation(Request $request,   Status $status)
 
     {
-        $userConnected= $status->userProfilService($this->getUser());
-        return $this->render("user/dashboard_fondateur/SettingAdminFondateur.html.twig", [ 
+        $userConnected = $status->userProfilService($this->getUser());
+        return $this->render("user/dashboard_fondateur/SettingAdminFondateur.html.twig", [
             "userConnected" => $userConnected,
         ]);
     }
@@ -1783,7 +1963,7 @@ class UserController extends AbstractController
         Request $request
 
     ): Response {
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
 
         $user = $this->getUser();
 
@@ -1801,7 +1981,9 @@ class UserController extends AbstractController
             $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
         }
 
-        return $this->render("user/dashboard_fondateur/listDePublication.html.twig", [
+        return $this->render(
+            "user/dashboard_fondateur/listDePublication.html.twig",
+            [
                 "userConnected" => $userConnected,
                 "profil" => $profil,
                 "statusTribut" => $tributGService->getStatusAndIfValid(
@@ -1826,7 +2008,7 @@ class UserController extends AbstractController
         SupplierRepository $supplierRepository,
         TributGService $tributGService
     ): Response {
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
         $user_connected = $this->getUser();
 
         $userType = $user_connected->getType();
@@ -1903,7 +2085,7 @@ class UserController extends AbstractController
 
     ): Response {
 
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
 
         $user = $this->getUser();
 
@@ -1962,13 +2144,13 @@ class UserController extends AbstractController
 
     #[Route("/user/invitation/update", name: "app_update_list_invitations")]
 
-    public function invitationUpdate(Status $status, RequestingService $requesting): Response
+    public function invitationUpdate(Status $status, RequestingService $requesting, ConfidentialityService $confidentialityService): Response
 
     {
 
         $tableRequestingName = $this->getUser()->getTablerequesting();
 
-        $invitations = $requesting->getAllRequest($tableRequestingName);
+        $invitations = $requesting->getAllRequest($tableRequestingName, $this->getUser()->getId(), $confidentialityService);
 
         //dd($invitations);
 
@@ -2018,7 +2200,8 @@ class UserController extends AbstractController
         TributGService $tr,
         $is_tribu,
         Tribu_T_Service $tribut,
-        // Request $request
+        // Request $request,
+        ConfidentialityService $confidentialityService
     ): Response {
 
         // $requestContent = json_decode($request->getContent(), true);
@@ -2033,23 +2216,22 @@ class UserController extends AbstractController
 
         $role = $tribut->getRole($balise, intval($idR));
 
-        $role == "Fondateur" ? $tribu_t_joined = json_decode($tribut->fetchJsonDataTribuT(intval($idR),"tribu_t_owned")) : 
-                                $tribu_t_joined = json_decode($tribut->fetchJsonDataTribuT(intval($idR),"tribu_t_joined"));
+        $role == "Fondateur" ? $tribu_t_joined = json_decode($tribut->fetchJsonDataTribuT(intval($idR), "tribu_t_owned")) :
+            $tribu_t_joined = json_decode($tribut->fetchJsonDataTribuT(intval($idR), "tribu_t_joined"));
 
         $listTribuT = $tribu_t_joined->tribu_t;
 
         $tribu_t_joined_info = null;
-        
-        if(is_array($listTribuT)){
+
+        if (is_array($listTribuT)) {
             for ($i = 0; $i < count($listTribuT); $i++) {
 
-                if($listTribuT[$i]->name == $balise) $tribu_t_joined_info = $listTribuT[$i];
-                
+                if ($listTribuT[$i]->name == $balise) $tribu_t_joined_info = $listTribuT[$i];
             }
-        }else{
+        } else {
             $tribu_t_joined_info = $listTribuT;
         }
-        
+
 
         $userPosterId = $userPoster->getId();
         $pseudo = $userPoster->getPseudo();
@@ -2060,8 +2242,8 @@ class UserController extends AbstractController
 
             $nameMuable = $tribu_t_joined_info->name_tribu_t_muable;
 
-            $tribut->setTribuT($tribu_t_joined_info->name, $tribu_t_joined_info->description, $tribu_t_joined_info->logo_path, $tribu_t_joined_info->extension, $userPosterId,"tribu_t_joined", $nameMuable);
-
+            $tribut->setTribuT($tribu_t_joined_info->name, $tribu_t_joined_info->description, $tribu_t_joined_info->logo_path, $tribu_t_joined_info->extension, $userPosterId, "tribu_t_joined", $nameMuable);
+$confidentialityService->insertRowInConfTribu($userPosterId, $tribu_t_joined_info->name);
             $tribut->updateMember($balise, $userPosterId, 1);
 
             $userFullname = $tribut->getFullName($userPosterId);
@@ -2183,15 +2365,15 @@ class UserController extends AbstractController
 
     #[Route("/user/invitation", name: "app_invitation")]
 
-    public function invitation(Status $status, RequestingService $requesting): Response
+    public function invitation(Status $status, RequestingService $requesting, ConfidentialityService $confidentialityService): Response
     {
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
 
         $statusProfile = $status->statusFondateur($this->getUser());
 
         $tableRequestingName = $this->getUser()->getTablerequesting();
 
-        $invitations = $requesting->getAllRequest($tableRequestingName);
+        $invitations = $requesting->getAllRequest($tableRequestingName, $this->getUser()->getId(), $confidentialityService);
 
 
 
@@ -2244,7 +2426,7 @@ class UserController extends AbstractController
     public function publication(Status $status, Request $request, TributGService $tributGService): Response
 
     {
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
         $user = $this->getUser();
 
         $user_id = $user->getId();
@@ -2350,7 +2532,6 @@ class UserController extends AbstractController
             "success" => true,
             "message" => "Photo ajouté avec succès!"
         ], 200);
-        
     }
 
     #[Route('/user/profil/update/avatar', name: 'update_avatar_user')]
@@ -2420,14 +2601,14 @@ class UserController extends AbstractController
                 $profil = $this->entityManager->getRepository(Supplier::class)->findByUserId($userId);
             }
 
-            if($profil)
+            if ($profil)
                 $profil[0]->setPhotoProfil('/uploads/users/photos/photo_user_' . $userId . "/" . $imagename);
 
 
 
             $this->entityManager->flush();
 
-            
+
 
             ///save image in public/uploader folder
 
@@ -2443,16 +2624,16 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/reception', name: 'user_boit_reception')]
-    public function boiteReception(  Status $status,): Response
+    public function boiteReception(Status $status,): Response
     {
 
-        $userConnected= $status->userProfilService($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
         return $this->render('user/boitDeReception/index.html.twig', [
             "userConnected" => $userConnected,
         ]);
     }
 
-  
+
     /** UPDATE PASSWORD */
     /*
     #[Route("/user/update/password", name : "update_password_on_dev")]
@@ -2489,36 +2670,36 @@ class UserController extends AbstractController
         $tablePub = $data["tablePub"];
         $pub_id = $data["pub_id"];
         $confidentialite = $data["confidentialite"];
-        
+
         $tribut->updateVisibility($tablePub, $pub_id, $confidentialite);
 
         return $this->json("Visibilité bien à jour");
-
     }
 
 
     #[Route('/user/publication/tribu/delete', name: 'delete_publication', methods: ['POST'])]
     public function deletePublication(Request $request, Tribu_T_Service $tribut): Response
     {
-        $data = json_decode($request->getContent(), true); 
+        $data = json_decode($request->getContent(), true);
         $tablePub = $data["tablePub"];
         $pub_id = $data["pub_id"];
 
         // $tablePub = "tribug_01_centre_et_est_belley_publication";
         // $pub_id = 31;
 
-        $publication= $tribut->getOnePublication($tablePub, $pub_id);
+        $publication = $tribut->getOnePublication($tablePub, $pub_id);
         // dd($publication);
 
-        if( !$publication ||  $publication['user_id'] !== $this->getUser()->getId()){
-            return $this->json(["success" => false, 
+        if (!$publication ||  $publication['user_id'] !== $this->getUser()->getId()) {
+            return $this->json([
+                "success" => false,
                 "message" => "Vous n'avez pas le droit de supprimée cette publication."
-            ], 403 );
+            ], 403);
         }
 
-        if( $publication["photo"] !== null &&  $publication["photo"] !== "" ){
+        if ($publication["photo"] !== null &&  $publication["photo"] !== "") {
             $filesystem = new Filesystem();
-            if($filesystem->exists($this->getParameter('kernel.project_dir') . $publication['photo'])){
+            if ($filesystem->exists($this->getParameter('kernel.project_dir') . $publication['photo'])) {
                 $filesystem->remove($this->getParameter('kernel.project_dir') . $publication['photo']);
             }
         }
@@ -2533,28 +2714,33 @@ class UserController extends AbstractController
 
 
     #[Route('/user/publication/tribu/comment', name: 'all_comment_publication', methods: ["POST"])]
-    public function getCommentPublication(Request $request, Tribu_T_Service $tribut): Response
-    {
+    public function getCommentPublication(
+        Request $request,
+        Tribu_T_Service $tribut,
+        UserService $userService,
+        ConfidentialityService $confidentialityService
+    ): Response {
         $data = json_decode($request->getContent(), true);
         $tablePub = $data["tablePub"];
         $pub_id = $data["pub_id"];
-        $comments= [];
-        
-        $comments= $tribut->getCommentsPublication($tablePub, $pub_id);
+        $comments = [];
+        $userId = $this->getUser()->getId();
+        $comments = $tribut->getCommentsPublication($tablePub, $pub_id, $userId, $confidentialityService, $userService);
 
         return $this->json([
             "success" => true,
             "comments" => $comments
         ], 200);
     }
-    
+
     #[Route('/user/publication/tribu/push_comment', name: 'push_comment', methods: ["POST"])]
     public function pushComment(
         Request $request,
         TributGService $tribut,
-        NotificationService $notificationService
-    ): Response
-    {
+        NotificationService $notificationService,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
+    ): Response {
         $data = json_decode($request->getContent(), true);
         extract($data); /// $tablePub, $pubID, $authorID, $comment, $audioname
 
@@ -2573,12 +2759,16 @@ class UserController extends AbstractController
         $full_name = $tribut->getFullName($this->getUser()->getId());
 
         if (intval($this->getUser()->getId()) != intval($authorID)) {
+            $user = $this->getUser();
+            $user_id = $user->getId();
+
+            $pseudo = $confidentialityService->getConfFullname($user_id, intval($authorID));
 
             $notificationService->sendNotificationForOne(
                 $this->getUser()->getId(),
                 $authorID,
-                "/user/actualite#".$table_tribu."_".$pubID,
-                $full_name . " a commenté votre publication."
+                "/user/actualite#" . $table_tribu . "_" . $pubID,
+                $pseudo . " a commenté votre publication."
             );
         }
 
@@ -2588,7 +2778,8 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/setpdp', name: 'app_setpdp_user', methods: ["POST"])]
-    public function setAsPdp(Request $request){
+    public function setAsPdp(Request $request)
+    {
 
         $user = $this->getUser();
 
@@ -2617,14 +2808,13 @@ class UserController extends AbstractController
         return $this->json([
             "success" => true,
         ], 200);
-
     }
 
-    #[Route("/user/liste/demande/partenariat", name:"app_liste_demande_partenaire", methods:["GET"])]
+    #[Route("/user/liste/demande/partenariat", name: "app_liste_demande_partenaire", methods: ["GET"])]
     public function getListeDemandePartenariat(
         SupplierRepository $suplierRepo,
         SerializerInterface $serializerInterface
-    ){
+    ) {
         $fields = $suplierRepo->findBy(
             ['isVerifiedTributGAdmin' => false]
         );
@@ -2639,20 +2829,20 @@ class UserController extends AbstractController
      * Je veux : voir la liste des adresses à valider
      * 
      */
-    #[Route("/user/liste/information/to/update", name:"app_liste_resto_to_update", methods:["GET"])]
+    #[Route("/user/liste/information/to/update", name: "app_liste_resto_to_update", methods: ["GET"])]
     public function getListeRestoToUpdate(
         SerializerInterface $serializerInterface,
         BddRestoUserModifRepository $bddRestoUserModifRepository,
         TributGService $tributGService,
         PDOConnexionService $pDOConnexionService,
         BddRestoRepository $bddRepo
-        
-    ){
+
+    ) {
         $fields = $bddRestoUserModifRepository->findBy([], ["id" => "DESC"]);
         $tab = [];
-        if(count($fields) > 0)
+        if (count($fields) > 0)
             foreach ($fields as $key) {
-                $resto=$bddRepo->findOneBy(["id"=>($key->getRestoId())]);
+                $resto = $bddRepo->findOneBy(["id" => ($key->getRestoId())]);
                 $temp = [];
                 $key->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true));
                 $key->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true));
@@ -2660,7 +2850,7 @@ class UserController extends AbstractController
                 $key->setCompvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true));
                 $key->setVillenorm(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true));
                 $key->setCommune(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true));
-                $temp["original_resto"]= $resto;
+                $temp["original_resto"] = $resto;
                 $temp["info"] = $key;
                 $temp["userFullName"] = $tributGService->getFullName($key->getUserId());
                 array_push($tab, $temp);
@@ -2677,7 +2867,7 @@ class UserController extends AbstractController
      * Je veux : voir la liste des adresses à valider
      * 
      */
-    #[Route("/user/information/{restoId}/etablissement/{userId}", name:"app_information_etablissement", methods:["GET"])]
+    #[Route("/user/information/{restoId}/etablissement/{userId}", name: "app_information_etablissement", methods: ["GET"])]
     public function getInfoEtab(
         $restoId,
         $userId,
@@ -2686,27 +2876,26 @@ class UserController extends AbstractController
         BddRestoRepository $bddRestoRepository,
         BddRestoBackupRepository $bddRestoBackupRepository,
         PDOConnexionService $pDOConnexionService
-    ){
+    ) {
         $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
-        
+
         $resto = $bddRestoRepository->findOneById(intval($restoId));
         $tab = [];
         $tab["current_info"] = $resto;
 
-        if($key->getStatus() != 1){
+        if ($key->getStatus() != 1) {
             $key->setDenominationF(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true));
             $key->setTypevoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true));
             $key->setNomvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true));
             $key->setCompvoie(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true));
             $key->setVillenorm(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true));
             $key->setCommune(json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true));
-
-        }else{
+        } else {
             $key = $bddRestoBackupRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
         }
 
         $tab["new_info"] = $key;
-        
+
 
         $json = $serializerInterface->serialize($tab, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
@@ -2719,7 +2908,7 @@ class UserController extends AbstractController
      * Je veux : refuser une demande pour l'adresse à valider
      * 
      */
-    #[Route("/user/reject/etab/to/update", name:"app_reject_etab_update", methods:["POST"])]
+    #[Route("/user/reject/etab/to/update", name: "app_reject_etab_update", methods: ["POST"])]
     public function rejectAdresseValidate(
         BddRestoUserModifRepository $bddRestoUserModifRepository,
         Request $request,
@@ -2729,16 +2918,16 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         UserService $userService,
         ValidationStoryRepository $validationStoryRepository
-    ){
-        $user= $this->getUser();
+    ) {
+        $user = $this->getUser();
 
         $data = json_decode($request->getContent(), true);
-        extract($data); 
+        extract($data);
 
         $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
         $key->setStatus(0);
 
-        $bddRestoUserModifRepository->save($key,true);
+        $bddRestoUserModifRepository->save($key, true);
 
         $validationStory = new ValidationStory();
         $validationStory->setRestoId(intval($restoId));
@@ -2746,24 +2935,24 @@ class UserController extends AbstractController
         $validationStory->setUserValidatorId($user->getId());
         $validationStory->setStatus(0);
         $validationStory->setDateValidation(new \DateTimeImmutable());
-        
-        $validationStoryRepository->save($validationStory, true);
-        
-        /// SEND EMAIL FOR ALL THREE GROUP PERSON: user modified, all_validator, super admin.
-        $user_modify= $userRepository->findOneBy(["id" => intval($userId)]);
 
-        $user_modify_receiver= [
+        $validationStoryRepository->save($validationStory, true);
+
+        /// SEND EMAIL FOR ALL THREE GROUP PERSON: user modified, all_validator, super admin.
+        $user_modify = $userRepository->findOneBy(["id" => intval($userId)]);
+
+        $user_modify_receiver = [
             [
                 "email" => $user_modify->getEmail(),
                 "fullName" => $userService->getFullName($user_modify->getId())
             ]
         ];
 
-        $resto_modify=$bddRestoRepository->getOneItemByID(intval($restoId));
+        $resto_modify = $bddRestoRepository->getOneItemByID(intval($restoId));
 
-        $adress_resto= $resto_modify["numvoie"] . " " . $resto_modify["typevoie"] . " " . $resto_modify["nomvoie"] . " " . $resto_modify["codpost"] . " " . $resto_modify["villenorm"];
-        
-        $context_for_user_modify= [
+        $adress_resto = $resto_modify["numvoie"] . " " . $resto_modify["typevoie"] . " " . $resto_modify["nomvoie"] . " " . $resto_modify["codpost"] . " " . $resto_modify["villenorm"];
+
+        $context_for_user_modify = [
             "object_mail" => "Rejet de demande de modification d'un établissement.",
             "template_path" => "emails/mail_res_modif_poi_resto_reject.html.twig",
             "resto" => [
@@ -2771,7 +2960,8 @@ class UserController extends AbstractController
                 "adress" => $adress_resto
             ],
             "user_modify" => [
-                "fullname" => $userService->getFullName(intval($userId)),
+                // "fullname" => $userService->getFullName(intval($userId)),
+                "fullname" => $user_modify->getPseudo(),
                 "email" => $user_modify->getEmail()
             ],
             "user_super_admin" => [
@@ -2792,23 +2982,23 @@ class UserController extends AbstractController
         );
 
 
-        $user_super_admin= $userRepository->getUserSuperAdmin();
+        $user_super_admin = $userRepository->getUserSuperAdmin();
 
-        $all_user_receiver= [];
-        $validators=$userRepository->getAllValidator();
-        foreach ($validators as $validator){
-            if($validator->getId() != $user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type"){
-                $temp=[
+        $all_user_receiver = [];
+        $validators = $userRepository->getAllValidator();
+        foreach ($validators as $validator) {
+            if ($validator->getId() != $user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type") {
+                $temp = [
                     "email" => $validator->getEmail(),
                     "fullName" => $userService->getFullName($validator->getId())
                 ];
-                array_push($all_user_receiver,$temp);
+                array_push($all_user_receiver, $temp);
             }
         }
 
 
 
-        $context_for_user_validator= [
+        $context_for_user_validator = [
             "object_mail" => "Rejet de demande de modification d'un établissement.",
             "template_path" => "emails/mail_res_modif_resto_validator_poi_reject.html.twig",
             "resto" => [
@@ -2816,7 +3006,8 @@ class UserController extends AbstractController
                 "adress" => $adress_resto
             ],
             "user_modify" => [
-                "fullname" => $userService->getFullName(intval($userId)),
+                // "fullname" => $userService->getFullName(intval($userId)),
+                "fullname" => $user_modify->getPseudo(),
                 "email" => $user_modify->getEmail(),
             ],
             "user_super_admin" => [
@@ -2838,15 +3029,15 @@ class UserController extends AbstractController
 
 
 
-        $user_super_admin= $userRepository->getUserSuperAdmin();
-        $user_super_admin_receiver= [
+        $user_super_admin = $userRepository->getUserSuperAdmin();
+        $user_super_admin_receiver = [
             [
                 "email" => $user_super_admin->getEmail(),
                 "fullName" => $userService->getFullName($user_super_admin->getId()),
             ]
         ];
 
-        $context_for_super_admin= [
+        $context_for_super_admin = [
             "object_mail" => "Rejet de demande de modification d'un établissement.",
             "template_path" => "emails/mail_res_modif_resto_super_admin_reject.html.twig",
             "resto" => [
@@ -2854,7 +3045,8 @@ class UserController extends AbstractController
                 "adress" => $adress_resto
             ],
             "user_modify" => [
-                "fullname" => $userService->getFullName(intval($userId)),
+                // "fullname" => $userService->getFullName(intval($userId)),
+                "fullname" => $user_modify->getPseudo(),
                 "email" => $user_modify->getEmail(),
             ],
             "user_super_admin" => [
@@ -2866,14 +3058,14 @@ class UserController extends AbstractController
                 "fullname" => $userService->getFullName($user->getId()),
             ]
         ];
-        
+
         $mailService->sendEmailResponseModifPOI(
             $user->getEmail(),
             $userService->getFullName($user->getId()),
             $user_super_admin_receiver,
             $context_for_super_admin
         );
-        
+
         return $this->json([
             "message" => "Bravo!"
         ]);
@@ -2886,7 +3078,7 @@ class UserController extends AbstractController
      * Je veux : accepter une demande pour l'adresse à valider
      * 
      */
-    #[Route("/user/accept/etab/to/update", name:"app_accept_etab_update", methods:["POST"])]
+    #[Route("/user/accept/etab/to/update", name: "app_accept_etab_update", methods: ["POST"])]
     public function acceptAdresseValidate(
         BddRestoUserModifRepository $bddRestoUserModifRepository,
         Request $request,
@@ -2897,65 +3089,65 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         UserService $userService,
         ValidationStoryRepository $validationStoryRepository
-    ){
-        $user= $this->getUser();
+    ) {
+        $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
         extract($data);
 
         $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
         $key->setStatus(1);
 
-        $bddRestoUserModifRepository->save($key,true);
+        $bddRestoUserModifRepository->save($key, true);
         $resto = $bddRestoRepository->findOneById(intval($restoId));
 
         $restoBackup = $bddRestoBackupRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
 
-        if($restoBackup == null){
+        if ($restoBackup == null) {
             $restoBackup = new BddRestoBackup();
             $restoBackup->setRestoId(intval($restoId))
-                        ->setUserId(intval($userId));
+                ->setUserId(intval($userId));
         }
 
         $restoBackup->setDenominationF($resto->getDenominationF())
-                    ->setTypevoie($resto->getTypevoie())
-                    ->setNomvoie($resto->getNomvoie())
-                    ->setCompvoie($resto->getCompvoie())
-                    ->setVillenorm($resto->getVillenorm())
-                    ->setCommune($resto->getCommune())
-                    ->setNumvoie($resto->getNumvoie())
-                    ->setCodpost($resto->getCodpost())
-                    ->setTel($resto->getTel())
-                    ->setRestaurant(1)
-                    ->setBrasserie($resto->getBrasserie())
-                    ->setCreperie($resto->getCreperie())
-                    ->setFastFood($resto->getFastFood())
-                    ->setPizzeria($resto->getPizzeria())
-                    ->setBoulangerie($resto->getBoulangerie())
-                    ->setBar($resto->getBar())
-                    ->setCuisineMonde($resto->getCuisineMonde())
-                    ->setCafe($resto->getCafe())
-                    ->setSalonThe($resto->getSalonThe())
-                    ->setPoiX($resto->getPoiX())
-                    ->setPoiY($resto->getPoiY());
+            ->setTypevoie($resto->getTypevoie())
+            ->setNomvoie($resto->getNomvoie())
+            ->setCompvoie($resto->getCompvoie())
+            ->setVillenorm($resto->getVillenorm())
+            ->setCommune($resto->getCommune())
+            ->setNumvoie($resto->getNumvoie())
+            ->setCodpost($resto->getCodpost())
+            ->setTel($resto->getTel())
+            ->setRestaurant(1)
+            ->setBrasserie($resto->getBrasserie())
+            ->setCreperie($resto->getCreperie())
+            ->setFastFood($resto->getFastFood())
+            ->setPizzeria($resto->getPizzeria())
+            ->setBoulangerie($resto->getBoulangerie())
+            ->setBar($resto->getBar())
+            ->setCuisineMonde($resto->getCuisineMonde())
+            ->setCafe($resto->getCafe())
+            ->setSalonThe($resto->getSalonThe())
+            ->setPoiX($resto->getPoiX())
+            ->setPoiY($resto->getPoiY());
 
-        $bddRestoBackupRepository->save($restoBackup,true);
+        $bddRestoBackupRepository->save($restoBackup, true);
 
-        $denominationF=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true) !="" ? 
-            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true) :$resto->getDenominationF();
-        $numvoie=$key->getNumvoie() !="" ? $key->getNumvoie() : $resto->getNumvoie();
-            
-        $typeVoie=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true) !="" ? 
-            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true) :$resto->getTypevoie(); 
-        $nomVoie=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true) !="" ? 
-            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true) :$resto->getNomvoie();
-        $compVoie=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true) !="" ? 
-            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true) :$resto->getCompvoie(); 
-        $villeNorme=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true) !="" ? 
-            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true) :$resto->getVillenorm();
-        $commune=json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true) !="" ? 
-            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true) :$resto->getCommune();
-        $codePost=$key->getCodpost() !="" ? $key->getCodpost() : $resto->getCodpost();
-        $tel=$key->getTel() !="" ?$key->getTel() :$resto->getTel();
+        $denominationF = json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true) != "" ?
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getDenominationF()), true) : $resto->getDenominationF();
+        $numvoie = $key->getNumvoie() != "" ? $key->getNumvoie() : $resto->getNumvoie();
+
+        $typeVoie = json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true) != "" ?
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getTypevoie()), true) : $resto->getTypevoie();
+        $nomVoie = json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true) != "" ?
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getNomvoie()), true) : $resto->getNomvoie();
+        $compVoie = json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true) != "" ?
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCompvoie()), true) : $resto->getCompvoie();
+        $villeNorme = json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true) != "" ?
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getVillenorm()), true) : $resto->getVillenorm();
+        $commune = json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true) != "" ?
+            json_decode($pDOConnexionService->convertUnicodeToUtf8($key->getCommune()), true) : $resto->getCommune();
+        $codePost = $key->getCodpost() != "" ? $key->getCodpost() : $resto->getCodpost();
+        $tel = $key->getTel() != "" ? $key->getTel() : $resto->getTel();
 
         $resto->setDenominationF($denominationF)
             ->setTypevoie($typeVoie)
@@ -2963,7 +3155,7 @@ class UserController extends AbstractController
             ->setCompvoie($compVoie)
             ->setVillenorm($villeNorme)
             ->setCommune($commune)
-            ->setNumvoie( $numvoie)
+            ->setNumvoie($numvoie)
             ->setCodpost($codePost)
             ->setTel($tel)
             ->setRestaurant(1)
@@ -2978,8 +3170,8 @@ class UserController extends AbstractController
             ->setSalonThe($key->getSalonThe())
             ->setPoiX($key->getPoiX())
             ->setPoiY($key->getPoiY());
-            
-        $bddRestoRepository->save($resto,true);
+
+        $bddRestoRepository->save($resto, true);
 
         $validationStory = new ValidationStory();
         $validationStory->setRestoId(intval($restoId));
@@ -2991,19 +3183,19 @@ class UserController extends AbstractController
         $validationStoryRepository->save($validationStory, true);
 
         /// SEND EMAIL FOR ALL THREE GROUP PERSON: user modified, all_validator, super admin.
-        $user_modify= $userRepository->findOneBy(["id" => intval($userId)]);
+        $user_modify = $userRepository->findOneBy(["id" => intval($userId)]);
 
-        $user_modify_receiver= [
+        $user_modify_receiver = [
             [
                 "email" => $user_modify->getEmail(),
                 "fullName" => $userService->getFullName($user_modify->getId())
             ]
         ];
 
-        $resto_modify=$bddRestoRepository->getOneItemByID(intval($restoId));
+        $resto_modify = $bddRestoRepository->getOneItemByID(intval($restoId));
 
-        $adress_resto= $resto_modify["numvoie"] . " " . $resto_modify["typevoie"] . " " . $resto_modify["nomvoie"] . " " . $resto_modify["codpost"] . " " . $resto_modify["villenorm"];
-        $context_for_user_modify= [
+        $adress_resto = $resto_modify["numvoie"] . " " . $resto_modify["typevoie"] . " " . $resto_modify["nomvoie"] . " " . $resto_modify["codpost"] . " " . $resto_modify["villenorm"];
+        $context_for_user_modify = [
             "object_mail" => "Approbation de la demande de modification d'un établissement.",
             "template_path" => "emails/mail_res_modif_poi_resto_accept.html.twig",
             "resto" => [
@@ -3011,7 +3203,8 @@ class UserController extends AbstractController
                 "adress" => $adress_resto
             ],
             "user_modify" => [
-                "fullname" => $userService->getFullName(intval($userId)),
+                // "fullname" => $userService->getFullName(intval($userId)),
+                "fullname" => $user_modify->getPseudo(),
                 "email" => $user_modify->getEmail()
             ],
             "user_super_admin" => [
@@ -3032,21 +3225,21 @@ class UserController extends AbstractController
         );
 
 
-        $user_super_admin= $userRepository->getUserSuperAdmin();
+        $user_super_admin = $userRepository->getUserSuperAdmin();
 
-        $all_user_receiver= [];
-        $validators=$userRepository->getAllValidator();
-        foreach ($validators as $validator){
-            if($validator->getId() != $user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type"){
-                $temp=[
+        $all_user_receiver = [];
+        $validators = $userRepository->getAllValidator();
+        foreach ($validators as $validator) {
+            if ($validator->getId() != $user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type") {
+                $temp = [
                     "email" => $validator->getEmail(),
                     "fullName" => $userService->getFullName($validator->getId())
                 ];
-                array_push($all_user_receiver,$temp);
+                array_push($all_user_receiver, $temp);
             }
         }
 
-        $context_for_user_validator= [
+        $context_for_user_validator = [
             "object_mail" => "Approbation de la demande de modification d'un établissement.",
             "template_path" => "emails/mail_res_modif_resto_validator_poi_accept.html.twig",
             "resto" => [
@@ -3054,7 +3247,8 @@ class UserController extends AbstractController
                 "adress" => $adress_resto
             ],
             "user_modify" => [
-                "fullname" => $userService->getFullName(intval($userId)),
+                // "fullname" => $userService->getFullName(intval($userId)),
+                "fullname" => $user_modify->getPseudo(),
                 "email" => $user_modify->getEmail(),
             ],
             "user_super_admin" => [
@@ -3073,14 +3267,14 @@ class UserController extends AbstractController
             $context_for_user_validator
         );
 
-        $user_super_admin_receiver= [
+        $user_super_admin_receiver = [
             [
                 "email" => $user_super_admin->getEmail(),
                 "fullName" => $userService->getFullName($user_super_admin->getId()),
             ]
         ];
 
-        $context_for_super_admin= [
+        $context_for_super_admin = [
             "object_mail" => "Approbation de la demande de modification d'un établissement.",
             "template_path" => "emails/mail_res_modif_resto_super_admin_accept.html.twig",
             "resto" => [
@@ -3088,7 +3282,8 @@ class UserController extends AbstractController
                 "adress" => $adress_resto
             ],
             "user_modify" => [
-                "fullname" => $userService->getFullName(intval($userId)),
+                // "fullname" => $userService->getFullName(intval($userId)),
+                "fullname" => $user_modify->getPseudo(),
                 "email" => $user_modify->getEmail(),
             ],
             "user_super_admin" => [
@@ -3121,7 +3316,7 @@ class UserController extends AbstractController
      * Je veux : annuler une demande pour l'adresse à valider
      * 
      */
-    #[Route("/user/cancel/etab/to/update", name:"app_cancel_etab_update", methods:["POST"])]
+    #[Route("/user/cancel/etab/to/update", name: "app_cancel_etab_update", methods: ["POST"])]
     public function cancelAdresseValidate(
         BddRestoUserModifRepository $bddRestoUserModifRepository,
         Request $request,
@@ -3131,44 +3326,44 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         UserService $userService,
         ValidationStoryRepository $validationStoryRepository
-    ){
+    ) {
         /*$restoBackup = $bddRestoUserModifRepository->findOneBy(["userId" => 1, "restoId" => 918]);
         dd($restoBackup);*/
-        $user= $this->getUser();
+        $user = $this->getUser();
         $data = json_decode($request->getContent(), true);
         extract($data);
 
         $key = $bddRestoUserModifRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
         $key->setStatus(-1);
-        $bddRestoUserModifRepository->save($key,true);
+        $bddRestoUserModifRepository->save($key, true);
 
         $restoBackup = $bddRestoBackupRepository->findOneBy(["userId" => intval($userId), "restoId" => intval($restoId)]);
 
         $resto = $bddRestoRepository->findOneById(intval($restoId));
 
         $resto->setDenominationF($restoBackup->getDenominationF())
-                    ->setTypevoie($restoBackup->getTypevoie())
-                    ->setNomvoie($restoBackup->getNomvoie())
-                    ->setCompvoie($restoBackup->getCompvoie())
-                    ->setVillenorm($restoBackup->getVillenorm())
-                    ->setCommune($restoBackup->getCommune())
-                    ->setNumvoie($restoBackup->getNumvoie())
-                    ->setCodpost($restoBackup->getCodpost())
-                    ->setTel($restoBackup->getTel())
-                    ->setRestaurant(1)
-                    ->setBrasserie($restoBackup->getBrasserie())
-                    ->setCreperie($restoBackup->getCreperie())
-                    ->setFastFood($restoBackup->getFastFood())
-                    ->setPizzeria($restoBackup->getPizzeria())
-                    ->setBoulangerie($restoBackup->getBoulangerie())
-                    ->setBar($restoBackup->getBar())
-                    ->setCuisineMonde($restoBackup->getCuisineMonde())
-                    ->setCafe($restoBackup->getCafe())
-                    ->setSalonThe($restoBackup->getSalonThe())
-                    ->setPoiX($restoBackup->getPoiX())
-                    ->setPoiY($restoBackup->getPoiY());
+            ->setTypevoie($restoBackup->getTypevoie())
+            ->setNomvoie($restoBackup->getNomvoie())
+            ->setCompvoie($restoBackup->getCompvoie())
+            ->setVillenorm($restoBackup->getVillenorm())
+            ->setCommune($restoBackup->getCommune())
+            ->setNumvoie($restoBackup->getNumvoie())
+            ->setCodpost($restoBackup->getCodpost())
+            ->setTel($restoBackup->getTel())
+            ->setRestaurant(1)
+            ->setBrasserie($restoBackup->getBrasserie())
+            ->setCreperie($restoBackup->getCreperie())
+            ->setFastFood($restoBackup->getFastFood())
+            ->setPizzeria($restoBackup->getPizzeria())
+            ->setBoulangerie($restoBackup->getBoulangerie())
+            ->setBar($restoBackup->getBar())
+            ->setCuisineMonde($restoBackup->getCuisineMonde())
+            ->setCafe($restoBackup->getCafe())
+            ->setSalonThe($restoBackup->getSalonThe())
+            ->setPoiX($restoBackup->getPoiX())
+            ->setPoiY($restoBackup->getPoiY());
 
-        $bddRestoRepository->save($resto,true);
+        $bddRestoRepository->save($resto, true);
 
         $validationStory = new ValidationStory();
         $validationStory->setRestoId(intval($restoId));
@@ -3179,21 +3374,21 @@ class UserController extends AbstractController
 
         $validationStoryRepository->save($validationStory, true);
 
-        
-        /// SEND EMAIL FOR ALL THREE GROUP PERSON: user modified, all_validator, super admin.
-        $user_modify= $userRepository->findOneBy(["id" => intval($userId)]);
 
-        $user_modify_receiver= [
+        /// SEND EMAIL FOR ALL THREE GROUP PERSON: user modified, all_validator, super admin.
+        $user_modify = $userRepository->findOneBy(["id" => intval($userId)]);
+
+        $user_modify_receiver = [
             [
                 "email" => $user_modify->getEmail(),
                 "fullName" => $userService->getFullName($user_modify->getId())
             ]
         ];
 
-        $resto_modify=$bddRestoRepository->getOneItemByID(intval($restoId));
+        $resto_modify = $bddRestoRepository->getOneItemByID(intval($restoId));
 
-        $adress_resto= $resto_modify["numvoie"] . " " . $resto_modify["typevoie"] . " " . $resto_modify["nomvoie"] . " " . $resto_modify["codpost"] . " " . $resto_modify["villenorm"];
-        $context_for_user_modify= [
+        $adress_resto = $resto_modify["numvoie"] . " " . $resto_modify["typevoie"] . " " . $resto_modify["nomvoie"] . " " . $resto_modify["codpost"] . " " . $resto_modify["villenorm"];
+        $context_for_user_modify = [
             "object_mail" => "Annulation de validation d'un établissement.",
             "template_path" => "emails/mail_res_modif_poi_resto_cancel.html.twig",
             "resto" => [
@@ -3201,7 +3396,8 @@ class UserController extends AbstractController
                 "adress" => $adress_resto
             ],
             "user_modify" => [
-                "fullname" => $userService->getFullName(intval($userId)),
+                // "fullname" => $userService->getFullName(intval($userId)),
+                "fullname" => $user_modify->getPseudo(),
                 "email" => $user_modify->getEmail()
             ],
             "user_super_admin" => [
@@ -3223,20 +3419,20 @@ class UserController extends AbstractController
 
 
 
-        $user_super_admin= $userRepository->getUserSuperAdmin();
-        $all_user_receiver= [];
-        $validators=$userRepository->getAllValidator();
-        foreach ($validators as $validator){
-            if($validator->getId() != $user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type"){
-                $temp=[
+        $user_super_admin = $userRepository->getUserSuperAdmin();
+        $all_user_receiver = [];
+        $validators = $userRepository->getAllValidator();
+        foreach ($validators as $validator) {
+            if ($validator->getId() != $user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type") {
+                $temp = [
                     "email" => $validator->getEmail(),
                     "fullName" => $userService->getFullName($validator->getId())
                 ];
-                array_push($all_user_receiver,$temp);
+                array_push($all_user_receiver, $temp);
             }
         }
 
-        $context_for_user_validator= [
+        $context_for_user_validator = [
             "object_mail" => "Annulation de validation d'un établissement.",
             "template_path" => "emails/mail_res_modif_resto_validator_poi_cancel.html.twig",
             "resto" => [
@@ -3244,7 +3440,8 @@ class UserController extends AbstractController
                 "adress" => $adress_resto
             ],
             "user_modify" => [
-                "fullname" => $userService->getFullName(intval($userId)),
+                // "fullname" => $userService->getFullName(intval($userId)),
+                "fullname" => $user_modify->getPseudo(),
                 "email" => $user_modify->getEmail(),
             ],
             "user_super_admin" => [
@@ -3266,15 +3463,15 @@ class UserController extends AbstractController
 
 
 
-        $user_super_admin= $userRepository->getUserSuperAdmin();
-        $user_super_admin_receiver= [
+        $user_super_admin = $userRepository->getUserSuperAdmin();
+        $user_super_admin_receiver = [
             [
                 "email" => $user_super_admin->getEmail(),
                 "fullName" => $userService->getFullName($user_super_admin->getId()),
             ]
         ];
 
-        $context_for_super_admin= [
+        $context_for_super_admin = [
             "object_mail" => "Annulation de validation d'un établissement.",
             "template_path" => "emails/mail_res_modif_resto_super_admin_cancel.html.twig",
             "resto" => [
@@ -3282,7 +3479,8 @@ class UserController extends AbstractController
                 "adress" => $adress_resto
             ],
             "user_modify" => [
-                "fullname" => $userService->getFullName(intval($userId)),
+                // "fullname" => $userService->getFullName(intval($userId)),
+                "fullname" => $user_modify->getPseudo(),
                 "email" => $user_modify->getEmail(),
             ],
             "user_super_admin" => [
@@ -3294,7 +3492,7 @@ class UserController extends AbstractController
                 "fullname" => $userService->getFullName($user->getId()),
             ]
         ];
-        
+
         $mailService->sendEmailResponseModifPOI(
             $user->getEmail(),
             $userService->getFullName($user->getId()),
@@ -3307,15 +3505,14 @@ class UserController extends AbstractController
         ]);
     }
 
-    #[Route("/is/pseudo/{pseudo}",name:"app_check_pseudo", methods:["GET"])]
+    #[Route("/is/pseudo/{pseudo}", name: "app_check_pseudo", methods: ["GET"])]
     public function isPesudo(
         $pseudo,
         UserService $userService,
         SerializerInterface $serializer
-    ){
-        $response=$serializer->serialize($userService->isPseudoExist($pseudo),'json');
+    ) {
+        $response = $serializer->serialize($userService->isPseudoExist($pseudo), 'json');
         return new JsonResponse($response, Response::HTTP_OK, [], true);
-
     }
 
     #[Route("/give/pseudo/{pseudo}", name: "give_pseudo", methods: ["GET"])]
@@ -3328,26 +3525,26 @@ class UserController extends AbstractController
         return new JsonResponse($response, Response::HTTP_OK, [], true);
     }
 
-    #[Route("/user/heartBeat", name:"app_heartbeat", methods: ["GET"])]
+    #[Route("/user/heartBeat", name: "app_heartbeat", methods: ["GET"])]
     public function heartBeat(
         UserService $userService,
         SerializerInterface $serializerInterface
-    ){
-        $user=$this->getUser();
-        $response=$userService->setActivity($user->getId());
-        
+    ) {
+        $user = $this->getUser();
+        $response = $userService->setActivity($user->getId());
+
         $json = $serializerInterface->serialize($response, 'json');
         return new JsonResponse($json, Response::HTTP_OK, [], true);
     }
 
-    #[Route("/user/inactive", name:"app_inactive", methods: ["GET"])]
-    public function getUserInactive(){
-
+    #[Route("/user/inactive", name: "app_inactive", methods: ["GET"])]
+    public function getUserInactive()
+    {
     }
 
-    #[Route("/user/active", name:"app_active", methods: ["GET"])]
-    public function getUserActivr(){
-
+    #[Route("/user/active", name: "app_active", methods: ["GET"])]
+    public function getUserActivr()
+    {
     }
 
     #[Route('/user/up/idle/{idle}', name: "user_idle", methods: ["GET"])]
@@ -3366,22 +3563,23 @@ class UserController extends AbstractController
     }
 
     #[Route('/user/idle', name: "user_get_idle", methods: ["GET"])]
-    public function getIdle(){
-       
+    public function getIdle()
+    {
+
         $user = $this->getUser();
         $userIdle = $user->getIdle();
 
-      
+
         return $this->json([
-            "idle" =>$userIdle
+            "idle" => $userIdle
         ]);
     }
 
-    #[Route('/user/look/{word}', name:"user_look", methods:["GET"])]
+    #[Route('/user/look/{word}', name: "user_look", methods: ["GET"])]
     public function user_look(
         $word,
         UserService $userService
-    ){
+    ) {
 
         $user = $this->getUser();
         $userIdle = $user->getId();
@@ -3396,71 +3594,80 @@ class UserController extends AbstractController
      * Je veux : afficher l'historique de la validation
      * 
      */
-    #[Route("/user/get/validation/story", name:"app_get_validatio_story", methods:["GET"])]
+    #[Route("/user/get/validation/story", name: "app_get_validatio_story", methods: ["GET"])]
     public function getValidationStory(
         BddRestoRepository $bddRestoRepository,
         UserRepository $userRepository,
         UserService $userService,
         ValidationStoryRepository $validationStoryRepository
-    ){
+    ) {
         $allValidations = $validationStoryRepository->findAll();
 
         $results = [];
 
         foreach ($allValidations as $key) {
-            $resto=$bddRestoRepository->getOneItemByID($key->getRestoId());
-            $adress_resto= $resto["numvoie"] . " " . $resto["typevoie"] . " " . $resto["nomvoie"] . " " . $resto["codpost"] . " " . $resto["villenorm"];
+            $resto = $bddRestoRepository->getOneItemByID($key->getRestoId());
+            $adress_resto = $resto["numvoie"] . " " . $resto["typevoie"] . " " . $resto["nomvoie"] . " " . $resto["codpost"] . " " . $resto["villenorm"];
             $restoName = $resto["denominationF"];
-            $user_modify= $userRepository->findOneBy(["id" => $key->getUserModifiedId()]);
-            $user_validator= $userRepository->findOneBy(["id" => $key->getUserValidatorId()]);
+            $user_modify = $userRepository->findOneBy(["id" => $key->getUserModifiedId()]);
+            $user_validator = $userRepository->findOneBy(["id" => $key->getUserValidatorId()]);
 
             //$datetime = date("Y-m-d H:i:s", $key->getDateValidation());
 
             $temp = [
-                "resto" => ["id"=>$key->getRestoId(), "name"=>$restoName, "adresse"=>$adress_resto],
-                "user_modify" => ["id"=>$key->getUserModifiedId(), "name"=>$userService->getFullName($user_modify->getId())],
-                "user_validator" => ["id"=>$key->getUserValidatorId(), "name"=> $userService->getFullName($user_validator->getId())],
+                "resto" => ["id" => $key->getRestoId(), "name" => $restoName, "adresse" => $adress_resto],
+                "user_modify" => ["id" => $key->getUserModifiedId(), "name" => $userService->getFullName($user_modify->getId())],
+                "user_validator" => ["id" => $key->getUserValidatorId(), "name" => $userService->getFullName($user_validator->getId())],
                 "status" => $key->getStatus(),
-                "date"=>$key->getDateValidation()
+                "date" => $key->getDateValidation()
             ];
 
             array_push($results, $temp);
-
         }
 
-        return $this->json(["results"=>$results]);
+        return $this->json(["results" => $results]);
     }
 
     #[Route("/user/invitations-all/interne", name: "app_invitation_interne")]
 
-    public function getInterneInvitation(Status $status, RequestingService $requesting, 
-    UserService $userService, Tribu_T_Service $tributService): Response
-    {
-        $userConnected= $status->userProfilService($this->getUser());
+    public function getInterneInvitation(
+        Status $status,
+        RequestingService $requesting,
+        UserService $userService,
+        Tribu_T_Service $tributService,
+        ConfidentialityService $confidentialityService
+    ): Response {
+        $userConnected = $status->userProfilService($this->getUser());
 
         $statusProfile = $status->statusFondateur($this->getUser());
 
         $tableRequestingName = $this->getUser()->getTablerequesting();
 
-        $invitations = $requesting->getAllRequest($tableRequestingName);
+        $invitations = $requesting->getAllRequest($tableRequestingName, $this->getUser()->getId(), $confidentialityService);
 
-        $all_invitation_interne = $requesting->getAllRequestUser($tableRequestingName);
+        $all_invitation_interne = $requesting->getAllRequestUser($tableRequestingName, $this->getUser()->getId(), $confidentialityService);
 
         return $this->json($all_invitation_interne);
     }
 
     #[Route("/user/invitations-all/externe", name: "app_invitation_externe")]
 
-    public function getExterneInvitation(Status $status, RequestingService $requesting, 
-    UserService $userService, Tribu_T_Service $tributService): Response
-    {
-        $userConnected= $status->userProfilService($this->getUser());
+    public function getExterneInvitation(
+        Status $status,
+        RequestingService $requesting,
+        UserService $userService,
+        Tribu_T_Service $tributService,
+        ConfidentialityService $confidentialityService
+    ): Response {
+        $userConnected = $status->userProfilService($this->getUser());
 
         $statusProfile = $status->statusFondateur($this->getUser());
 
         $tableRequestingName = $this->getUser()->getTablerequesting();
 
-        $invitations = $requesting->getAllRequest($tableRequestingName);
+        $userId = $this->getUser()->getId();
+
+        $invitations = $requesting->getAllRequest($tableRequestingName, $userId, $confidentialityService);
 
         $all_tribu = $userService->getTribuByIdUser($this->getUser());
 
@@ -3471,48 +3678,63 @@ class UserController extends AbstractController
         foreach ($all_tribu as $t) {
 
             // if($t["role"] =="Fondateur"){
-                
-                $table_invitation = $t["table_name"] ."_invitation";
-                $tribu_name = $t["name_tribu_t_muable"];
 
-                $invitation = $tributService->getAllInvitationStory($table_invitation);
-    
-                if(count($invitation)> 0){
-    
-                    $hist = [];
-    
-                    foreach ($invitation as $user) {
-                        $pp = null;
-                        $sender = null;
-                        $is_forMe = false;
-    
-                        if ($user['user_id']) {
-                            $pp = $userService->getUserProfileFromId($user['user_id']);
-                        }
+            $table_invitation = $t["table_name"] . "_invitation";
+            $tribu_name = $t["name_tribu_t_muable"];
 
-                        if ($user['sender_id']) {
-                            $sender = $userService->getUserProfileFromId($user['sender_id']);
-                        }
+            $invitation = $tributService->getAllInvitationStory($table_invitation);
 
-                        if($user['sender_id']==$this->getUser()->getId()){
-                            $is_forMe = true;
-                        }
-    
-                        array_push($hist, [
-                            'id' =>$user['id'],
-                            'user' => $pp,
-                            'is_valid' => $user['is_valid'],
-                            'sender' => $sender,
-                            'date' => $user['datetime'],
-                            'email' => $user['email'],
-                            "tribu"=> $tribu_name,
-                            "role"=>$t["role"],
-                            "is_forMe"=>$is_forMe
-                        ]);
+            if (count($invitation) > 0) {
+
+                $hist = [];
+
+                foreach ($invitation as $user) {
+                    $pp = null;
+                    $sender = null;
+                    $is_forMe = false;
+
+                    if ($user['user_id']) {
+                        $pp = $userService->getUserProfileFromId($user['user_id']);
                     }
-    
-                    array_push($all_invitation_externe, [$table_invitation => $hist]);
+
+                    if ($user['sender_id']) {
+                        $sender = $userService->getUserProfileFromId($user['sender_id']);
+                    }
+
+                    if ($user['sender_id'] == $this->getUser()->getId()) {
+                        $is_forMe = true;
+                    }
+
+                    $fullNameUser = "";
+                    $email = $user['email'];
+                    if ($pp) {
+                        $fullNameUser = $confidentialityService->getConfFullname($user["user_id"], $userId);
+                        $email = $confidentialityService->getVisibilityEmail(intval($user['id']), $userId) ? $user['email'] : "Confidentiel";
+                    }
+
+                    $fullNameSender = "";
+                    if($sender){
+                        $fullNameSender = $confidentialityService->getConfFullname($user["sender_id"], $userId);
+                    }
+                    
+                    array_push($hist, [
+                        'id' => $user['id'],
+                        'user' => $pp,
+                        'is_valid' => $user['is_valid'],
+                        'sender' => $sender,
+                        'date' => $user['datetime'],
+                        'email' => $user['email'],
+                        'emailConf' => $email,
+                        "tribu" => $tribu_name,
+                        "fullNameUser" => $fullNameUser,
+                        "fullNameSender" => $fullNameSender,
+                        "role" => $t["role"],
+                        "is_forMe" => $is_forMe
+                    ]);
                 }
+
+                array_push($all_invitation_externe, [$table_invitation => $hist]);
+            }
             // }
 
         }
@@ -3523,9 +3745,11 @@ class UserController extends AbstractController
      * @author Elie
      * @Route("user/tribu/relance/one-invitation" , name="relance_invitation_partisan")
      */
-    public function relanceOneInvitation(Request $request, NotificationService $notification
-    , RequestingService $requesting): Response
-    {
+    public function relanceOneInvitation(
+        Request $request,
+        NotificationService $notification,
+        RequestingService $requesting
+    ): Response {
         $requestContent = json_decode($request->getContent(), true);
 
         $table = $requestContent["table"];
@@ -3569,13 +3793,13 @@ class UserController extends AbstractController
      * Je veux : soumettre un formulaire d'abonnement
      * 
      */
-    #[Route("/user/save/abonnement/", name:"app_send_abonnement", methods:["POST"])]
+    #[Route("/user/save/abonnement/", name: "app_send_abonnement", methods: ["POST"])]
     public function saveAbonnement(
         Request $request,
         UserService $userService
-    ){
+    ) {
         $user = $this->getUser();
-        if($user){
+        if ($user) {
             $userId = $user->getId();
             $data = json_decode($request->getContent(), true);
             extract($data);
@@ -3584,7 +3808,7 @@ class UserController extends AbstractController
             $response = new Response();
             $response->setStatusCode(201);
             return $response;
-        }else{
+        } else {
             $response = new Response();
             $response->setStatusCode(205);
             return $response;
@@ -3598,19 +3822,19 @@ class UserController extends AbstractController
      * Je veux : afficher l'historique d'abonnement par utilisateur
      * 
      */
-    #[Route("/get/partisan/abonnement/", name:"app_get_partisan_abonnement", methods:["GET"])]
+    #[Route("/get/partisan/abonnement/", name: "app_get_partisan_abonnement", methods: ["GET"])]
     public function getAbonnementByUser(
         UserService $userService,
         TributGService $tributGService
-    ){
+    ) {
         $user = $this->getUser();
-        if($user){
+        if ($user) {
             $userId = $user->getId();
             $userService->createAbonnementTable();
-            $abonnements = $userService->getAbonnementByUser($userId);
-            return $this->json(["abonnements"=>$abonnements, "status"=>201, "fullName"=>$tributGService->getFullName($userId)]);
-        }else{
-            return $this->json(["abonnements"=>[], "status"=>205]);
+            $abonnements = $userService->getAbonnementByUserHistorique($userId);
+            return $this->json(["abonnements" => $abonnements, "status" => 201, "fullName" => $tributGService->getFullName($userId)]);
+        } else {
+            return $this->json(["abonnements" => [], "status" => 205]);
         }
     }
 
@@ -3621,13 +3845,13 @@ class UserController extends AbstractController
      * Je veux : soumettre un formulaire d'abonnement
      * 
      */
-    #[Route("/save/one/abonnement/", name:"app_save_one_abonnement", methods:["POST"])]
+    #[Route("/save/one/abonnement/", name: "app_save_one_abonnement", methods: ["POST"])]
     public function saveOneAbonnement(
         Request $request,
         UserService $userService
-    ){
+    ) {
         $user = $this->getUser();
-        if($user){
+        if ($user) {
             $userId = $user->getId();
             $data = json_decode($request->getContent(), true);
             extract($data);
@@ -3636,7 +3860,7 @@ class UserController extends AbstractController
             $response = new Response();
             $response->setStatusCode(201);
             return $response;
-        }else{
+        } else {
             $response = new Response();
             $response->setStatusCode(205);
             return $response;
@@ -3644,31 +3868,46 @@ class UserController extends AbstractController
     }
 
     /**
-     * @author Nantenaina
+     * @author Nantenaina updated Tomm
      * Où : On utilise cette fonction dans l'onglet abonnement de la page Super Admin
      * Localisation du fichier : UserController.php
      * Je veux : afficher l'historique de tous les abonnements
      * 
      */
-    #[Route("/get/all/abonnement/", name:"app_get_all_abonnement", methods:["GET"])]
+    #[Route("/get/all/abonnement/", name: "app_get_all_abonnement", methods: ["GET"])]
     public function getAllAbonnement(
-        UserService $userService,
-        TributGService $tributGService
-    ){
-        $user = $this->getUser();
-        if($user){
-            $userId = $user->getId();
-            $userService->createAbonnementTable();
-            $results = $userService->getAllAbonnement();
-            $abonnements = [];
-            foreach ($results as $key) {
-                $key["fullName"] = $tributGService->getFullName($key["userId"]);
-                array_push($abonnements, $key);
+        TributGService $tributGService,
+        EntityManagerInterface $entityManager,
+        UserService $userService
+    ) {
+
+
+        $abonnementList = $entityManager->getRepository(Abonnement::class)->findAll();
+        $abonnementListFullName = [];
+        foreach ($abonnementList as $abonnement) {
+            $fullNameList = $tributGService->getFullName($abonnement->getUserId());
+            $table_tribut = $tributGService->getTribuG($abonnement->getUserId());
+            $user_profil = $userService->getUserProfileFromId($abonnement->getUserId());
+            if ($user_profil) {
+                $getEmail = $user_profil->getUserId()->getEmail();
+                $isBanished = $tributGService->getBanishedStatus($table_tribut, $abonnement->getUserId());
+                $isSuspendre = $tributGService->getSuspenduStatus($table_tribut, $abonnement->getUserId());
+                $data = [
+                    "abonnement" => $abonnement,
+                    "fullName" => $fullNameList,
+                    "isBanished" => $isBanished,
+                    "isSuspendre" => $isSuspendre,
+                    "isEmail" => $getEmail
+                ];
+                array_push($abonnementListFullName, $data);
             }
-            return $this->json(["abonnements"=>$abonnements, "status"=>201]);
-        }else{
-            return $this->json(["abonnements"=>[], "status"=>205]);
         }
+
+
+
+        return $this->json([
+            "abonnementList" => $abonnementListFullName
+        ], 200);
     }
 
     /**
@@ -3678,14 +3917,15 @@ class UserController extends AbstractController
      * Je veux : afficher la liste des parrains et filleuls
      * 
      */
-    #[Route("/user/parrainage",name:"app_get_parrainage",methods:["POST","GET"])]
-    public function askToGetPartenaire(Status $status, UserService $userService, UserRepository $userRepository){
-        $userConnected= $status->userProfilService($this->getUser());
+    #[Route("/user/parrainage", name: "app_get_parrainage", methods: ["POST", "GET"])]
+    public function askToGetPartenaire(Status $status, UserService $userService, UserRepository $userRepository, ConfidentialityService $confidentialityService)
+    {
+        $userConnected = $status->userProfilService($this->getUser());
         $user = $this->getUser();
         $userId = $user->getId();
-        $allParrains = $userService->getAllParains("tableparrainage_".$userId, $userRepository);
-        return $this->render("user/referral.html.twig",[
-            "userConnected" => $userConnected, "parrains"=>$allParrains
+        $allParrains = $userService->getAllParains("tableparrainage_" . $userId, $userRepository, $userId, $confidentialityService);
+        return $this->render("user/referral.html.twig", [
+            "userConnected" => $userConnected, "parrains" => $allParrains
         ]);
     }
 
@@ -3694,16 +3934,17 @@ class UserController extends AbstractController
      * Où : On utilise cette fonction pour l'affichage de la liste de parains
      * Localisation du fichier : UserController.php
      * Je veux : afficher la liste de parains
-    */
-    #[Route("/user/get/all/parrains",name:"app_get_all_parrains",methods:["GET"])]
-    public function getAllParains(UserService $userService, UserRepository $userRepository){
+     */
+    #[Route("/user/get/all/parrains", name: "app_get_all_parrains", methods: ["GET"])]
+    public function getAllParains(UserService $userService, UserRepository $userRepository, ConfidentialityService $confidentialityService)
+    {
         $user = $this->getUser();
-        if($user){
+        if ($user) {
             $userId = $user->getId();
-            $allParrains = $userService->getAllParains("tableparrainage_".$userId, $userRepository);
-            return $this->json(["parrains"=>$allParrains, "isConnected"=>true]);
-        }else{
-            return $this->json(["parrains"=>[], "isConnected"=>false]);
+            $allParrains = $userService->getAllParains("tableparrainage_" . $userId, $userRepository, $userId, $confidentialityService);
+            return $this->json(["parrains" => $allParrains, "isConnected" => true]);
+        } else {
+            return $this->json(["parrains" => [], "isConnected" => false]);
         }
     }
 
@@ -3712,39 +3953,43 @@ class UserController extends AbstractController
      * Où : On utilise cette fonction pour l'affichage de la liste de filleuils
      * Localisation du fichier : UserController.php
      * Je veux : afficher la liste de filleuils
-    */
-    #[Route("/user/get/all/filleuils",name:"app_get_all_filleuils",methods:["GET"])]
-    public function getAllFilleuils(UserService $userService, UserRepository $userRepository){
+     */
+    #[Route("/user/get/all/filleuils", name: "app_get_all_filleuils", methods: ["GET"])]
+    public function getAllFilleuils(
+        UserService $userService,
+        UserRepository $userRepository,
+        ConfidentialityService $confidentialityService
+    ) {
         $user = $this->getUser();
-        if($user){
+        if ($user) {
             $userId = $user->getId();
-            $allFilleuils = $userService->getAllFilleuils("tableparrainage_".$userId, $userRepository);
-            return $this->json(["filleuils"=>$allFilleuils, "isConnected"=>true]);
-        }else{
-            return $this->json(["filleuils"=>[], "isConnected"=>false]);
+            $allFilleuils = $userService->getAllFilleuils("tableparrainage_" . $userId, $userRepository, $userId, $confidentialityService);
+            return $this->json(["filleuils" => $allFilleuils, "isConnected" => true]);
+        } else {
+            return $this->json(["filleuils" => [], "isConnected" => false]);
         }
     }
 
-    
+
     #[Route("/rubrique/all_favori_folder", name: "api_get_all_favori_folder", methods: ["GET"])]
     public function getAllFavoryFolder(
         UserService $userService
-    ){
-        $current_user= $this->getUser();
-        
-        if( !$current_user ){
+    ) {
+        $current_user = $this->getUser();
+
+        if (!$current_user) {
             return $this->json([
                 "code" => 401,
-                "all_folder" => []     
+                "all_folder" => []
             ]);
         }
-        
+
         $all_folder = $userService->getAllFavoryFolder($current_user->getId());
-        
-        
+
+
         return $this->json([
             "code" => 200,
-            "all_folder" => $all_folder     
+            "all_folder" => $all_folder
         ]);
     }
 
@@ -3752,30 +3997,30 @@ class UserController extends AbstractController
     public function addNewFavoryFolder(
         Request $request,
         UserService $userService
-    ){
+    ) {
         $data = json_decode($request->getContent(), true);
-        $folder_name= $data["folder_name"];
+        $folder_name = $data["folder_name"];
 
-        $parent_folder= $data["parent_folder"];
-        $parent_folder= $parent_folder != "0" ? $parent_folder : null; 
+        $parent_folder = $data["parent_folder"];
+        $parent_folder = $parent_folder != "0" ? $parent_folder : null;
 
-        $current_user= $this->getUser();
+        $current_user = $this->getUser();
 
-        if($userService->checkIsAlreadyExistFavoryFolder($current_user->getId(), $folder_name )){
+        if ($userService->checkIsAlreadyExistFavoryFolder($current_user->getId(), $folder_name)) {
             return $this->json([
                 "code" => 200,
                 "message" => "already_exists"
-            ],200);
+            ], 200);
         }
 
-        $folder= [
+        $folder = [
             "name" => $folder_name,
             "id_folder_parent" => $parent_folder,
             "livel_parent" => 0
         ];
 
-        $unique_id = $userService->createFavoryFolder( $current_user->getId(), $folder );
-        
+        $unique_id = $userService->createFavoryFolder($current_user->getId(), $folder);
+
         return $this->json([
             "code" => 201,
             "data" => [
@@ -3784,30 +4029,30 @@ class UserController extends AbstractController
                 "livel_parent" => $folder["livel_parent"],
                 "unique_id" => $unique_id
             ]
-        ],201);
+        ], 201);
     }
 
     #[Route("/user/change_favory_folder", name: "api_change_favory_folder", methods: ["POST"])]
     public function change_favory_folder(
         Request $request,
         UserService $userService
-    ){
+    ) {
         $data = json_decode($request->getContent(), true);
-        $etablisment_id= $data["etablisment_id"];
-        $new_favory_folder= $data["new_favory_folder"];
+        $etablisment_id = $data["etablisment_id"];
+        $new_favory_folder = $data["new_favory_folder"];
 
-        $current_user= $this->getUser();
+        $current_user = $this->getUser();
 
-        $etablisment= [
+        $etablisment = [
             "type" => "resto",
             "id" => $etablisment_id
         ];
 
-        $folder= [
+        $folder = [
             "new_favory_folder" => $new_favory_folder
         ];
 
-        $folder_information= $userService->changeFolderFavoryFolder(
+        $folder_information = $userService->changeFolderFavoryFolder(
             $current_user->getId(),
             $etablisment,
             $folder
@@ -3828,23 +4073,23 @@ class UserController extends AbstractController
         Request $request,
         UserService $userService,
         BddRestoRepository $bddRestoRepository
-    ){
-        $current_user= $this->getUser();
+    ) {
+        $current_user = $this->getUser();
 
-        if( !$current_user ){
+        if (!$current_user) {
             return $this->json([
                 "code" => 401,
-                "all_folder" => []     
+                "all_folder" => []
             ]);
         }
         ///for specific folder
-        $parent_favori_folder_id= $request->query->get("favoriFolder");
-        
+        $parent_favori_folder_id = $request->query->get("favoriFolder");
+
         ///result to return 
-        $results= [];
+        $results = [];
         ////favory_folder
         $all_folder = $userService->getFavoryFolder($current_user->getId(), $parent_favori_folder_id);
-        foreach ($all_folder as $folder){
+        foreach ($all_folder as $folder) {
             array_push($results, [
                 "id" => $folder["id"],
                 "name" => $folder["name"],
@@ -3853,13 +4098,13 @@ class UserController extends AbstractController
             ]);
         }
 
-        if($request->query->has("favoriFolder") ){
-            $favoriFolder_id= $request->query->get("favoriFolder");
-            $all_etablisment= $userService->getEtablismentInFolder($current_user->getId(), $favoriFolder_id);
-            if( count($all_etablisment) > 0 ){
-                $resto_favori= $bddRestoRepository->getRestoFavory($all_etablisment);
-                
-                foreach($resto_favori as $resto){
+        if ($request->query->has("favoriFolder")) {
+            $favoriFolder_id = $request->query->get("favoriFolder");
+            $all_etablisment = $userService->getEtablismentInFolder($current_user->getId(), $favoriFolder_id);
+            if (count($all_etablisment) > 0) {
+                $resto_favori = $bddRestoRepository->getRestoFavory($all_etablisment);
+
+                foreach ($resto_favori as $resto) {
                     array_push($results, [
                         "id" => $resto["id"],
                         "name" => $resto["name"],
@@ -3871,7 +4116,7 @@ class UserController extends AbstractController
                 }
             }
         }
-        
+
         return $this->json([
             "code" => 200,
             "data" => $results
@@ -3882,11 +4127,11 @@ class UserController extends AbstractController
     public function RemoveFavoriEtablisment(
         Request $request,
         UserService $userService
-    ){
+    ) {
         $data = json_decode($request->getContent(), true);
-        $etablisment_id= $data["etablisment_id"];
+        $etablisment_id = $data["etablisment_id"];
 
-        $current_user= $this->getUser();
+        $current_user = $this->getUser();
 
         $isDeleted = $userService->removeFavoriteEtablisment($current_user->getId(), $etablisment_id);
 
@@ -3896,5 +4141,569 @@ class UserController extends AbstractController
                 "isDeleted" => $isDeleted,
             ]
         ]);
+    }
+
+    
+    /** @author Elie */
+    #[Route("/user/account-not-member", name: "app_account_not_member")]
+
+    public function AccountNotMember(
+
+        Status $status,
+
+        Request $request,
+
+        EntityManagerInterface $entityManager,
+
+        TributGService $tributGService,
+
+        UserRepository $userRepository,
+
+        UserService $userService,
+        
+        ConfidentialityService $confidentialityService
+
+    ): Response {
+        $userConnected= $status->userProfilService($this->getUser());
+
+        $user = $this->getUser();
+        if($this->getUser()->getType() === "Type"){
+            return $this->redirectToRoute('app_actu_non_active');
+        }
+        $userType = $user->getType();
+
+        $userId = $user->getId();
+
+        $profil = "";
+
+        $user_trg = $userConnected['tableTribuG'];
+
+        $is_valid = $tributGService->isValid($user_trg, $userId);
+
+        // Redirect to account page member
+        if($is_valid == 1){
+            return $this->redirectToRoute('app_account');
+        }
+
+
+        if ($userType == "consumer") {
+
+            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+        } else {
+
+            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        }
+        
+        $all_TribuT= $userRepository->getListTableTribuT();
+        $tibu_T_data_owned = json_decode($user->getTribuT(), true);
+        $tibu_T_data_joined = json_decode($user->getTribuTJoined(), true);
+
+        $tribu_t_owned = !is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
+        $tribu_t_joined = !is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
+
+        $new_publication = $this->createForm(PublicationType::class, [], []);
+
+
+
+        $new_publication->handleRequest($request);
+
+
+
+        //$flash = [];
+
+
+
+        if ($new_publication->isSubmitted() && $new_publication->isValid()) {
+
+
+
+            $publication = $new_publication['legend']->getData();
+
+            $confid = $new_publication['confidentiality']->getData();
+
+            $photo = $new_publication['photo']->getData();
+
+            $capture = $new_publication['capture']->getData();
+
+            $newFilename = "";
+
+            $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/'.$profil[0]->getTributg().'/';
+
+            $dir_exist = $this->filesyst->exists($destination);
+
+            if($dir_exist==false){
+
+                $this->filesyst->mkdir($destination, 0777);
+
+            }
+
+            if ($publication || $confid) {
+
+
+                $destination = $this->getParameter('kernel.project_dir') . '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG();
+
+                if ($photo) {
+
+
+                    $originalFilename = pathinfo($photo->getClientOriginalName(), PATHINFO_FILENAME);
+
+                    $newFilename =  '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG() . "/" . md5($originalFilename) . '-' . uniqid() . '.' . $photo->guessExtension();
+                    $photo->move(
+
+                        $destination,
+
+                        $newFilename
+
+                    );
+                }
+
+                /*
+                 *Elie
+                 * bloc capture si l'utilisateur utilise un camera direct de votre appareil
+                 * utilisé dans Tribu G
+                 */
+                if ($capture) {
+
+                    // Function to write image into file
+
+                    $temp = explode(";", $capture);
+
+                    $extension = explode("/", $temp[0])[1];
+
+                    $imagename = md5($userId) . '-' . uniqid() . "." . $extension;
+
+                    $newFilename =  '/public/uploads/tribu_g/photos/' . $profil[0]->getTributG() . "/" .$imagename;
+
+                    file_put_contents($destination .'/'. $imagename, file_get_contents($capture));
+
+                }
+
+                $tributGService->createOnePub($profil[0]->getTributG() . "_publication", $userId, $publication, $confid, $newFilename);
+            }
+
+
+
+            return $this->redirect($request->getUri());
+        }
+
+        // dd($tributGService->getAllPublicationsUpdate($profil[0]->getTributg()));
+        
+        return $this->render("tribu_g/account_not_valid.html.twig", [
+            "userConnected" => $userConnected,
+
+            "profil" => $profil,
+
+            "table_tribu" => $profil[0]->getTributg(),
+
+            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(),$profil[0]->getIsVerifiedTributGAdmin(), $userId),
+
+            "tributG" => [
+                "table" => $profil[0]->getTributg(),
+
+                "profil" => $tributGService->getProfilTributG(
+
+                    $profil[0]->getTributg(),
+
+                    $userId
+
+                ),
+                // "publications" => $tributGService->getAllPublicationsUpdate($profil[0]->getTributg()),
+                "publications" => $tributGService->getAllPublicationsUpdate($profil[0]->getTributg(), $userId, $confidentialityService, $userService),
+                "count_publications" => $tributGService->getCountAllPublications($profil[0]->getTributg()),
+            ],
+
+            "new_publication" => $new_publication->createView(),
+            "tribu_T_owned" => $tribu_t_owned,
+            "tribu_T_joined" => $tribu_t_joined
+        ]);
+    }
+
+    #[Route("/user/drop/box",name:"app_drop_box")]
+    public function DropBox(
+    Request $request, 
+    UserService $userService,
+    EntityManagerInterface $entityManager,
+    Status $status){
+        //obtenir le profil utilisateur
+        $userConnected= $status->userProfilService($this->getUser());
+        $user = $this->getUser();
+        $userType = $user->getType();
+        $userId = $user->getId();
+        $profil = "";
+        if ($userType == "consumer") 
+            $profil = $entityManager->getRepository(Consumer::class)->findByUserId($userId);
+         else 
+            $profil = $entityManager->getRepository(Supplier::class)->findByUserId($userId);
+        
+        //recupéré touts les fichiers dans drop box 
+       
+        $allFiles=$userService->getAllFileInDropBox($userId);
+        //dd($allFiles);
+        foreach ($allFiles as &$allFile){
+            $allFile["id"]=base64_encode($allFile["id"]);
+            $allFile["file_path"]=base64_encode($allFile["file_path"]);
+            
+        }
+       
+        return $this->render("user/dropBox.html.twig",[
+            "userConnected" => $userConnected,
+            "profil" => $profil,
+            "allFiles" => $allFiles,
+            "idUser"=>base64_encode($userId)
+        ]);
+    }
+
+   #[Route("/user/add/drop/box", name:"add_file_drop_box")]
+   public function addFileDropBoxAction(
+    Request $request,
+    Filesystem $filesyst,
+    UserService $userService
+    ){
+        $idUser=$this->getUser()->getId();
+        $contents=json_decode($request->getContent(), true);
+        $filePathAbs="/public/uploads/users/dropbox_".$idUser."/";
+        $filePathRelativ="/public/uploads/users/dropbox_".$idUser."/";
+        $fileExtension= $contents["fileExtension"];
+        $tmps=explode(".",$contents["fileName"]);
+        $tmpL=count($tmps);
+        $fileName="";
+        for($i=0 ;$i < $tmpL;$i++){
+
+            if( $tmpL > 2 ){
+                if($i < ($tmpL-1) ){
+                    $fileName.=$tmps[$i]. ".";
+                }elseif($i == ($tmpL-1) ){
+                    $fileName=substr_replace($fileName,"",-1);
+                }
+            }elseif( $tmpL <= 2 && $i < ($tmpL-1) ){
+                $fileName=$tmps[$i] ;
+            }
+               
+        }
+        $fileSize=$contents["fileSize"];
+        if(!($filesyst->exists(($this->getParameter('kernel.project_dir').$filePathAbs)))){
+            $filesyst->mkdir(($this->getParameter('kernel.project_dir').$filePathAbs),0777);
+        }
+
+        if( $filesyst->exists( $this->getParameter('kernel.project_dir').$filePathAbs.$contents["fileName"]) ){
+            $fileName=$fileName."_".uniqid();
+            $contents["fileName"]=$fileName.".".$tmps[($tmpL-1)];
+        }
+
+        $fileName=json_encode($fileName);
+        file_put_contents(
+            $this->getParameter('kernel.project_dir').$filePathAbs.$contents["fileName"],
+            file_get_contents($contents["file"]));
+
+        $userService->setFileInDropBox($idUser,
+        $fileName,
+        json_encode(($filePathRelativ.$contents["fileName"])),
+        $fileSize,
+        $fileExtension,
+        uniqid());
+
+        return $this->json(["response" => "ok"]);
+   }
+
+   #[Route("/drop/get/{idUser}/{link}",name:"app_get_drop_box_link")]
+   public function getFileInDropBox(
+    $idUser,
+    $link,
+    UserService $userService
+    ){
+
+        $result=$userService->getSpecificFileINDropBox($idUser,$link)[0];
+       
+        $path=$this->getParameter('kernel.project_dir').$result["file_path"];
+
+        $response= new BinaryFileResponse($path);
+
+        $fileName=$result["file_name"].".".$result["file_extension"];
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $fileName);
+
+        return $response;
+   }
+
+   #[Route("/user/drop/read/{idUser}/{link}",name:"app_read_drop_box_file")]
+   public function readFileInDropBox(
+        $idUser,
+        $link,
+        UserService $userService
+    ){
+        
+        $result=$userService->getSpecificFileINDropBox($idUser,$link)[0];
+
+        $path=$this->getParameter('kernel.project_dir').$result["file_path"];
+
+        $response= new BinaryFileResponse($path);
+
+        $fileName=$result["file_name"].".".$result["file_extension"];
+        $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE,$fileName);
+
+        return $response;
+   }
+
+   #[Route("/user/drop/rename/{idUser}/{shortLink}/{newFileName}", name:"app_rename_file_drop_box")]
+   public function renameFileInDropBox(
+        $idUser,
+        $shortLink,
+        $newFileName,
+        UserService $userService
+    ){
+        $userService->renameFile($idUser,$shortLink, json_encode($newFileName));
+        return $this->json(["response"=>"ok"]);
+   }
+
+   #[Route("/user/drop/delete/{idUser}/{shortLink}", name:"app_delete_file_drop_box")]
+    public function deleteFileInDropBox(
+        $idUser,
+        $shortLink,
+        UserService $userService,
+        Filesystem $fileSyst
+    ){
+        $result=$userService->getSpecificFileINDropBox($idUser,$shortLink)[0];
+        $path=$this->getParameter('kernel.project_dir').$result["file_path"];
+        if($fileSyst->exists($path)){
+            if( unlink($path) ){
+                $userService->deleteFileFromDropBox($idUser,$shortLink);
+            }
+        }
+        return $this->json(["response"=>"ok"],200);
+    }
+    
+    #[Route("/user/share/file", name:"app_share_file")]
+    public function shareFileInDropBox(
+        Request $request,
+        MailService $mailService
+
+        ){
+            $contents=json_decode($request->getContent(),true);
+            
+            $objetMail=$contents["object"];
+            $receivers=$contents["receivers"];
+            $mailContent=$contents["mailContent"];
+
+            $contexts["object_mail"] = $objetMail;
+            $contexts["template_path"] = "emails/mail_news_letter.html.twig";
+            $contexts["content_mail"] = $mailContent;
+            $mailNotSends=[];
+            $mailSends=[];
+            foreach($receivers as $receiver){
+                $idEmailReceiver=["email"=>$receiver, "fullName"=>""];
+                $statusCode=$mailService->sendEmailSharingFileFromDropBox("ConsoMyZone",
+                $idEmailReceiver,$contexts);
+                if($statusCode === 250){
+                    array_push($mailSends,$receiver);
+                }else{
+                    array_push($mailNotSends,$receiver);
+                }
+            }
+
+            return $this->json(["mailNotSends"=>$mailNotSends, "mailSends"=>$mailSends],200);
+
+    }
+
+    
+    #[Route("/user/set/abonnement/cotisation/cmz", name: "set_abonnement_cotisation_cmz")]
+    public function setAbonnementCotisationCmz(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserService $userService
+    ) {
+
+        $data = json_decode($request->getContent(), true);
+        extract($data);
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $montant;
+        $datetime = new \DateTime();
+
+        $abonnementMontant = $entityManager->getRepository(Abonnement::class)->findOneBy(["userId" => $userId]);
+        $entityHistoriqueAbonnement = new AbonnementHistorique();
+
+        $abonnementMontant->setCotisationCMZ($montant)->setDateCotisationCMZ($datetime);
+        $entityManager->flush();
+
+        $findBy = $entityManager->getRepository(AbonnementHistorique::class)->findOneBy([
+            'userId' => $userId,
+            'cotisationCMZ' => null
+        ]);
+
+        if ($findBy) {
+            $findBy->setCotisationCMZ($montant)->setDateCotisationCMZ($datetime);
+            $entityManager->flush();
+        } else {
+            $entityHistoriqueAbonnement->setUserId($userId)->setCotisationCMZ($montant)->setDateCotisationCMZ($datetime);
+            $entityManager->persist($entityHistoriqueAbonnement);
+            $entityManager->flush();
+        }
+
+        return $this->json($montant);
+    }
+
+    #[Route("/user/set/abonnement/cotisation/bleu", name: "set_abonnement_cotisation_bleu")]
+    public function setAbonnementCotisationBleu(
+        Request $request,
+        EntityManagerInterface $entityManager,
+        UserService $userService
+    ) {
+
+        $data = json_decode($request->getContent(), true);
+        extract($data);
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $montant;
+        $datetime = new \DateTime();
+
+        $abonnementMontant = $entityManager->getRepository(Abonnement::class)->findOneBy(["userId" => $userId]);
+        $entityHistoriqueAbonnement = new AbonnementHistorique();
+
+        $abonnementMontant->setCotisationBleu($montant)->setDateCotisationBleu($datetime);
+        $entityManager->flush();
+
+        $findBy = $entityManager->getRepository(AbonnementHistorique::class)->findOneBy([
+            'userId' => $userId,
+            'cotisationBleu' => null
+        ]);
+
+        if ($findBy) {
+            $findBy->setCotisationBleu($montant)->setDateCotisationBleu($datetime);
+            $entityManager->flush();
+        } else {
+            $entityHistoriqueAbonnement->setUserId($userId)->setCotisationBleu($montant)->setDateCotisationBleu($datetime);
+            $entityManager->persist($entityHistoriqueAbonnement);
+            $entityManager->flush();
+        }
+
+
+
+        return $this->json($montant);
+    }
+
+    #[Route("/user/set/abonnement/cotisation/vert", name: "set_abonnement_cotisation_vert")]
+    public function setAbonnementCotisationVert(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ) {
+
+        $data = json_decode($request->getContent(), true);
+        extract($data);
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $montant;
+        $datetime = new \DateTime();
+
+        $abonnementMontant = $entityManager->getRepository(Abonnement::class)->findOneBy(["userId" => $userId]);
+
+        $abonnementMontant->setCotisationVert($montant)->setDateCotisationVert($datetime);
+        $entityManager->flush();
+
+        $entityHistoriqueAbonnement = new AbonnementHistorique();
+
+        $findBy = $entityManager->getRepository(AbonnementHistorique::class)->findOneBy([
+            'userId' => $userId,
+            'cotisationVert' => null
+        ]);
+
+        if ($findBy) {
+            $findBy->setCotisationVert($montant)->setDateCotisationVert($datetime);
+            $entityManager->flush();
+        } else {
+            $entityHistoriqueAbonnement->setUserId($userId)->setCotisationVert($montant)->setDateCotisationVert($datetime);
+            $entityManager->persist($entityHistoriqueAbonnement);
+            $entityManager->flush();
+        }
+
+
+        return $this->json($montant);
+    }
+
+    #[Route("/user/set/abonnement/cotisation/tribu", name: "set_abonnement_cotisation_tribu")]
+    public function setAbonnementCotisationTribu(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ) {
+
+        $data = json_decode($request->getContent(), true);
+        extract($data);
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $montant;
+        $datetime = new \DateTime();
+
+        $abonnementMontant = $entityManager->getRepository(Abonnement::class)->findOneBy(["userId" => $userId]);
+        $entityHistoriqueAbonnement = new AbonnementHistorique();
+
+        $abonnementMontant->setCotisationTribu($montant)->setDateCotisationTribu($datetime);
+        $entityManager->flush();
+
+        $findBy = $entityManager->getRepository(AbonnementHistorique::class)->findOneBy([
+            'userId' => $userId,
+            'cotisationTribu' => null
+        ]);
+
+        if ($findBy) {
+            $findBy->setCotisationTribu($montant)->setDateCotisationTribu($datetime);
+            $entityManager->flush();
+        } else {
+            $entityHistoriqueAbonnement->setUserId($userId)->setCotisationTribu($montant)->setDateCotisationTribu($datetime);
+            $entityManager->persist($entityHistoriqueAbonnement);
+            $entityManager->flush();
+        }
+
+
+        return $this->json($montant);
+    }
+
+    #[Route("/user/set/abonnement/cotisation/supplementaire", name: "set_abonnement_cotisation_supplementaire")]
+    public function setAbonnementSupplementaire(
+        Request $request,
+        EntityManagerInterface $entityManager
+    ) {
+
+        $data = json_decode($request->getContent(), true);
+        extract($data);
+        $user = $this->getUser();
+        $userId = $user->getId();
+        $montant;
+        $datetime = new \DateTime();
+
+        $abonnementMontant = $entityManager->getRepository(Abonnement::class)->findOneBy(["userId" => $userId]);
+
+        $entityHistoriqueAbonnement = new AbonnementHistorique();
+
+        $abonnementMontant->setParticipationSuplementaire($montant)->setDateSupplementaire($datetime);
+        $entityManager->flush();
+
+        $findBy = $entityManager->getRepository(AbonnementHistorique::class)->findOneBy([
+            'userId' => $userId,
+            'participationSuplementaire' => null
+        ]);
+
+        if ($findBy) {
+            $findBy->setParticipationSuplementaire($montant)->setDateSupplementaire($datetime);
+            $entityManager->flush();
+        } else {
+            $entityHistoriqueAbonnement->setUserId($userId)->setParticipationSuplementaire($montant)->setDateSupplementaire($datetime);
+            $entityManager->persist($entityHistoriqueAbonnement);
+            $entityManager->flush();
+        }
+
+
+        return $this->json($montant);
+    }
+
+    #[Route("/user/relance/mail/abonnement", name: "relance_mail_abonnement", methods: ["POST"])]
+    public function relanceMailAbonnement(
+        Request $request,
+        MailService $mailService
+    ) {
+        $data = json_decode($request->getContent(), true);
+        extract($data);
+
+        $objet = "Votre Abonnement";
+        $message = "Vous n'avez pas encore payé votre abonnement. Merci de régler le montant dû pour continuer à profiter de nos services.";
+        $mailService->sendEmailRelanceAbonnement($email, $objet, $message);
+        return $this->json("succes", 200);
     }
 }

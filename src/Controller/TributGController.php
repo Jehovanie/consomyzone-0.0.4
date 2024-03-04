@@ -22,9 +22,12 @@ use App\Service\NotificationService;
 
 use App\Service\FilesUtils;
 
+use App\Service\Status;
+
 use App\Service\AgendaService;
 
 use Doctrine\ORM\EntityManagerInterface; 
+use App\Service\ConfidentialityService; 
 
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +35,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 
 
@@ -60,6 +65,8 @@ class TributGController extends AbstractController
         TributGService $tributGService,
 
         NotificationService $notificationService,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
 
     ) {
 
@@ -101,14 +108,18 @@ class TributGController extends AbstractController
 
             $full_name = $tributGService->getFullName($this->getUser()->getId());
 
+            $user = $this->getUser();
+            $user_id = $user->getId();
+            $pseudo = $confidentialityService->getConfFullname($user_id, intval($author_id));
+
             if (intval($is_like) === 1) {
 
                 // $message_notification = $full_name . " a réagi sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $pub_id . "_jheo'>Voir la publication</a>";
-                $message_notification = $full_name . " a réagi sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/actualite#".$table."_".$pub_id."'>Voir la publication</a>";
+                $message_notification = $pseudo . " a réagi sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/actualite#".$table."_".$pub_id."'>Voir la publication</a>";
             } else {
 
                 // $message_notification = $full_name . " a supprimé sa réaction sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $pub_id . "_jheo'>Voir la publication</a>";
-                $message_notification = $full_name . " a supprimé sa réaction sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/actualite#".$table."_".$pub_id."'>Voir la publication</a>";
+                $message_notification = $pseudo . " a supprimé sa réaction sur votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/actualite#".$table."_".$pub_id."'>Voir la publication</a>";
             }
 
             $notificationService->sendNotificationForOne(
@@ -179,7 +190,9 @@ class TributGController extends AbstractController
 
         TributGService $tributGService,
 
-        NotificationService $notificationService
+        NotificationService $notificationService,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
 
     ) {
 
@@ -218,12 +231,14 @@ class TributGController extends AbstractController
         $full_name = $tributGService->getFullName($this->getUser()->getId());
 
         if (intval($this->getUser()->getId()) != intval($author_id)) {
-
+$user = $this->getUser();
+            $user_id = $user->getId();
+            $pseudo = $confidentialityService->getConfFullname($user_id, intval($author_id));
             $notificationService->sendNotificationForOne(
                 $this->getUser()->getId(),
                 $author_id,
                 "Comment publication.",
-                $full_name . " a commenté votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $publication_id . "_jheo'>Voir la publication</a>"
+                $pseudo . " a commenté votre publication.<br><a class='d-block btn btn-primary w-70 mt-2 mx-auto text-center' href='/user/account#pubication_js_" . $publication_id . "_jheo'>Voir la publication</a>"
             );
         }
 
@@ -297,7 +312,8 @@ class TributGController extends AbstractController
 
         UserRepository $userRepository,
 
-        UserService $userService
+        UserService $userService,
+        ConfidentialityService $confidentialityService
 
     ) {
         $user_connected = $this->getUser();
@@ -305,19 +321,26 @@ class TributGController extends AbstractController
 
         $all_user_id_tribug = $tributGService->getAllTributG($tributG_name);
         $memberTributG = [];
-
+        $userId = $this->getUser()->getId();
         foreach ($all_user_id_tribug as $user_id) {
             $user = $userRepository->find(intval($user_id["user_id"]));
-
+            $name = $confidentialityService->getConfFullname(intval($user->getId()), $userId);
+            if(intval($user->getId()) != $userId){
+                $email = $confidentialityService->getVisibilityEmail(intval($user->getId()), $userId) ? $user->getEmail() : "Confidentiel";
+            }else{
+                $email = $user->getEmail();
+            }
             $single_user = [
 
                 "id" => $user->getId(),
 
-                "email" => $user->getEmail(),
+                "email" => $email,
 
                 "firstname" => $userService->getUserFirstName($user->getId()),
 
                 "lastname" => $userService->getUserLastName($user->getId()),
+
+                "fullname" => $name,
 
                 "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId())
 
@@ -342,6 +365,8 @@ class TributGController extends AbstractController
 
         TributGService $tributGService,
         EntityManagerInterface $entityManager,
+        ConfidentialityService $confidentialityService,
+        UserService $userService
     ) {
 
         if(!$this->getUser()){
@@ -351,7 +376,7 @@ class TributGController extends AbstractController
         }
 
         $table_tributG_name = $tributGService->getTableNameTributG($this->getUser()->getId());
-        $publications = $tributGService->getAllPublicationsUpdate($table_tributG_name);
+        $publications = $tributGService->getAllPublicationsUpdate($table_tributG_name, $this->getUser()->getId(), $confidentialityService, $userService);
 
         return $this->render("tribu_g/publications.html.twig", [
             "publications" => $publications,
@@ -1054,7 +1079,8 @@ class TributGController extends AbstractController
     #[Route("/tributG/new_letter_fans", name: "app_tributG_new_letter_fans", methods: ["GET"])]
     public function fetchCallActionNewletterFansTribuG(
         TributGService $tributGService,
-        UserService $userService
+        UserService $userService,
+        ConfidentialityService $confidentialityService
     ){
         if( !$this->getUser() || $this->getUser()->getType() === "Type" ){
             return $this->json([ "success" => false, "message" => "User not connected"], 401 );
@@ -1073,6 +1099,7 @@ class TributGController extends AbstractController
                 "id" => $user_profil->getUserId()->getId(),
                 "firstname" => $user_profil->getFirstname(),
                 "lastname" => $user_profil->getLastname(),
+                "fullname" => $confidentialityService->getConfFullname($user_connected->getId(), $user_connected->getId()),
                 "email" => $user_profil->getUserId()->getEmail(),
                 "pseudo" => $user_profil->getUserId()->getPseudo(),
             ]
@@ -1364,6 +1391,352 @@ $user_destination_plus = [];
             $tributGService->deleteIsAlbumPath($table_tributG_name, $id);
         }
         return $this->json("succès");
+    }
+
+    #[Route("/tributG/adhesion/list", name: "app_adhesion_tributG_fondateur")]
+    public function fetchListAdhesionTribuG(
+
+        Request $request,
+
+        TributGService $tributGService,
+
+        UserRepository $userRepository,
+
+        UserService $userService,
+
+        ConfidentialityService $confidentialityService,
+
+    ) {
+        $user_connected = $this->getUser();
+
+        $tributG_name = $tributGService->getTribuGtableForNotif($user_connected->getId());
+
+        $all_user_id_tribug = $tributGService->getAllAdhesionTribuG($tributG_name);
+
+        $memberTributG = [];
+
+        foreach ($all_user_id_tribug as $user_id) {
+
+            $user = $userRepository->find(intval($user_id["user_id"]));
+
+            if($user){
+
+
+                $single_user = [
+
+                    "id" => $user->getId(),
+    
+                    "parrains"=> $userService->getAllParains("tableparrainage_".$user->getId(), $userRepository, $user->getId(), $confidentialityService),
+    
+                    "email" => $user->getEmail(),
+    
+                    "pseudo" => $user->getPseudo(),
+
+                    "nameConfid" => $confidentialityService->getConfFullname($user->getId(), $user_connected->getId()),
+    
+                    "firstname" => $userService->getUserFirstName($user->getId()),
+    
+                    "lastname" => $userService->getUserLastName($user->getId()),
+    
+                    "is_valid" => $user_id['isValid'],
+    
+                    "status" => $tributGService->getCurrentStatus($tributG_name, $user->getId())
+    
+                ];
+    
+                array_push($memberTributG, $single_user);
+            }
+
+        }
+
+        return $this->render("tribu_g/adhesion_tribuG.html.twig", [
+
+            "membersTributG" => $memberTributG,
+            "adhesion_length"=>count($all_user_id_tribug),
+
+        ]);
+    }
+
+    #[Route('/tribuG/setValid-member', name: 'set_valid_membre_tribu_g')]
+    public function setValidAdhesionTribuG(
+        Request $request,
+        TributGService $tributGService,
+        MailService $mailService,
+        UserService $userService,
+        Status $status,
+        RouterInterface $router,
+        NotificationService $notificationService,
+    ) {
+
+        $user = $this->getUser();
+
+        $userId = $user->getId();
+
+        $data = json_decode($request->getContent(), true);
+
+        $email_to = $data['email'];
+
+        $id_user = $data['id_user'];
+
+        $value = $data['value'];
+
+        $verbe = "";
+
+        if($value==1){
+            $verbe = "approuvé";
+        }
+
+        if($value==2){
+            $verbe = "refusé";
+        }
+
+        $url = $router->generate('app_account', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $type_tribu = "G";
+
+        
+        $userConnected= $status->userProfilService($this->getUser());
+
+        $tribu_name = $userConnected['tribuG_name_muable'];
+        
+        $objet = "Demande d'adhésion au membre de la tribu G ".$tribu_name;
+
+       
+
+        $fullName_to = $userService->getFullName($id_user);
+
+        $table_tributG_name = $tributGService->getTableNameTributG($userId);
+
+        $tributGService->setValidAdhesionTribuG($table_tributG_name, $id_user, $value);
+
+        ///send notification
+        $notificationService->sendNotificationForOne($userId, $id_user, $url, "Votre demande d'adhésion dans la tribu G \"".$tribu_name."\" a été ".$verbe." par le fondateur.");
+
+        $mailService->sendEmailForValidationTribu($email_to, $fullName_to, $objet, $url, $type_tribu, $tribu_name, $verbe, 'adhésion');
+        
+        return $this->json(["statusCode"=>200,"message"=>"Success"]);
+    }
+
+
+    #[Route('/tribuG/removeAdhesion-member', name: 'refuse_membre_tribu_g')]
+    public function removeAdhesionTribuG(
+        Request $request,
+        TributGService $tributGService,
+        MailService $mailService,
+        UserService $userService,
+        Status $status,
+        RouterInterface $router,
+        NotificationService $notificationService,
+    ) {
+
+        $user = $this->getUser();
+        
+        $userId = $user->getId();
+
+        $data = json_decode($request->getContent(), true);
+
+        $email_to = $data['email'];
+
+        $id_user = $data['id_user'];
+
+        $url = $router->generate('app_account', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $type_tribu = "G";
+        
+        $userConnected= $status->userProfilService($this->getUser());
+
+        $tribu_name = $userConnected['tribuG_name_muable'];
+        
+        $objet = "Demande d'adhésion au membre de la tribu G ".$tribu_name;
+
+        $fullName_to = $userService->getFullName($id_user);
+
+        $table_tributG_name = $tributGService->getTableNameTributG($userId);
+
+        $table_tributG_name = $tributGService->removeAdhesionTribuG($table_tributG_name, $id_user);
+
+        ///send notification
+        $notificationService->sendNotificationForOne($userId, $id_user, $url, "Votre demande d'adhésion dans la tribu G \"".$tribu_name."\" a été supprimé par le fondateur.");
+
+        $mailService->sendEmailForValidationTribu($email_to, $fullName_to, $objet, $url, $type_tribu, $tribu_name, "supprimé", 'adhésion');
+        
+        
+        return $this->json(["statusCode"=>200,"message"=>"Success"]);
+    }
+
+    #[Route('/tribuG/get_list_attente', name: 'get_liste_attente_tribu_g')]
+    public function getAttenteTribuG(
+        Request $request,
+        TributGService $tributGService,
+        MailService $mailService,
+        UserService $userService,
+        UserRepository $userRepository,
+        Status $status,
+        RouterInterface $router,
+        NotificationService $notificationService,
+        ConfidentialityService $confidentialityService,
+    ) {
+
+        $user_connected = $this->getUser();
+
+        $tributG_name = $tributGService->getTribuGtableForNotif($user_connected->getId());
+
+        $all_tribug_attente = $tributGService->getAttenteTribuG($tributG_name);
+
+        $memberTributG = [];
+
+        foreach ($all_tribug_attente as $user_id) {
+
+            $single_user = [
+
+                "user_id" => $user_id["user_id"],
+
+                "parrains"=> $userService->getAllParains("tableparrainage_".$user_id["user_id"], $userRepository,$user_id["user_id"], $confidentialityService),
+
+                "tribu_list_id" => $user_id["id"],
+
+                "user_profil" => $userService->getUserProfileFromId($user_id["user_id"]),
+
+                "nameConfid" => $confidentialityService->getConfFullname($user_id["user_id"], $user_connected->getId()),
+
+                "user_email" => $user_id["email"],
+
+                "pseudo" => $user_id["pseudo"],
+
+                "tribu_g_apropos" => $tributGService->getApropos($user_id["table_name"]),
+
+                "tribu_table_name" => $user_id["table_name"],
+
+                "is_valid" => $user_id['is_valid'],
+
+                "datetime" => $user_id['datetime'],
+
+            ];
+
+            array_push($memberTributG, $single_user);
+
+        }
+
+        return $this->json($memberTributG);
+
+        // dd($all_tribug_attente);
+
+    }
+
+    #[Route('/tribuG/setValid-fondateur', name: 'set_valid_fondateur_tribu_g')]
+    public function validFondateur(
+        Request $request,
+        TributGService $tributGService,
+        MailService $mailService,
+        UserService $userService,
+        Status $status,
+        RouterInterface $router,
+        NotificationService $notificationService,
+    ) {
+
+        $user = $this->getUser();
+        
+        $userId = $user->getId();
+
+        $data = json_decode($request->getContent(), true);
+
+        $id = $data['tribu_list_id'];
+
+        $id_user = $data['user_id'];
+
+        $email_to = $data['email'];
+        
+        $table_tributG_name = $data['table_tribu'];
+
+        $tribu_name = $data['name_tribu'];
+
+        $url = $router->generate('app_account', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $type_tribu = "G";
+        
+        $userConnected= $status->userProfilService($this->getUser());
+
+        $objet = "Demande de fondateur de la ".$tribu_name;
+
+        $fullName_to = $userService->getFullName($id_user);
+
+        $tributGService->validateFondateurTribuG($table_tributG_name, $id_user);
+
+        ///send notification
+        $notificationService->sendNotificationForOne($userId, $id_user, $url, "Votre demande de fondateur de la \"".$tribu_name."\" a été approuvé par le super admin.");
+
+        $mailService->sendEmailForValidationTribu($email_to, $fullName_to, $objet, $url, $type_tribu, $tribu_name, "approuvé", 'fondateur');
+        
+        
+        return $this->json(["statusCode"=>200,"message"=>"Success"]);
+
+    }
+
+    #[Route('/tribuG/setRefuse-fondateur', name: 'set_refuse_fondateur_tribu_g')]
+    public function refuseFondateur(
+        Request $request,
+        TributGService $tributGService,
+        MailService $mailService,
+        UserService $userService,
+        Status $status,
+        RouterInterface $router,
+        NotificationService $notificationService,
+    ) {
+
+        $user = $this->getUser();
+        
+        $userId = $user->getId();
+
+        $data = json_decode($request->getContent(), true);
+
+        $id = $data['tribu_list_id'];
+
+        $id_user = $data['user_id'];
+
+        $email_to = $data['email'];
+        
+        $table_tributG_name = $data['table_tribu'];
+
+        $tribu_name = $data['name_tribu'];
+
+        $url = $router->generate('app_account', [], UrlGeneratorInterface::ABSOLUTE_URL);
+
+        $type_tribu = "G";
+        
+        $userConnected= $status->userProfilService($this->getUser());
+
+        $objet = "Demande de fondateur de la ".$tribu_name;
+
+        $fullName_to = $userService->getFullName($id_user);
+
+        $tributGService->refusFondateurTribuG($table_tributG_name, $id_user);
+
+        ///send notification
+        $notificationService->sendNotificationForOne($userId, $id_user, $url, "Votre demande de fondateur de la \"".$tribu_name."\" a été refusé par le super admin.");
+
+        $mailService->sendEmailForValidationTribu($email_to, $fullName_to, $objet, $url, $type_tribu, $tribu_name, "refusé", 'fondateur');
+        
+        
+        return $this->json(["statusCode"=>200,"message"=>"Success"]);
+
+    }
+
+    #[Route('/tribuG/update-tribug-list', name: 'set_fondateur_tribu_g_list')]
+    public function setFondateurTribuGList(
+        TributGService $tributGService,
+    ){
+        $tributGService-> setFondateurTribuG();
+        
+        return $this->json(["statusCode"=>200,"message"=>"Success"]);
+    }
+
+    #[Route('/tribuG/validAllUsersOldTribuG', name: 'set_valid_old_users_tribu_g')]
+    public function validAllUsersTribuG(
+        TributGService $tributGService,
+    ){
+        $tributGService-> validAllUsersTribuG();
+        
+        return $this->json(["statusCode"=>200,"message"=>"Success"]);
     }
 
 }

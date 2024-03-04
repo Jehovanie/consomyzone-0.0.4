@@ -73,6 +73,7 @@ use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use SymfonyCasts\Bundle\VerifyEmail\Exception\VerifyEmailExceptionInterface;
 use Symfony\Component\Security\Http\Authentication\UserAuthenticatorInterface;
+use App\Service\ConfidentialityService;  
 
 class SecurityController extends AbstractController
 
@@ -370,7 +371,8 @@ class SecurityController extends AbstractController
         VerifyEmailHelperInterface $verifyEmailHelper,
         AgendaService $agendaService,
         CodeapeRepository $codeApeRep,
-        Tribu_T_Service $tribu_T_Service
+        Tribu_T_Service $tribu_T_Service,
+        UserService $userService
     ) {
 
         $result = true;
@@ -450,6 +452,12 @@ class SecurityController extends AbstractController
         $user->setIsConnected(true);
         $user->setIdle(300);
 
+        /** Add by Elie */
+        $user->setTrustedVersion(0);
+        $user->setUse2fa(0);
+        $user->setUse2FaEmail(1);
+        /** End Elie */
+
 
 
         ////setting roles for user admin.
@@ -508,6 +516,7 @@ class SecurityController extends AbstractController
         $agendaService->createTablePartageAgenda("partage_agenda_" . $numero_table);
         $agendaService->createAgendaStoryTable($numero_table);
         $tribu_T_Service->createParrainageTable($numero_table);
+        $tribu_T_Service->createTableDropBox($numero_table);
 
         ///keep the change in the user information
         // $entityManager->persist($user);
@@ -1257,6 +1266,12 @@ class SecurityController extends AbstractController
             $user->setIsConnected(true);
             $user->setIdle(300);
 
+            /** Add by Elie */
+            $user->setTrustedVersion(0);
+            $user->setUse2fa(0);
+            $user->setUse2FaEmail(1);
+            /** End Elie */
+
             ///property temp
             $user->setType("Type");
             $user->setTablemessage("tablemessage");
@@ -1451,16 +1466,20 @@ class SecurityController extends AbstractController
         TributGService $tributGService,
         UserRepository $userRepository,
         EntityManagerInterface $entityManager,
-        Filesystem $filesyst
+        Filesystem $filesyst,
+        UserService $userService,
+        ConfidentialityService $confidentialityService
         ){
         $context=[];
         $requestContent = json_decode($request->getContent(), true);
+
         $receivers=$requestContent["receiver"];
         $content=$requestContent["emailCore"];
         $piece_joint=$requestContent["files"];
+
         $user = $this->getUser();
         $userId = $user->getId();
-        $fullNameSender = $tributGService->getFullName($userId);
+        $fullNameSender = $user->getPseudo();
         $piece_with_path = [];
         if (count($piece_joint) > 0) {
             // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
@@ -1486,6 +1505,16 @@ class SecurityController extends AbstractController
             }
         }
         
+
+        /// add by Jehovanie RAMANDRIJOEL : email copy 21022024
+        $is_already_send_mail_copy= false;
+        $user_list= "<div class='card' style='width: 18rem;'><div class='card-body'><h5 class='card-title'>Ce mail a bien été envoyé vers ces adresses:</h5><ul class='list-group'>";
+        foreach($receivers as $rec){
+            $item = "<li class='list-group-item'>". $rec["email"] . "</li>";
+            $user_list = $user_list . $item;
+        }
+        $user_list = $user_list . "</ul></div></div>";
+        
         foreach($receivers as $receiver){
                 $agendaID = $receiver["agendaId"];
                 $from_id=$receiver["from_id"];
@@ -1493,30 +1522,119 @@ class SecurityController extends AbstractController
                 $email_to=$receiver["email"];
                 $nom=$receiver["lastname"];
                 $prenom=$receiver["firstname"];
+                $fullName=$receiver["fullname"];
                 $context["object_mail"]=$receiver["objet"];
                 $context["template_path"]="emails/mail_invitation_agenda.html.twig";
                 $context["link_confirm"]="";
-                $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$to_id."/".$agendaID,$content);
+                
+            $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID, "/agenda/confirmation/".$userId."/".$to_id."/".$agendaID, $content);
+            // http://localhost:8000/agenda/confirmation/4
+            $description_copie_for_myself = str_replace("/agenda/confirmation/".$agendaID, "#", $content);
+
                 $context["piece_joint"] = $piece_with_path;
                 $table_agenda_partage_name="partage_agenda_".$userId;
+
                 if(!is_null($to_id)){
-                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
+                $fullNameSender = $confidentialityService->getConfFullname($userId, intval($to_id));
+
+                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullName,$context, $fullNameSender);
+
+                if( $is_already_send_mail_copy === false ){
+                    $current_user= $this->getUser();
+                    $current_user_id= $current_user->getId();
+                    $current_user_email= $current_user->getEmail();
+                    $current_user_fullname= $userService->getFullName($current_user_id);
+
+                    $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                    $context["content_mail"] = $description_copie_for_myself . $user_list;
+
+                    $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                        $current_user_email, 
+                        $current_user_fullname, 
+                        $context, 
+                        "ConsoMyZone"
+                    );
+                    
+                    $is_already_send_mail_copy= true;
+
+                    if( $responsecode_mycopy == 550 ){
+                        return $this->json(["result" =>"failed"],400);
+                    }
+                }
+
                     $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$to_id]);
                     $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
                 }else{
                     if($userRepository->findOneBy(["email" => $email_to])){
                         $userTo = $userRepository->findOneBy(["email" => $email_to]);
                         $idUserTo = $userTo->getId();
+                        $fullNameSender = $confidentialityService->getConfFullname($userId, intval($idUserTo));
                         $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$idUserTo."/".$agendaID,$content);
-                        $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
+
+                        // http://localhost:8000/agenda/confirmation/4
+                        $description_copie_for_myself = str_replace("/agenda/confirmation/".$agendaID, "#", $content);
+
+                        $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullName,$context, $fullNameSender);
+
+                        if( $is_already_send_mail_copy === false ){
+                            $current_user= $this->getUser();
+                            $current_user_id= $current_user->getId();
+                            $current_user_email= $current_user->getEmail();
+                            $current_user_fullname= $userService->getFullName($current_user_id);
+
+                            $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                            $context["content_mail"] = $description_copie_for_myself . $user_list;
+
+                            $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                                $current_user_email, 
+                                $current_user_fullname, 
+                                $context, 
+                                "ConsoMyZone"
+                            );
+                            
+                            $is_already_send_mail_copy= true;
+
+                            if( $responsecode_mycopy == 550 ){
+                                return $this->json(["result" =>"failed"],400);
+                            }
+                        }
+
                         $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$idUserTo]);
                         $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
                     }else{
                         // ADD USER TEMP
+                        $fullNameSender = $user->getPseudo();
                         $userTemp = new User();
                         $idUserTo = $agendaService->insertUserTemp($userTemp, $email_to, time(), $userRepository, $entityManager);
+
                         $context["content_mail"] = str_replace("/agenda/confirmation/".$agendaID,"/agenda/confirmation/".$userId."/".$idUserTo."/".$agendaID,$content);
-                        $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$nom." ".$prenom,$context, $fullNameSender);
+                        // http://localhost:8000/agenda/confirmation/4
+                        $description_copie_for_myself = str_replace("/agenda/confirmation/".$agendaID, "#", $content);
+
+                        $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullName,$context, $fullNameSender);
+                        if( $is_already_send_mail_copy === false ){
+                            $current_user= $this->getUser();
+                            $current_user_id= $current_user->getId();
+                            $current_user_email= $current_user->getEmail();
+                            $current_user_fullname= $userService->getFullName($current_user_id);
+
+                            $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                            $context["content_mail"] = $description_copie_for_myself . $user_list;
+
+                            $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                                $current_user_email, 
+                                $current_user_fullname, 
+                                $context, 
+                                "ConsoMyZone"
+                            );
+                            
+                            $is_already_send_mail_copy= true;
+
+                            if( $responsecode_mycopy == 550 ){
+                                return $this->json(["result" =>"failed"],400);
+                            }
+                        }
+
                         $agendaService->setPartageAgenda($table_agenda_partage_name, $agendaID, ["userId"=>$idUserTo]);
                         $agendaService->addAgendaStory("agenda_".$userId."_story", $email_to, "Inscrit",$agendaID);
                     }
@@ -2048,6 +2166,13 @@ class SecurityController extends AbstractController
                     ///DEBUT
                     $userToVerifie->setIsConnected(true);
                     $userToVerifie->setIdle(300);
+                    
+                    /** Add by Elie */
+                    $userToVerifie->setTrustedVersion(0);
+                    $userToVerifie->setUse2fa(0);
+                    $userToVerifie->setUse2FaEmail(1);
+                    /** End Elie */
+
                     $userToVerifie->setTablemessage("tablemessage");
                     $userToVerifie->setTablenotification("tablenotification");
                     $userToVerifie->setTablerequesting("tablerequesting");
