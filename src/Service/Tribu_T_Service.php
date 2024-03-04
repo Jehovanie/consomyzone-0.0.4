@@ -3507,6 +3507,10 @@ class Tribu_T_Service extends PDOConnexionService
             return false;
         }
 
+        if( !$this->isColumnExist($table_tribu_current, "state_table_parent") ){
+            $this->updateTableTribuAddCullumnStateTableParent($table_tribu_current);
+        }
+
         $statement_check_parent = $this->getPDO()->prepare("SELECT table_parent, state_table_parent FROM $table_tribu_current WHERE table_parent= :table_tribu_futur_parrain AND state_table_parent = :state_table_parent");
         
         $state_table_parent= 1;
@@ -3798,9 +3802,10 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
     public function getHierarchicalTribu($table_name_parent){
-
+        /// Goal: Get parent table 
         $list_table_parent= [];
         $table_parent= $this->getSingleTableParent($table_name_parent);
+
         while($table_parent != null){
             array_push($list_table_parent, $table_parent);
             $table_parent = $this->getSingleTableParent($table_parent);
@@ -3815,23 +3820,23 @@ class Tribu_T_Service extends PDOConnexionService
                 $data = $this->dataTransformHierchicalTribu($item_table_parent, $data);
             }
         }
+        
         $sub_list_trub= $this->getListSousTribuT($table_name_parent);
-
-
         if( count($data["child"]) === 0 ){
             $ref_mytribu_in_hierchical = &$data;
         }else{
             $ref_mytribu_in_hierchical = &$data["child"][0];
             while(count($ref_mytribu_in_hierchical["child"]) > 0 ){
-                $ref_mytribu_in_hierchical= &$ref_mytribu_in_hierchical["child"][0];
+                $ref_mytribu_in_hierchical= &$ref_mytribu_in_hierchical["child"];
+                if( count($ref_mytribu_in_hierchical) > 0 ){
+                    $ref_mytribu_in_hierchical = &$ref_mytribu_in_hierchical[0];
+                }
             }
         }
-
         foreach($sub_list_trub as $item_sub_list){
             $hierachy_temp = $this->getHierarchicalFrom($item_sub_list["name"]);
             array_push($ref_mytribu_in_hierchical["child"], $hierachy_temp);
         }
-
         return $data;
     }
 
@@ -3861,7 +3866,10 @@ class Tribu_T_Service extends PDOConnexionService
         }else{
             $temp = &$data["child"][0];
             while(count($temp["child"]) > 0 ){
-                $temp= $temp["child"];
+                $temp= &$temp["child"];
+                if( count($temp) > 0 ){
+                    $temp = &$temp[0];
+                }
             }
 
             $temp["child"][] = $hierarchical_tribu;
@@ -3892,10 +3900,10 @@ class Tribu_T_Service extends PDOConnexionService
 
         if( count($sub_list_trub) === 0 && is_null($data) ) return $data_temp;
 
-        if( count($sub_list_trub) === 0 && !is_null($data) ){
-            array_push($data["child"], $data_temp);
-            return $data;
-        }
+        // if( count($sub_list_trub) === 0 && !is_null($data) ){
+        //     array_push($data["child"], $data_temp);
+        //     return $data;
+        // }
 
 
         foreach($sub_list_trub as $item_tribu){

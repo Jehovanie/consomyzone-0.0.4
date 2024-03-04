@@ -65,12 +65,12 @@
 	position: absolute;
 	left: 150px;
 	top: 50%;
-	margin-top: 1px;
+	margin-top: 30px;
 }
 
 .entry {
 	position: relative;
-	min-height: 55px;
+	min-height: 110px;
 	display: block;
 }
 
@@ -121,9 +121,9 @@
 }
 
 .entry:only-child:after {
-	width: 10px;
+	width: 20px;
 	height: 0px;
-	margin-top: 1px;
+	margin-top: 30px;
 	border-radius: 0px;
 }
 
@@ -162,4 +162,11 @@
 #tree .entry button:hover + .branch::before,
 #tree .entry button:hover + .branch .branch::before {
 	border-color: #a6a6a6;
+}
+
+.img40_40 {
+	width: 40px;
+	height: 40px;
+	border-radius: 30%;
+	margin: auto;
 }
