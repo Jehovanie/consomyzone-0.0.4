@@ -1730,6 +1730,13 @@ function resetDataNewPoiMarche() {
 	document.querySelector("#new_marche_latitude").setAttribute("readonly", true);
 	document.querySelector("#new_marche_longitude").setAttribute("readonly", true);
 	document.querySelector("#new_marche_departement").setAttribute("readonly", true);
+
+	const errors = document.querySelectorAll(".invalid-feedback_jheo_js");
+	Array.from(errors).forEach((error) => {
+		if (error.classList.contains("d-block")) {
+			error.classList.remove("d-block");
+		}
+	});
 }
 
 function addInputJourDeMarche() {
