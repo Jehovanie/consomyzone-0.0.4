@@ -122,6 +122,8 @@ class MapModule {
 		this.tab_closeToEachOther = [];
 
 		this.zoom_max_for_count_per_dep = 8;
+
+		this.lastLatLngOnClick = { depCode: 0, depName: "", lat: 0.0, lng: 0.0 };
 	}
 
 	initTales() {
@@ -427,8 +429,23 @@ class MapModule {
 					
 				`;
 				layer.bindPopup(popupContent);
+				layer.on({
+					click: (e) => {
+						const properties = e.target.feature.properties;
+						this.saveLatLongOnClick(properties.code, properties.nom, e.latlng.lat, e.latlng.lng);
+					},
+				});
 			},
 		}).addTo(this.map);
+	}
+
+	saveLatLongOnClick(depCode, depName, latitude, longitude) {
+		this.lastLatLngOnClick = {
+			depCode,
+			depName,
+			lat: latitude,
+			lng: longitude,
+		};
 	}
 
 	eventSetPositionOnMap() {

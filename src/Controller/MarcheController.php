@@ -211,4 +211,15 @@ $statusProfile = $status->statusFondateur($this->getUser());
             "data" => $datas
         ], 200);
     }
+
+
+    #[Route("/marche/add_new_element", name: "app_add_new_element", methods: ["POST"])]
+    public function apiAddNewMarche(
+        Request $request
+    ){
+
+        return $this->json([
+            'result' => 'pong'
+        ]);
+    }
 }

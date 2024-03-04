@@ -89,7 +89,7 @@ class MarckerClusterMarche extends MapModule {
 		// this.setNumberOfMarker();
 		this.addEventOnMap(this.map);
 
-		this.displayData();
+		// this.displayData();
 	}
 
 	addMarker(newData) {
@@ -252,6 +252,10 @@ class MarckerClusterMarche extends MapModule {
 
 			this.updateMarkersDisplay(new_size);
 			this.addPeripheriqueMarker(new_size);
+		});
+
+		map.on("click", () => {
+			alert("clicke fired");
 		});
 	}
 
