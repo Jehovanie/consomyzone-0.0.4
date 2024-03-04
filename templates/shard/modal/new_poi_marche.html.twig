@@ -1,0 +1,91 @@
+<div class="modal fade" 
+    id="modal_new_poi_marche" tabindex="-1" 
+    aria-labelledby="modal_new_poi_marche_label" 
+    aria-hidden="true"
+    style="z-index: 99999;"
+>
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modal_new_poi_marche_label">Ajouter une nouvelle POI Marche</h1>
+        <button type="button" class="btn-close btn_close_modal_new_poi_marche_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form class="container form_new_poi_marche_jheo_js">
+            <div class="row">
+                <div class="col-md-6 col-sm-10 col-xs-12 mx-auto">
+                    <div class="mb-3">
+                        <label for="new_marche_cles_num" class="form-label">Cles Num</label>
+                        <input type="text" class="form-control" name="cles_num" id="new_marche_cles_num">
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_marche_address" class="form-label">Adresse</label>
+                        <input type="text" class="form-control" name="address" id="new_marche_address">
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_marche_code_postal" class="form-label">Code postale</label>
+                        <input type="text" class="form-control" name="code_postal" id="new_marche_code_postal">
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_marche_ville_norm" class="form-label">Ville norme</label>
+                        <input type="text" class="form-control" name="ville_norm" id="new_marche_ville_norm">
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_marche_commune" class="form-label">Commune</label>
+                        <input type="text" class="form-control" name="commune" id="new_marche_commune">
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_marche_codeinsee" class="form-label">Code Insee</label>
+                        <input type="text" class="form-control" name="codeinsee" id="new_marche_codeinsee">
+                    </div>
+                </div>
+                <div class="col-md-6 col-sm-10 col-xs-12 mx-auto">
+                    <div class="mb-3">
+                        <label for="new_marche_denomination_f" class="form-label">Nom</label>
+                        <input type="text" class="form-control" name="denomination_f" id="new_marche_denomination_f">
+                    </div>
+                     <div class="mb-3">
+                        <label for="new_marche_specificite" class="form-label">Spécificité</label>
+                        <input type="text" class="form-control" name="specificite" id="new_marche_specificite">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-flex justify-content-between align-items-center">
+                            Jour de marche
+                            <i class="fa-solid fa-plus add_input_jour_de_marche_jheo_js" onclick="addInputJourDeMarche()"></i>
+                        </label>
+                        <div class="content_input_jour_de_marche content_input_jour_de_marche_jheo_js">
+                            <input type="text" class="form-control mb-1" name="jour_de_marche_1" id="new_marche_jour_de_marche_1">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_marche_departement" class="form-label">Département</label>
+                        <input type="text" class="form-control" name="departement" id="new_marche_departement">
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_marche_latitude" class="form-label">Latitude</label>
+                        <input type="text" class="form-control" name="latitude" id="new_marche_latitude">
+                    </div>
+                    <div class="mb-3">
+                        <label for="new_marche_longitude" class="form-label">Longitude</label>
+                        <input type="text" class="form-control" name="longitude" id="new_marche_longitude">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" 
+                    class="btn btn-danger cancel_new_poi_marche_jheo_js"
+                    data-bs-dismiss="modal"
+                   >
+                    Annuler
+                </button>
+                <button type="button" 
+                    class="btn btn-primary submit_new_poi_marche_jheo_js"
+                    onclick="handleSubmitNewPOIMarche()">
+                    Envoyer
+                </button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

@@ -393,6 +393,18 @@ class MapModule {
 				fillOpacity: 0,
 			},
 			onEachFeature: (feature, layer) => {
+				const is_can_add_new_feature = this.mapForType === "marche";
+				const add_new_feature = is_can_add_new_feature
+					? ` <hr class="mt-2 mb-1">
+						Nouvelle POI Marche
+						<span class="badge bg-light text-dark ms-1"
+							data-bs-toggle="modal" data-bs-target="#modal_new_poi_marche"
+							onclick="resetDataNewPoiMarche()">
+							<i class="fa-solid fa-circle-plus fa-fade"></i>
+						</span>
+					`
+					: "";
+
 				const details_html =
 					feature.properties.hasOwnProperty("details") && feature.properties.details != null
 						? `
@@ -409,8 +421,10 @@ class MapModule {
 					<button type="button" class="btn btn-primary btn-sm">
 						Département <span class="badge bg-info text-dark">${feature.properties.code} ${feature.properties.nom}</span></br>
 						Résultat trouvé <span class="badge bg-warning text-dark">${feature.properties.account_per_dep}</span> </br>
-						${details_html} 
+						${details_html}
+						${add_new_feature}
 					</button>
+					
 				`;
 				layer.bindPopup(popupContent);
 			},
