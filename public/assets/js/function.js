@@ -420,7 +420,7 @@ function getDetailResto(codeDepart, nameDepart, idResto, inHome = false, select_
 	fetchDetails(id_selector, pathDetails);
 }
 
-function getDetailMarche(codeDepart, nameDepart, idMarche, inHome = false, select_dem) {
+function getDetailMarche(codeDepart, nameDepart, idMarche, inHome = false, params = null) {
 	let remove = !inHome
 		? document.getElementById("remove-detail-marche")
 		: document.getElementById("remove-detail-home");
@@ -436,7 +436,8 @@ function getDetailMarche(codeDepart, nameDepart, idMarche, inHome = false, selec
 
 	document.querySelector(id_selector).innerHTML = createMiniCMZloading();
 
-	const pathDetails = `/marche/${codeDepart}/details/${idMarche}`;
+	let pathDetails = `/marche/${codeDepart}/details/${idMarche}`;
+	pathDetails = params != null ? `${pathDetails}?${params}` : pathDetails;
 
 	fetchDetails(id_selector, pathDetails);
 }

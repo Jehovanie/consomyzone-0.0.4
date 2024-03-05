@@ -1866,26 +1866,33 @@ function handleSubmitNewPOIMarche() {
 				return response.json();
 			})
 			.then((response) => {
+				const data = response.data;
 				$("#modal_new_poi_marche").modal("hide");
 				new swal(
 					"Succès !",
 					"Votre marche a été ajouter,Nous vous informez apres la descision de notre admin.",
 					"success"
-				).then((response) => {
-					document.querySelector(".btn_close_modal_new_poi_marche_jheo_js").removeAttribute("disabled");
-					document
-						.querySelector(".add_input_jour_de_marche_jheo_js")
-						.setAttribute("onclick", "addInputJourDeMarche()");
+				)
+					.then((response) => {
+						console.log(data);
+						CURRENT_MAP_INSTANCE.addPendingDataMarche(data);
+					})
+					.finally(() => {
+						////////////////////////////////////////////////////////////////////////////////////////////
+						document.querySelector(".btn_close_modal_new_poi_marche_jheo_js").removeAttribute("disabled");
+						document
+							.querySelector(".add_input_jour_de_marche_jheo_js")
+							.setAttribute("onclick", "addInputJourDeMarche()");
 
-					all_input.forEach((input) => {
-						input.removeAttribute("readonly");
+						all_input.forEach((input) => {
+							input.removeAttribute("readonly");
+						});
+
+						document.querySelector(".cancel_new_poi_marche_jheo_js").removeAttribute("disabled");
+
+						btn_submit.setAttribute("onclick", "handleSubmitNewPOIMarche()");
+						btn_submit.innerText = "Envoyer";
 					});
-
-					document.querySelector(".cancel_new_poi_marche_jheo_js").removeAttribute("disabled");
-
-					btn_submit.setAttribute("onclick", "handleSubmitNewPOIMarche()");
-					btn_submit.innerText = "Envoyer";
-				});
 			});
 	}
 }

@@ -3,15 +3,17 @@
 namespace App\Controller;
 
 use App\Service\Status;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Service\MessageService;
 use App\Service\TributGService;
+use App\Entity\MarcheUserModify;
 use App\Repository\UserRepository;
 
 use App\Repository\MarcheRepository;
 use App\Service\PDOConnexionService;
+use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use Symfony\Component\HttpFoundation\Request;
+use App\Repository\MarcheUserModifyRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -127,10 +129,15 @@ $statusProfile = $status->statusFondateur($this->getUser());
         $id_dep,
         $id_marche,
         MarcheRepository $marcheRepository,
-        PDOConnexionService $pdoConnexionService
+        MarcheUserModifyRepository $marcheUserModifyRepository,
+        PDOConnexionService $pdoConnexionService,
+        Request $request
     ) {
-
-        $marche_details= $marcheRepository->getOneItemByID($id_marche);
+        if( $request->query->has("userCreate")){
+            $marche_details= $marcheUserModifyRepository->getOneItemByID($id_marche);
+        }else{
+            $marche_details= $marcheRepository->getOneItemByID($id_marche);
+        }
 
         $temp = $marche_details["specificite"];
 
@@ -215,11 +222,60 @@ $statusProfile = $status->statusFondateur($this->getUser());
 
     #[Route("/marche/add_new_element", name: "app_add_new_element", methods: ["POST"])]
     public function apiAddNewMarche(
-        Request $request
+        Request $request,
+        MarcheUserModifyRepository $marcheUserModifyRepository,
+        EntityManagerInterface $entityManagerInterface
     ){
+        $data= json_decode($request->getContent(), true );
+
+        $current_user= $this->getUser();
+
+        $new_marche_add= new MarcheUserModify();
+
+        $new_marche_add->setDenominationF($data["denomination_f"])
+                       ->setClenum($data["cles_num"])
+                       ->setAdresse($data["address"])
+                       ->setCodpost($data["code_postal"])
+                       ->setVillenorm($data["ville_norm"])
+                       ->setSpecificite($data["specificite"])
+                       ->setJourDeMarche1($data["jour_de_marche_1"])
+                       ->setPoiX($data["latitude"])
+                       ->setPoiY($data["longitude"])
+                       ->setCommune($data["commune"])
+                       ->setCodinsee($data["codeinsee"])
+                       ->setPoiQualitegeorue("")
+                       ->setDcomiris("")
+                       ->setDep($data["departement"])
+                       ->setDateData("")
+                       ->setDateInser("")
+                       ->setUserId($current_user->getId())
+                       ->setStatus(0);
+
+        if( array_key_exists("jour_de_marche_2", $data)){
+            $new_marche_add->setJourDeMarche2($data["jour_de_marche_2"]);
+        }
+        if( array_key_exists("jour_de_marche_3", $data)){
+            $new_marche_add->setJourDeMarche3($data["jour_de_marche_3"]);
+        }
+        if( array_key_exists("jour_de_marche_4", $data)){
+            $new_marche_add->setJourDeMarche4($data["jour_de_marche_4"]);
+        }
+        if( array_key_exists("jour_de_marche_5", $data)){
+            $new_marche_add->setJourDeMarche5($data["jour_de_marche_5"]);
+        }
+        if( array_key_exists("jour_de_marche_6", $data)){
+            $new_marche_add->setJourDeMarche6($data["jour_de_marche_6"]);
+        }
+        if( array_key_exists("jour_de_marche_7", $data)){
+            $new_marche_add->setJourDeMarche7($data["jour_de_marche_7"]);
+        }
+
+        $entityManagerInterface->persist($new_marche_add);
+        $entityManagerInterface->flush();
 
         return $this->json([
-            'result' => 'pong'
+            'data' => $marcheUserModifyRepository->getOneItemByID($new_marche_add->getId()),
+            'id' => $new_marche_add->getId()
         ]);
     }
 }

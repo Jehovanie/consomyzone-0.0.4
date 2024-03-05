@@ -147,8 +147,15 @@ class MarckerClusterMarche extends MapModule {
 	getIcon(item, isSelected) {
 		let poi_icon = "assets/icon/NewIcons/icon_marche.png";
 		let poi_icon_Selected = "assets/icon/NewIcons/icon_marche_selected.png";
+		let poi_icon_wait = "assets/icon/NewIcons/icon_marche_blanc.png";
 
-		const icon_path = isSelected ? poi_icon_Selected : poi_icon;
+		const icon_path =
+			item.hasOwnProperty("status") && parseInt(item.status) === 0
+				? poi_icon_wait
+				: isSelected
+				? poi_icon_Selected
+				: poi_icon;
+
 		const icon_size = isSelected ? 2 : 0; /// 0: normal, 3: selected
 
 		return { path: icon_path, size: icon_size };
@@ -221,10 +228,15 @@ class MarckerClusterMarche extends MapModule {
 	}
 
 	renderFicheDetails(item) {
+		let params = null;
+		if (item.hasOwnProperty("status") && item.status == 0) {
+			params = "userCreate=true";
+		}
+
 		if (screen.width < 991) {
-			getDetailMarche(item.dep, item.depName, item.id, false);
+			getDetailMarche(item.dep, item.depName, item.id, false, params);
 		} else {
-			getDetailMarche(item.dep, item.depName, item.id, false);
+			getDetailMarche(item.dep, item.depName, item.id, false, params);
 		}
 	}
 
@@ -252,10 +264,6 @@ class MarckerClusterMarche extends MapModule {
 
 			this.updateMarkersDisplay(new_size);
 			this.addPeripheriqueMarker(new_size);
-		});
-
-		map.on("click", () => {
-			alert("clicke fired");
 		});
 	}
 
@@ -318,5 +326,41 @@ class MarckerClusterMarche extends MapModule {
 	resetToDefaultMarkers() {
 		this.removeMarker();
 		this.addMarker(this.default_data);
+	}
+
+	addPendingDataMarche(item) {
+		const zoom = this.map._zoom;
+		const icon = this.getIcon(item, false);
+
+		let marker = null;
+		marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), {
+			icon: setIconn(icon.path, "", icon.size, zoom),
+			cleNom: item.denominationF,
+			id: item.id,
+			type: "marche",
+			draggable: false,
+			isPedding: true,
+		});
+
+		const title = `
+		    <div>
+				<span class='fw-bolder'> Marché: </span>  
+				${item.denominationF}<br>
+				<span class='fw-bolder'>Adresse:</span>
+				${item.adresse}
+			</div>
+		`;
+		marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+
+		this.bindEventClick(marker, item);
+		this.markers.addLayer(marker);
+
+		this.markers.eachLayer((marker) => {
+			if (marker.options.hasOwnProperty("isPedding")) {
+				if (parseInt(marker.options.id) === parseInt(item.id) && marker.options.isPedding == true) {
+					marker.fireEvent("click");
+				}
+			}
+		});
 	}
 }

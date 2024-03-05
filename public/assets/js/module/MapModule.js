@@ -432,7 +432,7 @@ class MapModule {
 				layer.on({
 					click: (e) => {
 						const properties = e.target.feature.properties;
-						this.saveLatLongOnClick(properties.code, properties.nom, e.latlng.lat, e.latlng.lng);
+						this.saveLatLongOnClick(properties.code, properties.nom, e.latlng.lng, e.latlng.lat);
 					},
 				});
 			},
@@ -3208,6 +3208,10 @@ class MapModule {
 	}
 
 	fetchOneData() {
+		console.log("Fonction not implemented");
+	}
+
+	addPendingDataMarche(data) {
 		console.log("Fonction not implemented");
 	}
 }

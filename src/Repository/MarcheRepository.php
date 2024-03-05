@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Marche;
 use App\Service\DepartementService;
 use Doctrine\Persistence\ManagerRegistry;
+use App\Repository\MarcheUserModifyRepository;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
 /**
