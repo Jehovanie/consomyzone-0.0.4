@@ -362,5 +362,8 @@ class MarckerClusterMarche extends MapModule {
 				}
 			}
 		});
+
+		this.default_data = [...this.default_data, item];
+		this.data = [...this.default_data];
 	}
 }
