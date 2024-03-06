@@ -229,7 +229,7 @@ class MarckerClusterMarche extends MapModule {
 
 	renderFicheDetails(item) {
 		let params = null;
-		if (item.hasOwnProperty("status") && item.status == 0) {
+		if (item.hasOwnProperty("status")) {
 			params = "userCreate=true";
 		}
 

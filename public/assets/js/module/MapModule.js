@@ -1239,6 +1239,15 @@ class MapModule {
 			// <button class="btn btn-info" data-type="info_tabac_jheo_js" style="font-size: 1.1rem;">
 			//     <i class="fa-solid fa-circle-question" data-type="info_tabac_jheo_js"></i>
 			// </button>
+		} else if (this.mapForType === "marche") {
+			htmlControl += `
+                ${this.createBtnControl(
+					"info_marche_jheo_js",
+					"fa-solid fa-list-check",
+					"btn btn-light",
+					"Voir la liste mes actions demandé sur le marche."
+				)}
+            `;
 		}
 
 		htmlControl += `
@@ -1463,6 +1472,9 @@ class MapModule {
 			this.goBackOrAfterPosition("back");
 		} else if (rightSideContentType === "cart_after_jheo_js") {
 			this.goBackOrAfterPosition("after");
+		} else if (rightSideContentType === "info_marche_jheo_js") {
+			$("#list_marche_action").modal("show");
+			fetchListMarcheUserModified();
 		} else {
 			if (document.querySelector(".close_details_jheo_js")) {
 				document.querySelector(".close_details_jheo_js").click();
@@ -1541,6 +1553,8 @@ class MapModule {
 			this.goBackOrAfterPosition("back");
 		} else if (rightSideContentType === "cart_after_jheo_js") {
 			this.goBackOrAfterPosition("after");
+		} else if (rightSideContentType === "info_marche_jheo_js") {
+			$("#list_marche_action").modal("show");
 		} else {
 			if (document.querySelector(".close_details_jheo_js")) {
 				document.querySelector(".close_details_jheo_js").click();
@@ -3214,4 +3228,6 @@ class MapModule {
 	addPendingDataMarche(data) {
 		console.log("Fonction not implemented");
 	}
+
+	injectListRestoPastille() {}
 }

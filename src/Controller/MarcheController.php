@@ -161,6 +161,19 @@ $statusProfile = $status->statusFondateur($this->getUser());
         ]);
     }
 
+    #[Route("/api/marche/json_details/{id_marche}", name: "app_get_json_details_marche", methods: ["GET"])]
+    public function getJsonDetailMarche(
+        $id_marche,
+        MarcheUserModifyRepository $marcheUserModifyRepository,
+        Request $request
+    ) {
+        $marche_details= $marcheUserModifyRepository->getOneItemByID($id_marche);
+
+        return $this->json([
+            "data" => $marche_details
+        ]);
+    }
+
 
     #[Route("/api/marche", name: "app_api_marche", methods: ["GET"])]
     public function apiGetMarche(
@@ -340,6 +353,50 @@ $statusProfile = $status->statusFondateur($this->getUser());
         return $this->json([
             'data' => $marcheUserModifyRepository->getOneItemByID($new_marche_add->getId()),
             'id' => $new_marche_add->getId()
+        ]);
+    }
+
+    #[Route("/marche/list_marche_user_modified", name: "app_get_list_marche_user_modified", methods: ["GET"])]
+    public function getListMarcheUserModified(
+        MarcheUserModifyRepository $marcheUserModifyRepository,
+    ){
+        if( !$this->getUser()){
+            return $this->json([], 401);
+        }
+        $current_user= $this->getUser();
+
+        $data= [];
+        $data= $marcheUserModifyRepository->getAllMarcheModify(
+            $current_user->getId()
+        );
+
+        return $this->json([
+            "data" => $data
+        ]);
+    }
+
+    #[Route("api/marche/delete_marche_user_modified", name: "app_delete_marche_user_modified", methods: ["POST"])]
+    public function deleteMarcheUserModified(
+        Request $request,
+        MarcheUserModifyRepository $marcheUserModifyRepository,
+        EntityManagerInterface $entityManagerInterface
+    ){
+        if( !$this->getUser()){
+            return $this->json([], 401);
+        }
+        $current_user= $this->getUser();
+
+        $data= json_decode($request->getContent(), true );
+        $idMarcher= $data["idMarcher"];
+
+        $marche_add= $marcheUserModifyRepository->findOneBy(["id" => $idMarcher, "userId" => $current_user->getId()]);
+        if( $marche_add ){
+            $entityManagerInterface->remove($marche_add);
+            $entityManagerInterface->flush();
+        }
+
+        return $this->json([
+            "data" => $idMarcher
         ]);
     }
 }

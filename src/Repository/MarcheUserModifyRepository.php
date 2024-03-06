@@ -40,7 +40,7 @@ class MarcheUserModifyRepository extends ServiceEntityRepository
         }
     }
 
-        /**
+    /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
      * Goal: Get on element by the id
@@ -80,6 +80,46 @@ class MarcheUserModifyRepository extends ServiceEntityRepository
                 ->setParameter("id", $id)
                 ->getQuery()
                 ->getOneOrNullResult();
+    }
+
+
+    public function getAllMarcheModify($userId){
+        $marche= $this->createQueryBuilder("r")
+                    ->select(
+                        "r.id,
+                        r.clenum,
+                        r.denominationF,
+                        r.denominationF as nameFilter,
+                        r.adresse,
+                        r.codpost,
+                        r.commune,
+                        r.codinsee,
+                        r.villenorm,
+                        r.specificite,
+                        r.jour_de_marche_1,
+                        r.jour_de_marche_2,
+                        r.jour_de_marche_3,
+                        r.jour_de_marche_4,
+                        r.jour_de_marche_5,
+                        r.jour_de_marche_6,
+                        r.jour_de_marche_7,
+                        r.poi_qualitegeorue,
+                        r.dcomiris,
+                        r.dep,
+                        r.date_data,
+                        r.date_inser,
+                        r.userId,
+                        r.status,
+                        r.poiY as lat,
+                        r.poiX as long"
+                    )
+                    ->where("r.userId =:userId")
+                    ->setParameter("userId", $userId)
+                    ->orderBy('r.status','DESC')
+                    ->getQuery()
+                    ->getResult();
+
+        return $marche;
     }
 
 

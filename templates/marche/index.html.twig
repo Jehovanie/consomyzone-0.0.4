@@ -6,10 +6,13 @@
 	<link rel="stylesheet" href="{{asset('assets/css/marche/app.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/chatbot.css')}}">
+	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
 {% endblock %}
 
 
 {% block javascripts %}
+    {# <script src="{{asset('assets/js/golf/avis_golf_depart.js')}}" defer></script> #}
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 
 	{# <script src="{{asset('assets/js/restaurant/addToMap.js')}}" defer></script> #}
 	<script type="text/javascript" src="{{ asset('assets/js/marche/data_marche.js') }}" defer></script>
@@ -103,6 +106,7 @@
 {{ include('shard/modal/modal_avis.html.twig') }}
 {{ include('shard/modal/addRubriqueFavory.html.twig') }}
 {{ include('shard/modal/new_poi_marche.html.twig') }}
+{{ include('shard/modal/list_marche_action.html.twig') }}
 
 {% include 'shard/modal/modal_show_gallery.twig' %}
 

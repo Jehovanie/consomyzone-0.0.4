@@ -1874,7 +1874,6 @@ function handleSubmitNewPOIMarche() {
 					"success"
 				)
 					.then((response) => {
-						console.log(data);
 						CURRENT_MAP_INSTANCE.addPendingDataMarche(data);
 					})
 					.finally(() => {
@@ -1895,4 +1894,194 @@ function handleSubmitNewPOIMarche() {
 					});
 			});
 	}
+}
+
+function fetchListMarcheUserModified() {
+	const content_list_marche = document.querySelector(".content_list_marche_user_modified_jheo_js");
+
+	content_list_marche.innerHTML = `
+		<div class="chargememt_modal_fullscreen chargement_content_js_jheo">
+			<div class="containt">
+				<div class="word word-1">C</div>
+				<div class="word word-2">M</div>
+				<div class="word word-3">Z</div>
+			</div>
+		</div>
+	`;
+
+	const url = `/marche/list_marche_user_modified`;
+	const request = new Request(url, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+	});
+
+	fetch(request)
+		.then((response) => {
+			if (response.status === 401) {
+				location.reload();
+			}
+			return response.json();
+		})
+		.then((response) => {
+			const data = response.data;
+
+			content_list_marche.innerHTML = generateTableListeMarcheUserModified(data);
+
+			$("#list_marche_user_modified").DataTable({
+				language: {
+					url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+				},
+				order: [[8, "asc"]],
+			});
+		});
+}
+
+function generateTableListeMarcheUserModified(data) {
+	let table_html = `
+		<table id="list_marche_user_modified" class="table" >
+			<thead>
+				<tr>
+					<th scope="col">#</th>
+					<th scope="col">Nom</th>
+					<th scope="col">Spécificité</th>
+					<th scope="col">Adresse</th>
+					<th scope="col">Code Postal</th>
+					<th scope="col">Département</th>
+					<th scope="col">Commune</th>
+					<th scope="col">Status</th>
+					<th scope="col">Action</th>
+				</tr>
+			</thead>
+			<tbody>
+	`;
+
+	if (data.length !== 0) {
+		let list_tr_item = "";
+		data.forEach((item) => {
+			list_tr_item += generateItemListeMarcheUserModified(item);
+		});
+
+		table_html += list_tr_item;
+	}
+
+	return `${table_html}</tbody></table>`;
+}
+
+function generateItemListeMarcheUserModified(item) {
+	const { status, id, denominationF, specificite, codpost, adresse, dep, commune } = item;
+
+	let btn_status = "";
+	let btn_action = "";
+
+	let btn_voir = `
+		<button type="button"
+			class="btn btn-info me-md-2" 
+			onclick="getDetailsMarcherUserModified('${item.id}')"
+			>
+			Voir
+		</button>
+	`;
+
+	let disabled_deleted = false;
+
+	if (parseInt(status) === 0) {
+		btn_status = `
+			<button type="button" class="btn btn-warning btn-sm">En attente... </button>
+		`;
+	} else if (parseInt(status) === -1) {
+		btn_status = `
+			<button type="button" class="btn btn-danger btn-sm">Réjeté</button>
+		`;
+	} else if (parseInt(status) === 1) {
+		btn_status = `
+			<button type="button" class="btn btn-success btn-sm">Accepté</button>
+		`;
+		disabled_deleted = true;
+	}
+
+	btn_action = `
+			<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+				${btn_voir}
+				<button 
+					class="${disabled_deleted ? "btn btn-secondary" : "btn btn-danger"}" 
+					type="button" ${disabled_deleted ? "disabled" : ""}
+					onclick="deleteMarcheUserModified('${item.id}')"
+					>
+					Supprimer
+				</button>
+			</div>
+		`;
+
+	let item_list_marche_user_modified = `
+		<tr class="item_list_mud_${item.id} item_list_mud_${item.id}_jheo_js">
+			<th scope="row">${id}</th>
+			<td>${denominationF}</td>
+			<td>${specificite}</td>
+			<td>${adresse}</td>
+			<td>${codpost}</td>
+			<td>${dep}</td>
+			<td>${commune}</td>
+			<td>${btn_status}</td>
+			<td>${btn_action}</td>
+		</tr>
+	`;
+
+	return item_list_marche_user_modified;
+}
+
+function getDetailsMarcherUserModified(idMarcher) {
+	$("#list_marche_action").modal("hide");
+
+	const url = `/api/marche/json_details/${idMarcher}`;
+	const request = new Request(url, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+	});
+
+	fetch(request)
+		.then((response) => {
+			if (response.status === 401) {
+				location.reload();
+			}
+			return response.json();
+		})
+		.then((response) => {
+			const { data } = response;
+			CURRENT_MAP_INSTANCE.addPendingDataMarche(data);
+		});
+}
+
+function deleteMarcheUserModified(idMarcher) {
+	const url = `/api/marche/delete_marche_user_modified`;
+	const request = new Request(url, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			idMarcher: idMarcher,
+		}),
+	});
+
+	fetch(request)
+		.then((response) => {
+			if (response.status === 401) {
+				location.reload();
+			}
+			return response.json();
+		})
+		.then((response) => {
+			console.log(response);
+			if (document.querySelector(`.item_list_mud_${idMarcher}_jheo_js`)) {
+				const item_list = document.querySelector(`.item_list_mud_${idMarcher}_jheo_js`);
+				item_list.remove();
+			}
+		});
 }
