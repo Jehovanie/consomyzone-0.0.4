@@ -1939,8 +1939,14 @@ TributGService $tributGService,
                 ],
             ]
         );
+        
         // Select the form containing the button you want to click
-        $form = $response->selectButton('Accept all')->form();
+        try{
+            $form = $response->selectButton('Accept all')->form();
+        }catch(Exception $e){
+            $form = $response->selectButton('Tout accepter')->form();
+        }
+      
 
         // Submit the form
         $client->submit($form);

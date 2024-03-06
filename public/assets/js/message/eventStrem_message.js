@@ -120,7 +120,14 @@ if(document.querySelector(".content_entete_msg_grp_jheo_js")){
         // })
     }
 }
-function createDivMessageGroup(id,isForMe,date, message,images,userToFirstname,userToLastname, userToFullname) {
+function createDivMessageGroup(id,
+    isForMe,
+    date, 
+    message,
+    images,
+    userToFirstname,
+    userToLastname, 
+    userToFullname) {
 
     const card_msg= document.createElement("div");
     // if(isForMe== "1"){

@@ -2583,6 +2583,8 @@ for ($i=0; $i < count($results); $i++) {
     public function isValidParAdmin($table)
     {
 
+        $this->setFondateurTribuG();
+        
         $sql_g = "SELECT * FROM tribu_g_list WHERE table_name = '$table' AND is_valid = 1";
 
         $stm_g = $this->getPDO()->prepare($sql_g);
@@ -2744,7 +2746,7 @@ for ($i=0; $i < count($results); $i++) {
     public function setFondateurTribuG(){
 
         if(!$this->isColumnExist("tribu_g_list", "user_id")){
-
+            
             $sql = "ALTER TABLE tribu_g_list ADD user_id INT(11) NULL AFTER `table_name`";
 
             $request = $this->getPDO()->prepare($sql);
@@ -2799,6 +2801,8 @@ for ($i=0; $i < count($results); $i++) {
         
                 $stmt_2->execute();
             }
+
+            $this->validAllUsersTribuG(); 
         }
 
     }

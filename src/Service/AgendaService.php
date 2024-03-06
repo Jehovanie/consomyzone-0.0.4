@@ -550,6 +550,7 @@ class AgendaService extends PDOConnexionService
                 "title" =>$title,
                 "type" => $type,
                 "name" => $name,
+                "user_id"=>$event['user_id'],
                 "description" => $description,
                 "adresse" => $adresse,
                 "isEtabCMZ" => $event["isEtabCMZ"],
@@ -1169,7 +1170,9 @@ class AgendaService extends PDOConnexionService
         $user->setNomTableAgenda("agenda");
         $user->setNomTablePartageAgenda("partage_agenda");
         $user->setIdle(300);
-
+        $user->setTrustedVersion(0);
+        $user->setUse2fa(0);
+        $user->setUse2FaEmail(1);
         ///save the user
         $entityManager->persist($user);
 

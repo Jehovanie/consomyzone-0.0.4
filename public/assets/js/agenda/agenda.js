@@ -44,6 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					end: dateEndAgd,
 					textColor: "black",
 					classNames: ["calendar_title_tom_js_" + id],
+					userId: agenda.user_id
 				});
 			});
 			// console.log(agendaTab)
@@ -217,6 +218,7 @@ document.addEventListener("DOMContentLoaded", function () {
 // }
 
 function rendreCalendarWithEvents(events) {
+	console.log(events);
 	var calendarEl = document.getElementById("calendar");
 	if (typeof FullCalendar != "undefined") {
 		var calendar = new FullCalendar.Calendar(calendarEl, {
@@ -245,15 +247,31 @@ function rendreCalendarWithEvents(events) {
 				const id = info.event.id ? parseInt(info.event.id) : 0;
 				bindEventForAnEvent(id);
 			},
-			eventRender: function (element) {
+			eventRender: function (events) {
+				//console.log(events.el);
+				const userIdInEvent=events.event.extendedProps.userId;
+				const currentUserConnected=document.querySelector(".information_user_conected_jheo_js").dataset.toggleUserId
+				console.log(currentUserConnected,userIdInEvent)
+				if( userIdInEvent !=  parseInt(currentUserConnected,10) ){
+					let iconEventEnter = document.createElement("i");
+					iconEventEnter.classList.add("fa-regular", "fa-circle-down","fa-xl");
+					iconEventEnter.style.color="red";
+					iconEventEnter.style.marginLeft="5px";
+					events.el.querySelector(".fc-title").appendChild(iconEventEnter);
+					events.el.style.backgroundColor="#FFCA08";
+					events.el.setAttribute("title", "Événement entrant")
+				}else{
+					events.el.setAttribute("title", "Événement créé")
+				}
 				if (screen.width < 991) {
 					let icon = document.createElement("i");
 					icon.classList.add("fa-regular", "fa-bell", "fa-lg");
 					icon.style = "color: #f5bfa8;";
-					element.el.querySelector(".fc-time").style.display = "none";
-					element.el.querySelector(".fc-title").textContent = "";
-					element.el.querySelector(".fc-title").appendChild(icon);
+					events.el.querySelector(".fc-time").style.display = "none";
+					events.el.querySelector(".fc-title").textContent = "";
+					events.el.querySelector(".fc-title").appendChild(icon);
 				}
+				
 			},
 		});
 
@@ -262,6 +280,10 @@ function rendreCalendarWithEvents(events) {
 		}
 		calendar.render();
 	}
+}
+
+function renderIconEventEnter(element){
+
 }
 
 function bindEventForAllDay(info) {
@@ -353,10 +375,12 @@ function setAndShowModal(agenda) {
 	if (agenda.user_id == document.querySelector("#createOrEditBtn").dataset.usi) {
 		document.querySelector("#createOrEditBtn").disabled = false;
 		document.querySelector("#deleteAgendaBtn").disabled = false;
+		document.querySelector("#shareAgendaBtn").disabled = false;
 		document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block"
 	} else {
 		document.querySelector("#createOrEditBtn").disabled = true;
 		document.querySelector("#deleteAgendaBtn").disabled = true;
+		document.querySelector("#shareAgendaBtn").disabled = true;
 		document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "none"
 	}
 

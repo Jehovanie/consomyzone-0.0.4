@@ -11,10 +11,11 @@
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
 {% endblock %}
 
-{% block javascripts %}
+{% block javascriptsFaniryDrop %}
 	
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	
 {% endblock %}
 
@@ -41,7 +42,7 @@
 						<span class="visually-hidden">Loading...</span>
 					</div>
 					{% if allFiles|length > 0  %}
-						<table class="table table-striped drop_box_table">
+						<table class="table table-striped drop_box_table" id="drop_box_table_lst_js">
 							<thead>
 								<tr>
 									<th>

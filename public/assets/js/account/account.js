@@ -27,7 +27,8 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
       document.querySelector(".badge_message_jheo_js").innerText = `${parseInt(
         new_nbr_message
       )}`;
-      notificationSong();
+      if(typeof notificationSong === "function")
+          notificationSong();
     } else if (parseInt(new_nbr_message) === 0) {
       if (!badge_msg.classList.contains("d-none")) {
         badge_msg.classList.add("d-none");
@@ -68,7 +69,7 @@ if (document.querySelector(".information_user_conected_jheo_js")) {
       // let map2 = new Map();
       //get cookie
 
-      if (Cookies2.get("_egemonie_n_" + currentUser) != undefined) {
+      if (Cookies2?.get("_egemonie_n_" + currentUser) != undefined) {
         //console.log("ato express")
         let tmp = Cookies2.get("_egemonie_n_" + currentUser);
 
@@ -727,12 +728,9 @@ function showToastNotification(notifications, allNotificationsId) {
           bg_news = "#cff4fc";
         const duration = -1;
         const timeOutDelay = 600;
-
-        const audio = new Audio(
-          "https://drive.google.com/uc?export=download&id=1M95VOpto1cQ4FQHzNBaLf0WFQglrtWi7"
-        );
-        audio
-          .play()
+        AUDIO_FOR_MESSAGE=document.querySelector("#myAudio_message_faniry_js")
+        
+        AUDIO_FOR_MESSAGE.play()
           .then((r) => {})
           .catch((error) => {
             console.log(error);
@@ -1003,11 +1001,9 @@ function showNotifMessageWithSound(
 
   const duration = -1;
 
-  const audio = new Audio(
-    "https://drive.google.com/uc?export=download&id=1M95VOpto1cQ4FQHzNBaLf0WFQglrtWi7"
-  );
-  audio
-    .play()
+  AUDIO_FOR_MESSAGE=document.querySelector("#myAudio_message_faniry_js")
+        
+  AUDIO_FOR_MESSAGE.play()
     .then((r) => {})
     .catch((error) => {
       console.log(error);
@@ -1243,7 +1239,8 @@ function updateNbrNotificationAndShowBadge(allNotifications) {
         }
 
         alert_new_notification.innerText = array_notificationNotShow.length;
-        notificationSong();
+        if(typeof notificationSong === "function")
+          notificationSong();
       }
     } else {
       if (!content_alert_notif.classList.contains("d-none")) {

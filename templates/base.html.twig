@@ -38,6 +38,7 @@
        
         {#<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>#}
         {#<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>#}
+        {% block javascriptsFaniryDrop %}{% endblock %}
         <script src="https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js"></script>
         <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/super-build/ckeditor.js"></script>
         {# <script src="https://cdn.ckeditor.com/ckeditor5/10.0.0/classic/ckeditor.js"></script>#}
@@ -100,6 +101,10 @@
         <audio id="myAudio_faniry_js" controls hidden>
             <source src="/public/assets/song/best_ringtone_2022.mp3"  type="audio/ogg">
             <source src="/public/assets/song/best_ringtone_2022.mp3" type="audio/mpeg">
+        </audio>
+        <audio id="myAudio_message_faniry_js" controls hidden>
+            <source src="/public/assets/song/toast_sound.mp3"  type="audio/ogg">
+            <source src="/public/assets/song/toast_sound.mp3" type="audio/mpeg">
         </audio>
         <button id="btn_faniry_js"></button>
         <script src="{{asset('assets/js/bootstrap/bootstrap.min.js')}}"></script>

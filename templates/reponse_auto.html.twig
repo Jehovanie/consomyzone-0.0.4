@@ -1,0 +1,20 @@
+{% extends  'base.html.twig'%}
+{# {% block stylesheets %}
+    <link rel="stylsheet" href="{{asset('assets/css/downloadList.css')}}">
+{% endblock %} #}
+{% block body %}
+
+<div class="container">
+    <div class="breadcrumb-item"><a href="{{path("app_login")}}">Revenir à la page de connexion</a></li>
+    <div class="mx-auto">
+        <div class="alert alert-success" role="alert">
+            <h4 class="alert-heading">Information</h4>
+            <p>{{contents}}</p>
+            <hr>
+            <p class="mb-0">Nous vous remercions de votre compréhension et vous invitons à nous contacter par email à l'adresse contact@consomyzone.com.</p>
+        </div>
+    </div>
+</div>
+
+ 
+{% endblock %}

@@ -5,6 +5,7 @@ const nav_items = document.querySelectorAll(".nav-item");
 const url_test = new URL(current_url);
 //j'utilise cette variable pour les call de jitsi, dans fichier account.js
 let AUDIO_FOR_JITSI = null;
+let AUDIO_FOR_MESSAGE= null;
 let Cookies2 = Cookies.noConflict();
 // cloneResultDepResto()
 if (document.querySelector(".form_content_search_navbar_js")) {
@@ -1178,7 +1179,7 @@ function findInNet(server, denomination_f, adresse) {
 						if (adressRestoTheFork == adresse.toLowerCase()) {
 							swal({
 								title: "The fork",
-								text: "On ne trouve pas le lien exacte pour aller au restaurant sur the fork",
+								text: "Ce restaurant ne  figure pas sur the fork.",
 								icon: "error",
 								button: "OK",
 							});
@@ -1190,7 +1191,7 @@ function findInNet(server, denomination_f, adresse) {
 					} else {
 						swal({
 							title: "The fork",
-							text: "On ne trouve pas le lien exacte pour aller au restaurant sur the fork",
+							text: "Ce restaurant ne  figure pas sur the fork.",
 							icon: "error",
 							button: "OK",
 						});
@@ -2498,6 +2499,14 @@ if(document.querySelector(".method_2fa")){
 //render drop list
 const rows = Array.from(document.getElementsByClassName("drop-box file-name"));
 if (rows.length > 0) {
+	if(document.getElementById("drop_box_table_lst_js")){
+		
+		$("#drop_box_table_lst_js").DataTable({
+			language: {
+			  url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+			}
+		});
+	}
   initCKEditor("exampleFormControlTextareaDropBox", emailShareDropContent);
   rows.forEach((item) => {
     item.onmouseenter = (event) => {
@@ -2820,8 +2829,13 @@ function shareFile(id, shortLink, fileName, fileExtension) {
             responseContent=responseContent.substring(-1);
 
 			if(emailNotSend.length > 0)
-            	new swal("Information ",responseContent, "info");
-
+            	new swal("Information ",responseContent, "info").then((data) => {
+					if(emailSend.length > 0){
+						new swal("Information ","Fichier envoyé avec succès", "info")
+					}
+				});
+			if(emailNotSend.length == 0 && emailSend.length > 0)
+			new swal("Information ","Fichier envoyé avec succès", "info")
             tmpBtn.disabled=false;
             tmpBtn.innerHTML="Partager";
         });

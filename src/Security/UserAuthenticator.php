@@ -49,8 +49,11 @@ use Symfony\Component\Security\Http\Authenticator\Passport\Badge\RememberMeBadge
 use Symfony\Component\Security\Http\Authenticator\Passport\Credentials\PasswordCredentials;
 
 use Symfony\Component\Security\Core\Exception\CustomUserMessageAuthenticationException;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use App\Service\Tribu_T_Service;
 use App\Service\UserService;
+use Twig\Environment;
 
 class UserAuthenticator extends AbstractLoginFormAuthenticator
 
@@ -71,7 +74,7 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
     private $userRepository;
     private $userService;
     private $confidentialityService;
-
+    private $twig;
     public function __construct(
         UrlGeneratorInterface $urlGenerator,
 
@@ -83,7 +86,8 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
         UserRepository $userRepository,
 
         UserService $userService,
-        ConfidentialityService $confidentialityService
+        ConfidentialityService $confidentialityService,
+        Environment $twig
     ) {
 
         $this->urlGenerator = $urlGenerator;
@@ -98,10 +102,11 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
 
         $this->userService = $userService;
         $this->confidentialityService = $confidentialityService;
+        $this->twig=$twig;
     }
 
 
-
+ 
     public function authenticate(Request $request): Passport
 
     {
@@ -177,12 +182,16 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
                 } else if (!$this->passwordHasher->isPasswordValid($user, $request->request->get('password'))) {
 
                     throw new CustomUserMessageAuthenticationException("Mot de passe incorrecte");
-                } else if(!$isValidAdmin){
+                }else if(!$isValidAdmin){
 
-                    throw new CustomUserMessageAuthenticationException("Votre tribu G n'est pas encore validée, veuillez contacter l'administrateur pour approuver votre demande.");
+                    throw new CustomUserMessageAuthenticationException("Votre inscription à la tribu G est en attente de validation.". 
+                    "Veuillez contacter l'administrateur pour finaliser votre inscription.");
                 } else if(!$isValidFondateur){
                     
-                    throw new CustomUserMessageAuthenticationException("Vous n'êtes pas encore validé dans votre tribu G, veuillez contacter le fondateur pour approuver votre demande.");
+                   
+                    throw new CustomUserMessageAuthenticationException("Pour rejoindre la tribu G, vous devez obtenir l'approbation de l'administrateur." .
+                    "Veuillez le contacter pour qu'il examine votre demande.");
+                   
                 }
 
                 return $user;
@@ -304,5 +313,21 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
     {
 
         return $this->urlGenerator->generate(self::LOGIN_ROUTE);
+    }
+
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
+    {
+        $data = [
+            // you may want to customize or obfuscate the message first
+            'message' => strtr($exception->getMessageKey(), $exception->getMessageData())
+
+            // or to translate this message
+            // $this->translator->trans($exception->getMessageKey(), $exception->getMessageData())
+        ];
+       
+        
+        return new Response($this->twig->render("reponse_auto.html.twig",[
+            "contents"=>$exception->getMessageKey()
+        ]));
     }
 }
