@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Service\Status;
 use App\Service\MessageService;
 use App\Service\TributGService;
+use App\Service\MailService;
 use App\Entity\MarcheUserModify;
 use App\Repository\UserRepository;
 
@@ -224,7 +225,9 @@ $statusProfile = $status->statusFondateur($this->getUser());
     public function apiAddNewMarche(
         Request $request,
         MarcheUserModifyRepository $marcheUserModifyRepository,
-        EntityManagerInterface $entityManagerInterface
+        EntityManagerInterface $entityManagerInterface,
+        MailService $mailService,
+        UserRepository $userRepository
     ){
         $data= json_decode($request->getContent(), true );
 
@@ -249,7 +252,8 @@ $statusProfile = $status->statusFondateur($this->getUser());
                        ->setDateData("")
                        ->setDateInser("")
                        ->setUserId($current_user->getId())
-                       ->setStatus(0);
+                       ->setStatus(0)
+        ;
 
         if( array_key_exists("jour_de_marche_2", $data)){
             $new_marche_add->setJourDeMarche2($data["jour_de_marche_2"]);
@@ -272,6 +276,66 @@ $statusProfile = $status->statusFondateur($this->getUser());
 
         $entityManagerInterface->persist($new_marche_add);
         $entityManagerInterface->flush();
+
+
+        ////SEND NOTIFICATION FOR ALL
+
+        /// for user created
+        $context= [
+            "object_mail" => "Une nouvelle établissement de Marche",
+            "template_path" => "emails/marche_notification_user_creator.html.twig",
+            "etablisment" => [
+                "name" => $new_marche_add->getDenominationF(),
+                "adress" => $new_marche_add->getAdresse()
+            ],
+            "user_modify" => [
+                "fullname" => $current_user->getPseudo(),
+                "email" => $current_user->getEmail()
+            ],
+            "user_super_admin" => [
+                "fullname" => "",
+                "email" => ""
+            ],
+            "user_validator" => [
+                "fullname" => "",
+                "email" => ""
+            ]
+        ];
+
+        $mailService->sendEmailResponseModifPOIUpdate(
+            $current_user->getEmail(),
+            "ConsoMyZone",
+            [ 
+                [ "email" => $current_user->getEmail(), "fullName" => $current_user->getPseudo() ]
+            ],
+            $context
+        );
+        /// for super admin + validators
+        $all_user_receiver= [];
+
+        $user_super_admin= $userRepository->getUserSuperAdmin();
+        array_push($all_user_receiver,
+            [ "email" => $user_super_admin->getEmail(), "fullName" => $user_super_admin->getPseudo() ]
+        );
+
+        $validators=$userRepository->getAllValidator();
+        foreach ($validators as $validator){
+            if($validator->getId() != $current_user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type"){
+                $temp=[
+                    "email" => $validator->getEmail(),
+                    "fullName" => $validator->getPseudo()
+                ];
+                array_push($all_user_receiver,$temp);
+            }
+        }
+
+        $context["template_path"]= "emails/marche_notification_to_validated.html.twig";
+        $mailService->sendEmailResponseModifPOIUpdate(
+            $current_user->getEmail(),
+            "ConsoMyZone",
+            $all_user_receiver,
+            $context
+        );
 
         return $this->json([
             'data' => $marcheUserModifyRepository->getOneItemByID($new_marche_add->getId()),
