@@ -6,7 +6,9 @@
 					<div class="restoNameWithLogoTribu mb-2 mt-4">
 						<div class="col-12 mt-2">
 							<div class="text-center">
-								<p class="rubriqueNameDetail" data-name="{{details.denominationF | raw}}">{{details.denominationF | raw}}</p>
+								<p class="rubriqueNameDetail" data-name="{{details.denominationF | raw}}">
+									{{details.denominationF | raw}}
+								</p>
 							</div>
 						</div>
 					</div>
@@ -29,6 +31,23 @@
 						</span>
 						<button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour envoyer votre avis." onclick=" openSwalNonActif()">Donner votre avis</button>
 						<button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_gris_actif_js_Elie " data-bs-toggle="tooltip" data-bs-placement="top" title="Veuillez vous connecter, pour pastiller un restaurant." onclick="openSwalNonActif()">Pastiller</button>
+						
+						{% if app.user %}
+							<button type="button" 
+								class="btn btn-primary btn-sm" 
+								data-bs-toggle="tooltip" 
+								data-bs-placement="top" 
+								title="Modifier votre établissement" 
+								onclick="editPOIMarche({{details.id}})">
+
+								<i class="fa-solid fa-pen-to-square fa-fade cursor-pointer"></i>
+							</button>
+						{% else %}
+							<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement" onclick="openSwalActif()">
+								<i class="bi bi-pencil-square"></i>
+							</button>
+						{% endif %}
+						
 						<button type="button" class="btn btn-secondary btn-sm ms-2" onclick="openSwalNonActif()">
 							<i class="fa-regular fa-star"></i>
 						</button>
@@ -60,7 +79,7 @@
 							Jour de marché: 
 						</p>
 						<ul class="list-group">
-							{% if details.jour_de_marche_1 is not same as("") %}
+							{% if details.jour_de_marche_1 is not null and  details.jour_de_marche_1 is not same as("") %}
 								<li class="list-group-item">
 									<h6 class="text-secondary">
 										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
@@ -69,7 +88,7 @@
 								</li>
 							{% endif %}
 
-							{% if details.jour_de_marche_2 is not same as("") %}
+							{% if details.jour_de_marche_2 is not null and  details.jour_de_marche_2 is not same as("") %}
 								<li class="list-group-item">
 									<h6 class="text-secondary">
 										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
@@ -78,7 +97,7 @@
 								</li>
 							{% endif %}
 
-							{% if details.jour_de_marche_3 is not same as("") %}
+							{% if details.jour_de_marche_3 is not null and details.jour_de_marche_3 is not same as("") %}
 								<li  class="list-group-item">
 									<h6 class="text-secondary">
 										<i class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
@@ -87,7 +106,7 @@
 								</li>
 							{% endif %}
 
-							{% if details.jour_de_marche_4 is not same as("") %}
+							{% if details.jour_de_marche_4 is not null and details.jour_de_marche_4 is not same as("") %}
 								<li class="list-group-item">
 									<h6 class="text-secondary">
 										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
@@ -96,7 +115,7 @@
 								</li>
 							{% endif %}
 
-							{% if details.jour_de_marche_5 is not same as("") %}
+							{% if details.jour_de_marche_5 is not null and  details.jour_de_marche_5 is not same as("") %}
 								<li class="list-group-item">
 									<h6 class="text-secondary">
 										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
@@ -106,7 +125,7 @@
 							{% endif %}
 
 
-							{% if details.jour_de_marche_6 is not same as("") %}
+							{% if details.jour_de_marche_6 is not null and details.jour_de_marche_6 is not same as("") %}
 								<li class="list-group-item">
 									<h6 class="text-secondary">
 										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>
@@ -115,7 +134,7 @@
 								</li>
 							{% endif %}
 
-							{% if details.jour_de_marche_7 is not same as("") %}
+							{% if details.jour_de_marche_7 is not null and details.jour_de_marche_7 is not same as("") %}
 								<li class="list-group-item">
 									<h6 class="text-secondary">
 										<i   class="fa-solid fa-hand-point-right text-warning me-1 ft_09"></i>

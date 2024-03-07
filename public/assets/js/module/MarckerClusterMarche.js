@@ -150,7 +150,7 @@ class MarckerClusterMarche extends MapModule {
 		let poi_icon_wait = "assets/icon/NewIcons/icon_marche_blanc.png";
 
 		const icon_path =
-			item.hasOwnProperty("status") && parseInt(item.status) === 0
+			item.hasOwnProperty("status") && parseInt(item.status) != 1
 				? poi_icon_wait
 				: isSelected
 				? poi_icon_Selected
@@ -329,31 +329,45 @@ class MarckerClusterMarche extends MapModule {
 	}
 
 	addPendingDataMarche(item) {
-		const zoom = this.map._zoom;
-		const icon = this.getIcon(item, false);
-
-		let marker = null;
-		marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), {
-			icon: setIconn(icon.path, "", icon.size, zoom),
-			cleNom: item.denominationF,
-			id: item.id,
-			type: "marche",
-			draggable: false,
-			isPedding: true,
+		let already_exist = false;
+		this.markers.eachLayer((marker) => {
+			if (marker.options.hasOwnProperty("isPedding")) {
+				if (parseInt(marker.options.id) === parseInt(item.id) && marker.options.isPedding == true) {
+					already_exist = true;
+				}
+			}
 		});
 
-		const title = `
-		    <div>
-				<span class='fw-bolder'> Marché: </span>  
-				${item.denominationF}<br>
-				<span class='fw-bolder'>Adresse:</span>
-				${item.adresse}
-			</div>
-		`;
-		marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+		if (!already_exist) {
+			const zoom = this.map._zoom;
+			const icon = this.getIcon(item, false);
 
-		this.bindEventClick(marker, item);
-		this.markers.addLayer(marker);
+			let marker = null;
+			marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), {
+				icon: setIconn(icon.path, "", icon.size, zoom),
+				cleNom: item.denominationF,
+				id: item.id,
+				type: "marche",
+				draggable: false,
+				isPedding: true,
+			});
+
+			const title = `
+				<div>
+					<span class='fw-bolder'> Marché: </span>  
+					${item.denominationF}<br>
+					<span class='fw-bolder'>Adresse:</span>
+					${item.adresse}
+				</div>
+			`;
+			marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+
+			this.bindEventClick(marker, item);
+			this.markers.addLayer(marker);
+
+			this.default_data = [...this.default_data, item];
+			this.data = [...this.default_data];
+		}
 
 		this.markers.eachLayer((marker) => {
 			if (marker.options.hasOwnProperty("isPedding")) {
@@ -362,8 +376,64 @@ class MarckerClusterMarche extends MapModule {
 				}
 			}
 		});
+	}
 
-		this.default_data = [...this.default_data, item];
-		this.data = [...this.default_data];
+	saveOriginPosition(id, initalPos) {
+		this.initialPosition = [...this.initialPosition, { id_rubrique: id, position: initalPos }];
+	}
+
+	getOriginLastPosition(id) {
+		let origin_position = this.initialPosition.find(({ id_rubrique }) => parseInt(id_rubrique) === parseInt(id));
+		return origin_position.position;
+	}
+
+	makeMarkerDraggable(id) {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(id)) {
+				let initialPos = marker.getLatLng();
+				this.saveOriginPosition(id, initialPos);
+
+				console.log(this.initialPosition);
+
+				marker.dragging.enable();
+
+				marker.on("dragend", (e) => {
+					let position = marker.getLatLng();
+					let lat = position.lat;
+					let lng = position.lng;
+
+					$("#modal_edit_poi_marche").modal("show");
+
+					fetchInformationMarcheToEdit(id);
+
+					document.querySelector("#edit_marche_departement").setAttribute("readOnly", "true");
+
+					document.querySelector("#edit_marche_latitude").value = lng;
+					document.querySelector("#edit_marche_latitude").setAttribute("readOnly", "true");
+
+					document.querySelector("#edit_marche_longitude").value = lat;
+					document.querySelector("#edit_marche_longitude").setAttribute("readOnly", "true");
+
+					const btn_cancel = document.querySelector(".cancel_edit_poi_marche_jheo_js");
+					btn_cancel.setAttribute("onclick", `cancelEditPoiMarche("${id}")`);
+
+					const btn_sendSubmit = document.querySelector(".submit_edit_poi_marche_jheo_js");
+					btn_sendSubmit.setAttribute("onclick", `handleSubmitEditPOIMarche("${id}")`);
+
+					marker.dragging.disable();
+				});
+			}
+		});
+	}
+
+	cancelEditMarkerMarche(id) {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(id)) {
+				let initialPos = this.getOriginLastPosition(id);
+				marker.setLatLng(initialPos, {
+					draggable: "false",
+				});
+			}
+		});
 	}
 }

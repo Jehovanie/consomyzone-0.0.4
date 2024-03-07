@@ -1,0 +1,134 @@
+<div class="modal fade" 
+    id="modal_edit_poi_marche" tabindex="-1" 
+    aria-labelledby="modal_edit_poi_marche_label" 
+    aria-hidden="true"
+    style="z-index: 99999;"
+>
+  <div class="modal-dialog modal-fullscreen">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1 class="modal-title fs-5" id="modal_edit_poi_marche_label">Modification d'information POI Marche</h1>
+        <button type="button" class="btn-close btn_close_modal_edit_poi_marche_jheo_js" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <div class="marche_user_modified_jheo_js">
+            <div class="chargememt_modal_fullscreen chargement_content_js_jheo">
+                <div class="containt">
+                    <div class="word word-1">C</div>
+                    <div class="word word-2">M</div>
+                    <div class="word word-3">Z</div>
+                </div>
+            </div>
+        </div>
+        <form class="container d-none form_edit_poi_marche_jheo_js">
+            <div class="row">
+                <div class="col-md-6 col-sm-10 col-xs-12 mx-auto">
+                    <div class="mb-3">
+                        <label for="edit_marche_denomination_f" class="form-label">Nom</label>
+                        <input type="text" class="form-control" name="denomination_f" id="edit_marche_denomination_f">
+                        <div class="invalid-feedback invalid-feedback_jheo_js edit_marche_denomination_f_error_jheo_js">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Veuillez ajoute le nom de votre marche. 
+                        </div>
+                    </div>
+                     <div class="mb-3">
+                        <label for="edit_marche_specificite" class="form-label">Spécificité</label>
+                        <input type="text" class="form-control" name="specificite" id="edit_marche_specificite">
+                        <div class="invalid-feedback invalid-feedback_jheo_js edit_marche_specificite_error_jheo_js">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Veuillez ajouter la spécificiter de votre marche. 
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label d-flex justify-content-between align-items-center">
+                            Jour de marche
+                            <i class="fa-solid fa-plus add_input_jour_de_marche_jheo_js" onclick="addInputJourDeMarche()"></i>
+                        </label>
+                        <div class="content_input_jour_de_marche content_input_jour_de_marche_jheo_js">
+                            <input type="text" class="form-control mb-1" name="jour_de_marche_1" id="edit_marche_jour_de_marche_1">
+                        </div>
+                        <div class="invalid-feedback invalid-feedback_jheo_js new_marche_jour_de_marche_1_error_jheo_js">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Vous allez dépasser le nombre de jour. 
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_marche_address" class="form-label">Adresse</label>
+                        <input type="text" class="form-control" name="address" id="edit_marche_address">
+                        <div class="invalid-feedback invalid-feedback_jheo_js edit_marche_address_error_jheo_js">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Veuillez ajouter une addrese.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_marche_code_postal" class="form-label">Code postale</label>
+                        <input type="text" class="form-control" name="code_postal" id="edit_marche_code_postal">
+                        <div class="invalid-feedback invalid-feedback_jheo_js edit_marche_code_postal_error_jheo_js">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Veuillez completer le code postal.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_marche_commune" class="form-label">Commune</label>
+                        <input type="text" class="form-control" name="commune" id="edit_marche_commune">
+                        <div class="invalid-feedback invalid-feedback_jheo_js edit_marche_commune_error_jheo_js">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Veuillez ajouter le nom de commune. 
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="col-md-6 col-sm-10 col-xs-12 mx-auto">
+                    <div class="mb-3">
+                        <label for="edit_marche_departement" class="form-label">Département</label>
+                        <input type="text" class="form-control" name="departement" id="edit_marche_departement">
+                        <div class="invalid-feedback invalid-feedback_jheo_js edit_marche_departement_error_jheo_js">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Veuillez ajouter votre numero de département. 
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_marche_latitude" class="form-label">Latitude</label>
+                        <input type="text" class="form-control" name="latitude" id="edit_marche_latitude">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_marche_longitude" class="form-label">Longitude</label>
+                        <input type="text" class="form-control" name="longitude" id="edit_marche_longitude">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_marche_codeinsee" class="form-label">Code Insee</label>
+                        <input type="text" class="form-control" name="codeinsee" id="edit_marche_codeinsee">
+                        <div class="invalid-feedback invalid-feedback_jheo_js edit_marche_codeinsee_error_jheo_js">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Veuillez ajouter le code insee. 
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_marche_cles_num" class="form-label">Cles Num</label>
+                        <input type="text" class="form-control" name="cles_num" id="edit_marche_cles_num">
+                        <div class="invalid-feedback invalid-feedback_jheo_js edit_marche_cles_num_error_jheo_js">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Veuillez completer le cles num.
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_marche_ville_norm" class="form-label">Ville norme</label>
+                        <input type="text" class="form-control" name="ville_norm" id="edit_marche_ville_norm">
+                        <div class="invalid-feedback invalid-feedback_jheo_js edit_marche_ville_norm_error_jheo_js">
+                            <i class="fa-solid fa-circle-exclamation me-1"></i>Veuillez ajouter le ville norm. 
+                        </div>
+                    </div>
+                    
+                    
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" 
+                    class="btn btn-danger cancel_edit_poi_marche_jheo_js"
+                    data-bs-dismiss="modal"
+                    onclick="cancelEditPoiMarche()"
+                   >
+                    Annuler
+                </button>
+                <button type="button" 
+                    class="btn btn-primary submit_edit_poi_marche_jheo_js"
+                    onclick="handleSubmitEditPOIMarche()">
+                    Envoyer
+                </button>
+            </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

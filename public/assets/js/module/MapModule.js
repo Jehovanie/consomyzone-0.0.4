@@ -124,6 +124,8 @@ class MapModule {
 		this.zoom_max_for_count_per_dep = 8;
 
 		this.lastLatLngOnClick = { depCode: 0, depName: "", lat: 0.0, lng: 0.0 };
+
+		this.initialPosition = [];
 	}
 
 	initTales() {
@@ -3222,12 +3224,18 @@ class MapModule {
 	}
 
 	fetchOneData() {
-		console.log("Fonction not implemented");
+		console.log("Fonction not implemented in class fils");
 	}
 
 	addPendingDataMarche(data) {
-		console.log("Fonction not implemented");
+		console.log("Fonction not implemented in class fils");
 	}
 
-	injectListRestoPastille() {}
+	injectListRestoPastille() {
+		console.log("Fonction not implemented in class fils");
+	}
+
+	makeMarkerDraggable(id) {
+		console.log("Fonction not implemented in class fils");
+	}
 }

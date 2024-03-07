@@ -1835,6 +1835,8 @@ function handleSubmitNewPOIMarche() {
 			En cours d'envoi...
 		`;
 
+		btn_submit.setAttribute("disabled", true);
+
 		document.querySelector(".btn_close_modal_new_poi_marche_jheo_js").setAttribute("disabled", true);
 		document.querySelector(".add_input_jour_de_marche_jheo_js").setAttribute("onclick", () => {});
 
@@ -1934,7 +1936,7 @@ function fetchListMarcheUserModified() {
 				language: {
 					url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
 				},
-				order: [[8, "asc"]],
+				order: [[7, "asc"]],
 			});
 		});
 }
@@ -1971,7 +1973,7 @@ function generateTableListeMarcheUserModified(data) {
 }
 
 function generateItemListeMarcheUserModified(item) {
-	const { status, id, denominationF, specificite, codpost, adresse, dep, commune } = item;
+	const { status, id, denominationF, specificite, codpost, adresse, dep, commune, marcheId } = item;
 
 	let btn_status = "";
 	let btn_action = "";
@@ -2002,22 +2004,36 @@ function generateItemListeMarcheUserModified(item) {
 		disabled_deleted = true;
 	}
 
-	btn_action = `
-			<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-				${btn_voir}
-				<button 
-					class="${disabled_deleted ? "btn btn-secondary" : "btn btn-danger"}" 
-					type="button" ${disabled_deleted ? "disabled" : ""}
-					onclick="deleteMarcheUserModified('${item.id}')"
-					>
-					Supprimer
-				</button>
-			</div>
+	let item_status = "";
+	if (marcheId !== null && parseInt(status) === 0) {
+		item_status = `
+			<button type="button" class="btn btn-outline-primary btn-sm">Modifiée</button>
 		`;
+	} else {
+		item_status = `
+			<button type="button" class="btn btn-outline-primary btn-sm">
+				Ajouté
+			</button>
+		`;
+	}
+	btn_action = `
+		<div class="d-grid gap-2 d-md-flex justify-content-md-end">
+			${btn_voir}
+			<button 
+				class="${disabled_deleted ? "btn btn-secondary" : "btn btn-danger"}" 
+				type="button" ${disabled_deleted ? "disabled" : ""}
+				onclick="deleteMarcheUserModified('${item.id}')"
+				>
+				Supprimer
+			</button>
+		</div>
+	`;
 
 	let item_list_marche_user_modified = `
 		<tr class="item_list_mud_${item.id} item_list_mud_${item.id}_jheo_js">
-			<th scope="row">${id}</th>
+			<th scope="row">
+				${item_status}
+			</th>
 			<td>${denominationF}</td>
 			<td>${specificite}</td>
 			<td>${adresse}</td>
@@ -2078,10 +2094,193 @@ function deleteMarcheUserModified(idMarcher) {
 			return response.json();
 		})
 		.then((response) => {
-			console.log(response);
-			if (document.querySelector(`.item_list_mud_${idMarcher}_jheo_js`)) {
-				const item_list = document.querySelector(`.item_list_mud_${idMarcher}_jheo_js`);
-				item_list.remove();
-			}
+			$("#list_marche_action").modal("hide");
+			new swal(
+				"Succès !",
+				"Votre marche a été ajouter,Nous vous informez apres la descision de notre admin.",
+				"success"
+			).then((response) => {
+				if (document.querySelector(`.item_list_mud_${idMarcher}_jheo_js`)) {
+					const item_list = document.querySelector(`.item_list_mud_${idMarcher}_jheo_js`);
+					item_list.remove();
+				}
+			});
 		});
+}
+
+function editPOIMarche(id) {
+	swal("Vous allez entrer en mode interactif, pour pouvoir modifier les informations sur cet établissement.", {
+		buttons: {
+			cancel: "Annuler.",
+			ok: {
+				text: "Poursuivre.",
+				value: "ok",
+			},
+		},
+	}).then((value) => {
+		switch (value) {
+			case "ok": {
+				swal("Vous pouvez maintenant déplacer le marquer.😊").then(() => {
+					CURRENT_MAP_INSTANCE.makeMarkerDraggable(id);
+				});
+
+				break;
+			}
+			default:
+				swal("Merci et revenez la prochaine fois!");
+		}
+	});
+}
+
+function cancelEditPoiMarche(idMarche) {
+	CURRENT_MAP_INSTANCE.cancelEditMarkerMarche(idMarche);
+}
+
+function fetchInformationMarcheToEdit(idMarcher) {
+	const url = `/api/marche/json_details/${idMarcher}?realData=edit`;
+	const request = new Request(url, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+	});
+
+	fetch(request)
+		.then((response) => {
+			if (response.status === 401) {
+				location.reload();
+			}
+			return response.json();
+		})
+		.then((response) => {
+			const { data } = response;
+			console.log(data);
+
+			if (document.querySelector(".marche_user_modified_jheo_js")) {
+				document.querySelector(".marche_user_modified_jheo_js").remove();
+			}
+
+			if (document.querySelector(".form_edit_poi_marche_jheo_js")) {
+				document.querySelector(".form_edit_poi_marche_jheo_js").classList.remove("d-none");
+			}
+
+			setFormEdit(data);
+		});
+}
+
+function setFormEdit(data) {
+	document.querySelector("#edit_marche_denomination_f").value = data.denominationF;
+	document.querySelector("#edit_marche_specificite").value = data.specificite;
+	document.querySelector("#edit_marche_jour_de_marche_1").value = data.jour_de_marche_1;
+
+	document.querySelector("#edit_marche_address").value = data.adresse;
+	document.querySelector("#edit_marche_code_postal").value = data.codpost;
+	document.querySelector("#edit_marche_commune").value = data.commune;
+
+	document.querySelector("#edit_marche_departement").value = data.dep;
+	document.querySelector("#edit_marche_codeinsee").value = data.codinsee;
+	document.querySelector("#edit_marche_cles_num").value = data.clenum;
+
+	document.querySelector("#edit_marche_ville_norm").value = data.villenorm;
+}
+
+function handleSubmitEditPOIMarche(idMarche) {
+	const data = {};
+
+	const form = document.querySelector(".form_edit_poi_marche_jheo_js");
+	all_input = Array.from(form.querySelectorAll("input"));
+
+	all_input.forEach((input) => {
+		data[input.name] = input.value;
+	});
+
+	const object_keys = Object.keys(data);
+
+	object_keys.forEach((key) => {
+		if (data[key] === "") {
+			const object = form.querySelector(`#edit_marche_${key}`);
+			const key_html = object ? object : null;
+
+			if (!key_html) return false;
+
+			const id_key_html = key_html.getAttribute("id");
+			form.querySelector(`.${id_key_html}_error_jheo_js`).classList.add("d-block");
+
+			key_html.addEventListener("input", () => {
+				form.querySelector(`.${id_key_html}_error_jheo_js`).classList.remove("d-block");
+			});
+		}
+	});
+
+	if (Object.values(data).every((item) => item != "")) {
+		const btn_submit = document.querySelector(".submit_edit_poi_marche_jheo_js");
+
+		btn_submit.innerHTML = `
+			<i class="fa-solid fa-spinner fa-spin"></i>
+			En cours d'envoi...
+		`;
+
+		btn_submit.setAttribute("disabled", true);
+
+		document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js").setAttribute("disabled", true);
+		document.querySelector(".add_input_jour_de_marche_jheo_js").setAttribute("onclick", () => {});
+
+		Array.from(document.querySelectorAll(".cta_remove_input_jour_de_marche_jheo_js")).forEach((item) =>
+			item.setAttribute("onclick", () => {})
+		);
+
+		document.querySelector(".cancel_edit_poi_marche_jheo_js").setAttribute("disabled", true);
+		document.querySelector(".cancel_edit_poi_marche_jheo_js").setAttribute("onclick", () => {});
+
+		all_input.forEach((input) => {
+			input.setAttribute("readonly", true);
+		});
+
+		const url = `/marche/add_edit_element/${idMarche}`;
+		const request = new Request(url, {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		});
+
+		fetch(request)
+			.then((response) => {
+				if (response.status === 401) {
+					location.reload();
+				}
+				return response.json();
+			})
+			.then((response) => {
+				const data = response.data;
+				$("#modal_edit_poi_marche").modal("hide");
+				new swal(
+					"Succès !",
+					"Votre modification a été envoyer,Nous vous informez apres la descision de notre admin.",
+					"success"
+				)
+					.then((response) => {
+						CURRENT_MAP_INSTANCE.addPendingDataMarche(data);
+					})
+					.finally(() => {
+						////////////////////////////////////////////////////////////////////////////////////////////
+						document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js").removeAttribute("disabled");
+						document
+							.querySelector(".add_input_jour_de_marche_jheo_js")
+							.setAttribute("onclick", "addInputJourDeMarche()");
+
+						all_input.forEach((input) => {
+							input.removeAttribute("readonly");
+						});
+
+						document.querySelector(".cancel_edit_poi_marche_jheo_js").removeAttribute("disabled");
+
+						btn_submit.setAttribute("onclick", "handleSubmitEditPOIMarche()");
+						btn_submit.innerText = "Envoyer";
+					});
+			});
+	}
 }

@@ -164,10 +164,15 @@ $statusProfile = $status->statusFondateur($this->getUser());
     #[Route("/api/marche/json_details/{id_marche}", name: "app_get_json_details_marche", methods: ["GET"])]
     public function getJsonDetailMarche(
         $id_marche,
+        MarcheRepository $marcheRepository,
         MarcheUserModifyRepository $marcheUserModifyRepository,
         Request $request
     ) {
-        $marche_details= $marcheUserModifyRepository->getOneItemByID($id_marche);
+        if( $request->query->has("realData")){
+            $marche_details= $marcheRepository->getOneItemByID($id_marche);
+        }else{
+            $marche_details= $marcheUserModifyRepository->getOneItemByID($id_marche);
+        }
 
         return $this->json([
             "data" => $marche_details
@@ -355,6 +360,131 @@ $statusProfile = $status->statusFondateur($this->getUser());
             'id' => $new_marche_add->getId()
         ]);
     }
+
+    #[Route("/marche/add_edit_element/{idMarche}", name: "app_add_edit_element", methods: ["POST"])]
+    public function appEditMarche(
+        $idMarche,
+        Request $request,
+        MarcheUserModifyRepository $marcheUserModifyRepository,
+        EntityManagerInterface $entityManagerInterface,
+        MailService $mailService,
+        UserRepository $userRepository
+    ){
+        $data= json_decode($request->getContent(), true );
+
+        $current_user= $this->getUser();
+
+        $new_marche_add= new MarcheUserModify();
+
+        $new_marche_add->setDenominationF($data["denomination_f"])
+                       ->setClenum($data["cles_num"])
+                       ->setAdresse($data["address"])
+                       ->setCodpost($data["code_postal"])
+                       ->setVillenorm($data["ville_norm"])
+                       ->setSpecificite($data["specificite"])
+                       ->setJourDeMarche1($data["jour_de_marche_1"])
+                       ->setPoiX($data["latitude"])
+                       ->setPoiY($data["longitude"])
+                       ->setCommune($data["commune"])
+                       ->setCodinsee($data["codeinsee"])
+                       ->setPoiQualitegeorue("")
+                       ->setDcomiris("")
+                       ->setDep($data["departement"])
+                       ->setDateData("")
+                       ->setDateInser("")
+                       ->setUserId($current_user->getId())
+                       ->setMarcheId($idMarche) 
+                       ->setStatus(0)
+        ;
+
+        if( array_key_exists("jour_de_marche_2", $data)){
+            $new_marche_add->setJourDeMarche2($data["jour_de_marche_2"]);
+        }
+        if( array_key_exists("jour_de_marche_3", $data)){
+            $new_marche_add->setJourDeMarche3($data["jour_de_marche_3"]);
+        }
+        if( array_key_exists("jour_de_marche_4", $data)){
+            $new_marche_add->setJourDeMarche4($data["jour_de_marche_4"]);
+        }
+        if( array_key_exists("jour_de_marche_5", $data)){
+            $new_marche_add->setJourDeMarche5($data["jour_de_marche_5"]);
+        }
+        if( array_key_exists("jour_de_marche_6", $data)){
+            $new_marche_add->setJourDeMarche6($data["jour_de_marche_6"]);
+        }
+        if( array_key_exists("jour_de_marche_7", $data)){
+            $new_marche_add->setJourDeMarche7($data["jour_de_marche_7"]);
+        }
+
+        $entityManagerInterface->persist($new_marche_add);
+        $entityManagerInterface->flush();
+
+
+        ////SEND NOTIFICATION FOR ALL
+
+        /// for user created
+        $context= [
+            "object_mail" => "Modification d'une établissement de Marche",
+            "template_path" => "emails/marche_notification_user_edit.html.twig",
+            "etablisment" => [
+                "name" => $new_marche_add->getDenominationF(),
+                "adress" => $new_marche_add->getAdresse()
+            ],
+            "user_modify" => [
+                "fullname" => $current_user->getPseudo(),
+                "email" => $current_user->getEmail()
+            ],
+            "user_super_admin" => [
+                "fullname" => "",
+                "email" => ""
+            ],
+            "user_validator" => [
+                "fullname" => "",
+                "email" => ""
+            ]
+        ];
+
+        $mailService->sendEmailResponseModifPOIUpdate(
+            $current_user->getEmail(),
+            "ConsoMyZone",
+            [ 
+                [ "email" => $current_user->getEmail(), "fullName" => $current_user->getPseudo() ]
+            ],
+            $context
+        );
+        /// for super admin + validators
+        $all_user_receiver= [];
+
+        $user_super_admin= $userRepository->getUserSuperAdmin();
+        array_push($all_user_receiver,
+            [ "email" => $user_super_admin->getEmail(), "fullName" => $user_super_admin->getPseudo() ]
+        );
+
+        $validators=$userRepository->getAllValidator();
+        foreach ($validators as $validator){
+            if($validator->getId() != $current_user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type"){
+                $temp=[
+                    "email" => $validator->getEmail(),
+                    "fullName" => $validator->getPseudo()
+                ];
+                array_push($all_user_receiver,$temp);
+            }
+        }
+
+        $context["template_path"]= "emails/marche_notification_to_edit_validated.html.twig";
+        $mailService->sendEmailResponseModifPOIUpdate(
+            $current_user->getEmail(),
+            "ConsoMyZone",
+            $all_user_receiver,
+            $context
+        );
+
+        return $this->json([
+            'data' => $marcheUserModifyRepository->getOneItemByID($new_marche_add->getId()),
+            'id' => $new_marche_add->getId()
+        ]);
+    }
+
 
     #[Route("/marche/list_marche_user_modified", name: "app_get_list_marche_user_modified", methods: ["GET"])]
     public function getListMarcheUserModified(
