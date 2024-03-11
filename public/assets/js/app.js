@@ -517,7 +517,7 @@ if (document.querySelector(".list-nav-bar")) {
 		document.querySelector(".ferme-page-mobile").classList.add("active-mobile");
 	} else if (activPage.includes("/marche")) {
 		document.querySelector("#marche-page").classList.add("active");
-		if (document.querySelector(".marche-page-mobile")){
+		if (document.querySelector(".marche-page-mobile")) {
 			document.querySelector(".marche-page-mobile").classList.add("active-mobile");
 		}
 	} else if (activPage.includes("/restaurant")) {
@@ -1062,6 +1062,15 @@ function openSwalActif() {
 			window.open("/connexion", "_blank");
 		}
 	});
+}
+
+/**
+ * Function opening a sweet alert on click button actif without event
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ * @constructor
+ */
+function openSwalWaitValidation() {
+	swal("Désole, Cette POI marche est en attend de validation.");
 }
 
 /**

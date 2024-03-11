@@ -396,9 +396,16 @@ class MarckerClusterSearch extends MapModule {
 		} else if (item.tabac !== undefined) {
 			icon_path = isSelected ? "assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
 		} else if (item.marche !== undefined) {
-			icon_path = isSelected
-				? "assets/icon/NewIcons/icon_marche_selected.png"
-				: "assets/icon/NewIcons/icon_marche.png";
+			let poi_icon = "assets/icon/NewIcons/icon_marche.png";
+			let poi_icon_Selected = "assets/icon/NewIcons/icon_marche_selected.png";
+			let poi_icon_wait = "assets/icon/NewIcons/icon_marche_blanc.png";
+
+			icon_path =
+				item.hasOwnProperty("status") && parseInt(item.status) != 1
+					? poi_icon_wait
+					: isSelected
+					? poi_icon_Selected
+					: poi_icon;
 		}
 
 		return { path: icon_path, size: icon_size };
@@ -645,7 +652,11 @@ class MarckerClusterSearch extends MapModule {
 				getDetailTabac(item.dep, item.nom_dep, item.id, true);
 			}
 		} else if (type === "marche") {
-			getDetailMarche(item.dep, item.depName, item.id, true);
+			let params = null;
+			if (item.hasOwnProperty("status")) {
+				params = "userCreate=true";
+			}
+			getDetailMarche(item.dep, item.depName, item.id, true, params);
 		}
 	}
 
@@ -1427,5 +1438,98 @@ class MarckerClusterSearch extends MapModule {
 		} catch (e) {
 			console.log(e);
 		}
+	}
+
+	makeMarkerDraggablePOI(id, type = "marche") {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(id) && marker.options.type == type) {
+				let initialPos = marker.getLatLng();
+				this.saveOriginPosition(id, initialPos);
+
+				marker.dragging.enable();
+
+				marker.on("dragend", (e) => {
+					let position = marker.getLatLng();
+					let lat = position.lat;
+					let lng = position.lng;
+
+					$("#modal_edit_poi_marche").modal("show");
+
+					fetchInformationMarcheToEdit(id);
+
+					document.querySelector("#edit_marche_departement").setAttribute("readOnly", "true");
+
+					document.querySelector("#edit_marche_latitude").value = lng;
+					document.querySelector("#edit_marche_latitude").setAttribute("readOnly", "true");
+
+					document.querySelector("#edit_marche_longitude").value = lat;
+					document.querySelector("#edit_marche_longitude").setAttribute("readOnly", "true");
+
+					const btn_cancel = document.querySelector(".cancel_edit_poi_marche_jheo_js");
+					btn_cancel.setAttribute("onclick", `cancelEditPoiMarche("${id}")`);
+
+					const btn_close_modal_edit_poi = document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js");
+					btn_close_modal_edit_poi.setAttribute("onclick", `cancelEditPoiMarche("${id}")`);
+
+					const btn_sendSubmit = document.querySelector(".submit_edit_poi_marche_jheo_js");
+					btn_sendSubmit.setAttribute("onclick", `handleSubmitEditPOIMarche("${id}")`);
+
+					marker.dragging.disable();
+				});
+			}
+		});
+	}
+
+	addPendingDataMarche(item) {
+		let already_exist = false;
+		this.markers.eachLayer((marker) => {
+			if (marker.options.hasOwnProperty("isPedding")) {
+				if (parseInt(marker.options.id) === parseInt(item.id) && marker.options.isPedding == true) {
+					already_exist = true;
+				}
+			}
+		});
+
+		if (!already_exist) {
+			const zoom = this.map._zoom;
+			const icon = this.getIcon(item, false);
+
+			let marker = null;
+			marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), {
+				icon: setIconn(icon.path, "", icon.size, zoom),
+				cleNom: item.denominationF,
+				id: item.id,
+				type: "marche",
+				draggable: false,
+				isPedding: true,
+			});
+
+			const title = `
+				<div>
+					<span class='fw-bolder'> Marché: </span>  
+					${item.denominationF}<br>
+					<span class='fw-bolder'>Adresse:</span>
+					${item.adresse}
+				</div>
+			`;
+			marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+
+			this.bindEventClick(marker, item, "marche");
+			this.markers.addLayer(marker);
+
+			this.default_data = {
+				...this.default_data,
+				results: [[...this.default_data.results[0], item], ...this.default_data.results],
+			};
+			this.data = { ...this.default_data };
+		}
+
+		this.markers.eachLayer((marker) => {
+			if (marker.options.hasOwnProperty("isPedding")) {
+				if (parseInt(marker.options.id) === parseInt(item.id) && marker.options.isPedding == true) {
+					marker.fireEvent("click");
+				}
+			}
+		});
 	}
 }

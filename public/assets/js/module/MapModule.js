@@ -125,7 +125,7 @@ class MapModule {
 
 		this.lastLatLngOnClick = { depCode: 0, depName: "", lat: 0.0, lng: 0.0 };
 
-		this.initialPosition = [];
+		this.initialPosition = []; //// [ { id_rubbrique: ..., position: ... }]
 	}
 
 	initTales() {
@@ -397,9 +397,13 @@ class MapModule {
 				fillOpacity: 0,
 			},
 			onEachFeature: (feature, layer) => {
-				const is_can_add_new_feature = this.mapForType === "marche";
-				const add_new_feature = is_can_add_new_feature
-					? ` <hr class="mt-2 mb-1">
+				const is_can_add_new_feature = this.mapForType === "marche" || this.mapForType === "tous";
+
+				const information_user_conected = document.querySelector(".information_user_conected_jheo_js");
+
+				const add_new_feature =
+					information_user_conected && is_can_add_new_feature
+						? ` <hr class="mt-2 mb-1">
 						Nouvelle POI Marche
 						<span class="badge bg-light text-dark ms-1"
 							data-bs-toggle="modal" data-bs-target="#modal_new_poi_marche"
@@ -407,7 +411,7 @@ class MapModule {
 							<i class="fa-solid fa-circle-plus fa-fade"></i>
 						</span>
 					`
-					: "";
+						: "";
 
 				const details_html =
 					feature.properties.hasOwnProperty("details") && feature.properties.details != null
@@ -1197,6 +1201,12 @@ class MapModule {
 					"fa-solid fa-location-dot fa-flip text-danger",
 					"btn btn-light",
 					"Liste des restaurants pastilles."
+				)}
+				${this.createBtnControl(
+					"info_marche_jheo_js",
+					"fa-solid fa-list-check",
+					"btn btn-light",
+					"Voir la liste mes actions demandé sur le marche."
 				)}
             `;
 			// <button class="btn btn-info" data-type="info_tous_jheo_js" style="font-size: 1.1rem;">
@@ -3224,18 +3234,40 @@ class MapModule {
 	}
 
 	fetchOneData() {
-		console.log("Fonction not implemented in class fils");
+		console.log("fetchOneData(): fonction not implemented in class fils");
 	}
 
 	addPendingDataMarche(data) {
-		console.log("Fonction not implemented in class fils");
+		console.log("addPendingDataMarche(): fonction not implemented in class fils");
 	}
 
 	injectListRestoPastille() {
-		console.log("Fonction not implemented in class fils");
+		console.log("injectListRestoPastille(): fonction not implemented in class fils");
 	}
 
 	makeMarkerDraggable(id) {
-		console.log("Fonction not implemented in class fils");
+		console.log("makeMarkerDraggable(): fonction not implemented in class fils");
+	}
+
+	saveOriginPosition(id, initalPos) {
+		this.initialPosition = [...this.initialPosition, { id_rubrique: id, position: initalPos }];
+	}
+
+	getOriginLastPosition(id) {
+		let origin_position = this.initialPosition.find(({ id_rubrique }) => parseInt(id_rubrique) === parseInt(id));
+		return origin_position.position;
+	}
+
+	cancelEditMarkerMarche(id, type = "marche") {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(id) && marker.options.type == type) {
+				let initialPos = this.getOriginLastPosition(id);
+				marker.setLatLng(initialPos, {
+					draggable: false,
+				});
+
+				marker.dragging.disable();
+			}
+		});
 	}
 }

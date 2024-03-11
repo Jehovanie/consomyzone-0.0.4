@@ -8,9 +8,13 @@
 	<link rel="stylesheet" href="{{asset('assets/css/marche/sepecific_departement.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/marche/app_specifique.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
 {% endblock %}
 
 {% block javascripts %}
+    {# <script src="{{asset('assets/js/golf/avis_golf_depart.js')}}" defer></script> #}
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
+
 	<script type="text/javascript" src="{{ asset('assets/js/marche/data_marche.js') }}" defer></script>
 
     <script src="{{asset('assets/js/module/leaflet.shpfile.js')}}" defer></script>
@@ -73,5 +77,10 @@
 
     {{ include('shard/marche/detail_marche_navleft.html.twig') }}
     {{ include('shard/chatBot.html.twig') }}
+
+    {{ include('shard/modal/new_poi_marche.html.twig') }}
+    {{ include('shard/modal/list_marche_action.html.twig') }}
+    {{ include('shard/modal/edit_marche.html.twig') }}
+
 
 {% endblock %}

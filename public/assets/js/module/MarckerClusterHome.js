@@ -528,9 +528,16 @@ class MarckerClusterHome extends MapModule {
 		} else if (item.tabac !== undefined) {
 			icon_path = isSelected ? "assets/icon/NewIcons/tabac_red0.png" : "assets/icon/NewIcons/tabac_black0.png";
 		} else if (item.marche !== undefined) {
-			icon_path = isSelected
-				? "assets/icon/NewIcons/icon_marche_selected.png"
-				: "assets/icon/NewIcons/icon_marche.png";
+			let poi_icon = "assets/icon/NewIcons/icon_marche.png";
+			let poi_icon_Selected = "assets/icon/NewIcons/icon_marche_selected.png";
+			let poi_icon_wait = "assets/icon/NewIcons/icon_marche_blanc.png";
+
+			icon_path =
+				item.hasOwnProperty("status") && parseInt(item.status) != 1
+					? poi_icon_wait
+					: isSelected
+					? poi_icon_Selected
+					: poi_icon;
 		}
 
 		return { path: icon_path, size: icon_size };
@@ -593,21 +600,8 @@ class MarckerClusterHome extends MapModule {
 
 			this.updateLastMarkerSelected(stationMarker, "station");
 
-			if (screen.width < 991) {
-				getDetailStation(
-					dataStation.departementName.toString().trim().replace("?", ""),
-					dataStation.departementCode.toString().toString().trim(),
-					dataStation.id,
-					true
-				);
-			} else {
-				getDetailStation(
-					dataStation.departementName.toString().trim().replace("?", ""),
-					dataStation.departementCode.toString().toString().trim(),
-					dataStation.id,
-					true
-				);
-			}
+			this.renderFicheDetails(dataStation, "station");
+
 			if (document.querySelector("#dockableIcone_station_" + dataStation.id))
 				document.querySelector("#dockableIcone_station_" + dataStation.id).remove();
 			if (document.querySelector("#dockableBtn_station_" + dataStation.id))
@@ -656,16 +650,14 @@ class MarckerClusterHome extends MapModule {
 
 			this.updateLastMarkerSelected(fermeMarker, "ferme");
 
-			if (screen.width < 991) {
-				getDetailFerme(dataFerme.departement, dataFerme.departementName, dataFerme.id, true);
-			} else {
-				getDetailFerme(dataFerme.departement, dataFerme.departementName, dataFerme.id, true);
-			}
+			this.renderFicheDetails(dataFerme, "ferme");
 
 			if (document.querySelector("#dockableIcone_ferme_" + dataFerme.id))
 				document.querySelector("#dockableIcone_ferme_" + dataFerme.id).remove();
+
 			if (document.querySelector("#dockableBtn_ferme_" + dataFerme.id))
 				document.querySelector("#dockableBtn_ferme_" + dataFerme.id).remove();
+
 			removeOrEditSpecificElement();
 		});
 	}
@@ -728,11 +720,7 @@ class MarckerClusterHome extends MapModule {
 
 			this.updateLastMarkerSelected(restoMarker, "resto");
 
-			if (screen.width < 991) {
-				getDetailResto(dataResto.dep, dataResto.depName, dataResto.id, true);
-			} else {
-				getDetailResto(dataResto.dep, dataResto.depName, dataResto.id, true);
-			}
+			this.renderFicheDetails(dataResto, "resto");
 
 			if (document.querySelector("#dockableIcone_resto_" + dataResto.id))
 				document.querySelector("#dockableIcone_resto_" + dataResto.id).remove();
@@ -799,11 +787,7 @@ class MarckerClusterHome extends MapModule {
 
 			this.updateLastMarkerSelected(golfMarker, "golf");
 
-			if (screen.width < 991) {
-				getDetailGolf(item.dep, item.nom_dep, item.id, true);
-			} else {
-				getDetailGolf(item.dep, item.nom_dep, item.id, true);
-			}
+			this.renderFicheDetails(item, "golf");
 
 			if (document.querySelector("#dockableIcone_golf_" + item.id))
 				document.querySelector("#dockableIcone_golf_" + item.id).remove();
@@ -857,11 +841,8 @@ class MarckerClusterHome extends MapModule {
 
 			this.updateLastMarkerSelected(tabacMarker, "tabac");
 
-			if (screen.width < 991) {
-				getDetailTabac(item.dep, item.nom_dep, item.id, true);
-			} else {
-				getDetailTabac(item.dep, item.nom_dep, item.id, true);
-			}
+			this.renderFicheDetails(item, "tabac");
+
 			if (document.querySelector("#dockableIcone_tabac_" + item.id))
 				document.querySelector("#dockableIcone_tabac_" + item.id).remove();
 
@@ -914,7 +895,7 @@ class MarckerClusterHome extends MapModule {
 
 			this.updateLastMarkerSelected(marcheMarker, "marche");
 
-			getDetailMarche(dataMarche.dep, dataMarche.depName, dataMarche.id, true);
+			this.renderFicheDetails(dataMarche, "marche");
 
 			if (document.querySelector("#dockableIcone_marche_" + dataMarche.id))
 				document.querySelector("#dockableIcone_marche_" + dataMarche.id).remove();
@@ -977,6 +958,95 @@ class MarckerClusterHome extends MapModule {
 
 		this.marker_last_selected = marker;
 		this.marker_last_selected_type = type;
+	}
+
+	renderFicheDetails(item, type = "resto") {
+		switch (type) {
+			case "resto":
+				this.renderFicheDetailsResto(item);
+				break;
+			case "marche":
+				this.renderFicheDetailsMarche(item);
+				break;
+			case "ferme":
+				this.renderFicheDetailsFerme(item);
+				break;
+			case "station":
+				this.renderFicheDetailsStation(item);
+				break;
+			case "golf":
+				this.renderFicheDetailsGolf(item);
+				break;
+			case "tabac":
+				this.renderFicheDetailsTabac(item);
+				break;
+			default:
+				console.log("Unknown type");
+				break;
+		}
+	}
+
+	renderFicheDetailsMarche(item) {
+		let params = null;
+		if (item.hasOwnProperty("status")) {
+			params = "userCreate=true";
+		}
+
+		if (screen.width < 991) {
+			getDetailMarche(item.dep, item.depName, item.id, true, params);
+		} else {
+			getDetailMarche(item.dep, item.depName, item.id, true, params);
+		}
+	}
+
+	renderFicheDetailsFerme(item) {
+		if (screen.width < 991) {
+			getDetailFerme(item.departement, item.departementName, item.id, true);
+		} else {
+			getDetailFerme(item.departement, item.departementName, item.id, true);
+		}
+	}
+
+	renderFicheDetailsStation(item) {
+		if (screen.width < 991) {
+			getDetailStation(
+				item.departementName.toString().trim().replace("?", ""),
+				item.departementCode.toString().toString().trim(),
+				item.id,
+				true
+			);
+		} else {
+			getDetailStation(
+				item.departementName.toString().trim().replace("?", ""),
+				item.departementCode.toString().toString().trim(),
+				item.id,
+				true
+			);
+		}
+	}
+
+	renderFicheDetailsResto(item) {
+		if (screen.width < 991) {
+			getDetailResto(item.dep, item.depName, item.id, true);
+		} else {
+			getDetailResto(item.dep, item.depName, item.id, true);
+		}
+	}
+
+	renderFicheDetailsGolf(item) {
+		if (screen.width < 991) {
+			getDetailGolf(item.dep, item.nom_dep, item.id, true);
+		} else {
+			getDetailGolf(item.dep, item.nom_dep, item.id, true);
+		}
+	}
+
+	renderFicheDetailsTabac(item) {
+		if (screen.width < 991) {
+			getDetailTabac(item.dep, item.nom_dep, item.id, true);
+		} else {
+			getDetailTabac(item.dep, item.nom_dep, item.id, true);
+		}
 	}
 
 	addEventOnMap(map) {
@@ -1492,7 +1562,7 @@ class MarckerClusterHome extends MapModule {
 	 * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
 	 *
 	 * @param {*} idToCheck
-	 * 
+	 *
 	 * @returns
 	 */
 	clickOnMarker(id, type = "resto") {
@@ -1604,7 +1674,7 @@ class MarckerClusterHome extends MapModule {
 							"Ça fait 10 minutes que vous n'avez effectué aucune modification sur le marquer, le mode interactif sur le marquer sera désactivé."
 						).then(() => {
 							marker.setLatLng(initialPos, {
-								draggable: "false",
+								draggable: false,
 							});
 							marker.dragging.disable();
 						});
@@ -1614,6 +1684,47 @@ class MarckerClusterHome extends MapModule {
 				});
 
 				console.log(marker);
+			}
+		});
+	}
+
+	makeMarkerDraggablePOI(id, type = "marche") {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(id) && marker.options.type == type) {
+				let initialPos = marker.getLatLng();
+				this.saveOriginPosition(id, initialPos);
+
+				marker.dragging.enable();
+
+				marker.on("dragend", (e) => {
+					let position = marker.getLatLng();
+					let lat = position.lat;
+					let lng = position.lng;
+
+					$("#modal_edit_poi_marche").modal("show");
+
+					fetchInformationMarcheToEdit(id);
+
+					document.querySelector("#edit_marche_departement").setAttribute("readOnly", "true");
+
+					document.querySelector("#edit_marche_latitude").value = lng;
+					document.querySelector("#edit_marche_latitude").setAttribute("readOnly", "true");
+
+					document.querySelector("#edit_marche_longitude").value = lat;
+					document.querySelector("#edit_marche_longitude").setAttribute("readOnly", "true");
+
+					const btn_cancel = document.querySelector(".cancel_edit_poi_marche_jheo_js");
+					btn_cancel.setAttribute("onclick", `cancelEditPoiMarche("${id}")`);
+
+					//btn_close_modal_edit_poi_marche_jheo_js
+					const btn_close_modal_edit_poi = document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js");
+					btn_close_modal_edit_poi.setAttribute("onclick", `cancelEditPoiMarche("${id}")`);
+
+					const btn_sendSubmit = document.querySelector(".submit_edit_poi_marche_jheo_js");
+					btn_sendSubmit.setAttribute("onclick", `handleSubmitEditPOIMarche("${id}")`);
+
+					marker.dragging.disable();
+				});
 			}
 		});
 	}
@@ -1641,5 +1752,55 @@ class MarckerClusterHome extends MapModule {
 		} catch (e) {
 			console.log(e);
 		}
+	}
+
+	addPendingDataMarche(item) {
+		let already_exist = false;
+		this.markers.eachLayer((marker) => {
+			if (marker.options.hasOwnProperty("isPedding")) {
+				if (parseInt(marker.options.id) === parseInt(item.id) && marker.options.isPedding == true) {
+					already_exist = true;
+				}
+			}
+		});
+
+		if (!already_exist) {
+			const zoom = this.map._zoom;
+			const icon = this.getIcon(item, false);
+
+			let marker = null;
+			marker = L.marker(L.latLng(parseFloat(item.lat), parseFloat(item.long)), {
+				icon: setIconn(icon.path, "", icon.size, zoom),
+				cleNom: item.denominationF,
+				id: item.id,
+				type: "marche",
+				draggable: false,
+				isPedding: true,
+			});
+
+			const title = `
+				<div>
+					<span class='fw-bolder'> Marché: </span>  
+					${item.denominationF}<br>
+					<span class='fw-bolder'>Adresse:</span>
+					${item.adresse}
+				</div>
+			`;
+			marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+
+			this.handleClickMarche(marker, item);
+			this.markers.addLayer(marker);
+
+			this.default_data = { ...this.default_data, marche: [...this.default_data.marche, item] };
+			this.data = { ...this.default_data };
+		}
+
+		this.markers.eachLayer((marker) => {
+			if (marker.options.hasOwnProperty("isPedding")) {
+				if (parseInt(marker.options.id) === parseInt(item.id) && marker.options.isPedding == true) {
+					marker.fireEvent("click");
+				}
+			}
+		});
 	}
 }

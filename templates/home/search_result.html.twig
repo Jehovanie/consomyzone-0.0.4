@@ -7,11 +7,12 @@
     <link rel="stylesheet" href="{{asset('assets/css/home/app.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/home/search.css')}}">
     <link rel="stylesheet" href="{{asset('assets/css/home/responsif_home.css')}}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
 {% endblock %}
 
 {% block javascripts %}
-    {# <script src="{{asset('assets/js/home/fetchLeftSide.js')}}" defer></script>  #}
-    {# <script type="text/javascript" src="{{asset('assets/js/home/data_home.js')}}" defer></script> #}
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
+    
     <script type="text/javascript"  src="{{asset('assets/js/home/data_search.js')}}"defer></script>
 
     <script src="{{asset('assets/js/module/leaflet.shpfile.js')}}" defer></script>
@@ -153,5 +154,9 @@
     {% include 'shard/modal/list_avis.html.twig' %}
     {% include 'shard/modal/modal_avis.html.twig' %}
     {% include 'shard/modal/modal_show_gallery.twig' %}
+
+    {{ include('shard/modal/new_poi_marche.html.twig') }}
+    {{ include('shard/modal/list_marche_action.html.twig') }}
+    {{ include('shard/modal/edit_marche.html.twig') }}
 
 {% endblock %}

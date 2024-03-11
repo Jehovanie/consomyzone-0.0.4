@@ -66,6 +66,7 @@ class MarcheUserModifyRepository extends ServiceEntityRepository
                     r.jour_de_marche_5,
                     r.jour_de_marche_6,
                     r.jour_de_marche_7,
+                    r.jour_de_marche_1 as marche,
                     r.poi_qualitegeorue,
                     r.dcomiris,
                     r.dep,

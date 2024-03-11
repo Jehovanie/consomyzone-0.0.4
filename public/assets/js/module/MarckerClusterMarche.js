@@ -378,22 +378,11 @@ class MarckerClusterMarche extends MapModule {
 		});
 	}
 
-	saveOriginPosition(id, initalPos) {
-		this.initialPosition = [...this.initialPosition, { id_rubrique: id, position: initalPos }];
-	}
-
-	getOriginLastPosition(id) {
-		let origin_position = this.initialPosition.find(({ id_rubrique }) => parseInt(id_rubrique) === parseInt(id));
-		return origin_position.position;
-	}
-
-	makeMarkerDraggable(id) {
+	makeMarkerDraggablePOI(id) {
 		this.markers.eachLayer((marker) => {
 			if (parseInt(marker.options.id) === parseInt(id)) {
 				let initialPos = marker.getLatLng();
 				this.saveOriginPosition(id, initialPos);
-
-				console.log(this.initialPosition);
 
 				marker.dragging.enable();
 
@@ -417,21 +406,14 @@ class MarckerClusterMarche extends MapModule {
 					const btn_cancel = document.querySelector(".cancel_edit_poi_marche_jheo_js");
 					btn_cancel.setAttribute("onclick", `cancelEditPoiMarche("${id}")`);
 
+					//btn_close_modal_edit_poi_marche_jheo_js
+					const btn_close_modal_edit_poi = document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js");
+					btn_close_modal_edit_poi.setAttribute("onclick", `cancelEditPoiMarche("${id}")`);
+
 					const btn_sendSubmit = document.querySelector(".submit_edit_poi_marche_jheo_js");
 					btn_sendSubmit.setAttribute("onclick", `handleSubmitEditPOIMarche("${id}")`);
 
 					marker.dragging.disable();
-				});
-			}
-		});
-	}
-
-	cancelEditMarkerMarche(id) {
-		this.markers.eachLayer((marker) => {
-			if (parseInt(marker.options.id) === parseInt(id)) {
-				let initialPos = this.getOriginLastPosition(id);
-				marker.setLatLng(initialPos, {
-					draggable: "false",
 				});
 			}
 		});

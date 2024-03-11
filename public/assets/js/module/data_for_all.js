@@ -1946,7 +1946,7 @@ function generateTableListeMarcheUserModified(data) {
 		<table id="list_marche_user_modified" class="table" >
 			<thead>
 				<tr>
-					<th scope="col">#</th>
+					<th scope="col"></th>
 					<th scope="col">Nom</th>
 					<th scope="col">Spécificité</th>
 					<th scope="col">Adresse</th>
@@ -2121,7 +2121,7 @@ function editPOIMarche(id) {
 		switch (value) {
 			case "ok": {
 				swal("Vous pouvez maintenant déplacer le marquer.😊").then(() => {
-					CURRENT_MAP_INSTANCE.makeMarkerDraggable(id);
+					CURRENT_MAP_INSTANCE.makeMarkerDraggablePOI(id);
 				});
 
 				break;
@@ -2224,6 +2224,8 @@ function handleSubmitEditPOIMarche(idMarche) {
 		btn_submit.setAttribute("disabled", true);
 
 		document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js").setAttribute("disabled", true);
+		document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js").setAttribute("onclick", () => {});
+
 		document.querySelector(".add_input_jour_de_marche_jheo_js").setAttribute("onclick", () => {});
 
 		Array.from(document.querySelectorAll(".cta_remove_input_jour_de_marche_jheo_js")).forEach((item) =>
