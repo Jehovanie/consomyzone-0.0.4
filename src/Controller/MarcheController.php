@@ -270,6 +270,7 @@ $statusProfile = $status->statusFondateur($this->getUser());
                        ->setDateData("")
                        ->setDateInser("")
                        ->setUserId($current_user->getId())
+                       ->setAction("Ajouter")
                        ->setStatus(0)
                        ->setIsDeleted(0)
         ;
@@ -396,6 +397,7 @@ $statusProfile = $status->statusFondateur($this->getUser());
                        ->setUserId($current_user->getId())
                        ->setMarcheId($idMarche) 
                        ->setStatus(0)
+                       ->setAction("Modifier")
                        ->setIsDeleted(0)
         ;
 
@@ -531,6 +533,126 @@ $statusProfile = $status->statusFondateur($this->getUser());
 
         return $this->json([
             "data" => $idMarcher
+        ]);
+    }
+
+    #[Route("api/marche/delete_marche", name: "app_delete_marche", methods: ["POST"])]
+    public function deleteMarcheRequest(
+        Request $request,
+        MarcheRepository $marcheRepository,
+        EntityManagerInterface $entityManagerInterface,
+        MailService $mailService,
+        UserRepository $userRepository
+    ){
+        if( !$this->getUser()){
+            return $this->json([], 401);
+        }
+        $current_user= $this->getUser();
+
+        $data= json_decode($request->getContent(), true );
+        $idMarcher= $data["idMarcher"];
+
+        $marche_del= $marcheRepository->findOneBy(["id" => $idMarcher]);
+        
+        if( !$marche_del ) return  $this->json([ "error" => "Marche not found", "idMarche" => $data["idMarcher"]]);
+
+        $new_marche_add= new MarcheUserModify();
+
+        $new_marche_add->setDenominationF($marche_del->getDenominationF())
+                       ->setClenum($marche_del->getClenum())
+                       ->setAdresse($marche_del->getAdresse())
+                       ->setCodpost($marche_del->getCodpost())
+                       ->setVillenorm($marche_del->getVillenorm())
+                       ->setSpecificite($marche_del->getSpecificite())
+                       ->setJourDeMarche1($marche_del->getJourDeMarche1())
+                       ->setJourDeMarche2($marche_del->getJourDeMarche2())
+                       ->setJourDeMarche3($marche_del->getJourDeMarche3())
+                       ->setJourDeMarche4($marche_del->getJourDeMarche4())
+                       ->setJourDeMarche5($marche_del->getJourDeMarche5())
+                       ->setJourDeMarche6($marche_del->getJourDeMarche6())
+                       ->setJourDeMarche7($marche_del->getJourDeMarche7())
+                       ->setPoiX($marche_del->getPoiX())
+                       ->setPoiY($marche_del->getPoiY())
+                       ->setCommune($marche_del->getCommune())
+                       ->setCodinsee($marche_del->getCodinsee())
+                       ->setPoiQualitegeorue($marche_del->getPoiQualitegeorue())
+                       ->setDcomiris($marche_del->getDcomiris())
+                       ->setDep($marche_del->getDep())
+                       ->setDateData($marche_del->getDateData())
+                       ->setDateInser($marche_del->getDateInser())
+                       ->setUserId($current_user->getId())
+                       ->setMarcheId($marche_del->getId()) 
+                       ->setAction("Supprimer")
+                       ->setStatus(0)
+                       ->setIsDeleted(0)
+        ;
+
+        $entityManagerInterface->persist($new_marche_add);
+        $entityManagerInterface->flush();
+
+
+        ////SEND NOTIFICATION FOR ALL
+
+        /// for user created
+        $context= [
+            "object_mail" => "Modification d'une établissement de Marche",
+            "template_path" => "emails/marche_notification_user_delete.html.twig",
+            "etablisment" => [
+                "name" => $new_marche_add->getDenominationF(),
+                "adress" => $new_marche_add->getAdresse()
+            ],
+            "user_modify" => [
+                "fullname" => $current_user->getPseudo(),
+                "email" => $current_user->getEmail()
+            ],
+            "user_super_admin" => [
+                "fullname" => "",
+                "email" => ""
+            ],
+            "user_validator" => [
+                "fullname" => "",
+                "email" => ""
+            ]
+        ];
+
+        $mailService->sendEmailResponseModifPOIUpdate(
+            $current_user->getEmail(),
+            "ConsoMyZone",
+            [ 
+                [ "email" => $current_user->getEmail(), "fullName" => $current_user->getPseudo() ]
+            ],
+            $context
+        );
+        /// for super admin + validators
+        $all_user_receiver= [];
+
+        $user_super_admin= $userRepository->getUserSuperAdmin();
+        array_push($all_user_receiver,
+            [ "email" => $user_super_admin->getEmail(), "fullName" => $user_super_admin->getPseudo() ]
+        );
+
+        $validators=$userRepository->getAllValidator();
+        foreach ($validators as $validator){
+            if($validator->getId() != $current_user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type"){
+                $temp=[
+                    "email" => $validator->getEmail(),
+                    "fullName" => $validator->getPseudo()
+                ];
+                array_push($all_user_receiver,$temp);
+            }
+        }
+
+        $context["template_path"]= "emails/marche_notification_to_delete_validated.html.twig";
+        $mailService->sendEmailResponseModifPOIUpdate(
+            $current_user->getEmail(),
+            "ConsoMyZone",
+            $all_user_receiver,
+            $context
+        );
+
+        return $this->json([
+            "data" => $new_marche_add,
+            'id' => $marche_del->getId()
         ]);
     }
 }

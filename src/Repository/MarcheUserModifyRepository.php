@@ -114,6 +114,7 @@ class MarcheUserModifyRepository extends ServiceEntityRepository
                         r.date_inser,
                         r.userId,
                         r.marcheId,
+                        r.action,
                         r.status,
                         r.poiY as lat,
                         r.poiX as long"

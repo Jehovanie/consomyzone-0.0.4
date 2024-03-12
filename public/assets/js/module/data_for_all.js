@@ -2027,7 +2027,7 @@ function generateTableListeMarcheUserModified(data) {
 		<table id="list_marche_user_modified" class="table" >
 			<thead>
 				<tr>
-					<th scope="col"></th>
+					<th scope="col">Type action</th>
 					<th scope="col">Nom</th>
 					<th scope="col">Spécificité</th>
 					<th scope="col">Adresse</th>
@@ -2054,7 +2054,7 @@ function generateTableListeMarcheUserModified(data) {
 }
 
 function generateItemListeMarcheUserModified(item) {
-	const { status, id, denominationF, specificite, codpost, adresse, dep, commune, marcheId } = item;
+	const { status, id, action, denominationF, specificite, codpost, adresse, dep, commune, marcheId } = item;
 
 	let btn_status = "";
 	let btn_action = "";
@@ -2085,18 +2085,12 @@ function generateItemListeMarcheUserModified(item) {
 		disabled_deleted = true;
 	}
 
-	let item_status = "";
-	if (marcheId !== null && parseInt(status) === 0) {
-		item_status = `
-			<button type="button" class="btn btn-outline-primary btn-sm">Modifiée</button>
-		`;
-	} else {
-		item_status = `
-			<button type="button" class="btn btn-outline-primary btn-sm">
-				Ajouté
-			</button>
-		`;
-	}
+	let item_status = `
+		<button type="button" class="btn btn-outline-primary btn-sm">
+			${action}
+		</button>
+	`;
+
 	btn_action = `
 		<div class="d-grid gap-2 d-md-flex justify-content-md-end">
 			${btn_voir}
@@ -2190,27 +2184,89 @@ function deleteMarcheUserModified(idMarcher) {
 }
 
 function editPOIMarche(id) {
-	swal("Vous allez entrer en mode interactif, pour pouvoir modifier les informations sur cet établissement.", {
-		buttons: {
-			cancel: "Annuler.",
-			ok: {
-				text: "Poursuivre.",
-				value: "ok",
+	swal(
+		`
+			Vous allez entrer en mode interactif, pour pouvoir modifier les informations sur cet établissement.
+			ou vous pouvez directement supprimer cette établissement.
+		`,
+		{
+			buttons: {
+				cancel: "Annuler",
+				ok: {
+					text: "Poursuivre.",
+					value: "ok",
+					className: "btn btn-info",
+				},
+				supprimer: { text: "Suprimer", value: "delete", className: "btn btn-danger" },
 			},
-		},
-	}).then((value) => {
-		switch (value) {
-			case "ok": {
-				swal("Vous pouvez maintenant déplacer le marquer.😊").then(() => {
-					CURRENT_MAP_INSTANCE.makeMarkerDraggablePOI(id);
-				});
-
-				break;
-			}
-			default:
-				swal("Merci et revenez la prochaine fois!");
+		}
+	).then((value) => {
+		if (value === "ok") {
+			swal("Vous pouvez maintenant déplacer le marquer.😊").then(() => {
+				CURRENT_MAP_INSTANCE.makeMarkerDraggablePOI(id);
+			});
+		} else if (value === "delete") {
+			swal("Voulez-vous vraiment supprimer cette établissement?", {
+				buttons: {
+					cancel: "NON",
+					ok: {
+						text: "OUI.",
+						value: "ok",
+					},
+				},
+			}).then((second_value) => {
+				if (second_value === "ok") {
+					deleteEtablismentMarcker(id, "marche");
+				} else {
+					swal("Merci, suppression annuler.");
+				}
+			});
+		} else {
+			swal("Merci et revenez la prochaine fois!");
 		}
 	});
+}
+
+function deleteEtablismentMarcker(idEtablisment, type) {
+	switch (type) {
+		case "marche":
+			deleteEtablismentMarche(idEtablisment);
+			break;
+		default:
+			break;
+	}
+}
+
+function deleteEtablismentMarche(idEtablisment) {
+	const url = `/api/marche/delete_marche`;
+	const request = new Request(url, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			idMarcher: idEtablisment,
+		}),
+	});
+
+	fetch(request)
+		.then((response) => {
+			if (response.status === 401) {
+				location.reload();
+			}
+			return response.json();
+		})
+		.then((response) => {
+			const { id: idMarche, data } = response;
+			new swal(
+				"Succès !",
+				"Votre demander a été envoyer, Nous vous informez apres la descision de notre admin.",
+				"success"
+			).then((response) => {
+				CURRENT_MAP_INSTANCE.removeSingleMarker(idMarche, "marche");
+			});
+		});
 }
 
 function cancelEditPoiMarche(idMarche) {

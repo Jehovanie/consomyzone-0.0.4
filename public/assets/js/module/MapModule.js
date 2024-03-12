@@ -3248,6 +3248,10 @@ class MapModule {
 		console.log("makeMarkerDraggable(): fonction not implemented in class fils");
 	}
 
+	removeSingleMarker(id, type){
+		console.log("removeSingleMarker(): fonction not implemented in class fils");
+	}
+
 	saveOriginPosition(id, initalPos) {
 		this.initialPosition = [...this.initialPosition, { id_rubrique: id, position: initalPos }];
 	}

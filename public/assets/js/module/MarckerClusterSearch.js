@@ -1532,4 +1532,34 @@ class MarckerClusterSearch extends MapModule {
 			}
 		});
 	}
+
+	removeSingleMarker(idMarche, type) {
+		switch (type) {
+			case "marche":
+				this.removeSingleMarkerMarche(idMarche);
+				break;
+			default:
+				break;
+		}
+	}
+
+	removeSingleMarkerMarche(idMarche) {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(idMarche) && marker.options.type === "marche") {
+				this.markers.removeLayer(marker);
+			}
+		});
+
+		this.default_data = {
+			...this.default_data,
+			results: [
+				this.default_data.results[0].filter(
+					(data) => parseInt(data.id) !== parseInt(idMarche) && item.marche !== undefined
+				),
+				...this.default_data.results,
+			],
+		};
+
+		this.data = { ...this.default_data };
+	}
 }

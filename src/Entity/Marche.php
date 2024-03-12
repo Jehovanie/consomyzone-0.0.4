@@ -128,6 +128,12 @@ class Marche
      */
     private $date_inser;
 
+    /**
+     * @ORM\Column(name="is_deleted", type="boolean")
+     * 
+     */
+    private $isDeleted;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -393,6 +399,26 @@ class Marche
     public function setDateInser(?string $date_inser): self
     {
         $this->date_inser = $date_inser;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of isDeleted
+     */ 
+    public function getIsDeleted()
+    {
+        return $this->isDeleted;
+    }
+
+    /**
+     * Set the value of isDeleted
+     *
+     * @return  self
+     */ 
+    public function setIsDeleted($isDeleted)
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

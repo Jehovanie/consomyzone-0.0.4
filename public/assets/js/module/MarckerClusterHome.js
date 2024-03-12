@@ -1803,4 +1803,28 @@ class MarckerClusterHome extends MapModule {
 			}
 		});
 	}
+
+	removeSingleMarker(idMarche, type) {
+		switch (type) {
+			case "marche":
+				this.removeSingleMarkerMarche(idMarche);
+				break;
+			default:
+				break;
+		}
+	}
+
+	removeSingleMarkerMarche(idMarche) {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(idMarche) && marker.options.type === "marche") {
+				this.markers.removeLayer(marker);
+			}
+		});
+
+		this.default_data = {
+			marche: this.default_data.marche.filter((data) => parseInt(data.id) !== parseInt(idMarche)),
+			...this.default_data,
+		};
+		this.data = { ...this.default_data };
+	}
 }

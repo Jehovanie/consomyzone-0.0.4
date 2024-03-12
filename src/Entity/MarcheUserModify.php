@@ -155,6 +155,11 @@ class MarcheUserModify
      */
     private $isDeleted;
 
+    /**
+     * @ORM\Column(name="action", type="string")
+     */
+    private $action;
+
 
     public function getId(): ?int
     {
@@ -501,6 +506,26 @@ class MarcheUserModify
     public function setIsDeleted($isDeleted)
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of action
+     */ 
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * Set the value of action
+     *
+     * @return  self
+     */ 
+    public function setAction($action)
+    {
+        $this->action = $action;
 
         return $this;
     }
