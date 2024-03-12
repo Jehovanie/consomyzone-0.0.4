@@ -73,9 +73,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use App\Service\MailService;
+use Exception;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-
+use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 class UserController extends AbstractController
 {
 
@@ -3923,9 +3924,10 @@ $confidentialityService->insertRowInConfTribu($userPosterId, $tribu_t_joined_inf
         $userConnected = $status->userProfilService($this->getUser());
         $user = $this->getUser();
         $userId = $user->getId();
-        $allParrains = $userService->getAllParains("tableparrainage_" . $userId, $userRepository, $userId, $confidentialityService);
+        $allFilleuils = $userService->getAllFilleuils("tableparrainage_" . $userId, $userRepository, $userId, $confidentialityService);
         return $this->render("user/referral.html.twig", [
-            "userConnected" => $userConnected, "parrains" => $allParrains
+            "userConnected" => $userConnected, 
+            "filleuils" => $allFilleuils
         ]);
     }
 
@@ -4411,7 +4413,9 @@ $confidentialityService->insertRowInConfTribu($userPosterId, $tribu_t_joined_inf
     $link,
     UserService $userService
     ){
+$response=null;
 
+try{
         $result=$userService->getSpecificFileINDropBox($idUser,$link)[0];
        
         $path=$this->getParameter('kernel.project_dir').$result["file_path"];
@@ -4420,6 +4424,16 @@ $confidentialityService->insertRowInConfTribu($userPosterId, $tribu_t_joined_inf
 
         $fileName=$result["file_name"].".".$result["file_extension"];
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, $fileName);
+}catch(Exception $e){
+            if($e instanceof FileNotFoundException){
+                return $this->render("reponse_auto.html.twig",[
+                    "link" => "app_drop_box",
+                    "title" => "Revenir vers mon espace Cloud",
+                    "contents"=>"Le fichier est introuvable."]);
+            }else{
+                return $this->render("reponse_auto.html.twig",["contents"=>"Erreur 500."]);
+            }
+        }
 
         return $response;
    }
@@ -4430,7 +4444,8 @@ $confidentialityService->insertRowInConfTribu($userPosterId, $tribu_t_joined_inf
         $link,
         UserService $userService
     ){
-        
+        $response=null;
+        try{
         $result=$userService->getSpecificFileINDropBox($idUser,$link)[0];
 
         $path=$this->getParameter('kernel.project_dir').$result["file_path"];
@@ -4439,6 +4454,18 @@ $confidentialityService->insertRowInConfTribu($userPosterId, $tribu_t_joined_inf
 
         $fileName=$result["file_name"].".".$result["file_extension"];
         $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_INLINE,$fileName);
+}catch(Exception $e){
+            
+            if($e instanceof FileNotFoundException){
+                return $this->render("reponse_auto.html.twig",[
+                    "link" => "app_drop_box",
+                    "title" => "Revenir vers mon espace Cloud",
+                    "contents"=>"Le fichier est introuvable."]);
+            }else{
+                return $this->render("reponse_auto.html.twig",["contents"=>"Erreur 500."]);
+            }
+        }
+        
 
         return $response;
    }
@@ -4461,6 +4488,7 @@ $confidentialityService->insertRowInConfTribu($userPosterId, $tribu_t_joined_inf
         UserService $userService,
         Filesystem $fileSyst
     ){
+try{
         $result=$userService->getSpecificFileINDropBox($idUser,$shortLink)[0];
         $path=$this->getParameter('kernel.project_dir').$result["file_path"];
         if($fileSyst->exists($path)){
@@ -4468,6 +4496,17 @@ $confidentialityService->insertRowInConfTribu($userPosterId, $tribu_t_joined_inf
                 $userService->deleteFileFromDropBox($idUser,$shortLink);
             }
         }
+}catch(Exception $e){
+            if($e instanceof FileNotFoundException){
+                return $this->render("reponse_auto.html.twig",[
+                    "link" => "app_drop_box",
+                    "title" => "Revenir vers mon espace Cloud",
+                    "contents"=>"Le fichier est introuvable."]);
+            }else{
+                return $this->render("reponse_auto.html.twig",["contents"=>"Erreur 500."]);
+            }
+        }
+       
         return $this->json(["response"=>"ok"],200);
     }
     

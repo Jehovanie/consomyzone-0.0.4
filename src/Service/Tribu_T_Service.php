@@ -1120,6 +1120,30 @@ if(is_null($otherUserId) && is_null($confidentialityService)){
         return $nbTribu;
     }
 
+    public function showTableTribuWithExactPattern($table)
+
+    {
+
+
+
+        $db = $_ENV["DATABASENAME"];
+
+
+
+        $query = "SHOW TABLES FROM $db like '$table'";
+
+
+
+        $sql = $this->getPDO()->query($query);
+
+
+
+        $nbTribu = $sql->rowCount();
+
+
+
+        return $nbTribu;
+    }
 
 
     public function removePublicationOrCommentaire($table, $id)
@@ -3142,7 +3166,7 @@ $pseudo = $confidentialityService->getConfFullname(intval($publication_user_id),
     */
     public function createTableDropBox(int $id){
         $tableName="dropbox_".$id;
-        $rowCount=intval($this->showTableTribu($tableName),10);
+        $rowCount=intval($this->showTableTribuWithExactPattern($tableName),10);
         if($rowCount === 0){
             $sql="CREATE TABLE ". $tableName ." (".
             "`id` int(11) PRIMARY KEY NOT NULL AUTO_INCREMENT,".

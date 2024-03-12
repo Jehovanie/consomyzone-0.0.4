@@ -1991,7 +1991,8 @@ function setAsPdp(span) {
     });
 }
 
-setGallerieImageV2();
+if( typeof setGallerieImageV2 === "function")
+    setGallerieImageV2();
 
 document.querySelectorAll(".elie_nav_link").forEach((i) => {
   i.addEventListener("click", function () {
@@ -2712,10 +2713,10 @@ function getPartisanAbonnement(){
               <th>Cotisation bleu</th>
               <th>Cotisation vert</th>
               <th>Participation supplémentaire</th>
-              <th>Date codisation CMZ</th>
-              <th>Date codisation Tribu</th>
-              <th>Date codisation bleu</th>
-              <th>Date codisation vert</th>
+              <th>Date Cotisation CMZ</th>
+              <th>Date Cotisation Tribu</th>
+              <th>Date Cotisation bleu</th>
+              <th>Date Cotisation vert</th>
               <th>Date Participation supplémentaire</th>
             </tr>
           </thead>
@@ -2836,10 +2837,10 @@ function getListeAbonnementSuperAdmin(e) {
               <th>Cotisation bleu</th>
               <th>Cotisation vert</th>
               <th>Participation supplémentaire</th>
-              <th>Date codisation CMZ</th>
-              <th>Date codisation Tribu</th>
-              <th>Date codisation bleu</th>
-              <th>Date codisation vert</th>
+              <th>Date Cotisation CMZ</th>
+              <th>Date Cotisation Tribu</th>
+              <th>Date Cotisation bleu</th>
+              <th>Date Cotisation vert</th>
               <th>Date Participation supplémentaire</th>
               <th>Radier</th>
               <th>Suspendre</th>

@@ -327,6 +327,8 @@ class UserAuthenticator extends AbstractLoginFormAuthenticator
        
         
         return new Response($this->twig->render("reponse_auto.html.twig",[
+            "link"=>"app_login",
+            "title"=>"Revenir vers la page de connexion",
             "contents"=>$exception->getMessageKey()
         ]));
     }

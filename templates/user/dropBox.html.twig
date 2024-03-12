@@ -14,9 +14,12 @@
 {% block javascriptsFaniryDrop %}
 	
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
-	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
 	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 	
+{% endblock %}
+
+{% block javascripts %}
+	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
 {% endblock %}
 
 {% block body %}

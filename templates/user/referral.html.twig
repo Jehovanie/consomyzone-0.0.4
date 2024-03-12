@@ -28,14 +28,14 @@
                 <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr what-means-partenaire-Nantenaina_css" style="max-width: 54.75rem !important">
                     <ul class="nav nav-tabs ml-3" id="smallNavAffiliate">
                         <li class="nav-item">
-                            <a class="nav-link active text-secondary tab_parrain_nanta_js" href="#" onclick="setActiveTabAffiliate(this, 'parrain')">Parrains</a>
+                            <a class="nav-link active text-secondary tab_filleul_nanta_js" href="#" onclick="setActiveTabAffiliate(this, 'filleul')">Filleuls</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-secondary tab_filleul_nanta_js" href="#" onclick="setActiveTabAffiliate(this, 'filleul')">Filleuls</a>
+                            <a class="nav-link text-secondary tab_parrain_nanta_js" href="#" onclick="setActiveTabAffiliate(this, 'parrain')">Parrains</a>
                         </li>
                     </ul>
-                    <div id="blockListParrains" class="mt-2">
-                        <h5 class="modal-title text-primary mt-3 mb-3">Liste de vos parrains</h5>
+                    <div id="blockListFilleuls" class="mt-2">
+                        <h5 class="modal-title text-primary mt-3 mb-3">Liste de vos filleuils</h5>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -46,8 +46,8 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% if parrains | length > 0%}
-                                    {% for item in parrains %}  
+                                {% if filleuils | length > 0%}
+                                    {% for item in filleuils %}  
                                         <tr valign="middle">
                                             <td class=""><a href="/user/profil/{{item.user_id}}" class="badge text-bg-primary">{{item.fullName}}</a></td>
                                             <td>{{item.email}}</td>
@@ -57,14 +57,14 @@
                                     {% endfor %}
                                 {% else %}
                                     <tr class="text-center">
-                                        <td colspan="4">Vous n'avez aucun parrain</td>
+                                        <td colspan="4">Vous n'avez aucun filleuls</td>
                                     </tr>
                                 {% endif %}
                             </tbody>
                         </table>
                     </div>
-                    <div id="blockListFilleuls" class="mt-2" style="display:none;">
-                        <h5 class="modal-title text-primary mt-3 mb-3">Liste de vos filleuls</h5>
+                    <div id="blockListParrains" class="mt-2" style="display:none;">
+                        <h5 class="modal-title text-primary mt-3 mb-3">Liste de vos Parrains</h5>
                         <table class="table">
                             <thead>
                                 <tr>
