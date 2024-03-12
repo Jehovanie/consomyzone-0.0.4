@@ -271,6 +271,7 @@ $statusProfile = $status->statusFondateur($this->getUser());
                        ->setDateInser("")
                        ->setUserId($current_user->getId())
                        ->setStatus(0)
+                       ->setIsDeleted(0)
         ;
 
         if( array_key_exists("jour_de_marche_2", $data)){
@@ -395,6 +396,7 @@ $statusProfile = $status->statusFondateur($this->getUser());
                        ->setUserId($current_user->getId())
                        ->setMarcheId($idMarche) 
                        ->setStatus(0)
+                       ->setIsDeleted(0)
         ;
 
         if( array_key_exists("jour_de_marche_2", $data)){
@@ -521,7 +523,9 @@ $statusProfile = $status->statusFondateur($this->getUser());
 
         $marche_add= $marcheUserModifyRepository->findOneBy(["id" => $idMarcher, "userId" => $current_user->getId()]);
         if( $marche_add ){
-            $entityManagerInterface->remove($marche_add);
+            $marche_add->setIsDeleted(true);
+
+            $entityManagerInterface->persist($marche_add);
             $entityManagerInterface->flush();
         }
 

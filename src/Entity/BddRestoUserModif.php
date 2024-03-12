@@ -192,8 +192,6 @@ class BddRestoUserModif
      */
     private $status;
 
-  
-
     public function getId(): ?int
     {
         return $this->id;

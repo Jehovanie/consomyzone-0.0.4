@@ -1655,9 +1655,8 @@ class MapModule {
 			tilesSelectHTML += `
                 <div class="form-check">
                     <span class="leaflet-minimap-label">
-                        <input type="radio" id="${item.id}" class="leaflet-control-layers-selector ID_${
-				item.id
-			}" name="leaflet-base-layers" ${item.isCurrent ? "checked" : ""}>
+                        <input type="radio" id="${item.id}" class="leaflet-control-layers-selector ID_${item.id}" 
+							name="leaflet-base-layers" ${item.isCurrent ? "checked" : ""}>
                         <label class="" for="${item.id}">${item.name.toUpperCase()}</label>
                     </span>
                 </div>

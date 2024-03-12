@@ -149,6 +149,11 @@ class MarcheUserModify
     //// marcheId != null && status = 0 => Modification Marche
     //// marcheId === null && status = 0  => Nouveau Marche 
     
+    /**
+     * @ORM\Column(name="is_deleted", type="boolean")
+     * 
+     */
+    private $isDeleted;
 
 
     public function getId(): ?int
@@ -476,6 +481,26 @@ class MarcheUserModify
     public function setStatus($status)
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of isDeleted
+     */ 
+    public function getIsDeleted()
+    {
+        return $this->isDeleted;
+    }
+
+    /**
+     * Set the value of isDeleted
+     *
+     * @return  self
+     */ 
+    public function setIsDeleted($isDeleted)
+    {
+        $this->isDeleted = $isDeleted;
 
         return $this;
     }

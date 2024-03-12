@@ -85,6 +85,9 @@ class MarcheUserModifyRepository extends ServiceEntityRepository
 
 
     public function getAllMarcheModify($userId){
+
+        $isDeleted= false;
+        
         $marche= $this->createQueryBuilder("r")
                     ->select(
                         "r.id,
@@ -116,7 +119,9 @@ class MarcheUserModifyRepository extends ServiceEntityRepository
                         r.poiX as long"
                     )
                     ->where("r.userId =:userId")
+                    ->andWhere("r.isDeleted =:isDeleted")
                     ->setParameter("userId", $userId)
+                    ->setParameter("isDeleted", $isDeleted)
                     ->orderBy('r.status','DESC')
                     ->getQuery()
                     ->getResult();
