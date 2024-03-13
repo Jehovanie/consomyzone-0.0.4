@@ -1,6 +1,6 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
-    secret: '%env(APP_SECRET)%'
+    secret: "%env(APP_SECRET)%"
     #csrf_protection: true
     http_method_override: false
 
@@ -22,7 +22,7 @@ framework:
         log: true
 
     assets:
-        base_path: '/public'
+        base_path: "/"
 
 when@test:
     framework:
