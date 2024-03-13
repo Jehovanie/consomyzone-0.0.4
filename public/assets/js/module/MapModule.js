@@ -3248,7 +3248,7 @@ class MapModule {
 		console.log("makeMarkerDraggable(): fonction not implemented in class fils");
 	}
 
-	removeSingleMarker(id, type){
+	removeSingleMarker(id, type) {
 		console.log("removeSingleMarker(): fonction not implemented in class fils");
 	}
 

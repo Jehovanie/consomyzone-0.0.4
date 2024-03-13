@@ -354,7 +354,7 @@ class MarckerClusterMarche extends MapModule {
 
 			const title = `
 				<div>
-					<span class='fw-bolder'> Marché: </span>  
+					<span class='fw-bolder'> Marche: </span>  
 					${item.denominationF}<br>
 					<span class='fw-bolder'>Adresse:</span>
 					${item.adresse}
@@ -376,6 +376,24 @@ class MarckerClusterMarche extends MapModule {
 				}
 			}
 		});
+	}
+
+	removePeddingMarche(idMarche) {
+		this.markers.eachLayer((marker) => {
+			if (marker.options.hasOwnProperty("isPedding")) {
+				if (parseInt(marker.options.id) === parseInt(idMarche) && marker.options.isPedding === true) {
+					console.log(marker);
+					this.markers.removeLayer(marker);
+
+					if (this.marker_last_selected && this.marker_last_selected == marker) {
+						this.marker_last_selected = null;
+					}
+				}
+			}
+		});
+
+		this.default_data = this.default_data.filter((data) => parseInt(data.id) !== parseInt(idMarche));
+		this.data = [...this.default_data];
 	}
 
 	makeMarkerDraggablePOI(id) {
@@ -431,8 +449,11 @@ class MarckerClusterMarche extends MapModule {
 
 	removeSingleMarkerMarche(idMarche) {
 		this.markers.eachLayer((marker) => {
-			if (parseInt(marker.options.id) === parseInt(idMarche) && marker.options.type === "marche") {
+			if (parseInt(marker.options.id) === parseInt(idMarche) && marker.options.type == "marche") {
 				this.markers.removeLayer(marker);
+				if (this.marker_last_selected && this.marker_last_selected == marker) {
+					this.marker_last_selected = null;
+				}
 			}
 		});
 

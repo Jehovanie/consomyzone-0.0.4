@@ -1804,6 +1804,25 @@ class MarckerClusterHome extends MapModule {
 		});
 	}
 
+	removePeddingMarche(idMarche) {
+		this.markers.eachLayer((marker) => {
+			if (marker.options.hasOwnProperty("isPedding")) {
+				if (parseInt(marker.options.id) === parseInt(idMarche) && marker.options.isPedding == true) {
+					this.markers.removeLayer(marker);
+					if (this.marker_last_selected && this.marker_last_selected == marker) {
+						this.marker_last_selected = null;
+					}
+				}
+			}
+		});
+
+		this.default_data = {
+			marche: this.default_data.marche.filter((data) => parseInt(data.id) !== parseInt(idMarche)),
+			...this.default_data,
+		};
+		this.data = { ...this.default_data };
+	}
+
 	removeSingleMarker(idMarche, type) {
 		switch (type) {
 			case "marche":
@@ -1818,6 +1837,9 @@ class MarckerClusterHome extends MapModule {
 		this.markers.eachLayer((marker) => {
 			if (parseInt(marker.options.id) === parseInt(idMarche) && marker.options.type === "marche") {
 				this.markers.removeLayer(marker);
+				if (this.marker_last_selected && this.marker_last_selected == marker) {
+					this.marker_last_selected = null;
+				}
 			}
 		});
 

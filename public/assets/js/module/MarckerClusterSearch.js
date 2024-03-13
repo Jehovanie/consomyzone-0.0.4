@@ -1427,8 +1427,7 @@ class MarckerClusterSearch extends MapModule {
 			const api_data = `/api/restaurant/one_data/${id}`;
 			const response = await fetch(api_data);
 			let { details } = await response.json();
-			console.log(details);
-			console.log(this.default_data);
+
 			this.default_data.results[0] = [...this.default_data.results[0], details];
 
 			this.settingSingleMarker(details, false);
@@ -1533,6 +1532,31 @@ class MarckerClusterSearch extends MapModule {
 		});
 	}
 
+	removePeddingMarche(idMarche) {
+		this.markers.eachLayer((marker) => {
+			if (marker.options.hasOwnProperty("isPedding")) {
+				if (parseInt(marker.options.id) === parseInt(idMarche) && marker.options.isPedding == true) {
+					this.markers.removeLayer(marker);
+					if (this.marker_last_selected && this.marker_last_selected == marker) {
+						this.marker_last_selected = null;
+					}
+				}
+			}
+		});
+
+		this.default_data = {
+			...this.default_data,
+			results: [
+				this.default_data.results[0].filter(
+					(data) => parseInt(data.id) !== parseInt(idMarche) && item.marche !== undefined
+				),
+				...this.default_data.results,
+			],
+		};
+
+		this.data = { ...this.default_data };
+	}
+
 	removeSingleMarker(idMarche, type) {
 		switch (type) {
 			case "marche":
@@ -1547,6 +1571,9 @@ class MarckerClusterSearch extends MapModule {
 		this.markers.eachLayer((marker) => {
 			if (parseInt(marker.options.id) === parseInt(idMarche) && marker.options.type === "marche") {
 				this.markers.removeLayer(marker);
+				if (this.marker_last_selected && this.marker_last_selected == marker) {
+					this.marker_last_selected = null;
+				}
 			}
 		});
 

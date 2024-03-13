@@ -2149,6 +2149,10 @@ function getDetailsMarcherUserModified(idMarcher) {
 }
 
 function deleteMarcheUserModified(idMarcher) {
+	if (document.querySelector(".close_details_jheo_js")) {
+		document.querySelector(".close_details_jheo_js").click();
+	}
+
 	const url = `/api/marche/delete_marche_user_modified`;
 	const request = new Request(url, {
 		method: "POST",
@@ -2179,6 +2183,7 @@ function deleteMarcheUserModified(idMarcher) {
 					const item_list = document.querySelector(`.item_list_mud_${idMarcher}_jheo_js`);
 					item_list.remove();
 				}
+				CURRENT_MAP_INSTANCE.removePeddingMarche(idMarcher);
 			});
 		});
 }
@@ -2228,6 +2233,10 @@ function editPOIMarche(id) {
 }
 
 function deleteEtablismentMarcker(idEtablisment, type) {
+	if (document.querySelector(".close_details_jheo_js")) {
+		document.querySelector(".close_details_jheo_js").click();
+	}
+
 	switch (type) {
 		case "marche":
 			deleteEtablismentMarche(idEtablisment);
@@ -2369,7 +2378,10 @@ function handleSubmitEditPOIMarche(idMarche) {
 		data[input.name] = input.value;
 	});
 
-	const object_keys = Object.keys(data);
+	let object_keys = Object.keys(data);
+	let isDataIncomplet = false;
+
+	object_keys = object_keys.filter((item) => item != "specificite");
 
 	object_keys.forEach((key) => {
 		if (data[key] === "") {
@@ -2384,10 +2396,13 @@ function handleSubmitEditPOIMarche(idMarche) {
 			key_html.addEventListener("input", () => {
 				form.querySelector(`.${id_key_html}_error_jheo_js`).classList.remove("d-block");
 			});
+
+			isDataIncomplet = true;
 		}
 	});
 
-	if (Object.values(data).every((item) => item != "")) {
+	// if (Object.values(data).every((item) => item != "")) {
+	if (!isDataIncomplet) {
 		const btn_submit = document.querySelector(".submit_edit_poi_marche_jheo_js");
 
 		btn_submit.innerHTML = `
@@ -2406,6 +2421,7 @@ function handleSubmitEditPOIMarche(idMarche) {
 		Array.from(content_edit_jour_de_marche.querySelectorAll(".cta_remove_input_jour_de_marche_jheo_js")).forEach(
 			(item) => item.setAttribute("onclick", () => {})
 		);
+		
 		document.querySelector(".cancel_edit_poi_marche_jheo_js").setAttribute("disabled", true);
 		document.querySelector(".cancel_edit_poi_marche_jheo_js").setAttribute("onclick", () => {});
 
