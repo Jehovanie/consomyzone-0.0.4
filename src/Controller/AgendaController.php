@@ -2193,4 +2193,63 @@ class AgendaController extends AbstractController
     //    dd( $stories);
         return $this->json($stories);
     }
+
+
+    
+     #[Route("/user/agenda/participants/{agendaId}" , name:"app_user_agenda_participants", methods:"GET")]
+    public function agendaFetchParticipants(
+        $agendaId,
+        AgendaService $agendaService,
+        UserService $userService,
+        UserRepository $userRepository
+    ){
+        $user= $this->getUser();
+        $table_agenda= $user->getNomTableAgenda();
+        $agenda= $agendaService->getOneAgenda($table_agenda, $agendaId);
+
+        $table_partage_agenda= "partage_agenda_" . $agenda["user_id"];
+
+        $list_participants= $agendaService->getListParticipants($table_partage_agenda, $agendaId);
+        $user_participants= [];
+        foreach ($list_participants as $participant){
+            $user_profil = $userService->getUserProfileFromId(intval($participant["user_id"]));
+            if( $user_profil !== null ){
+                array_push($user_participants, [
+                    "user" => [
+                         "photoProfil" => $user_profil->getPhotoProfil(),
+                        "firstname" => $user_profil->getFirstname(),
+                        "lastname" => $user_profil->getLastname(),
+                        "pseudo" => $user_profil->getUserId()->getPseudo(),
+                        "email" => $user_profil->getUserId()->getEmail(),
+                        "isAnonymous" => false
+                    ],
+                    "status" => $participant
+                ]);
+            }else{
+                $user_annonyme= $userRepository->findOneBy(["id" => intval($participant["user_id"])]);
+                array_push($user_participants, [
+                    "user" => [
+                        "photoProfil" => "",
+                        "firstname" => "",
+                        "lastname" => "",
+                        "pseudo" => $user_annonyme->getPseudo(),
+                        "email" => $user_annonyme->getEmail(),
+                        "isAnonymous" => true
+                    ],
+                    "status" => $participant
+                ]);
+            }
+        }
+
+        return $this->json([
+            "data" => $user_participants,
+            "agenda" => [
+                "id" => $agenda["id"],
+                "title" => $agenda["title"],
+                "description" => $agenda["description"],
+                "adresse" => $agenda["adresse"],
+            ],
+            "table_partage_agenda" => $table_partage_agenda,
+        ]);
+    }
 }

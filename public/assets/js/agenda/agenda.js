@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", function () {
 					end: dateEndAgd,
 					textColor: "black",
 					classNames: ["calendar_title_tom_js_" + id],
-					userId: agenda.user_id
+					userId: agenda.user_id,
 				});
 			});
 			// console.log(agendaTab)
@@ -53,36 +53,36 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // if ("WebSocket" in window) {
-	// 	(function () {
-		// 		function refreshCSS() {
-			// 			var sheets = [].slice.call(document.getElementsByTagName("link"));
-			// 			var head = document.getElementsByTagName("head")[0];
-			// 			for (var i = 0; i < sheets.length; ++i) {
-				// 				var elem = sheets[i];
-				// 				var parent = elem.parentElement || head;
-				// 				parent.removeChild(elem);
-				// 				var rel = elem.rel;
-				// 				if ((elem.href && typeof rel != "string") || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
-					// 					var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, "");
-					// 					elem.href = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_cacheOverride=" + new Date().valueOf();
-				// 				}
+// 	(function () {
+// 		function refreshCSS() {
+// 			var sheets = [].slice.call(document.getElementsByTagName("link"));
+// 			var head = document.getElementsByTagName("head")[0];
+// 			for (var i = 0; i < sheets.length; ++i) {
+// 				var elem = sheets[i];
+// 				var parent = elem.parentElement || head;
+// 				parent.removeChild(elem);
+// 				var rel = elem.rel;
+// 				if ((elem.href && typeof rel != "string") || rel.length == 0 || rel.toLowerCase() == "stylesheet") {
+// 					var url = elem.href.replace(/(&|\?)_cacheOverride=\d+/, "");
+// 					elem.href = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_cacheOverride=" + new Date().valueOf();
+// 				}
 // 				parent.appendChild(elem);
-			// 			}
+// 			}
 // 		}
 // 		var protocol = window.location.protocol === "http:" ? "ws://" : "wss://";
-		// 		var address = protocol + window.location.host + window.location.pathname + "/ws";
-		// 		var socket = new WebSocket(address);
-		// 		socket.onmessage = function (msg) {
-			// 			if (msg.data == "reload") window.location.reload();
-			// 			else if (msg.data == "refreshcss") refreshCSS();
-		// 		};
-		// 		if (sessionStorage && !sessionStorage.getItem("IsThisFirstTime_Log_From_LiveServer")) {
-			// 			console.log("Live reload enabled.");
-			// 			sessionStorage.setItem("IsThisFirstTime_Log_From_LiveServer", true);
-		// 		}
+// 		var address = protocol + window.location.host + window.location.pathname + "/ws";
+// 		var socket = new WebSocket(address);
+// 		socket.onmessage = function (msg) {
+// 			if (msg.data == "reload") window.location.reload();
+// 			else if (msg.data == "refreshcss") refreshCSS();
+// 		};
+// 		if (sessionStorage && !sessionStorage.getItem("IsThisFirstTime_Log_From_LiveServer")) {
+// 			console.log("Live reload enabled.");
+// 			sessionStorage.setItem("IsThisFirstTime_Log_From_LiveServer", true);
+// 		}
 // 	})();
 // } else {
-	// 	console.error("Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.");
+// 	console.error("Upgrade your browser. This Browser is NOT supported WebSocket for Live-Reloading.");
 // }
 
 ///// CANCEL CREATE AGENDA ------------------------------------------------------
@@ -249,19 +249,20 @@ function rendreCalendarWithEvents(events) {
 			},
 			eventRender: function (events) {
 				//console.log(events.el);
-				const userIdInEvent=events.event.extendedProps.userId;
-				const currentUserConnected=document.querySelector(".information_user_conected_jheo_js").dataset.toggleUserId
-				console.log(currentUserConnected,userIdInEvent)
-				if( userIdInEvent !=  parseInt(currentUserConnected,10) ){
+				const userIdInEvent = events.event.extendedProps.userId;
+				const currentUserConnected = document.querySelector(".information_user_conected_jheo_js").dataset
+					.toggleUserId;
+				console.log(currentUserConnected, userIdInEvent);
+				if (userIdInEvent != parseInt(currentUserConnected, 10)) {
 					let iconEventEnter = document.createElement("i");
-					iconEventEnter.classList.add("fa-regular", "fa-circle-down","fa-xl");
-					iconEventEnter.style.color="red";
-					iconEventEnter.style.marginLeft="5px";
+					iconEventEnter.classList.add("fa-regular", "fa-circle-down", "fa-xl");
+					iconEventEnter.style.color = "red";
+					iconEventEnter.style.marginLeft = "5px";
 					events.el.querySelector(".fc-title").appendChild(iconEventEnter);
-					events.el.style.backgroundColor="#FFCA08";
-					events.el.setAttribute("title", "Événement entrant")
-				}else{
-					events.el.setAttribute("title", "Événement créé")
+					events.el.style.backgroundColor = "#FFCA08";
+					events.el.setAttribute("title", "Événement entrant");
+				} else {
+					events.el.setAttribute("title", "Événement créé");
 				}
 				if (screen.width < 991) {
 					let icon = document.createElement("i");
@@ -271,7 +272,6 @@ function rendreCalendarWithEvents(events) {
 					events.el.querySelector(".fc-title").textContent = "";
 					events.el.querySelector(".fc-title").appendChild(icon);
 				}
-				
 			},
 		});
 
@@ -282,9 +282,7 @@ function rendreCalendarWithEvents(events) {
 	}
 }
 
-function renderIconEventEnter(element){
-
-}
+function renderIconEventEnter(element) {}
 
 function bindEventForAllDay(info) {
 	const info_date = new Date(info.dateStr);
@@ -311,9 +309,9 @@ function bindEventForAllDay(info) {
 	$("#createAgenda").modal("show");
 	document.querySelector("#createOrEditBtn").disabled = false;
 	document.querySelector("#deleteAgendaBtn").disabled = false;
-	document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block"
+	document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block";
 	// if (document.querySelector("#createOrEditBtn").textContent.toLowerCase().trim() == "modifier") {
-		
+
 	// }
 
 	document.querySelector(".preview_image_nanta_js").classList.add("d-none");
@@ -342,7 +340,9 @@ function bindEventForAnEvent(id) {
 		.then((response) => response.json())
 		.then((response) => {
 			const agenda = response.agenda;
+
 			setAndShowModal(agenda);
+
 			if (agenda.isGolfCMZ == 1) {
 				document.querySelector("#golfRadio").checked = true;
 			} else if (agenda.isRestoCMZ == 1) {
@@ -351,6 +351,13 @@ function bindEventForAnEvent(id) {
 				document.querySelector("#visioRadio").checked = true;
 			} else {
 				document.querySelector("#autreRadio").checked = true;
+			}
+
+			if (document.querySelector(".cta_list_user_participate_jheo_js")) {
+				const cta_list_user = document.querySelector(".cta_list_user_participate_jheo_js");
+				cta_list_user.setAttribute("onclick", `getListParticipantEvenement('${agenda.id}')`);
+			} else {
+				console.log("Selector not found : 'cta_list_user_participate_jheo_js'");
 			}
 		});
 }
@@ -376,12 +383,12 @@ function setAndShowModal(agenda) {
 		document.querySelector("#createOrEditBtn").disabled = false;
 		document.querySelector("#deleteAgendaBtn").disabled = false;
 		document.querySelector("#shareAgendaBtn").disabled = false;
-		document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block"
+		document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block";
 	} else {
 		document.querySelector("#createOrEditBtn").disabled = true;
 		document.querySelector("#deleteAgendaBtn").disabled = true;
 		document.querySelector("#shareAgendaBtn").disabled = true;
-		document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "none"
+		document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "none";
 	}
 
 	if (document.querySelector("#shareAgendaBtn").classList.contains("d-none")) {
@@ -716,7 +723,7 @@ function deleteAgenda() {
 					$("#createAgenda").modal("hide");
 					document.querySelector("#createOrEditBtn").disabled = false;
 					document.querySelector("#deleteAgendaBtn").disabled = false;
-					document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block"
+					document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block";
 					swal("Bravo !", response.message, "success").then((value) => {
 						location.reload();
 					});
@@ -753,7 +760,7 @@ function activeOnglet(elem) {
 	if (!elem.classList.contains("active")) {
 		elem.classList.add("active");
 
-				let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab;
+		let cmzEtab = document.querySelector("#hiddenListDep").dataset.etab;
 
 		if (elem.parentElement.nextElementSibling) {
 			document.querySelector("#hideOrShow").style.display = "block";
@@ -1236,7 +1243,7 @@ function generateTableForEtab(index, etab, isValid = true, etabObject = null) {
 	if (isValid) {
 		let forTribuT = "";
 		let tr = document.createElement("tr");
-        if (etab.tribu && etab.tribu != null) {
+		if (etab.tribu && etab.tribu != null) {
 			if (!document.querySelector(".forTribu")) {
 				const thForLogo = document.createElement("th");
 
@@ -1438,8 +1445,8 @@ function makeLoading() {
  * create new egenda
  * @param {*} agenda
  */
-function saveNewAgenda(agenda, reload=1) {
-	let isReload= (!!reload)
+function saveNewAgenda(agenda, reload = 1) {
+	let isReload = !!reload;
 	const param = {
 		title: agenda.title,
 		type: agenda.type,
@@ -1495,20 +1502,19 @@ function saveNewAgenda(agenda, reload=1) {
 		.then((response) => response.json())
 		.then((response) => {
 			swal("Bravo !", response.message, "success").then((value) => {
-if(isReload) 
-				location.reload();
+				if (isReload) location.reload();
 			});
 		});
 }
 
 /**
  * @author Nantenaina x Faniry
- * @param {*} e 
- * @param {int } isReload  "La valeur est 0 ou 1, 
- * indiquant si le système doit recharger la page après la création d'un événement. 
+ * @param {*} e
+ * @param {int } isReload  "La valeur est 0 ou 1,
+ * indiquant si le système doit recharger la page après la création d'un événement.
  * Par défaut, la valeur est 1.
  */
-function getObjectForNewAgenda(e, isReload=1) {
+function getObjectForNewAgenda(e, isReload = 1) {
 	let state = true;
 
 	let isEtabCMZ = false;
@@ -1571,7 +1577,8 @@ function getObjectForNewAgenda(e, isReload=1) {
 			"veuillez renseigner l'heure de fin de votre événement",
 			containerMessageRequiredAgd
 		);
-		const descriptionParDefaut= document.querySelector("#eventTitle").value+". "+ document.querySelector("#typeEvent").value.trim()
+		const descriptionParDefaut =
+			document.querySelector("#eventTitle").value + ". " + document.querySelector("#typeEvent").value.trim();
 		agenda = {
 			title: document.querySelector("#eventTitle").value,
 			type:
@@ -1602,7 +1609,7 @@ function getObjectForNewAgenda(e, isReload=1) {
 			directoryroot: directoryroot,
 			fileName: fileName,
 		};
-		saveNewAgenda(agenda,isReload);
+		saveNewAgenda(agenda, isReload);
 		// const agenda_keys = Object.keys(agenda);
 		// agenda_keys.forEach(key => {
 		//     if (agenda[key] === '') {
@@ -1755,9 +1762,9 @@ function initInputForm() {
 			j.value = null;
 		}
 	})*/
-	let classL=document.querySelector(".desc").classList
-	if(classL.contains("userInput")){
-		classL.remove("userInput")
+	let classL = document.querySelector(".desc").classList;
+	if (classL.contains("userInput")) {
+		classL.remove("userInput");
 	}
 	document.querySelector("#eventTitle").value = null;
 	document.querySelector("#typeEvent").value = "Evènement";
@@ -1776,7 +1783,7 @@ function initInputForm() {
 	document.querySelector("#golfRadio").checked = false;
 	document.querySelector("#autreRadio").checked = false;
 	document.querySelector("#restoRadio").checked = false;
-    document.querySelector("#visioRadio").checked = false;
+	document.querySelector("#visioRadio").checked = false;
 
 	let nomEtab = document.querySelector("#containerNomEtab");
 	let adresseContainer = document.querySelector(".lieuEventContainer");
@@ -1802,7 +1809,7 @@ function initInputForm() {
 	if (!document.querySelector("#shareAgendaBtn").classList.contains("d-none")) {
 		document.querySelector("#shareAgendaBtn").classList.add("d-none");
 	}
-	document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block"
+	document.querySelector(".cta_cancel_create_agenda_jheo_js").style.display = "block";
 }
 
 if (document.querySelector("#shareAgendaBtn")) {
@@ -2007,10 +2014,11 @@ function showPartisanAgenda(tribu_t_name) {
 				jsons[0].forEach((json) => {
 					if (jsons["curent_user"] != json.id) {
 						profilInfo = JSON.parse(json.infos_profil);
-						let profil =
-							profilInfo ? (profilInfo.photo_profil != null
+						let profil = profilInfo
+							? profilInfo.photo_profil != null
 								? "/public" + profilInfo.photo_profil
-								: "/public/assets/image/img_avatar3.png"):"/public/assets/image/img_avatar3.png";
+								: "/public/assets/image/img_avatar3.png"
+							: "/public/assets/image/img_avatar3.png";
 						let lastName = profilInfo?.lastName;
 						let firstName = profilInfo?.firstName;
 						let fullname = json.fullname;
@@ -2302,36 +2310,38 @@ function getMyDepEtab() {
 }
 
 function changeDescription() {
-	const descriptionParDefaut= document.querySelector("#eventTitle").value +". "+document.querySelector("#typeEvent").value.trim();
-	if(!document.querySelector(".desc").classList.contains("userInput"))
-		document.querySelector("#eventDesc").value =descriptionParDefaut;
-	
+	const descriptionParDefaut =
+		document.querySelector("#eventTitle").value + ". " + document.querySelector("#typeEvent").value.trim();
+	if (!document.querySelector(".desc").classList.contains("userInput"))
+		document.querySelector("#eventDesc").value = descriptionParDefaut;
 }
 /**
  * @author Nantenaina x faniry
  * ajoute une class dans la list class de l'element description
- * 
+ *
  */
-function setUserInput(){
-	let classL=document.querySelector(".desc").classList
-	if(!classL.contains("userInput")){
-		classL.add("userInput")
+function setUserInput() {
+	let classL = document.querySelector(".desc").classList;
+	if (!classL.contains("userInput")) {
+		classL.add("userInput");
 	}
 }
 
-function resetInputData(){
-	document.querySelectorAll("input[name=etabRadioOptions]").forEach(item=>{
-		item.checked = false
-	})
-	document.querySelector("#eventTitle").value = ""
-	document.querySelector("#typeEvent").value = "Evènement"
-	document.querySelector("#nomEtabEvent").value = ""
-	document.querySelector("#lieuEvent").value = ""
-	document.querySelector("#containerNomEtab").style.display = "none"
-	document.querySelector("#containerAdresseEtab").style.display = "none"
-	document.querySelector("#eventDesc").value = ""
-	document.querySelector("#nbrParticipant").value = "50"
-	document.querySelector(".img_upload_agenda").innerHTML = `<div class="preview text-center d-none preview_image_nanta_js">
+function resetInputData() {
+	document.querySelectorAll("input[name=etabRadioOptions]").forEach((item) => {
+		item.checked = false;
+	});
+	document.querySelector("#eventTitle").value = "";
+	document.querySelector("#typeEvent").value = "Evènement";
+	document.querySelector("#nomEtabEvent").value = "";
+	document.querySelector("#lieuEvent").value = "";
+	document.querySelector("#containerNomEtab").style.display = "none";
+	document.querySelector("#containerAdresseEtab").style.display = "none";
+	document.querySelector("#eventDesc").value = "";
+	document.querySelector("#nbrParticipant").value = "50";
+	document.querySelector(
+		".img_upload_agenda"
+	).innerHTML = `<div class="preview text-center d-none preview_image_nanta_js">
 			  <img id="image-preview" class="image-upload-image">
 			  <div class="image-title-wrap">
 				<button type="button" onclick="resetImagePreview()" class="remove-image-uplaod">
@@ -2341,5 +2351,104 @@ function resetInputData(){
 			</div>
 			<button class="btn btn-info btnAddPhoto_nanta_js" data-bs-target="#addPictureModal" data-bs-toggle="modal">
 			  <b><i class="bi bi-plus" style="font-size:20px;"></i> Ajouter une photo à votre événement</b>
-			</button>`
-  }
+			</button>`;
+}
+
+///// tache 199: Jehovanie /////
+
+function getListParticipantEvenement(agendaId) {
+	if (!document.querySelector(".content_list_tableu_jheo_js")) {
+		return null;
+	}
+
+	const content_list = document.querySelector(".content_list_tableu_jheo_js");
+
+	content_list.innerHTML = `
+      <div class="chargement_content chargement_content_js_jheo" style="min-height: 50vh;">
+          <div class="containt">
+              <div class="word word-1">C</div>
+              <div class="word word-2">M</div>
+              <div class="word word-3">Z</div>
+          </div>
+      </div>
+ 	`;
+
+	let link = `/user/agenda/participants/${agendaId}`;
+
+	const request = new Request(link, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+	});
+
+	fetch(request)
+		.then((response) => response.json())
+		.then((response) => {
+			const { data, agenda } = response;
+			content_list.innerHTML = `
+				<table class="table table-striped" >
+					<thead>
+						<tr>
+							<th scope="col">Email</th>
+							<th scope="col">Status</th>
+							<th scope="col"></th>
+						</tr>
+					</thead>
+					<tbody>
+						${generateListParticipant(data)}
+					</tbody>
+				</table>
+			`;
+		});
+}
+
+function generateListParticipant(data) {
+	let listParticipantHtml = "";
+
+	data.forEach((item) => {
+		listParticipantHtml += generateItemParticipantEvent(item);
+	});
+
+	return listParticipantHtml;
+}
+
+function generateItemParticipantEvent(data) {
+	const { user, status } = data;
+
+	let action = "";
+	if (parseInt(status.accepted) === 1) {
+		action = `
+			<a href="#" class="btn btn-danger btn-sm" onClick="handleRemoveMyPresent()">Annuler ma présence</a>
+		`;
+	} else if (parseInt(status.accepted) === -1) {
+		action = `
+			<a href="#" class="btn btn-warning btn-sm" disabled>En attente</a>
+		`;
+	}
+
+	let itemParticpantHtml = `
+		<tr class="mb-2">
+			<th scope="row">
+				${user.email}
+			</th>
+			<td>
+				${
+					!user.isAnonymous
+						? "<span class='badge bg-info text-dark'>Inscrit</span>"
+						: "<span class='badge bg-secondary'>Non inscrit</span>"
+				}
+			</td>
+			<td>
+				${action}
+			</td>
+		</tr>
+	`;
+
+	return itemParticpantHtml;
+}
+
+function handleRemoveMyPresent() {
+	alert("Remove my present");
+}

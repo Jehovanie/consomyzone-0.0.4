@@ -1,6 +1,6 @@
 {# ///// MODAL FOR CREATE AGENDA #}
 <div class="modal fade" id="createAgenda" tabindex="-1" aria-labelledby="modalCreateAgendaTitles" aria-hidden="true">
-  <div class="modal-dialog custom_modal_dialog modal-dialog-scrollable">
+  <div class="modal-dialog modal-lg custom_modal_dialog modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="modalCreateAgendaTitles">Créer un événement</h5>
@@ -99,6 +99,7 @@
         </div>
       </div>
       <div class="modal-footer">
+        <button type="button" class="btn btn-warning cta_list_user_participate_jheo_js" data-bs-target="#dashboardAgenda" data-bs-toggle="modal" data-bs-dismiss="modal" onclick="getListParticipantEvenement()">Voir la liste des personnés </button>
         <button type="button" class="btn btn-secondary cta_cancel_create_agenda_jheo_js" onclick="resetInputData()">Annuler saisie</button>
         <button type="button" class="btn btn-info d-none" id="shareAgendaBtn"  data-bs-target="#confirmPartageAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Partager</button>
         <button type="button" class="btn btn-danger d-none" id="deleteAgendaBtn" onclick="deleteAgenda()">Supprimer</button>
@@ -400,6 +401,73 @@
               </table>
             {% endif %}
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{# DASHBOARD AGENDA  #}
+<div class="modal fade" id="dashboardAgenda" tabindex="-1" aria-labelledby="dashboardAgendaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="dashboardAgendaLabel">Liste des participants</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" data-bs-target="#createAgenda" data-bs-toggle="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+          <div class="content_list_tableau content_list_tableu_jheo_js">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">#</th>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>
+                    <div class="card">
+                      <div class="card-body d-flex justify-content-between align-items-center">
+                          <div class="content_information"><div class="card-title">Your expenses for '<b>Groceries</b>' has exceeded its budget</div></div>
+                          <div>
+                            <a href="#" class="btn btn-danger" onClick="handleRemoveMyPresent()">Annuler ma présence</a>
+                          </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="card">
+                      <div class="card-body d-flex justify-content-between align-items-center">
+                          <div class="content_information">
+                            <div class="card-title">
+                              Your expenses for '<b>Groceries</b>' has exceeded its budget
+                            </div>
+                          </div>
+                          <div>
+                            <a href="#" class="btn btn-warning" disabled>En attente</a>
+                          </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="card">
+                      <div class="card-body d-flex justify-content-between align-items-center">
+                          <div class="content_information"><div class="card-title">Your expenses for '<b>Groceries</b>' has exceeded its budget</div></div>
+                          <div>
+                            <a href="#" class="btn btn-info" disabled>Accepter</a>
+                          </div>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary"  data-bs-target="#createAgenda" data-bs-toggle="modal" data-bs-dismiss="modal">Fermer</button>
       </div>
     </div>
   </div>

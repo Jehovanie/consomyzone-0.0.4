@@ -1265,4 +1265,20 @@ class AgendaService extends PDOConnexionService
 
         $stmt->execute([]);
     }
+
+    public function getListParticipants($table_partage_agenda, $agenda_id ){
+        if (!$this->isTableExist($table_partage_agenda)) {
+            return false;
+        }
+
+        $request_check_favory = $this->getPDO()->prepare(
+            "SELECT * FROM $table_partage_agenda WHERE agenda_id= :agenda_id"
+        );
+        $request_check_favory->bindParam(':agenda_id', $agenda_id);
+        $request_check_favory->execute();
+
+        $result = $request_check_favory->fetchAll(PDO::FETCH_ASSOC);
+
+        return $result;
+    }
 }
