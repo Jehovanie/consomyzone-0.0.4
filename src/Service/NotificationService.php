@@ -477,13 +477,32 @@ $pseudo = $confidentialityService->getConfFullname(intval($userId), $userIdC);
      * type: { 0 : Message Alert, 1 : Message Information(mise à jour par ex), 2 : Message sur les nouveaux }
      * is_update : = 1 Quand l'information est décider de ne plus afficher dans rendus, par défaut 0.
      */
-    public function getToastMessage(){
+    public function getToastMessage($privateID){
         $table= "toast_message"; /// non de table dans la base de données
-        $statement = $this->getPDO()->prepare("SELECT * FROM $table  WHERE is_update = '0'");
-        $statement->execute();
-        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        if( count($privateID)  > 0 ){
+            $placeholders = str_repeat('?,', count($privateID) - 1) . '?';
+            $statement = $this->getPDO()->prepare("SELECT * FROM $table  WHERE id NOT IN ($placeholders)");
+        }else{
+            $statement = $this->getPDO()->prepare("SELECT * FROM $table");
+        }
+        
+        $statement->execute($privateID);
 
-        return $result;
+        $data = $statement->fetchAll(PDO::FETCH_ASSOC);
+
+        $results= [];
+        if( count($data) > 0 ){
+            foreach($data as $result ){
+                $result["toast_message"]=json_decode($result["toast_message"],true);
+                $result["toast_message"] = $this->convertUnicodeToUtf8($result["toast_message"]);
+                $result["toast_message"]=mb_convert_encoding($result["toast_message"], 'UTF-8', 'UTF-8');
+
+                array_push($results, [
+                    ...$result
+                ]);
+            }
+        }
+        return $results;
     }
 
 }

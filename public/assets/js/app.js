@@ -5,7 +5,7 @@ const nav_items = document.querySelectorAll(".nav-item");
 const url_test = new URL(current_url);
 //j'utilise cette variable pour les call de jitsi, dans fichier account.js
 let AUDIO_FOR_JITSI = null;
-let AUDIO_FOR_MESSAGE= null;
+let AUDIO_FOR_MESSAGE = null;
 let Cookies2 = Cookies.noConflict();
 // cloneResultDepResto()
 if (document.querySelector(".form_content_search_navbar_js")) {
@@ -289,8 +289,97 @@ if (document.querySelector("#togglePasswordInscription")) {
 	});
 }
 
-////jheo: Responsive for mobile -----------------------
+if (document.querySelector(".content_card_alert_message_jheo_js")) {
+	const content_alert_message = document.querySelector(".content_card_alert_message_jheo_js");
+	const info_alert_icon = document.querySelector(".info_alert_message_jheo_js");
+
+	info_alert_icon.addEventListener("click", () => {
+		createChargement(content_alert_message, "content_alert_message");
+		fetchAlertInfoCMZ();
+	});
+}
+
+if (document.querySelector(".all_read_alert_toast_jheo_js")) {
+	const cta_all_read_alert_message = document.querySelector(".all_read_alert_toast_jheo_js");
+	cta_all_read_alert_message.addEventListener("click", () => {
+		const all_toast_message = Array.from(document.querySelectorAll(".alert_toast_message_jheo_js"));
+
+		if (all_toast_message.length > 0) {
+			cta_all_read_alert_message.innerText = "Action en cours...";
+
+			let all_toast_ID = [];
+
+			all_toast_message.forEach((toast_message) => {
+				let id = toast_message.getAttribute("id"); ///toast_message_ID15
+				id = id.slice(16); /// delete 'toast_message_ID' to get real id toast message.
+				all_toast_ID.push(parseInt(id));
+			});
+
+			const cookie_toast_message = isValueInCookie("toast_message");
+			let data_cookie = !!cookie_toast_message ? JSON.parse(cookie_toast_message) : [];
+
+			Cookies2.set(`toast_message`, JSON.stringify([...data_cookie, ...all_toast_ID]), {
+				expires: 30,
+				secure: true,
+			});
+
+			const alert_message = document.querySelector(".alert_message_nbr_jheo_js");
+			alert_message.innerText = 0;
+
+			if (!alert_message.parentElement.classList.contains("d-none")) {
+				alert_message.parentElement.classList.add("d-none");
+			}
+
+			let list_info = `
+				<div class="content_alert_message">
+					<div class="d-flex justify-content-center text-primary">
+						<div class="alert alert-warning d-flex align-items-center" role="alert">
+							<div>
+								<i class="fa-solid fa-face-smile-wink"></i>
+								Vous avez toutes lu.</br>
+								<a class="text-decoration-underline fs-6 cursor-pointer" onclick="revoirAlertToastMessage()">Vous pouvez les revoir ici. </a>
+							</div>
+						</div>
+					</div>
+				</div>
+			`;
+
+			const content_alert_message = document.querySelector(".content_card_alert_message_jheo_js");
+			content_alert_message.innerHTML = list_info;
+
+			cta_all_read_alert_message.innerText = "Marquer tous comme lus";
+		}
+	});
+}
+
+function revoirAlertToastMessage() {
+	const cookie_toast_message = isValueInCookie("toast_message");
+	let data_cookie = !!cookie_toast_message ? JSON.parse(cookie_toast_message) : [];
+
+	console.log(data_cookie);
+
+	if (document.querySelector(".alert_message_nbr_jheo_js")) {
+		const alert_message = document.querySelector(".alert_message_nbr_jheo_js");
+		alert_message.innerText = data_cookie.length;
+
+		if (alert_message.parentElement.classList.contains("d-none")) {
+			alert_message.parentElement.classList.remove("d-none");
+		}
+	}
+
+	Cookies2.set(`toast_message`, JSON.stringify([]), {
+		expires: 30,
+		secure: true,
+	});
+
+	const content_alert_message = document.querySelector(".content_card_alert_message_jheo_js");
+	createChargement(content_alert_message, "content_alert_message");
+
+	fetchAlertInfoCMZ();
+}
+
 if (document.getElementById("close_menu_for_mobile")) {
+	////jheo: Responsive for mobile -----------------------
 	const close_menu = document.getElementById("close_menu_for_mobile");
 
 	close_menu.addEventListener("click", () => {
@@ -317,13 +406,13 @@ window.addEventListener("load", () => {
 	if (!linkPathname.includes("/actualite-non-active")) {
 		const useCookieOrNot = isValueInCookie("isCanUseCookie");
 
-		if (useCookieOrNot == "true") {
-			console.log(useCookieOrNot);
-			getToastMessage();
-		}
-		//else{
-		//    getToastMessage()
+		const cookie_toast_message = isValueInCookie("toast_message");
+		let data_cookie = !!cookie_toast_message ? JSON.parse(cookie_toast_message) : [];
+		getToastMessage(data_cookie);
 
+		// if (useCookieOrNot == "true") {
+		// } else {
+		// 	getToastMessage();
 		// }
 	}
 });
@@ -516,7 +605,7 @@ if (document.querySelector(".list-nav-bar")) {
 	} else if (activPage.includes("/ferme")) {
 		document.querySelector("#ferme-page").classList.add("active");
 		document.querySelector(".ferme-page-mobile").classList.add("active-mobile");
-    } else if (activPage.includes("/marche")) {
+	} else if (activPage.includes("/marche")) {
 		if (document.querySelector("#marche-page")) {
 			document.querySelector("#marche-page").classList.add("active");
 		}
@@ -949,8 +1038,7 @@ function showModalEditor(isG, isListeInfile = false) {
 	let dateOld = new Intl.DateTimeFormat("fr-FR", { dateStyle: "full" }).format(new Date(back));
 
 	if (document.querySelector("#object_share_event") && agenda)
-		document.querySelector("#object_share_event").value =
-			agenda.title + ", " + fullname;
+		document.querySelector("#object_share_event").value = agenda.title + ", " + fullname;
 	// <span contenteditable="false" style="background-color:rgba(252, 130, 29, 1);" >{{Nom}} de la personne invité
 	//</span>
 	if (agenda && agenda.isVisioCMZ == 1) {
@@ -1161,21 +1249,21 @@ function findInNet(server, denomination_f, adresse) {
 			break;
 		case "thefork": {
 			const request = new Request(`/get/link/thefork/${denomination_f.replaceAll(" ", "_")}/${adresse}`, {
-				method: 'GET',
+				method: "GET",
 			});
 			fetch(request)
 				.then((response) => response.text())
 				.then((result) => {
-					const htmlParse = new DOMParser().parseFromString(result, "text/html")
-					let linkTheForkGoogle = htmlParse.querySelector("#main > div > div > div.egMi0 > a")
-					let linkTheForkGoogleHref = linkTheForkGoogle.getAttribute("href")
-					let linkTheFork = linkTheForkGoogleHref.split("/")[3]
-					let theFork = linkTheFork.split(".")[1]
+					const htmlParse = new DOMParser().parseFromString(result, "text/html");
+					let linkTheForkGoogle = htmlParse.querySelector("#main > div > div > div.egMi0 > a");
+					let linkTheForkGoogleHref = linkTheForkGoogle.getAttribute("href");
+					let linkTheFork = linkTheForkGoogleHref.split("/")[3];
+					let theFork = linkTheFork.split(".")[1];
 
-					if (theFork === 'thefork') {
-						let nameRestoTheForkSplit = linkTheForkGoogleHref.split("/")[5]
+					if (theFork === "thefork") {
+						let nameRestoTheForkSplit = linkTheForkGoogleHref.split("/")[5];
 
-						let adressRestoTheFork = nameRestoTheForkSplit.split("-")[0]
+						let adressRestoTheFork = nameRestoTheForkSplit.split("-")[0];
 						if (adressRestoTheFork == adresse.toLowerCase()) {
 							swal({
 								title: "The fork",
@@ -1184,10 +1272,9 @@ function findInNet(server, denomination_f, adresse) {
 								button: "OK",
 							});
 						} else {
-							let nameRestoTheFork = nameRestoTheForkSplit.split("&")[0]
+							let nameRestoTheFork = nameRestoTheForkSplit.split("&")[0];
 							window.open("https://www.thefork.fr/restaurant/" + nameRestoTheFork);
 						}
-
 					} else {
 						swal({
 							title: "The fork",
@@ -1196,12 +1283,11 @@ function findInNet(server, denomination_f, adresse) {
 							button: "OK",
 						});
 					}
-				})
+				});
 			break;
 		}
 		// const linkTheFork1 = `https://www.google.com/search?q=the+fork+${denomination_f.replaceAll(" ", "+")}+${adresse}`
 		// console.log(linkTheFork1)
-
 	}
 }
 
@@ -1408,8 +1494,9 @@ function getListeDemandePartenariat(e) {
 					let adrComplet = r[i].numRue + " " + r[i].codePostal + " " + r[i].commune;
 					if (adrComplet != "") {
 						let linkAdresse = document.createElement("a");
-						linkAdresse.href = `https://www.google.com/maps?q=${r[i].numRue + " " + r[i].codePostal + " " + r[i].commune
-							}`;
+						linkAdresse.href = `https://www.google.com/maps?q=${
+							r[i].numRue + " " + r[i].codePostal + " " + r[i].commune
+						}`;
 						linkAdresse.textContent = r[i].numRue + " " + r[i].codePostal + " " + r[i].commune;
 						linkAdresse.setAttribute("class", "linkOndetail");
 						linkAdresse.setAttribute("target", "_blanc");
@@ -1814,7 +1901,7 @@ function acceptPropositionPartenariat(e) {
 				break;
 			}
 			default: {
-				swal("Merci !", "Vous n'avez pas encore decidé, revenez plus tard.", "warning").then((value) => { });
+				swal("Merci !", "Vous n'avez pas encore decidé, revenez plus tard.", "warning").then((value) => {});
 			}
 		}
 	});
@@ -2047,13 +2134,36 @@ function expand(e) {
  *
  * @return (resultat fetch) /// object { success: '', toastMessage : [ {id: ..., toast_message: ..., is_update: ...}, ...] }
  */
-function getToastMessage() {
-	fetch("/notification/toast-message")
+function getToastMessage(dataToastMessage) {
+	let url = "/notification/toast-message";
+	const request = new Request(url, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			privateID: dataToastMessage,
+		}),
+	});
+
+	fetch(request)
 		.then((response) => response.json())
 		.then((response) => {
 			if (response.success) {
 				// response.toastMessage : [ {id: ..., toast_message: ..., is_update: ...}, ...]
-				generateToastMessage(response.toastMessage);
+				const { data: toastMessage } = response;
+
+				if (document.querySelector(".alert_message_nbr_jheo_js")) {
+					const alert_message = document.querySelector(".alert_message_nbr_jheo_js");
+					alert_message.innerText = toastMessage.length;
+
+					if (toastMessage.length != 0 && alert_message.parentElement.classList.contains("d-none")) {
+						alert_message.parentElement.classList.remove("d-none");
+					}
+				}
+
+				// generateToastMessage(response.toastMessage);
 			} else {
 				const link_now = new URL(window.location.href);
 				const linkPathname = link_now.pathname;
@@ -2170,14 +2280,54 @@ function generateOneToastMessage(toastId, message, type, duration, isForConnexio
 }
 
 function saveToastMessage(toastID, isSave = false) {
+	if (document.querySelector(".alert_message_nbr_jheo_js")) {
+		const alert_message = document.querySelector(".alert_message_nbr_jheo_js");
+
+		const nbr_alert_message = parseInt(alert_message.innerText) - 1;
+		alert_message.innerText = nbr_alert_message;
+
+		if (nbr_alert_message === 0) {
+			if (!alert_message.parentElement.classList.contains("d-none")) {
+				alert_message.parentElement.classList.add("d-none");
+			}
+		}
+	}
+
+	if (document.querySelector(`.alert_toast_${toastID}_message_jheo_js`)) {
+		document.querySelector(`.alert_toast_${toastID}_message_jheo_js`).remove();
+	}
+
+	if (document.querySelectorAll(".alert_toast_message_jheo_js").length === 0) {
+		let list_info = `
+			<div class="content_alert_message">
+				<div class="d-flex justify-content-center text-primary">
+					<div class="alert alert-warning d-flex align-items-center" role="alert">
+						<div>
+							<i class="fa-solid fa-face-smile-wink"></i>
+							Vous avez toutes lu.</br>
+							<a class="text-decoration-underline fs-6 cursor-pointer" onclick="revoirAlertToastMessage()">Vous pouvez les revoir ici. </a>
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+		const content_alert_message = document.querySelector(".content_card_alert_message_jheo_js");
+		content_alert_message.innerHTML = list_info;
+	}
+
 	if (isSave === true) {
-		Cookies2.set(`toast_message_${toastID}`, true, {
+		const cookie_toast_message = isValueInCookie("toast_message");
+
+		let data_cookie = !!cookie_toast_message ? JSON.parse(cookie_toast_message) : [];
+		data_cookie.push(toastID);
+
+		Cookies2.set(`toast_message`, JSON.stringify([...data_cookie]), {
 			expires: 30,
 			secure: true,
 		});
-		//document.cookie = `toast_message_${toastID}=1`;
 	}
-	clickedOnToastMessage(toastID);
+
+	// clickedOnToastMessage(toastID);
 }
 function isValueInCookie(cName) {
 	return Cookies2.get(cName);
@@ -2347,41 +2497,36 @@ function setViewTribu(a, b) {
 
 // bloc double authentification @author Faniry//
 
-if(document.getElementById("doitmail")){
-	document.getElementById("doitmail").onclick =()=>{
-		const param={
-			v:1
-		}
-		const request = new Request("/user/set/2fa/useMail",{
+if (document.getElementById("doitmail")) {
+	document.getElementById("doitmail").onclick = () => {
+		const param = {
+			v: 1,
+		};
+		const request = new Request("/user/set/2fa/useMail", {
 			method: "POST",
 			headers: {
 				Accept: "application/json",
 				"Content-Type": "application/json",
 			},
 			body: JSON.stringify(param),
-		})
-		fetch(request).then(r=>{
-			if(r.status===200 && r.ok){
-				r.json().then(j=>{
-					if(j){
-						new swal("Merci", "Vous avez choisi d'utiliser la double authentification par e-mal","info")
-					}else{
-						new swal("Merci", "Vous avez choisi d'utiliser la double authentification par sms","info")
-
+		});
+		fetch(request).then((r) => {
+			if (r.status === 200 && r.ok) {
+				r.json().then((j) => {
+					if (j) {
+						new swal("Merci", "Vous avez choisi d'utiliser la double authentification par e-mal", "info");
+					} else {
+						new swal("Merci", "Vous avez choisi d'utiliser la double authentification par sms", "info");
 					}
-				})
-				
+				});
 			}
-		})
-
-	}
-	
+		});
+	};
 }
 
-if(document.getElementById("doitsms")){
-	document.getElementById("doitsms").onclick =()=>{
-		new swal("Merci de votre compréhension.", 
-		"Fonctionnalité en cours de développement","info")
+if (document.getElementById("doitsms")) {
+	document.getElementById("doitsms").onclick = () => {
+		new swal("Merci de votre compréhension.", "Fonctionnalité en cours de développement", "info");
 		// const param={
 		// 	v:0
 		// }
@@ -2403,94 +2548,85 @@ if(document.getElementById("doitsms")){
 
 		// 			}
 		// 		})
-				
+
 		// 	}
 		// })
-	}
+	};
 }
 
-if(document.querySelector(".doublefa")){
-	fetch("/user/isuse/2fact").then((r)=>{
-		if(r.status === 200 && r.ok){
-			r.json().then(value=>{
-			
-				const isUse2fac=(!!value.response);
-				if(isUse2fac){
+if (document.querySelector(".doublefa")) {
+	fetch("/user/isuse/2fact").then((r) => {
+		if (r.status === 200 && r.ok) {
+			r.json().then((value) => {
+				const isUse2fac = !!value.response;
+				if (isUse2fac) {
 					//utiliser la double auth
-					document.getElementById("yes2fa").checked=false;
-					document.getElementById("no2fa").checked=true;
-				}else{
+					document.getElementById("yes2fa").checked = false;
+					document.getElementById("no2fa").checked = true;
+				} else {
 					// ne pas utiliser la double auth
-					document.getElementById("no2fa").checked=false;
-					document.getElementById("yes2fa").checked=true;
+					document.getElementById("no2fa").checked = false;
+					document.getElementById("yes2fa").checked = true;
 				}
-			})
+			});
 		}
-	})
+	});
 
-	Array.from(document.getElementsByClassName("doublefa_js_fa")).
-	forEach(item=>{
-		
-		item.onclick=(e)=>{
-			let param={
-				v:1
+	Array.from(document.getElementsByClassName("doublefa_js_fa")).forEach((item) => {
+		item.onclick = (e) => {
+			let param = {
+				v: 1,
+			};
+			if (e.target.id == "yes2fa") {
+				param.v = 0;
+				document.getElementById("no2fa").checked = false;
+			} else {
+				param.v = 1;
+				document.getElementById("yes2fa").checked = false;
 			}
-			if(e.target.id=="yes2fa"){
-				param.v=0;
-				document.getElementById("no2fa").checked=false;
-			}else{
-				param.v=1;
-				document.getElementById("yes2fa").checked=false;
-			}
-			const request = new Request("/user/set/isuse2fact",{
+			const request = new Request("/user/set/isuse2fact", {
 				method: "POST",
 				headers: {
 					Accept: "application/json",
 					"Content-Type": "application/json",
 				},
 				body: JSON.stringify(param),
-			})
-			fetch(request).then(r=>{
-				if(r.status===200 && r.ok){
-					r.json().then(j=>{
-						
-						if(j.response){
-							new swal("Merci", 
-							"Vous avez choisi d'utiliser la double authentification.",
-							"info")
-						}else{
-							new swal("Merci", 
-							"Vous avez choisi de désactiver la double authentification.",
-							"info")
+			});
+			fetch(request).then((r) => {
+				if (r.status === 200 && r.ok) {
+					r.json().then((j) => {
+						if (j.response) {
+							new swal("Merci", "Vous avez choisi d'utiliser la double authentification.", "info");
+						} else {
+							new swal("Merci", "Vous avez choisi de désactiver la double authentification.", "info");
 						}
-					})
-					
+					});
 				}
-			})
-		}
-	})
+			});
+		};
+	});
 }
 
-if(document.querySelector(".method_2fa")){
-	fetch("/user/isuse/famail").then(r=>{
-		if(r.status == 200 && r.ok){
-			r.json().then(v=>{
-				if(v.response){
-					document.querySelector(".message_2fa").innerHTML=`
+if (document.querySelector(".method_2fa")) {
+	fetch("/user/isuse/famail").then((r) => {
+		if (r.status == 200 && r.ok) {
+			r.json().then((v) => {
+				if (v.response) {
+					document.querySelector(".message_2fa").innerHTML = `
 					<div class="alert alert-warning alert-dismissible fade show w-25" role="alert">
 						<strong>Information:</strong> Vous Utilisez la méthode par e-mail.
 						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-				  	</div>`
-				}else{
-					document.querySelector(".message_2fa").innerHTML=`
+				  	</div>`;
+				} else {
+					document.querySelector(".message_2fa").innerHTML = `
 					<div class="alert alert-warning alert-dismissible fade show w-25" role="alert">
 						<strong>Information:</strong> Vous Utilisez la méthode par texto.
 						<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-				  	</div>`
+				  	</div>`;
 				}
-			})
+			});
 		}
-	})
+	});
 }
 
 //endblock
@@ -2499,288 +2635,268 @@ if(document.querySelector(".method_2fa")){
 //render drop list
 const rows = Array.from(document.getElementsByClassName("drop-box file-name"));
 if (rows.length > 0) {
-	if(document.getElementById("drop_box_table_lst_js")){
-		
+	if (document.getElementById("drop_box_table_lst_js")) {
 		$("#drop_box_table_lst_js").DataTable({
 			language: {
-			  url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
-			}
+				url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+			},
 		});
 	}
-  initCKEditor("exampleFormControlTextareaDropBox", emailShareDropContent);
-  rows.forEach((item) => {
-    item.onmouseenter = (event) => {
-      const container = item.querySelector(".drop-action-fa-js");
-      const fileName = item.querySelector(".file_name").textContent;
-      const fileExtension = item.querySelector(".file_extension").textContent;
-      const idUser = parseInt(atob(container.dataset.rank), 10);
-      const shortLink = container.dataset.short;
-      if (
-        !container.querySelector(".fa-link") &&
-        !container.querySelector(".fa-readme") &&
-        !container.querySelector(".fa-download") &&
-        !container.querySelector(".fa-pen") &&
-        !container.querySelector(".fa-trash") &&
-        !container.querySelector(".fa-share-nodes")
-      ) {
-        //data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tooltip on bottom"
-        const iconLink = document.createElement("i");
-        iconLink.setAttribute("class", "fa-solid fa-link p-2");
-        iconLink.dataset.bsToggle = "tooltip";
-        iconLink.dataset.bsPlacement = "bottom";
-        iconLink.setAttribute("title", "Copier le lien");
-        iconLink.onclick = () => {
-          copyTextToClipBoard(idUser, shortLink);
-        };
+	initCKEditor("exampleFormControlTextareaDropBox", emailShareDropContent);
+	rows.forEach((item) => {
+		item.onmouseenter = (event) => {
+			const container = item.querySelector(".drop-action-fa-js");
+			const fileName = item.querySelector(".file_name").textContent;
+			const fileExtension = item.querySelector(".file_extension").textContent;
+			const idUser = parseInt(atob(container.dataset.rank), 10);
+			const shortLink = container.dataset.short;
+			if (
+				!container.querySelector(".fa-link") &&
+				!container.querySelector(".fa-readme") &&
+				!container.querySelector(".fa-download") &&
+				!container.querySelector(".fa-pen") &&
+				!container.querySelector(".fa-trash") &&
+				!container.querySelector(".fa-share-nodes")
+			) {
+				//data-bs-toggle="tooltip" data-bs-placement="bottom" title="Tooltip on bottom"
+				const iconLink = document.createElement("i");
+				iconLink.setAttribute("class", "fa-solid fa-link p-2");
+				iconLink.dataset.bsToggle = "tooltip";
+				iconLink.dataset.bsPlacement = "bottom";
+				iconLink.setAttribute("title", "Copier le lien");
+				iconLink.onclick = () => {
+					copyTextToClipBoard(idUser, shortLink);
+				};
 
-        const iconView = document.createElement("i");
-        iconView.setAttribute("class", "fa-brands fa-readme p-2");
-        iconView.dataset.bsToggle = "tooltip";
-        iconView.dataset.bsPlacement = "bottom";
-        iconView.setAttribute("title", "Lire");
-        iconView.onclick = () => {
-          readFile(idUser, shortLink);
-        };
+				const iconView = document.createElement("i");
+				iconView.setAttribute("class", "fa-brands fa-readme p-2");
+				iconView.dataset.bsToggle = "tooltip";
+				iconView.dataset.bsPlacement = "bottom";
+				iconView.setAttribute("title", "Lire");
+				iconView.onclick = () => {
+					readFile(idUser, shortLink);
+				};
 
-        const iconDownload = document.createElement("i");
-        iconDownload.setAttribute("class", "fa-solid fa-download p-2");
-        iconDownload.dataset.bsToggle = "tooltip";
-        iconDownload.dataset.bsPlacement = "bottom";
-        iconDownload.setAttribute("title", "Télécharger");
-        iconDownload.onclick = () => {
-          downloadFleInDropBox(idUser, shortLink);
-        };
+				const iconDownload = document.createElement("i");
+				iconDownload.setAttribute("class", "fa-solid fa-download p-2");
+				iconDownload.dataset.bsToggle = "tooltip";
+				iconDownload.dataset.bsPlacement = "bottom";
+				iconDownload.setAttribute("title", "Télécharger");
+				iconDownload.onclick = () => {
+					downloadFleInDropBox(idUser, shortLink);
+				};
 
-        const iconRename = document.createElement("i");
-        iconRename.setAttribute("class", "fa-solid fa-pen p-2");
-        iconRename.dataset.bsToggle = "tooltip";
-        iconRename.dataset.bsPlacement = "bottom";
-        iconRename.dataset.bsToggle = "modal";
-        iconRename.dataset.bsTarget = "#rnmFileInDp";
-        iconRename.setAttribute("title", "Renommer");
-        iconRename.onclick = () => {
-          document.getElementById("inputFileInDpFajs").value = fileName.trim();
-          document.getElementById("rnmFileInDpFajs").dataset.rank =
-            container.dataset.rank;
-          document.getElementById("rnmFileInDpFajs").dataset.short =
-            container.dataset.short;
-        };
+				const iconRename = document.createElement("i");
+				iconRename.setAttribute("class", "fa-solid fa-pen p-2");
+				iconRename.dataset.bsToggle = "tooltip";
+				iconRename.dataset.bsPlacement = "bottom";
+				iconRename.dataset.bsToggle = "modal";
+				iconRename.dataset.bsTarget = "#rnmFileInDp";
+				iconRename.setAttribute("title", "Renommer");
+				iconRename.onclick = () => {
+					document.getElementById("inputFileInDpFajs").value = fileName.trim();
+					document.getElementById("rnmFileInDpFajs").dataset.rank = container.dataset.rank;
+					document.getElementById("rnmFileInDpFajs").dataset.short = container.dataset.short;
+				};
 
-        const iconDelete = document.createElement("i");
-        iconDelete.setAttribute("class", "fa-solid fa-trash p-2");
-        iconDelete.dataset.bsToggle = "tooltip";
-        iconDelete.dataset.bsPlacement = "bottom";
-        iconDelete.setAttribute("title", "Supprimer");
-        iconDelete.onclick = () => {
-          deleteFile(idUser, shortLink);
-        };
+				const iconDelete = document.createElement("i");
+				iconDelete.setAttribute("class", "fa-solid fa-trash p-2");
+				iconDelete.dataset.bsToggle = "tooltip";
+				iconDelete.dataset.bsPlacement = "bottom";
+				iconDelete.setAttribute("title", "Supprimer");
+				iconDelete.onclick = () => {
+					deleteFile(idUser, shortLink);
+				};
 
-        const iconShare = document.createElement("i");
-        iconShare.setAttribute("class", "fa-solid fa-share-nodes p-2");
-        iconShare.dataset.bsToggle = "tooltip";
-        iconShare.dataset.bsPlacement = "bottom";
-        iconShare.dataset.bsToggle = "modal";
-        iconShare.dataset.bsTarget = "#shareFileInDp";
-        iconShare.setAttribute("title", "Partager le fichier");
-        iconShare.onclick = () => {
-          shareFile(idUser, shortLink, fileName, fileExtension);
-        };
+				const iconShare = document.createElement("i");
+				iconShare.setAttribute("class", "fa-solid fa-share-nodes p-2");
+				iconShare.dataset.bsToggle = "tooltip";
+				iconShare.dataset.bsPlacement = "bottom";
+				iconShare.dataset.bsToggle = "modal";
+				iconShare.dataset.bsTarget = "#shareFileInDp";
+				iconShare.setAttribute("title", "Partager le fichier");
+				iconShare.onclick = () => {
+					shareFile(idUser, shortLink, fileName, fileExtension);
+				};
 
-        if (container.classList.contains("action-super-admin-dropfa-js")) {
-          const uploadFirstTake = document.createElement("i");
-          uploadFirstTake.style.color = "#3AA6B9";
-          uploadFirstTake.setAttribute("class", "fa-solid fa-upload");
-          uploadFirstTake.dataset.bsToggle = "tooltip";
-          uploadFirstTake.dataset.bsPlacement = "bottom";
-          uploadFirstTake.setAttribute(
-            "title",
-            "Envoyer dans les fichiers prise en main"
-          );
-          container.appendChild(uploadFirstTake);
-        }
+				if (container.classList.contains("action-super-admin-dropfa-js")) {
+					const uploadFirstTake = document.createElement("i");
+					uploadFirstTake.style.color = "#3AA6B9";
+					uploadFirstTake.setAttribute("class", "fa-solid fa-upload");
+					uploadFirstTake.dataset.bsToggle = "tooltip";
+					uploadFirstTake.dataset.bsPlacement = "bottom";
+					uploadFirstTake.setAttribute("title", "Envoyer dans les fichiers prise en main");
+					container.appendChild(uploadFirstTake);
+				}
 
-        container.appendChild(iconView);
-        container.appendChild(iconLink);
-        container.appendChild(iconDownload);
-        container.appendChild(iconRename);
-        container.appendChild(iconDelete);
-        container.appendChild(iconShare);
-      } else {
-        container.querySelector(".fa-link").style.display = "inline";
-        container.querySelector(".fa-readme").style.display = "inline";
-        container.querySelector(".fa-download").style.display = "inline";
-        container.querySelector(".fa-pen").style.display = "inline";
-        container.querySelector(".fa-trash").style.display = "inline";
-        container.querySelector(".fa-share-nodes").style.display = "inline";
-        if (container.classList.contains("action-super-admin-dropfa-js"))
-          container.querySelector(".fa-upload").style.display = "inline";
-      }
-      item.onmouseleave = (event) => {
-        if (
-          container.querySelector(".fa-link") &&
-          container.querySelector(".fa-readme") &&
-          container.querySelector(".fa-download") &&
-          container.querySelector(".fa-pen") &&
-          container.querySelector(".fa-trash") &&
-          container.querySelector(".fa-share-nodes")
-        ) {
-          container.querySelector(".fa-link").style.display = "none";
-          container.querySelector(".fa-readme").style.display = "none";
-          container.querySelector(".fa-download").style.display = "none";
-          container.querySelector(".fa-pen").style.display = "none";
-          container.querySelector(".fa-trash").style.display = "none";
-          container.querySelector(".fa-share-nodes").style.display = "none";
-          if (container.classList.contains("action-super-admin-dropfa-js"))
-            container.querySelector(".fa-upload").style.display = "none";
-        }
-      };
-    };
-  });
+				container.appendChild(iconView);
+				container.appendChild(iconLink);
+				container.appendChild(iconDownload);
+				container.appendChild(iconRename);
+				container.appendChild(iconDelete);
+				container.appendChild(iconShare);
+			} else {
+				container.querySelector(".fa-link").style.display = "inline";
+				container.querySelector(".fa-readme").style.display = "inline";
+				container.querySelector(".fa-download").style.display = "inline";
+				container.querySelector(".fa-pen").style.display = "inline";
+				container.querySelector(".fa-trash").style.display = "inline";
+				container.querySelector(".fa-share-nodes").style.display = "inline";
+				if (container.classList.contains("action-super-admin-dropfa-js"))
+					container.querySelector(".fa-upload").style.display = "inline";
+			}
+			item.onmouseleave = (event) => {
+				if (
+					container.querySelector(".fa-link") &&
+					container.querySelector(".fa-readme") &&
+					container.querySelector(".fa-download") &&
+					container.querySelector(".fa-pen") &&
+					container.querySelector(".fa-trash") &&
+					container.querySelector(".fa-share-nodes")
+				) {
+					container.querySelector(".fa-link").style.display = "none";
+					container.querySelector(".fa-readme").style.display = "none";
+					container.querySelector(".fa-download").style.display = "none";
+					container.querySelector(".fa-pen").style.display = "none";
+					container.querySelector(".fa-trash").style.display = "none";
+					container.querySelector(".fa-share-nodes").style.display = "none";
+					if (container.classList.contains("action-super-admin-dropfa-js"))
+						container.querySelector(".fa-upload").style.display = "none";
+				}
+			};
+		};
+	});
 }
 
 //upload file
 const inputFile = document.getElementById("choose-file-drop");
 if (inputFile) {
-  inputFile.onchange = (e) => {
-    document.getElementById("drop-box-loader-js").classList.toggle("d-none");
-    files = e.target.files[0];
-    let param = {};
-    const reader = new FileReader();
-    reader.readAsDataURL(files);
-    reader.onload = (e) => {
-      const base64Data = reader.result;
-	  const fileExtensions=files.name.split(".");
-	  const fileType=fileExtensions[(fileExtensions.length-1)];
-      param = {
-        fileName: files.name,
-        fileSize: (files.size/1024),
-        fileExtension: fileType,
-        file: base64Data,
-      };
+	inputFile.onchange = (e) => {
+		document.getElementById("drop-box-loader-js").classList.toggle("d-none");
+		files = e.target.files[0];
+		let param = {};
+		const reader = new FileReader();
+		reader.readAsDataURL(files);
+		reader.onload = (e) => {
+			const base64Data = reader.result;
+			const fileExtensions = files.name.split(".");
+			const fileType = fileExtensions[fileExtensions.length - 1];
+			param = {
+				fileName: files.name,
+				fileSize: files.size / 1024,
+				fileExtension: fileType,
+				file: base64Data,
+			};
 
+			const request = new Request("/user/add/drop/box", {
+				method: "POST",
+				headers: {
+					Accept: "application/json",
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(param),
+			});
 
-      const request = new Request("/user/add/drop/box", {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(param),
-      });
-
-      fetch(request).then((response) => {
-        if (response.status === 200 && response.ok) {
-			document.getElementById("drop-box-loader-js").classList.toggle("d-none");
-          	window.location.reload();
-				
-        } else if (response.status === 500) {
-          new swal("Erreur", `Erreur 500`, "error");
-		  document.getElementById("drop-box-loader-js").classList.toggle("d-none");
-        }
-      });
-    };
-  };
+			fetch(request).then((response) => {
+				if (response.status === 200 && response.ok) {
+					document.getElementById("drop-box-loader-js").classList.toggle("d-none");
+					window.location.reload();
+				} else if (response.status === 500) {
+					new swal("Erreur", `Erreur 500`, "error");
+					document.getElementById("drop-box-loader-js").classList.toggle("d-none");
+				}
+			});
+		};
+	};
 }
 
 const btnRenameFileInDropBox = document.getElementById("rnmFileInDpFajs");
 if (btnRenameFileInDropBox) {
-  btnRenameFileInDropBox.onclick = (event) => {
-    const container = event.target;
-    const newFileName = document
-      .getElementById("inputFileInDpFajs")
-      .value.trim();
-    const idUser = parseInt(atob(container.dataset.rank), 10);
-    const shortLink = container.dataset.short;
-	btnRenameFileInDropBox.disabled=true
-	btnRenameFileInDropBox.textContent="En cours..."
-    renameFile(idUser, shortLink, newFileName,btnRenameFileInDropBox);
-  };
-  document.getElementById("inputFileInDpFajs").addEventListener("keypress", (event)=> {
+	btnRenameFileInDropBox.onclick = (event) => {
+		const container = event.target;
+		const newFileName = document.getElementById("inputFileInDpFajs").value.trim();
+		const idUser = parseInt(atob(container.dataset.rank), 10);
+		const shortLink = container.dataset.short;
+		btnRenameFileInDropBox.disabled = true;
+		btnRenameFileInDropBox.textContent = "En cours...";
+		renameFile(idUser, shortLink, newFileName, btnRenameFileInDropBox);
+	};
+	document.getElementById("inputFileInDpFajs").addEventListener("keypress", (event) => {
 		if (event.key === "Enter") {
 			const container = btnRenameFileInDropBox;
-			const newFileName = document
-			.getElementById("inputFileInDpFajs")
-			.value.trim();
+			const newFileName = document.getElementById("inputFileInDpFajs").value.trim();
 			const idUser = parseInt(atob(container.dataset.rank), 10);
 			const shortLink = container.dataset.short;
-			btnRenameFileInDropBox.disabled=true
-			btnRenameFileInDropBox.textContent="En cours..."
-			renameFile(idUser, shortLink, newFileName,btnRenameFileInDropBox);
+			btnRenameFileInDropBox.disabled = true;
+			btnRenameFileInDropBox.textContent = "En cours...";
+			renameFile(idUser, shortLink, newFileName, btnRenameFileInDropBox);
 		}
-  });
+	});
 }
 function copyTextToClipBoard(id, shortLink) {
-  const text = window.location.origin + `/drop/get/${id}/${shortLink}`;
-  navigator.clipboard.writeText(text).then((e) => {
-    new swal(
-      "Copier",
-      `Le lien ${text}, a bien été copié dans le presse papier`,
-      "success"
-    );
-  });
+	const text = window.location.origin + `/drop/get/${id}/${shortLink}`;
+	navigator.clipboard.writeText(text).then((e) => {
+		new swal("Copier", `Le lien ${text}, a bien été copié dans le presse papier`, "success");
+	});
 }
 
 function readFile(id, shortLink) {
-  const URL = `/user/drop/read/${id}/${shortLink}`;
-  window.open(URL, "_blank");
+	const URL = `/user/drop/read/${id}/${shortLink}`;
+	window.open(URL, "_blank");
 }
 
 function downloadFleInDropBox(id, shortLink) {
-  const URL = `/drop/get/${id}/${shortLink}`;
-  window.open(URL, "_blank");
+	const URL = `/drop/get/${id}/${shortLink}`;
+	window.open(URL, "_blank");
 }
 
-function renameFile(id, shortLink, newFileName,btnRenameFileInDropBox) {
-	fetch(`/user/drop/rename/${id}/${shortLink}/${newFileName}`).then(
-		(response) => {
-		  if (response.status === 200 && response.ok) {
-				btnRenameFileInDropBox.disabled=false
-				btnRenameFileInDropBox.textContent="Renommer"	
-			  	new swal("Information", "Fichier renommé", "info")
-				window.location.reload();
-		  }
+function renameFile(id, shortLink, newFileName, btnRenameFileInDropBox) {
+	fetch(`/user/drop/rename/${id}/${shortLink}/${newFileName}`).then((response) => {
+		if (response.status === 200 && response.ok) {
+			btnRenameFileInDropBox.disabled = false;
+			btnRenameFileInDropBox.textContent = "Renommer";
+			new swal("Information", "Fichier renommé", "info");
+			window.location.reload();
+		}
 	});
-  
-	
 }
 
 function deleteFile(idUser, shortLink) {
-	new swal("Voulez-vous vraiment supprimer le fichier ?",{
-		buttons:{
-		   cancel: "Non",
-		   valider:"Oui"
+	new swal("Voulez-vous vraiment supprimer le fichier ?", {
+		buttons: {
+			cancel: "Non",
+			valider: "Oui",
+		},
+	}).then((value) => {
+		switch (value) {
+			case "cancel": {
+				new swal("Information", "Vous avez choisi de ne pas supprimer le fichier.", "info");
+				break;
+			}
+			case "valider": {
+				fetch(`/user/drop/delete/${idUser}/${shortLink}`).then((response) => {
+					if (response.status === 200 && response.ok) {
+						window.location.reload();
+					}
+				});
+				break;
+			}
+
+			default:
+				new swal("Information", "Vous avez choisi de ne pas supprimer le fichier.", "info");
 		}
-	 }).then(value => {
-		   switch(value){
-			   case "cancel":{
-				   new swal("Information", "Vous avez choisi de ne pas supprimer le fichier.", "info");
-				   break;
-			   }
-			   case "valider":{
-					fetch(`/user/drop/delete/${idUser}/${shortLink}`).then((response) => {
-						if (response.status === 200 && response.ok) {
-							window.location.reload();
-						}
-					});
-				   break;
-			   }
-   
-			   default: new swal("Information", "Vous avez choisi de ne pas supprimer le fichier.", "info")
-		   }
-	 })
-  
+	});
 }
 
 function shareFile(id, shortLink, fileName, fileExtension) {
-  const input_principal = document.querySelector(".destinaire_drop_box");
-  controlInputEmailToMultiple([input_principal]);
-  let dataTmp = editor.getData();
-  const link = window.location.origin + `/drop/get/${id}/${shortLink}`;
-  let userSender = "";
-  if (document.querySelector(".information_user_conected_jheo_js"))
-    userSender = document.querySelector(".information_user_conected_jheo_js")
-      .dataset.userfullname;
-  dataTmp = `<span>Bonjour,</span>
+	const input_principal = document.querySelector(".destinaire_drop_box");
+	controlInputEmailToMultiple([input_principal]);
+	let dataTmp = editor.getData();
+	const link = window.location.origin + `/drop/get/${id}/${shortLink}`;
+	let userSender = "";
+	if (document.querySelector(".information_user_conected_jheo_js"))
+		userSender = document.querySelector(".information_user_conected_jheo_js").dataset.userfullname;
+	dataTmp = `<span>Bonjour,</span>
           <p> j'ai le plaisir de vous partager le lien suivant :</p>
           <a href="#" id="droplink" style="text-decoration:underline;color:blue; cursor:pointer">
             <span id="dropFileName">Lien partagé.</span>
@@ -2788,65 +2904,67 @@ function shareFile(id, shortLink, fileName, fileExtension) {
           <p>Cordialement </p>
           <p>${userSender}</p>
   `;
-  let tmpDiv = document.createElement("div");
-  tmpDiv.innerHTML = dataTmp;
-  console.log(tmpDiv);
-  tmpDiv.querySelector("#droplink").href = link;
-  tmpDiv.querySelector("#dropFileName").textContent =
-    fileName + "." + fileExtension;
-  editor.setData(tmpDiv.innerHTML);
-  document.getElementById("shareFileInDpFajs").onclick = (e) => {
-    const tmpBtn=e.target
-    tmpBtn.disabled=true
-    tmpBtn.innerHTML="Partage en cours..."
-    const mailContent = editor.getData();
-    const strObject = document.getElementById("objet_area_object_drop").value;
-    const receivers = document
-      .getElementById("dest_area_drop_box")
-      .value.split(",");
-    const datas = {
-      object: strObject,
-      receivers: receivers,
-      mailContent: mailContent,
-    };
-    const request = new Request("/user/share/file", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(datas),
-    });
-    fetch(request).then((response) => {
-      if (response.status === 200 && response.ok) {
-        response.json().then((data) => {
-            const emailNotSend = data.mailNotSends;
-            const emailSend = data.mailSends;
-            
-            let responseContent= emailNotSend.length === 1 ? "Le lien n'a pas pu être envoyé à l'email suivant : " : 
-            "Le lien n'a pas pu être envoyé aux emails suivant: ";
-            emailNotSend.forEach(item => {responseContent+=item+","})
-            responseContent=responseContent.substring(-1);
+	let tmpDiv = document.createElement("div");
+	tmpDiv.innerHTML = dataTmp;
+	console.log(tmpDiv);
+	tmpDiv.querySelector("#droplink").href = link;
+	tmpDiv.querySelector("#dropFileName").textContent = fileName + "." + fileExtension;
+	editor.setData(tmpDiv.innerHTML);
+	document.getElementById("shareFileInDpFajs").onclick = (e) => {
+		const tmpBtn = e.target;
+		tmpBtn.disabled = true;
+		tmpBtn.innerHTML = "Partage en cours...";
+		const mailContent = editor.getData();
+		const strObject = document.getElementById("objet_area_object_drop").value;
+		const receivers = document.getElementById("dest_area_drop_box").value.split(",");
+		const datas = {
+			object: strObject,
+			receivers: receivers,
+			mailContent: mailContent,
+		};
+		const request = new Request("/user/share/file", {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(datas),
+		});
+		fetch(request)
+			.then((response) => {
+				if (response.status === 200 && response.ok) {
+					response.json().then((data) => {
+						const emailNotSend = data.mailNotSends;
+						const emailSend = data.mailSends;
 
-			if(emailNotSend.length > 0)
-            	new swal("Information ",responseContent, "info").then((data) => {
-					if(emailSend.length > 0){
-						new swal("Information ","Fichier envoyé avec succès", "info")
-					}
-				});
-			if(emailNotSend.length == 0 && emailSend.length > 0)
-			new swal("Information ","Fichier envoyé avec succès", "info")
-            tmpBtn.disabled=false;
-            tmpBtn.innerHTML="Partager";
-        });
-      }
-    }).catch((error) =>{
+						let responseContent =
+							emailNotSend.length === 1
+								? "Le lien n'a pas pu être envoyé à l'email suivant : "
+								: "Le lien n'a pas pu être envoyé aux emails suivant: ";
+						emailNotSend.forEach((item) => {
+							responseContent += item + ",";
+						});
+						responseContent = responseContent.substring(-1);
 
-      new swal("Erreur","Erreur 500","error")
-      tmpBtn.disabled=false;
-      tmpBtn.innerHTML="Partager";
-    });
-  };
+						if (emailNotSend.length > 0)
+							new swal("Information ", responseContent, "info").then((data) => {
+								if (emailSend.length > 0) {
+									new swal("Information ", "Fichier envoyé avec succès", "info");
+								}
+							});
+						if (emailNotSend.length == 0 && emailSend.length > 0)
+							new swal("Information ", "Fichier envoyé avec succès", "info");
+						tmpBtn.disabled = false;
+						tmpBtn.innerHTML = "Partager";
+					});
+				}
+			})
+			.catch((error) => {
+				new swal("Erreur", "Erreur 500", "error");
+				tmpBtn.disabled = false;
+				tmpBtn.innerHTML = "Partager";
+			});
+	};
 }
 
 /**
@@ -2855,7 +2973,96 @@ function shareFile(id, shortLink, fileName, fileExtension) {
  * @returns  String html
  */
 function emailShareDropContent() {
-  return `<p>Écrivez votre message ici.</p>`;
+	return `<p>Écrivez votre message ici.</p>`;
 }
 
 //end block drop box author faniry
+
+function fetchAlertInfoCMZ() {
+	const cookie_toast_message = isValueInCookie("toast_message");
+	let data_cookie = !!cookie_toast_message ? JSON.parse(cookie_toast_message) : [];
+
+	let link = "/notification/toast-message";
+
+	const request = new Request(link, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			privateID: data_cookie,
+		}),
+	});
+
+	fetch(request)
+		.then((response) => response.json())
+		.then((response) => {
+			const { data } = response;
+
+			const content_alert_message = document.querySelector(".content_card_alert_message_jheo_js");
+
+			const lists_info = getListAlertInfo(data);
+
+			content_alert_message.innerHTML = lists_info;
+		})
+		.catch((error) => console.log(error));
+}
+
+function getListAlertInfo(data) {
+	let list_info = "";
+	if (data.length > 0) {
+		data.forEach((item) => {
+			list_info += getItemAlertInfo(item);
+		});
+	} else {
+		list_info = `
+			<div class="content_alert_message">
+				<div class="d-flex justify-content-center text-primary">
+					<div class="alert alert-warning d-flex align-items-center" role="alert">
+						<div>
+							<i class="fa-solid fa-face-smile-wink"></i>
+							Vous avez toutes lu.</br>
+							<a class="text-decoration-underline fs-6 cursor-pointer" onclick="revoirAlertToastMessage()">Vous pouvez les revoir ici. </a>
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+
+		const cta_all_read_alert_message = document.querySelector(".all_read_alert_toast_jheo_js");
+		cta_all_read_alert_message.setAttribute("disabled", true);
+	}
+
+	return list_info;
+}
+
+function getItemAlertInfo(item) {
+	const { id: toastId, toast_message, is_alert, is_news, is_info, datetime } = item;
+	let item_info = "";
+
+	let alert_class = is_alert ? "alert-danger" : "";
+	alert_class = is_news ? "alert-info" : alert_class;
+	alert_class = is_info ? "alert-primary" : alert_class;
+
+	let alert_icon = is_alert ? `<i class="fa-solid fa-triangle-exclamation fs-5"></i>` : "";
+	alert_icon = is_news ? `<i class="fa-solid fa-circle-check fs-5"></i>` : alert_icon;
+	alert_icon = is_info ? `<i class="fa-solid fa-triangle-exclamation fs-5"></i>` : alert_icon;
+
+	item_info = `
+		<div id="toast_message_ID${toastId}" class="alert ${alert_class} alert_toast_message_jheo_js alert_toast_${toastId}_message_jheo_js" role="alert">
+			<p class="mb-2">
+				${alert_icon}
+				${toast_message}
+			</p>
+			<hr>
+			<div class="d-flex justify-content-end align-items-center">
+				<h6 class="mt-2 text-end cursor-pointer" onclick="saveToastMessage('${toastId}',true)">
+					OK, j'ai compris.
+				</h6>
+			</div>
+		</div>
+	`;
+
+	return item_info;
+}

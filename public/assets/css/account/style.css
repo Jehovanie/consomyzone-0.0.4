@@ -1011,6 +1011,9 @@ body{
 .od{
   height: 28.75rem;
 }
+.od_update {
+    height: 38rem;
+}
 .pd{
   height: auto;
 }
@@ -1115,6 +1118,9 @@ body{
 }
 .ve{
   width: 18.75rem;
+}
+.ve_update{
+  width: 60rem
 }
 .we{
   width: 11.25rem;

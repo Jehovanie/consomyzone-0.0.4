@@ -70,6 +70,13 @@ body {
 	z-index: 1030;
 }
 
+.content_alert_message {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
 /* .ep-nav .nav-item{
     width: 146px;
 } */

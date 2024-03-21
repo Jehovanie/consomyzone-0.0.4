@@ -66,8 +66,9 @@ class NotificationController extends AbstractController
     }
 
 
-    #[Route("/notification/toast-message" , name : "app_toast_message")]
+    #[Route("/notification/toast-message" , name : "app_toast_message", methods: ["POST"])]
     public function toastMessage(
+        Request $request,
         NotificationService $notificationsService
     )
     {
@@ -75,12 +76,14 @@ class NotificationController extends AbstractController
             return $this->json([ "success" => false,  "toastMessage" => [] ]);
         }
 
-        $result = $notificationsService->getToastMessage();
+        $data = json_decode($request->getContent(), true);
+        extract($data); /// $privateID
+
+        $result = $notificationsService->getToastMessage($privateID);
 
         return $this->json([
             "success" => true,
-            "toastMessage" => $result
+            "data" => $result
         ]);
     }
-    
 }

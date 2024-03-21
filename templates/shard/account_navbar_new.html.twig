@@ -182,6 +182,46 @@
 					<!-- Dropdown End -->
 				</li>
 				<!-- Chat Notification Area -->
+
+				<!-- Chat Notification Area -->
+				<li class="h" x-data="{ dropdownOpen: false }" @click.outside="dropdownOpen = false">
+					<a class="h info_alert_message_jheo_js" href="#" @click.prevent="dropdownOpen = ! dropdownOpen">
+						<span class="g -ud-top-0.5 -ud-right-0.5 he dd th ck sa d-none">
+							<span class="alert_message_nbr_jheo_js position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+								0
+							</span> 
+						</span>
+						<i class="fa-solid fa-circle-info fa-flip fs-4"></i>
+					</a>
+
+					<!-- Dropdown Start -->
+					<div x-show="dropdownOpen" class="a nj xr dc -ud-right-20 ve_update gq mt od_update" style="display: none">
+						<div class="vi bj wr vl ql">
+							<h5 class="tn sn zn gs">
+								Des infos sur ConsoMyZone
+							</h5>
+						</div>
+						
+						{# message list  #}
+						<ul class="lc hg tg ph ip pd rl ym fn content_card_alert_message_jheo_js" style="overflow-y: auto;">
+							<div class="content_alert_message">
+								<div class="d-flex justify-content-center text-primary">
+									<div class="spinner-border" role="status">
+										<span class="sr-only">Loading...</span>
+									</div>
+								</div>
+							</div>
+						</ul>
+
+						<div class="g l ra yd ei ti nj xr bj wr yk">
+							<div class="d-flex justify-content-end align-items-center">
+								<a class="lc mg pg qh un eo oj wq vk cursor-pointer all_read_alert_toast_jheo_js">Marquer tous comme lus</a>
+							</div>
+						</div>
+					</div>
+					<!-- Dropdown End -->
+				</li>
+				<!-- Chat Notification Area --> 
 			</ul>
 
 			<!-- User Area -->
