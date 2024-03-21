@@ -415,6 +415,7 @@ class MarcheRepository extends ServiceEntityRepository
                          ->setParameter('cles1', $mot_cles1 );
             }else{
                 $qb = $qb->where("REPLACE(p.adresse) LIKE :cles1")
+                         ->orWhere("REPLACE(p.codpost) LIKE :cles1")
                          ->setParameter('cles1', '%'. $mot_cles1. '%' );
             }
 
