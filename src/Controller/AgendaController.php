@@ -2196,7 +2196,7 @@ class AgendaController extends AbstractController
 
 
     
-     #[Route("/user/agenda/participants/{agendaId}" , name:"app_user_agenda_participants", methods:"GET")]
+    #[Route("/user/agenda/participants/{agendaId}" , name:"app_user_agenda_participants", methods:"GET")]
     public function agendaFetchParticipants(
         $agendaId,
         AgendaService $agendaService,
@@ -2204,26 +2204,42 @@ class AgendaController extends AbstractController
         UserRepository $userRepository
     ){
         $user= $this->getUser();
+
         $table_agenda= $user->getNomTableAgenda();
         $agenda= $agendaService->getOneAgenda($table_agenda, $agendaId);
 
         $table_partage_agenda= "partage_agenda_" . $agenda["user_id"];
 
+        $data_user_created = [ 
+            "id" => 0,
+            "agenda_id" => $agendaId,
+            "user_id" => $agenda["user_id"],
+            "origin" => "creator",
+            "accepted" => 1,
+            "presence" => 0
+        ];
+
         $list_participants= $agendaService->getListParticipants($table_partage_agenda, $agendaId);
+        array_push($list_participants, $data_user_created);
+
         $user_participants= [];
         foreach ($list_participants as $participant){
             $user_profil = $userService->getUserProfileFromId(intval($participant["user_id"]));
             if( $user_profil !== null ){
                 array_push($user_participants, [
                     "user" => [
-                         "photoProfil" => $user_profil->getPhotoProfil(),
+                        "photoProfil" => $user_profil->getPhotoProfil(),
                         "firstname" => $user_profil->getFirstname(),
                         "lastname" => $user_profil->getLastname(),
                         "pseudo" => $user_profil->getUserId()->getPseudo(),
                         "email" => $user_profil->getUserId()->getEmail(),
                         "isAnonymous" => false
                     ],
-                    "status" => $participant
+                    "status" => [
+                        ...$participant,
+                        "isCreator" => intval($participant["user_id"]) === intval($agenda["user_id"]),
+                        "id_user_connected" => $user->getId()
+                    ]
                 ]);
             }else{
                 $user_annonyme= $userRepository->findOneBy(["id" => intval($participant["user_id"])]);
@@ -2236,7 +2252,11 @@ class AgendaController extends AbstractController
                         "email" => $user_annonyme->getEmail(),
                         "isAnonymous" => true
                     ],
-                    "status" => $participant
+                    "status" => [
+                        ...$participant,
+                        "isCreator" => false,
+                        "id_user_connected" => $user_annonyme->getId()
+                    ]
                 ]);
             }
         }
@@ -2250,6 +2270,70 @@ class AgendaController extends AbstractController
                 "adresse" => $agenda["adresse"],
             ],
             "table_partage_agenda" => $table_partage_agenda,
+        ]);
+    }
+
+
+    #[Route("/user/cancel/invitation/event" , name:"user_cancel_invitation_event", methods:"POST")]
+    public function annullerInvitation(
+        AgendaService $agendaService, 
+        Request $request,
+        MailService $mailService,
+        UserRepository $userRepository,
+    ){
+        $data = json_decode($request->getContent(), true);
+        extract($data); ///$agendaId
+
+        $current_user = $this->getUser();
+        $userId= $current_user->getId();
+        $table_agenda= $current_user->getNomTableAgenda();
+        
+        $agenda= $agendaService->getOneAgenda($table_agenda, $agendaId);
+        $creatorId= $agenda["user_id"];
+
+        $userCreator= $userRepository->findOneBy(["id" => intval($creatorId)]);
+
+
+        $mailService->sendEmailCancelAgendaEvent(
+            $current_user->getEmail(),
+            $current_user->getPseudo(),
+            [ "email" => $userCreator->getEmail(), "fullName" => $userCreator->getPseudo()],
+            [   
+                "object_mail" => "Annulation de ma présence à un événement",
+                "template_path" => "emails/mail_cancel_invitation_agenda.html.twig",
+                "agenda" => [
+                    "name" =>  $agenda["name"],
+                    "date" => $agenda["dateStart"],
+                    "heure_debut" => $agenda["heure_debut"],
+                    "adresse" => $agenda["adresse"],
+                ],
+                "user_sender" => [
+                    "fullName" => $current_user->getPseudo()
+                ]
+            ]
+        );
+        
+        $mailService->sendEmailCancelAgendaEvent(
+            null,
+            "ConsoMyZone",
+            [ "email" => $current_user->getEmail(), "fullName" => $current_user->getPseudo()],
+            [
+                "object_mail" => "Confirmation de l'annulation de ma présence à un événement",
+                "template_path" => "emails/mail_confirm_cancel_invitation_agenda.html.twig",
+                "agenda" =>  [
+                    "name" =>  $agenda["name"],
+                    "date" => $agenda["dateStart"],
+                    "heure_debut" => $agenda["heure_debut"],
+                    "adresse" => $agenda["adresse"],
+                ],
+                "user_sender" => [
+                    "fullName" => ""
+                ]
+            ]
+        );
+        
+        return $this->json([
+            "status"=>true,
         ]);
     }
 }

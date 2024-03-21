@@ -730,5 +730,53 @@ return 250;
         $customMailer->send($email);
     }
 
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Send email for user who create an event when user participate decide to cancel
+     * Use in: AgendaController.php
+     * 
+     * @param $email_from 
+     * @param $fullName_from
+     * @param $user_receiver [ "email" => ..., "fullName" => ... ]
+     * @param $context [ "tamplate_path" => ..., [ "email" => ..., "today" => ..., "agenda" => ..., "user_sender" => ... ]]
+     * 
+     * @return boolean true of false
+     */
+    public function sendEmailCancelAgendaEvent($email_from, $fullName_from, $user_recevieur, $context){
+        
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender ,$fullName_from))
+
+                ->subject($context["object_mail"])
+                ->to(new Address($user_recevieur["email"], $user_recevieur["fullName"]));
+
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
+        $email= $email->html(
+                    $this->renderView(
+                        $context["template_path"],
+                        [
+                            'email' => new WrappedTemplatedEmail($this->twig, $email),
+                            'today' => $date_fr,
+                            'agenda' => $context["agenda"],
+                            'user_sender' => $context["user_sender"]
+                        ]
+                    )
+                );
+
+        try{
+            $customMailer->send($email);
+            return true;
+        }catch(error){
+            return false;
+        }
+    }
+
 }
 ?>

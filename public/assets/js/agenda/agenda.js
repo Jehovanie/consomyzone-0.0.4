@@ -2387,8 +2387,9 @@ function getListParticipantEvenement(agendaId) {
 		.then((response) => response.json())
 		.then((response) => {
 			const { data, agenda } = response;
+
 			content_list.innerHTML = `
-				<table class="table table-striped" >
+				<table id="list_agenda_participant_jheo_js" class="table table-striped" >
 					<thead>
 						<tr>
 							<th scope="col">Email</th>
@@ -2401,6 +2402,12 @@ function getListParticipantEvenement(agendaId) {
 					</tbody>
 				</table>
 			`;
+
+			$("#list_agenda_participant_jheo_js").DataTable({
+				language: {
+					url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+				},
+			});
 		});
 }
 
@@ -2418,9 +2425,21 @@ function generateItemParticipantEvent(data) {
 	const { user, status } = data;
 
 	let action = "";
-	if (parseInt(status.accepted) === 1) {
+	if (status.origin === "creator") {
 		action = `
-			<a href="#" class="btn btn-danger btn-sm" onClick="handleRemoveMyPresent()">Annuler ma présence</a>
+			<a href="#" class="btn btn-info btn-sm">Créateur</a>
+		`;
+	} else if (
+		parseInt(status.accepted) === 1 &&
+		status.isCreator === false &&
+		parseInt(status.user_id) === parseInt(status.id_user_connected)
+	) {
+		action = `
+			<a href="#" class="btn btn-danger btn-sm" onClick="handleRemoveMyPresent('${status.agenda_id}')">Annuler ma présence</a>
+		`;
+	} else if (parseInt(status.accepted) === 1 && parseInt(status.user_id) !== parseInt(status.id_user_connected)) {
+		action = `
+			<a href="#" class="btn btn-danger btn-sm" >Participé</a>
 		`;
 	} else if (parseInt(status.accepted) === -1) {
 		action = `
@@ -2449,6 +2468,23 @@ function generateItemParticipantEvent(data) {
 	return itemParticpantHtml;
 }
 
-function handleRemoveMyPresent() {
-	alert("Remove my present");
+function handleRemoveMyPresent(agendaId) {
+	const link = "/user/cancel/invitation/event";
+
+	const request = new Request(link, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			agendaId,
+		}),
+	});
+
+	fetch(request)
+		.then((response) => response.json())
+		.then((response) => {
+			console.log(response);
+		});
 }
