@@ -549,6 +549,7 @@ class MapModule {
 		const memoryCenter = getDataInSessionStorage("memoryCenter")
 			? JSON.parse(getDataInSessionStorage("memoryCenter"))
 			: null;
+			
 		if (memoryCenter.zoom !== 6) {
 			this.lastMemoryCenter = memoryCenter;
 			this.map.setView(L.latLng(this.defautLatitude, this.defaultLongitude), 6, { animation: true });
@@ -1118,6 +1119,7 @@ class MapModule {
 				"Listes des contours géographiques."
 			)}
         `;
+
 		if (this.mapForType === "golf") {
 			htmlControl += `
                 ${this.createBtnControl(
@@ -1127,9 +1129,6 @@ class MapModule {
 					"Légende des icônes sur la carte."
 				)}
             `;
-			//     <button class="btn btn-info" data-type="info_golf_jheo_js" style="font-size: 1.1rem;">
-			//         <i class="fa-solid fa-circle-question" data-type="info_golf_jheo_js"></i>
-			//     </button>
 		} else if (this.mapForType === "resto") {
 			htmlControl += `
                 ${this.createBtnControl(
@@ -1145,12 +1144,6 @@ class MapModule {
 					"Liste des restaurants pastilles."
 				)}
             `;
-			// <button class="btn btn-info" data-type="info_resto_jheo_js" style="font-size: 1.1rem;">
-			//     <i class="fa-solid fa-circle-question" data-type="info_resto_jheo_js"></i>
-			// </button>
-			// <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
-			//     <i  class="fa-solid fa-location-dot fa-flip text-danger" data-type="resto_pastille_jheo_js"></i>
-			// </button>
 		} else if (this.mapForType === "tous") {
 			htmlControl += `
                 ${this.createBtnControl(
@@ -1166,12 +1159,6 @@ class MapModule {
 					"Liste des restaurants pastilles."
 				)}
             `;
-			// <button class="btn btn-info" data-type="info_tous_jheo_js" style="font-size: 1.1rem;">
-			//     <i class="fa-solid fa-circle-question" data-type="info_tous_jheo_js"></i>
-			// </button>
-			// <button class="btn btn-light" data-type="resto_pastille_jheo_js" style="font-size: 1.1rem;">
-			//     <i  class="fa-solid fa-location-dot fa-flip text-danger" data-type="resto_pastille_jheo_js"></i>
-			// </button>
 		} else if (this.mapForType === "station") {
 			htmlControl += `
                 ${this.createBtnControl(
@@ -1181,9 +1168,6 @@ class MapModule {
 					"Légende des icônes sur la carte."
 				)}
             `;
-			// <button class="btn btn-info" data-type="info_station_jheo_js" style="font-size: 1.1rem;">
-			//     <i class="fa-solid fa-circle-question" data-type="info_station_jheo_js"></i>
-			// </button>
 		} else if (this.mapForType === "ferme") {
 			htmlControl += `
                 ${this.createBtnControl(
@@ -1193,9 +1177,6 @@ class MapModule {
 					"Légende des icônes sur la carte."
 				)}
             `;
-			// <button class="btn btn-info" data-type="info_ferme_jheo_js" style="font-size: 1.1rem;">
-			//     <i class="fa-solid fa-circle-question" data-type="info_ferme_jheo_js"></i>
-			// </button>
 		} else if (this.mapForType === "tabac") {
 			htmlControl += `
                 ${this.createBtnControl(
@@ -1205,9 +1186,6 @@ class MapModule {
 					"Légende des icônes sur la carte."
 				)}
             `;
-			// <button class="btn btn-info" data-type="info_tabac_jheo_js" style="font-size: 1.1rem;">
-			//     <i class="fa-solid fa-circle-question" data-type="info_tabac_jheo_js"></i>
-			// </button>
 		}
 
 		htmlControl += `

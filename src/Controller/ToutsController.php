@@ -412,15 +412,12 @@ class ToutsController extends AbstractController
             "ferme" => $fermeGeomRepository->getAllFilterByLatLong($data),
             "resto" => $bddRestoRepository->getAllFilterByLatLong($data)
         ]);
+    }
 
-        // return $this->json([
-        //     "station" => $stationServiceFrGeomRepository->getLatitudeLongitudeStation(),
-        //     "ferme" => $fermeGeomRepository->getLatitudeLongitudeFerme(),
-        //     "resto" => $bddRestoRepository->getAllOpenedRestos(),
-        //     "profil" => $statusProfile["profil"],
-        //     "statusTribut" => $statusProfile["statusTribut"]
-        // ]);
 
+    #[Route('/new_home', name: 'for_explore_cat_tous', methods:["GET", "POST"])]
+    public function new_page_home(){
+        return $this->render("new_home/index.html.twig");
     }
 }
 
