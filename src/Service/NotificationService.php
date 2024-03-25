@@ -473,9 +473,7 @@ $pseudo = $confidentialityService->getConfFullname(intval($userId), $userIdC);
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * où: on Utilise pour avoir les données dans le base de données les informations utils pour les internautes, 
      * localisation du fichier: NotificationController.php
-     * @return [ [ id => ..., toast_message => ..., type: ..., is_update => ... ], ... ]
-     * type: { 0 : Message Alert, 1 : Message Information(mise à jour par ex), 2 : Message sur les nouveaux }
-     * is_update : = 1 Quand l'information est décider de ne plus afficher dans rendus, par défaut 0.
+     * @return 
      */
     public function getToastMessage($privateID){
         $table= "toast_message"; /// non de table dans la base de données

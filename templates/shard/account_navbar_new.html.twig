@@ -196,10 +196,12 @@
 
 					<!-- Dropdown Start -->
 					<div x-show="dropdownOpen" class="a nj xr dc -ud-right-20 ve_update gq mt od_update" style="display: none">
-						<div class="vi bj wr vl ql">
+						<div class="lc qg hn vi bj wr vl ql">
 							<h5 class="tn sn zn gs">
 								Des infos sur ConsoMyZone
 							</h5>
+
+							<i class="fa-solid fa-xmark fs-3 cg"  @click.prevent="dropdownOpen = !dropdownOpen"></i>
 						</div>
 						
 						{# message list  #}

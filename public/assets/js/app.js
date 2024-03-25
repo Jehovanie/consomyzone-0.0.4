@@ -378,8 +378,8 @@ function revoirAlertToastMessage() {
 	fetchAlertInfoCMZ();
 }
 
+////jheo: Responsive for mobile -----------------------
 if (document.getElementById("close_menu_for_mobile")) {
-	////jheo: Responsive for mobile -----------------------
 	const close_menu = document.getElementById("close_menu_for_mobile");
 
 	close_menu.addEventListener("click", () => {
@@ -404,7 +404,7 @@ window.addEventListener("load", () => {
 	const link_now = new URL(window.location.href);
 	const linkPathname = link_now.pathname;
 	if (!linkPathname.includes("/actualite-non-active")) {
-		const useCookieOrNot = isValueInCookie("isCanUseCookie");
+		// const useCookieOrNot = isValueInCookie("isCanUseCookie");
 
 		const cookie_toast_message = isValueInCookie("toast_message");
 		let data_cookie = !!cookie_toast_message ? JSON.parse(cookie_toast_message) : [];
@@ -2164,19 +2164,20 @@ function getToastMessage(dataToastMessage) {
 				}
 
 				// generateToastMessage(response.toastMessage);
-			} else {
-				const link_now = new URL(window.location.href);
-				const linkPathname = link_now.pathname;
-				if (!linkPathname.includes("/connexion")) {
-					generateOneToastMessage(
-						0,
-						JSON.stringify(""),
-						3, //// type de notification : 0 alert, 1 primary, 2 news
-						200000,
-						true
-					);
-				}
 			}
+			//  else {
+			// 	const link_now = new URL(window.location.href);
+			// 	const linkPathname = link_now.pathname;
+			// 	if (!linkPathname.includes("/connexion")) {
+			// 		generateOneToastMessage(
+			// 			0,
+			// 			JSON.stringify(""),
+			// 			3, //// type de notification : 0 alert, 1 primary, 2 news
+			// 			200000,
+			// 			true
+			// 		);
+			// 	}
+			// }
 		});
 }
 
@@ -2329,6 +2330,7 @@ function saveToastMessage(toastID, isSave = false) {
 
 	// clickedOnToastMessage(toastID);
 }
+
 function isValueInCookie(cName) {
 	return Cookies2.get(cName);
 }
