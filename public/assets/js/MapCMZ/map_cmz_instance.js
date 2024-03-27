@@ -1,3 +1,11 @@
-const map_cmz = new RubriqueCMZ();
+const MAP_CMZ = new RubriqueCMZ();
 
-map_cmz.initMap();
+MAP_CMZ.initMap();
+
+function updateGeoJsonAdd(couche, index) {
+	MAP_CMZ.updateGeoJson(couche, index);
+}
+
+function removeSpecGeoJson(couche, index) {
+	MAP_CMZ.removeSpecGeoJson(couche, index);
+}
