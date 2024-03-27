@@ -69,6 +69,13 @@ class MapCMZ {
 
 		///use for the store last memory center.
 		this.lastMemoryCenter = null;
+
+		//// this variable use for the historique navigation in the carte
+		this.listPositionBeforAndAfter = [];
+
+		/// this use for to know the current index in the history navigation in the carte
+		/// by default it is the length of the this.listPositionBeforAndAfter.
+		this.indexCurrentOnLisPositionBeforeAndAfter = 0;
 	}
 
 	initTales() {
@@ -256,6 +263,20 @@ class MapCMZ {
 		const memoryCenter = this.getDataMemoryCenterInSession("memoryCenter");
 
 		// si on est dans une departement specifique, ou on est dans le recherch, et memory Center est vide...
+
+		let map_zoom = 0;
+		if (this.id_dep) {
+			map_zoom = this.defaultZoom;
+		} else if (lat && long && zoom) {
+			map_zoom = zoom;
+		} else if (memoryCenter) {
+			map_zoom = memoryCenter.zoom;
+		} else {
+			map_zoom = this.defaultZoom;
+		}
+
+		map_zoom = 5;
+
 		this.map = L.map("map", {
 			zoomControl: false,
 			center:
@@ -263,13 +284,7 @@ class MapCMZ {
 					? L.latLng(this.latitude, this.longitude)
 					: L.latLng(memoryCenter.coord.lat, memoryCenter.coord.lng),
 
-			zoom: this.id_dep
-				? this.defaultZoom
-				: lat && long && zoom
-				? zoom
-				: memoryCenter
-				? memoryCenter.zoom
-				: this.defaultZoom,
+			zoom: map_zoom,
 			layers: [this.tiles],
 		});
 
@@ -731,6 +746,60 @@ class MapCMZ {
 		}
 	}
 
+	goBackOrAfterPosition(backOrAfter) {
+		if (backOrAfter === "back") {
+			this.indexCurrentOnLisPositionBeforeAndAfter--;
+		} else if (backOrAfter === "after") {
+			this.indexCurrentOnLisPositionBeforeAndAfter++;
+		}
+
+		const before = this.listPositionBeforAndAfter[this.indexCurrentOnLisPositionBeforeAndAfter - 1];
+
+		this.map.flyTo(L.latLng(before.lat, before.lng), before.zoom, { animation: true, noMoveStart: true });
+
+		// console.log(`I ${backOrAfter} here ${this.indexCurrentOnLisPositionBeforeAndAfter}`);
+		// console.log(before)
+
+		if (this.indexCurrentOnLisPositionBeforeAndAfter === 1) {
+			const parentIconControl = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
+			if (!parentIconControl.classList.contains("d-none")) {
+				parentIconControl.classList.add("d-none");
+			}
+
+			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
+			if (parentIconControlAfter.classList.contains("d-none")) {
+				parentIconControlAfter.classList.remove("d-none");
+			}
+		}
+
+		if (this.indexCurrentOnLisPositionBeforeAndAfter === this.listPositionBeforAndAfter.length) {
+			const parentIconControl = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
+			if (!parentIconControl.classList.contains("d-none")) {
+				parentIconControl.classList.add("d-none");
+			}
+
+			const parentIconControlBefore = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
+			if (parentIconControlBefore.classList.contains("d-none")) {
+				parentIconControlBefore.classList.remove("d-none");
+			}
+		}
+
+		if (
+			this.indexCurrentOnLisPositionBeforeAndAfter > 1 &&
+			this.indexCurrentOnLisPositionBeforeAndAfter < this.listPositionBeforAndAfter.length
+		) {
+			const parentIconControlBefore = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
+			if (parentIconControlBefore.classList.contains("d-none")) {
+				parentIconControlBefore.classList.remove("d-none");
+			}
+
+			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
+			if (parentIconControlAfter.classList.contains("d-none")) {
+				parentIconControlAfter.classList.remove("d-none");
+			}
+		}
+	}
+
 	openBottomSide(bottomSideContentType) {
 		const tiles_change_map = ["tiles_type_jheo_js"];
 
@@ -757,6 +826,12 @@ class MapCMZ {
 			this.injectTilesTypesOnBottom();
 		} else if (bottomSideContentType === "reset_zoom_jheo_js") {
 			this.resetZoom();
+		} else if (bottomSideContentType === "couche_tabac_jheo_js") {
+			this.openRightSide(bottomSideContentType);
+		} else if (bottomSideContentType === "cart_before_jheo_js") {
+			this.goBackOrAfterPosition("back");
+		} else if (bottomSideContentType === "cart_after_jheo_js") {
+			this.goBackOrAfterPosition("after");
 		}
 	}
 
@@ -1127,6 +1202,83 @@ class MapCMZ {
 		document.querySelector(".content_cart_map_jheo_js").appendChild(container);
 	}
 
+	settingMemoryCenter() {
+		this.map.on("moveend", (e) => {
+			const center = e.target.getCenter();
+			const coordAndZoom = {
+				zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
+				coord: center,
+			};
+			setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom));
+
+			if (getDataInSessionStorage("lastSearchPosition")) {
+				const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+				const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+				const lastSearchPosition = {
+					zoom: 13,
+					position: { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max },
+				};
+				setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition));
+			}
+
+			/// check and add polylines s'il faut
+			// this.customiSpyderfyWithoutMousePosition();
+		});
+
+		this.map.on("movestart", (e) => {
+			const center = e.target.getCenter();
+			const coordAndZoom = {
+				zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
+				coord: center,
+			};
+
+			if (document.querySelector(".icon_close_nav_left_jheo_js")) {
+				if (!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")) {
+					document.querySelector(".content_navleft_jheo_js").classList.add("d-none");
+					iconsChange();
+				}
+			}
+
+			////object of the current position
+			this.currentPositionOnMap = {
+				/// { zoom : 0, lat: 0, lng: 0 }
+				zoom: coordAndZoom.zoom,
+				...center,
+			};
+
+			////array contains history current position...
+			this.listPositionBeforAndAfter.push(this.currentPositionOnMap); /// [ { zoom : 0, lat: 0, lng: 0 }, ... ]
+
+			if (this.listPositionBeforAndAfter.length > 10) {
+				this.listPositionBeforAndAfter.shift();
+			}
+
+			this.indexCurrentOnLisPositionBeforeAndAfter = this.listPositionBeforAndAfter.length;
+			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
+			if (!parentIconControlAfter.classList.contains("d-none")) {
+				parentIconControlAfter.classList.add("d-none");
+			}
+
+			if (this.listPositionBeforAndAfter.length > 1) {
+				const parentIconControl = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
+				if (parentIconControl.classList.contains("d-none")) {
+					parentIconControl.classList.remove("d-none");
+				}
+			}
+
+			///remove polyline
+			// this.removePolylineWithoutMousePosition();
+
+			///REMOVE THE OUTSIDE THE BOX
+			/// if not bind data.
+			// const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+			// const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+			// const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
+			// this.removeMarkerOutSideTheBox(new_size);
+		});
+	}
+
 	async initMap(lat = null, long = null, zoom = null) {
 		const content_map = document.querySelector(".cart_map_js");
 
@@ -1149,7 +1301,7 @@ class MapCMZ {
 		await this.addGeoJsonToMap();
 
 		///inject event to save memoir zoom
-		// this.settingMemoryCenter();
+		this.settingMemoryCenter();
 
 		/// bind controller in the right
 		this.bindOtherControles();
@@ -1236,15 +1388,19 @@ class MapCMZ {
 
 	removeCoucheOnLeafled(COUCHE) {
 		const data_spec = this.objectGeoJson.find((item) => item.couche.toLowerCase() === COUCHE.toLowerCase());
-
 		//// remove geoJsom
 		data_spec.child.forEach((jtem) => jtem.geoJson.clearLayers());
-
-		///// update data remove all children selected in this
-		// this.objectGeoJson= this.objectGeoJson.map(item => {
-		//     item.child = (item.couche.toLowerCase() === COUCHE ) ? [] : item.child;
-		//     return item;
-		// })
 		this.objectGeoJson = this.objectGeoJson.filter((item) => item.couche.toLowerCase() !== COUCHE);
+	}
+
+	getMax(max, min) {
+		return max < min ? { max: min, min: max } : { max: max, min: min };
+	}
+
+	getBoundsWestEastNorthSouth() {
+		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+		return { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
 	}
 }

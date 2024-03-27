@@ -1,0 +1,88 @@
+
+<header class="g s r vd vd-head ya cj padding_header" :class="{ '' : stickyMenu }" @scroll.window="stickyMenu = (window.pageYOffset > 20) ? true : false">
+	<div class="bb 2xl:ud-px-0 oo wf yf i">
+	{# <div class="bb ze ki xn 2xl:ud-px-0 oo i"> #}
+
+        {# =================== CONTENT LOGO AND FORM SEARCH =================== #}
+		<div class="vd to/4 tc wf yf">
+			<div class="content-logo-shearch row">
+                <div class="col-3">
+                    <a class="navbar-brand" href="{{path("app_home")}}"><img src="{{asset('assets/image/logo.png')}}" alt="logo"></a>
+                </div>
+                <div class="recherche-navbar col-9">
+                    <form action="/search" method="get" class="bar-de-recherche form_content_search_navbar_js">
+                        <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?">
+                        <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Où ?">
+                        <button type="submit" class="hidden"></button>
+                    </form>
+                    <button class="open-navleft-resto open-navleft-resto-spec open-navleft-resto-arrond open-navleft-ferme open-navleft-ferme-spec open-navleft-station open-navleft-station-spec btn-recher-nav open_nav_left_jheo_js">
+                        <i class="fa-solid fa-minuss icon_open_nav_left_jheo_js"></i>
+                    </button>
+                </div>
+            </div>
+		</div>
+        {# =================== END CONTENT LOGO AND FORM SEARCH =================== #}
+
+        <div class="sd qo f ho oo wf yf" :class="{ 'd hh rm sr td ud qg ug jc yh': navigationOpen }">
+			<div class="tc wf ig pb no">
+
+                {# ======================== CONTENT CONNEXION/ACTUALITY =========================== #}
+				<div class="d-flex justify-content-center align-items-center icon-connexion">
+                    {% if app.user and app.user.type != "Type" and userConnected is defined and userConnected is not null %}
+
+                        <a class="cta_connexion_navbar cta_to_actualite_jheo_js" href="{{path('app_account')}}">
+                            <img src="{{(userConnected.photo_profil) ? "/public" ~ userConnected.photo_profil : asset('/public/uploads/users/photos/default_pdp.png') }}" alt="pdp">
+                        </a>
+                        <div class="">
+                            <a class="un mn qv lc mg dp zq ml" data-toggle="tooltip" data-placement="bottom" title="Déconnexion" href="{{path('app_logout')}}">
+                                <i class="fa-solid fa-right-from-bracket fa-xl hover-deconnexion" style="color:red;  text-shadow: -1px -1px 0 #ffff, 1px -1px 0 #ffff, -1px 1px 0 #ffff, 1px 1px 0 #ffff;
+                                    font-weight: bolder;
+                                    font-size: 18pt;" >
+                                </i>
+                            </a>
+                        </div>
+                    {% else %}
+                        <a class="cta_connexion_navbar_no_connected cta_navbar_to_connexion_jheo_js" href="{{path('app_login')}}">
+                            <svg fill="gray" class="svg-1" version="1.0" xmlns="http://www.w3.org/2000/svg" width="7vw" height="7vh" viewbox="0 0 512.000000 512.000000" preserveaspectratio="xMidYMid meet">
+                                <g transform="translate(0.000000,512.000000) scale(0.100000,-0.100000)"  stroke="none">
+                                    <path d="M2158 4700 c-97 -24 -184 -64 -271 -123 -37 -26 -71 -47 -75 -47 -18
+                                        0 -152 -149 -199 -222 -108 -164 -156 -331 -155 -533 2 -566 251 -1070 615
+                                        -1246 158 -76 318 -88 482 -35 222 71 456 320 565 600 18 44 38 95 45 111 14
+                                        32 51 178 60 235 3 19 9 58 15 85 18 97 23 297 11 386 -52 350 -290 653 -598
+                                        760 -153 53 -350 64 -495 29z m-330 -574 c44 -22 209 -75 291 -92 233 -49 454
+                                        -27 713 70 l91 35 33 -33 c19 -19 39 -55 49 -87 21 -67 30 -281 17 -394 -5
+                                        -44 -9 -81 -8 -82 1 -1 25 9 53 23 29 15 56 24 61 23 4 -2 2 -42 -5 -89 -7
+                                        -47 -15 -100 -17 -117 -13 -99 -110 -331 -185 -442 -247 -363 -637 -443 -946
+                                        -194 -72 59 -180 191 -225 276 -19 34 -36 64 -39 67 -13 11 -31 51 -40 87 -5
+                                        21 -20 75 -34 120 -27 88 -63 280 -54 290 3 3 31 -7 62 -21 l56 -25 -8 72 c-4
+                                        40 -7 128 -7 197 0 151 24 246 75 298 36 37 32 36 67 18z"/>
+
+                                    <path d="M1545 2554 c-461 -82 -824 -424 -945 -889 -30 -113 -38 -352 -16
+                                        -455 45 -211 166 -342 376 -409 116 -37 239 -52 495 -61 284 -10 1568 -11
+                                        1692 -2 l82 7 -30 45 c-49 72 -87 153 -111 237 -19 65 -23 101 -22 218 0 131
+                                        2 146 32 234 76 220 215 377 424 476 101 48 248 78 356 73 45 -3 82 -3 82 0 0
+                                        2 -25 37 -55 77 -114 151 -294 292 -467 367 -89 39 -245 82 -325 91 -41 5 -41
+                                        4 -48 -31 -28 -150 -198 -272 -459 -329 -63 -14 -122 -18 -261 -17 -160 1
+                                        -191 4 -280 27 -229 61 -376 170 -411 306 -6 25 -15 46 -20 47 -5 1 -45 -4
+                                        -89 -12z"/>
+
+                                    <path d="M3790 1934 c-14 -2 -52 -9 -85 -15 -33 -5 -106 -32 -162 -60 -356
+                                        -172 -492 -593 -307 -951 54 -104 191 -240 295 -291 171 -84 362 -99 534 -44
+                                        273 89 463 333 482 620 22 336 -208 648 -531 722 -68 15 -188 26 -226 19z
+                                        m148 -360 c70 -35 103 -90 110 -185 l5 -69 33 0 c61 0 64 -10 64 -223 0 -106
+                                        -5 -199 -10 -207 -14 -23 -531 -28 -566 -5 -24 15 -24 16 -24 210 0 215 3 225
+                                        64 225 l33 0 5 69 c7 95 40 150 110 185 66 33 110 33 176 0z"/>
+                                        
+                                    <path d="M3774 1487 c-33 -30 -36 -39 -41 -100 l-6 -67 122 0 121 0 0 51 c0
+                                    92 -47 149 -124 149 -27 0 -45 -8 -72 -33z"/>
+                                </g>
+                            </svg>
+                        </a>
+                    {% endif %}
+                </div>
+                
+                {# ======================== END CONTENT CONNEXION/ACTUALITY =========================== #}
+			</div>
+		</div>
+	</div>
+</header>

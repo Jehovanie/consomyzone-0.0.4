@@ -417,7 +417,11 @@ class ToutsController extends AbstractController
 
     #[Route('/new_home', name: 'for_explore_cat_tous', methods:["GET", "POST"])]
     public function new_page_home(){
-        return $this->render("new_home/index.html.twig");
+        $userConnected= null;
+        
+        return $this->render("new_home/index.html.twig", [
+            "userConnected" => $userConnected,
+        ]);
     }
 }
 

@@ -1269,7 +1269,7 @@ li a .station {
 	background-color: #f7f8f8;
 	width: 400px;
 	height: 60px;
-	margin-left: 3px !important;
+	/* margin-left: 3px !important; */
 	border-radius: 10px;
 	box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
 }
