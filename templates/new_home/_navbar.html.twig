@@ -1,7 +1,6 @@
 
 <header class="g s r vd vd-head ya cj padding_header" :class="{ '' : stickyMenu }" @scroll.window="stickyMenu = (window.pageYOffset > 20) ? true : false">
 	<div class="bb 2xl:ud-px-0 oo wf yf i">
-	{# <div class="bb ze ki xn 2xl:ud-px-0 oo i"> #}
 
         {# =================== CONTENT LOGO AND FORM SEARCH =================== #}
 		<div class="vd to/4 tc wf yf">
@@ -22,10 +21,12 @@
             </div>
 		</div>
         {# =================== END CONTENT LOGO AND FORM SEARCH =================== #}
+        <div class="content_list_rubrique_active content_list_rubrique_active_jheo_js d-flex justify-content-start align-items-center">
+            <button id="ID_nav_Restaurant_jheo_js" type="button" class="btn btn-primary btn-sm me-1 rounded-pill">Restaurant</button>
+        </div>
 
         <div class="sd qo f ho oo wf yf" :class="{ 'd hh rm sr td ud qg ug jc yh': navigationOpen }">
 			<div class="tc wf ig pb no">
-
                 {# ======================== CONTENT CONNEXION/ACTUALITY =========================== #}
 				<div class="d-flex justify-content-center align-items-center icon-connexion">
                     {% if app.user and app.user.type != "Type" and userConnected is defined and userConnected is not null %}

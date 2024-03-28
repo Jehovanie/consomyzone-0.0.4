@@ -9,6 +9,19 @@ class RubriqueCMZ extends MapCMZ {
 		this.zoom_max_for_count_per_dep = 8;
 
 		this.geos = [];
+
+		this.allRubriques = [
+			{ name: "Restaurant", icon: "assets/icon/NewIcons/restaurant.png", is_active: true },
+			{ name: "Ferme", icon: "assets/icon/NewIcons/restaurant.png", is_active: false },
+			{ name: "Station", icon: "assets/icon/NewIcons/restaurant.png", is_active: false },
+			{ name: "Golf", icon: "assets/icon/NewIcons/restaurant.png", is_active: false },
+			{ name: "Tabac", icon: "assets/icon/NewIcons/restaurant.png", is_active: false },
+			{ name: "Marché", icon: "assets/icon/NewIcons/restaurant.png", is_active: false },
+			{ name: "Boulangerie", icon: "assets/icon/NewIcons/restaurant.png", is_active: false },
+			{ name: "Extra Pizza", icon: "assets/icon/NewIcons/restaurant.png", is_active: false },
+			{ name: "KFC", icon: "assets/icon/NewIcons/restaurant.png", is_active: false },
+			{ name: "Gastro", icon: "assets/icon/NewIcons/restaurant.png", is_active: false },
+		];
 	}
 
 	createMarkersCluster() {
@@ -161,22 +174,22 @@ class RubriqueCMZ extends MapCMZ {
 	async addCulsterNumberAtablismentPerDep() {
 		this.geos = this.geos.length === 0 ? await this.settingGeos() : this.geos;
 		this.geos.forEach((item) => {
-			// if (parseInt(item.properties.account_per_dep) > 0) {
-			///get center lat long
-			const centroidCoordinates = this.getCentroidCoordinatesFromGeos(item);
+			if (parseInt(item.properties.account_per_dep) > 0) {
+				///get center lat long
+				const centroidCoordinates = this.getCentroidCoordinatesFromGeos(item);
 
-			/// item is not type polygone or multipolygon
-			if (centroidCoordinates !== null) {
-				///leaflet latlng
-				const latlng = L.latLng(parseFloat(centroidCoordinates[1]), parseFloat(centroidCoordinates[0]));
-				////create marker
-				let markerCountPerDep = this.singleMarkerNumberEtablisementPerDep({ ...item, latlng: latlng });
+				/// item is not type polygone or multipolygon
+				if (centroidCoordinates !== null) {
+					///leaflet latlng
+					const latlng = L.latLng(parseFloat(centroidCoordinates[1]), parseFloat(centroidCoordinates[0]));
+					////create marker
+					let markerCountPerDep = this.singleMarkerNumberEtablisementPerDep({ ...item, latlng: latlng });
 
-				this.bindEventClickMarkerCountPerDep(markerCountPerDep);
+					this.bindEventClickMarkerCountPerDep(markerCountPerDep);
 
-				this.markerClusterForCounterPerDep.addLayer(markerCountPerDep);
+					this.markerClusterForCounterPerDep.addLayer(markerCountPerDep);
+				}
 			}
-			// }
 		});
 
 		if (this.map.getZoom() < this.zoom_max_for_count_per_dep) {
@@ -203,7 +216,74 @@ class RubriqueCMZ extends MapCMZ {
 		//// api get all data from server
 		this.default_data = await response.json(); /// { station, ferme, resto, golf, tabac, marche, allIdRestoPasstille}
 		this.data = this.default_data; /// { station, ferme, resto, golf, tabac, marche, allIdRestoPasstille}
+	}
 
-		console.log(this.default_data);
+	injectListRubriqueType() {
+		if (!document.querySelector(".content_right_side_body_jheo_js")) {
+			console.log("Selector not found : '.content_right_side_body_body'");
+			return false;
+		}
+
+		let btn_rugbrique = this.allRubriques.map((item) => {
+			const icon_image = IS_DEV_MODE ? `/${item.icon}` : `/public/${item.icon}`;
+			const class_active = item.is_active ? "btn-primary" : "btn-light";
+			return `<button type="button" 
+						class="d-flex justify-content-center align-items-center rubrique_list_item rubrique_list_item_jheo_js btn ${class_active} btn-sm mb-1 me-1"
+						data-type="${item.name}"
+					>
+						<img class="image_icon_rubrique" src="${icon_image}" alt="${item.name}_rubrique" />
+						${item.name}
+					</button>`;
+		});
+
+		document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+            <div class="rubrique_list right_side_body_jheo_js">
+                ${btn_rugbrique.join("")}
+            </div>
+        `;
+
+		this.bindSelectRubrique();
+	}
+
+	bindSelectRubrique() {
+		if (!document.querySelectorAll(".rubrique_list_item_jheo_js")) {
+			console.log("Selector not found: 'rubrique_list_item_jheo_js' ");
+			return;
+		}
+
+		const all_button_rubrique = Array.from(document.querySelectorAll(".rubrique_list_item_jheo_js"));
+
+		all_button_rubrique.forEach((btn_rubrique) => {
+			btn_rubrique.addEventListener("click", () => {
+				btn_rubrique.classList.toggle("btn-light");
+				btn_rubrique.classList.toggle("btn-primary");
+
+				const rubrique_type = btn_rubrique.getAttribute("data-type");
+				const rubrique_clicked = this.allRubriques.find((item) => item.name === rubrique_type);
+
+				if (rubrique_clicked.is_active === true) {
+					this.allRubriques = [
+						...this.allRubriques.map((item) => {
+							if (item.name === rubrique_type) {
+								item.is_active = false;
+							}
+							return item;
+						}),
+					];
+					removeRubriqueActivNavbar(rubrique_type);
+				} else {
+					this.allRubriques = [
+						...this.allRubriques.map((item) => {
+							if (item.name === rubrique_type) {
+								item.is_active = true;
+							}
+							return item;
+						}),
+					];
+
+					addRubriqueActivNavbar(rubrique_type);
+				}
+			});
+		});
 	}
 }

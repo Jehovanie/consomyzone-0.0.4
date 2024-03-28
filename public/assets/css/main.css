@@ -777,11 +777,7 @@ body {
 }
 
 .leaflet-control-zoom.leaflet-bar.leaflet-control {
-	/* margin-top: 100px; */
-	/* margin-left: 95vw; */
-
-	/* margin-bottom: 100px;
-    margin-right: 2vw; */
+	margin-right: 19px !important;
 }
 
 .leaflet-right {
@@ -4120,4 +4116,30 @@ span.btn_event:hover {
 
 .icon-connexion div {
 	width: 70px;
+}
+
+.image_icon_rubrique {
+	width: 25px;
+	border: 1px solid black;
+	border-radius: 10px;
+	margin-right: 5px;
+}
+
+.rubrique_list_item:hover > .image_icon_rubrique {
+	border-radius: 50%;
+}
+
+.rubrique_list {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: flex-start;
+}
+
+.content_list_rubrique_active {
+	width: 55%;
+	max-width: 55%;
+	overflow-y: hidden;
+	overflow-x: auto;
+	scrollbar-width: none;
 }

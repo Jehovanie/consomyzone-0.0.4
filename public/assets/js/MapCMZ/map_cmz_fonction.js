@@ -87,3 +87,22 @@ function updateGeoJson(couche, index, e) {
 		removeSpecGeoJson(couche, index);
 	}
 }
+
+function addRubriqueActivNavbar(name) {
+	const key_name = name.trim().split(" ").join("_");
+	const rubrique = `
+		<button id="ID_nav_${key_name}_jheo_js" type="button" class="btn btn-primary btn-sm me-1 rounded-pill">${name}</button>
+	`;
+
+	if (document.querySelector(".content_list_rubrique_active_jheo_js")) {
+		addNewElement(rubrique);
+	}
+}
+
+function removeRubriqueActivNavbar(name) {
+	if (document.querySelector(".content_list_rubrique_active_jheo_js")) {
+		const key_name = name.trim().split(" ").join("_");
+		const index_deleted = document.querySelector(`#ID_nav_${key_name}_jheo_js`).parentElement.childElementCount;
+		removeNewElement(parseInt(index_deleted) - 1);
+	}
+}

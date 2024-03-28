@@ -640,13 +640,17 @@ class MapCMZ {
 		}
 	}
 
+	injectListRubriqueType() {
+		console.log("Fonction inject on class filles...");
+	}
+
 	openRightSide(rightSideContentType) {
 		if (rightSideContentType === "reset_zoom_jheo_js") {
 			this.resetZoom();
 		} else if (rightSideContentType === "cart_before_jheo_js") {
-			// this.goBackOrAfterPosition("back");
+			this.goBackOrAfterPosition("back");
 		} else if (rightSideContentType === "cart_after_jheo_js") {
-			// this.goBackOrAfterPosition("after");
+			this.goBackOrAfterPosition("after");
 		} else {
 			if (document.querySelector(".close_details_jheo_js")) {
 				document.querySelector(".close_details_jheo_js").click();
@@ -696,6 +700,11 @@ class MapCMZ {
 						"Liste de mes favoris géographiques.";
 					// alert("Please")
 					this.injectMyFavoris();
+				} else if (rightSideContentType === "rubrique_type_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText =
+						"Sélectionner ou désélectionner une ou plusieurs rubriques.";
+
+					this.injectListRubriqueType();
 				} else {
 					//// default tiles type
 					document.querySelector(".title_right_side_jheo_js").innerText = "Sélectionner un type de carte.";
@@ -1072,29 +1081,40 @@ class MapCMZ {
         `;
 
 		let htmlControlRubrique = `
-			${this.createBtnControl("favoris_elie_js", "fa-regular fa-bookmark fs-5", "btn btn-dark", "Mes favoris géographiques.")}
+			${this.createBtnControl(
+				"rubrique_type_jheo_js",
+				"fa-solid fa-group-arrows-rotate",
+				"btn btn-success mb-2",
+				"Sélectionne ou désélectionne une rubrique."
+			)}
+			${this.createBtnControl(
+				"favoris_elie_js",
+				"fa-regular fa-bookmark fs-4",
+				"btn btn-dark mb-2",
+				"Mes favoris géographiques."
+			)}
 			${this.createBtnControl(
 				"resto_pastille_jheo_js",
 				"fa-solid fa-location-dot fa-flip text-danger",
-				"btn btn-light",
+				"btn btn-light mb-2",
 				"Liste des restaurants pastilles."
 			)}
 			${this.createBtnControl(
 				"info_golf_jheo_js",
 				"fa-solid fa-circle-question",
-				"btn btn-info",
+				"btn btn-info mb-2",
 				"Légende des icônes sur la carte."
 			)}
 			${this.createBtnControl(
 				"couche_tabac_jheo_js",
-				"fa-brands fa-connectdevelop",
-				"btn btn-primary",
+				"fa-brands fa-connectdevelop fs-6",
+				"btn btn-primary mb-2",
 				"Listes des contours géographiques."
 			)}
 			${this.createBtnControl(
 				"reset_zoom_jheo_js",
 				"fa-solid fa-arrows-rotate",
-				"btn btn-dark me-2",
+				"btn btn-dark me-2 mb-2",
 				"Réstaure le niveau de zoom en position initiale."
 			)}
 		`;
