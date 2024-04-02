@@ -20,8 +20,8 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon-resto-new-B.png",
 				},
 				is_active: false,
-				setSingleMarker: (item, isInHome) => {
-					this.setSingleMarkerResto(item, isInHome);
+				setSingleMarker: (item, options = {}) => {
+					this.setSingleMarkerResto(item, options);
 				},
 			},
 			{
@@ -33,8 +33,8 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon-ferme-new-B.png",
 				},
 				is_active: false,
-				setSingleMarker: (item, isInHome) => {
-					this.settingSingleMarker(item, isInHome);
+				setSingleMarker: (item, options = {}) => {
+					this.setSingleMarkerFerme(item, options);
 				},
 			},
 			{
@@ -46,8 +46,8 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon-station-new-B.png",
 				},
 				is_active: false,
-				setSingleMarker: (item, isInHome) => {
-					this.settingSingleMarker(item, isInHome);
+				setSingleMarker: (item, options = {}) => {
+					this.settingSingleMarker(item, options);
 				},
 			},
 			{
@@ -59,8 +59,8 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon-blanc-golf-vertC.png",
 				},
 				is_active: false,
-				setSingleMarker: (item, isInHome) => {
-					this.settingSingleMarker(item, isInHome);
+				setSingleMarker: (item, options = {}) => {
+					this.settingSingleMarker(item, options);
 				},
 			},
 			{
@@ -72,8 +72,8 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/tabac_black0.png",
 				},
 				is_active: false,
-				setSingleMarker: (item, isInHome) => {
-					this.settingSingleMarker(item, isInHome);
+				setSingleMarker: (item, options = {}) => {
+					this.settingSingleMarker(item, options);
 				},
 			},
 			{
@@ -85,8 +85,8 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
-				setSingleMarker: (item, isInHome) => {
-					this.settingSingleMarker(item, isInHome);
+				setSingleMarker: (item, options = {}) => {
+					this.settingSingleMarker(item, options);
 				},
 			},
 			{
@@ -98,8 +98,8 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
-				setSingleMarker: (item, isInHome) => {
-					this.settingSingleMarker(item, isInHome);
+				setSingleMarker: (item, options = {}) => {
+					this.settingSingleMarker(item, options);
 				},
 			},
 			{
@@ -111,8 +111,8 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
-				setSingleMarker: (item, isInHome) => {
-					this.settingSingleMarker(item, isInHome);
+				setSingleMarker: (item, options = {}) => {
+					this.settingSingleMarker(item, options);
 				},
 			},
 			{
@@ -124,8 +124,8 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
-				setSingleMarker: (item, isInHome) => {
-					this.settingSingleMarker(item, isInHome);
+				setSingleMarker: (item, options = {}) => {
+					this.settingSingleMarker(item, options);
 				},
 			},
 			{
@@ -137,14 +137,16 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
-				setSingleMarker: (item, isInHome) => {
-					this.settingSingleMarker(item, isInHome);
+				setSingleMarker: (item, options = {}) => {
+					this.settingSingleMarker(item, options);
 				},
 			},
 		];
 
 		this.defaultData = {}; /// { 'ferme' : [ ], 'restaurant' : [ ] , ... } ///original data
 		this.data = {}; /// { 'ferme' : [ ], 'restaurant' : [ ] , ... }        ///data filtered.
+
+		this.dataMarkerDisplay = {};
 	}
 
 	createMarkersCluster() {
@@ -182,6 +184,8 @@ class RubriqueCMZ extends MapCMZ {
 		this.createMarkersCluster();
 		////create new marker Cluster special for count per dep.
 		this.createMarkersClusterForCountPerDep();
+
+		this.addEventOnMap();
 	}
 
 	/**
@@ -238,6 +242,70 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			}
 		});
+	}
+
+	addEventOnMap() {
+		this.map.on("resize moveend", () => {
+			const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+			const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+			const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
+
+			this.updateMarkersDisplay(new_size);
+			// this.addPeripheriqueMarker(new_size);
+		});
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL
+	 * où: on Utilise cette fonction dans la rubrique resto,
+	 * localisation du fichier: dans MarkerClusterResto.js,
+	 * je veux: mise a jour les données sur la carte,
+	 * @param {} newSize  { minx, maxx, miny, maxy }
+	 *
+	 * - remove markers outside the box
+	 * - Add some markers ( via latitude, ratio, dataMax )
+	 * -
+	 */
+	updateMarkersDisplay(newSize) {
+		// ///REMOVE THE OUTSIDE THE BOX
+		this.removeMarkerOutSideTheBox(newSize);
+
+		//// Update icon size while zoom in or zoom out
+		// const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
+		// this.synchronizeAllIconSize();
+
+		////count marker in map
+		// this.countMarkerInCart();
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL
+	 * où: on Utilise cette fonction dans le mapModule,
+	 * localisation du fichier: dans MapModule.js,
+	 * je veux: supprimer les markers qui sont en dehors de notre vue sur la carte
+	 *
+	 * @param {} newSize  { minx, maxx, miny, maxy }
+	 *
+	 * - remove markers outside the box an normalize the size of the markers.
+	 */
+	removeMarkerOutSideTheBox(newSize) {
+		const { minx, maxx, miny, maxy } = newSize;
+
+		let countMarkersRemoved = 0;
+		//// REMOVE the outside the box
+		this.markers.eachLayer((marker) => {
+			const { lat, lng } = marker.getLatLng();
+			const isInDisplay =
+				lat > parseFloat(miny) && lat < parseFloat(maxy) && lng > parseFloat(minx) && lng < parseFloat(maxx);
+
+			if (!isInDisplay) {
+				this.markers.removeLayer(marker);
+				countMarkersRemoved++;
+			}
+		});
+
+		console.log("Marker Removed: " + countMarkersRemoved);
 	}
 
 	/**
@@ -394,6 +462,7 @@ class RubriqueCMZ extends MapCMZ {
 						}),
 					];
 					removeRubriqueActivNavbar(rubrique_type);
+					this.removeRubriqueMarker(rubrique_api_name);
 				} else {
 					this.allRubriques = [
 						...this.allRubriques.map((item) => {
@@ -412,18 +481,24 @@ class RubriqueCMZ extends MapCMZ {
 		});
 	}
 
-	async addRubriqueMarker(rubrique_type) {
-		const response = await this.fetchDataRubrique(rubrique_type.toLowerCase());
-		this.defaultData[rubrique_type] = {
-			data: response.data,
-			...this.defaultData?.rubrique_type,
-		};
-
-		this.updateMapAddRubrique(rubrique_type);
+	removeRubriqueMarker(rubrique_api_name) {
+		this.markers.eachLayer((marker) => {
+			if (marker.options.type === rubrique_api_name.toLowerCase()) {
+				this.markers.removeLayer(marker);
+			}
+		});
 	}
 
 	async fetchDataRubrique(rubrique_type) {
-		let link = `/fetch_data/${rubrique_type}`;
+		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+		let param = `minx=${encodeURIComponent(x.min)}`;
+		param = `${param}&miny=${encodeURIComponent(y.min)}`;
+		param = `${param}&maxx=${encodeURIComponent(x.max)}`;
+		param = `${param}&maxy=${encodeURIComponent(y.max)}`;
+
+		let link = `/fetch_data/${rubrique_type}?${param}`;
 
 		const request = new Request(link, {
 			method: "GET",
@@ -443,52 +518,102 @@ class RubriqueCMZ extends MapCMZ {
 		}
 	}
 
+	async addRubriqueMarker(rubrique_api_name) {
+		const response = await this.fetchDataRubrique(rubrique_api_name.toLowerCase());
+		this.defaultData[rubrique_api_name] = {
+			data: response.data,
+			...this.defaultData?.rubrique_api_name,
+		};
+
+		this.updateMapAddRubrique(rubrique_api_name);
+	}
+
 	updateMapAddRubrique(rubrique_type) {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 
 		const data_rubrique_add = this.defaultData[rubrique_type]["data"];
 
 		data_rubrique_add?.forEach((item) => {
-			rubrique_type_object.setSingleMarker(item, false);
+			rubrique_type_object.setSingleMarker(item);
 		});
 	}
 
-	setSingleMarkerResto(item, isHome = false) {
+	setSingleMarkerResto(item, options = {}) {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon);
+		let poi_options = { isPastille: true, is_pastille_vert: false, is_pastille_rouge: true };
+		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
-		const departementName = item.depName + "<br>";
-		const adresseRestaurant = `${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`;
-		const adress = "<br><span class='fw-bolder'> Adresse:</span> <br>" + adresseRestaurant;
-		const title =
-			"<span class='fw-bolder'> Restaurant: </span>  " +
-			item.denominationF +
-			" <br><span class='fw-bolder'><br> Departement:</span>  " +
-			departementName +
-			"." +
-			adress;
+		const title = `
+			<span class='fw-bolder'> 
+				Restaurant: ${item.denominationF}
+			</span>
+			<br>
+			<span class='fw-bolder'>
+				Departement: ${item.depName}
+			</span>
+			<br>
+			<span class='fw-bolder'>
+				Adresse: ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}
+			</span>
+		`;
 
-		marker.bindTooltip(title, { direction: "top", offset: L.point(0, -30) }).openTooltip();
+		marker.bindTooltip(title, { direction: "top", offset: L.point(20, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
 	}
 
-	newMarkerPOI(rubrique_type, singleData, poi_icon) {
-		let [w, h] = [30, 45];
+	setSingleMarkerFerme(item, options = {}) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "ferme");
+		const icon = rubrique_type_object.poi_icon.not_selected;
+
+		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon);
+
+		const title = `
+			<span class='fw-bolder'>
+				Ferme: ${item.nomFerme}
+			</span>
+			<br>
+			<span class='fw-bolder'> 
+				Departement: ${item.departement}
+			</span>
+			<br>
+			<span class='fw-bolder'> 
+				Adresse: ${item.adresseFerme}
+			</span>
+		`;
+
+		marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
+
+		this.markers.addLayer(marker);
+	}
+
+	newMarkerPOI(rubrique_type, singleData, poi_icon, options = {}) {
+		poi_icon = "assets/icon/NewIcons/mini_logo_ferme.png";
+
+		let [w, h] = [26, 25];
 		const path_icon = IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`;
+
+		let point_pastille = "";
+		if (options?.isPastille) {
+			if (options.is_pastille_vert) {
+				point_pastille = `<div class="single_marker_point_pastille" style="background-color: green"></div>`;
+			} else if (options.is_pastille_rouge) {
+				point_pastille = `<div class="single_marker_point_pastille" style="background-color: red"></div>`;
+			}
+		}
 
 		return new L.Marker(L.latLng(parseFloat(singleData.lat), parseFloat(singleData.long)), {
 			icon: new L.DivIcon({
-				className: "my-div-icon",
+				className: "content_single_marker_poi",
 				html: ` 
-						<span class="my-div-span" style="padding:2px;position:absolute;top:-5px;left:-10px;
-							background-color:red;color:white;
-							border-radius: 50%;">
-							2.1
-						</span>
-						<img class="my-div-image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
+					<div class="single_marker_poi">
+						${point_pastille}
+						<img class="single_marker_image" style="width:${w}px ; height:${h}px" src="${path_icon}"/>
+						<div class="single_marker_note">2.1</div>
+						<div class="single_marker_point"></div>
+					</div>
 				`,
 				iconAnchor: [11, 30],
 				popupAnchor: [0, -20],

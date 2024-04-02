@@ -1330,6 +1330,9 @@ class MapCMZ {
 		this.createRightSideControl();
 
 		this.createBottomSideControl();
+
+		this.addEventOnMap();
+		
 	}
 
 	updateGeoJson(couche, indexInJson) {
