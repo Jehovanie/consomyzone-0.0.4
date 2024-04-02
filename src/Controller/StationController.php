@@ -416,62 +416,57 @@ class StationController extends AbstractController
 
     /**
      * DON'T CHANGE THIS ROUTE: This use in js file.
-     * @Route("/getLatitudeLongitudeStation" , name="getLatitudeLongitudeStation" , methods={"GET"})
      */
-    public function getLatitudeLongitudeStation(StationServiceFrGeomRepository $stationServiceFrGeomRepository, Request $request)
-    {
-
-
+    #[Route("/fetch_data/station", name: "fetch_data_station" , methods: [ "GET"])]
+    #[Route("/getLatitudeLongitudeStation", name: "getLatitudeLongitudeStation" , methods: [ "GET"])]
+    public function getLatitudeLongitudeStation(
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository, 
+        Request $request
+    ){
+        $current_uri= $request->getUri();
+        $pathname= parse_url($current_uri, PHP_URL_PATH);
+        // if( str_contains($pathname, "fetch_data")){}
 
         $max = $request->query->get("max");
-
         $min = $request->query->get("min");
-
         $type = $request->query->get("type");
-
         $nom_dep = $request->query->get("nom_dep");
-
         $id_dep = $request->query->get("id_dep");
 
-
-
         if ($max || $min || $type) {
-
-
-
             if ($nom_dep != "null" && $id_dep != "null") {
-                return $this->json(
-
-                    $stationServiceFrGeomRepository->getLatitudeLongitudeStation(floatval($min), floatval($max), $type, $nom_dep, $id_dep)
-
-                );
+                $datas = $stationServiceFrGeomRepository->getLatitudeLongitudeStation(floatval($min), floatval($max), $type, $nom_dep, $id_dep);
             } else {
-
-                return $this->json(
-
-                    $stationServiceFrGeomRepository->getLatitudeLongitudeStation(floatval($min), floatval($max), $type)
-
-                );
+                $datas = $stationServiceFrGeomRepository->getLatitudeLongitudeStation(floatval($min), floatval($max), $type);
             }
+
+            if( str_contains($pathname, "fetch_data")){
+                return $this->json([
+                    "data" => $datas
+                ], 200);
+            }
+            
+            return $this->json($datas, 200);
         } else {
-
             if ($nom_dep != null && $id_dep != null) {
-
-                return $this->json(
-
-                    $stationServiceFrGeomRepository->getAllStationInDepartement($id_dep, $nom_dep)
-
-                );
+                $datas = $stationServiceFrGeomRepository->getAllStationInDepartement($id_dep, $nom_dep);
+                if( str_contains($pathname, "fetch_data")){
+                    return $this->json([
+                        "data" => $datas
+                    ], 200);
+                }
+                return $this->json($datas, 200);
             }
         }
 
-        // return $this->json(count($stationServiceFrGeomRepository->getLatitudeLongitudeStation()));
+        $datas = $stationServiceFrGeomRepository->getLatitudeLongitudeStation();
 
-        return $this->json(
-
-            $stationServiceFrGeomRepository->getLatitudeLongitudeStation()
-
-        );
+        if( str_contains($pathname, "fetch_data")){
+            return $this->json([
+                "data" => $datas
+            ], 200);
+        }
+        return $this->json($datas, 200);
     }
 
     /**

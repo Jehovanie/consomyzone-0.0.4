@@ -108,6 +108,7 @@ class GolfFranceController extends AbstractController
         ]);
     }
 
+    #[Route("/fetch_data/golf", name: "fetch_data_golf" , methods: [ "GET"])]
     #[Route('/api/golf', name: 'api_golf_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
         Request $request,
@@ -115,6 +116,9 @@ class GolfFranceController extends AbstractController
         AvisGolfRepository $avisGolfRepository,
         GolfFranceService $golfFranceService,
     ) {
+        $current_uri= $request->getUri();
+        $pathname= parse_url($current_uri, PHP_URL_PATH);
+        // if( str_contains($pathname, "fetch_data")){}
 
         $golfs = [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
@@ -133,6 +137,12 @@ class GolfFranceController extends AbstractController
 
             $golfs= $golfFranceService->mergeDatasAndAvis($datas, $moyenneNote);
 
+            if( str_contains($pathname, "fetch_data")){
+                return $this->json([
+                    "data" => $golfs,
+                ], 200);
+            }
+
             return $this->json([ "success" => true, "data" => $golfs ], 200);
         }
 
@@ -143,6 +153,12 @@ class GolfFranceController extends AbstractController
         $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
 
         $golfs= $golfFranceService->mergeDatasAndAvis($data, $moyenneNote);
+
+        if( str_contains($pathname, "fetch_data")){
+            return $this->json([
+                "data" => $golfs,
+            ], 200);
+        }
 
         return $this->json([
             "success" => true,

@@ -482,6 +482,7 @@ class MarckerClusterHome extends MapModule {
 					: resultRestoPastille.length === 1
 					? "assets/icon/NewIcons/icon-resto-new-B-org-single.png"
 					: "assets/icon/NewIcons/icon-resto-new-B.png";
+					
 			let poi_icon_Selected =
 				resultRestoPastille.length > 1
 					? "assets/icon/NewIcons/icon-resto-new-Rr-vert-multi.png"

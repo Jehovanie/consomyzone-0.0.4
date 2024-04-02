@@ -332,11 +332,16 @@ class FermeController extends AbstractController
     /**
      * @Route("/getLatitudeLongitudeFerme" , name="getLatitudeLongitudeFerme" , methods={"GET"})
      */
+    #[Route("/fetch_data/ferme", name: "fetch_data_ferme" , methods: [ "GET"])]
+    #[Route("/getLatitudeLongitudeFerme", name: "getLatitudeLongitudeFerme" , methods: [ "GET"])]
     public function getLatitudeLongitudeFerme(
         Request $request,
         FermeGeomRepository $fermeGeomRepository,
         SerializerInterface $serialize
     ){
+        $current_uri= $request->getUri();
+        $pathname= parse_url($current_uri, PHP_URL_PATH);
+        // if( str_contains($pathname, "fetch_data")){}
 
         if($request->query->has("minx") && $request->query->has("miny") ){
 
@@ -347,10 +352,22 @@ class FermeController extends AbstractController
 
             $datas= $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
 
+            if( str_contains($pathname, "fetch_data")){
+                return $this->json([
+                    "data" => $datas
+                ], 200);
+            }
             return $this->json($datas);
         }
 
-        return $this->json($fermeGeomRepository->getSomeDataShuffle(2000));
+        $datas= $fermeGeomRepository->getSomeDataShuffle(2000);
+
+        if( str_contains($pathname, "fetch_data")){
+            return $this->json([
+                "data" => $datas
+            ], 200);
+        }
+        return $this->json($datas);
     }
 
     #[Route("/avis/ferme/{idFerme}", name: "avis_ferme", methods: ["POST"])]

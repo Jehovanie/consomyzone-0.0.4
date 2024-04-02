@@ -1,6 +1,7 @@
 var slickConfig = {
-	slidesToShow: 1,
+	slidesToShow: 0,
 	slidesToScroll: 1,
+	infinite: false,
 	arrows: true,
 	prevArrow: `<i class="fa-solid fa-circle-chevron-left fs-3 cursor-pointer"></i>`,
 	nextArrow: `<i class="fa-solid fa-circle-chevron-right fs-3 cursor-pointer"></i>`,
@@ -10,6 +11,7 @@ const slickElement = $(".content_list_rubrique_active_jheo_js").slick(slickConfi
 
 function updateSlidesToShow() {
 	let max_slidesToScroll = slickElement[0].slick.slideCount;
+	console.log(max_slidesToScroll);
 
 	// Adjust slidesToShow based on the number of child elements
 	slickConfig.slidesToShow = Math.min(max_slidesToScroll, 5); // Limit to maximum of 5 slidesToShow
@@ -24,6 +26,7 @@ function addNewElement(newElement) {
 }
 
 function removeNewElement(index) {
+	console.log("remove: " + index);
 	slickElement.slick("slickRemove", index);
 	updateSlidesToShow();
 }

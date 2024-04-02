@@ -96,7 +96,7 @@ class RestaurantController extends AbstractController
         ]);
     }
 
-
+    #[Route("/fetch_data/restaurant", name: "fetch_data_restaurant" , methods: [ "GET"])]
     #[Route("/Coord/All/Restaurant", name: "app_coord_restaurant", methods: ["GET"])]
     public function getAllRestCoor(
         Request $request,
@@ -107,6 +107,11 @@ class RestaurantController extends AbstractController
         TributGService $tributGService,
         AvisRestaurantRepository $avisRestaurantRepository
     ) {
+
+        $current_uri= $request->getUri();
+        $pathname= parse_url($current_uri, PHP_URL_PATH);
+        // if( str_contains($pathname, "fetch_data")){}
+
         $arrayIdResto = [];
 
         //// all my tribu t.
@@ -139,6 +144,13 @@ class RestaurantController extends AbstractController
             $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
             //merge of resto data and note 
             // $l=array_map("self::mergeDatasAndAvis",$datas,$moyenneNote);
+
+            if( str_contains($pathname, "fetch_data")){
+                return $this->json([
+                    "data" =>self::mergeDatasAndAvis($datas,$moyenneNote)
+                ], 200);
+            }
+
             return $this->json([
                 "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
                 "allIdRestoPastille" => $arrayIdResto
@@ -146,7 +158,7 @@ class RestaurantController extends AbstractController
         }
 
         //// data resto all departement
-        $datas= $bddResto->getSomeDataShuffle(2000);
+        $datas= $bddResto->getSomeDataShuffle(20);
 
         //// update data result to add all resto pastille in the Tribu T
         $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
@@ -155,10 +167,15 @@ class RestaurantController extends AbstractController
 
         $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
 
+        if( str_contains($pathname, "fetch_data")){
+            return $this->json([
+                "data" =>self::mergeDatasAndAvis($datas,$moyenneNote)
+            ], 200);
+        }
+
         return $this->json([
             "data" =>self::mergeDatasAndAvis($datas,$moyenneNote),
             "allIdRestoPastille" => $arrayIdResto,
-           
         ], 200);
     }
     /**

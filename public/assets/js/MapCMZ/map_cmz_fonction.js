@@ -102,7 +102,8 @@ function addRubriqueActivNavbar(name) {
 function removeRubriqueActivNavbar(name) {
 	if (document.querySelector(".content_list_rubrique_active_jheo_js")) {
 		const key_name = name.trim().split(" ").join("_");
-		const index_deleted = document.querySelector(`#ID_nav_${key_name}_jheo_js`).parentElement.childElementCount;
-		removeNewElement(parseInt(index_deleted) - 1);
+		const index_deleted = $(`#ID_nav_${key_name}_jheo_js`).index();
+
+		removeNewElement(parseInt(index_deleted));
 	}
 }

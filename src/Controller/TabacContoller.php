@@ -81,11 +81,15 @@ class TabacContoller extends AbstractController
     }
 
 
+    #[Route("/fetch_data/tabac", name: "fetch_data_tabac" , methods: [ "GET"])]
     #[Route('/api/tabac', name: 'api_tabac_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
         Request $request,
         TabacRepository $tabacRepository,
     ){
+        $current_uri= $request->getUri();
+        $pathname= parse_url($current_uri, PHP_URL_PATH);
+        // if( str_contains($pathname, "fetch_data")){}
 
         $tabac= [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
@@ -101,7 +105,7 @@ class TabacContoller extends AbstractController
 
             return $this->json([
                 "data" => $datas
-            ]);
+            ], 200);
         }
 
         $tabac= $tabacRepository->getSomeDataShuffle(2000);

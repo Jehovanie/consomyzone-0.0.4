@@ -154,11 +154,15 @@ Status $status,
     }
 
 
+    #[Route("/fetch_data/marche", name: "fetch_data_marche" , methods: [ "GET"])]
     #[Route("/api/marche", name: "app_api_marche", methods: ["GET"])]
     public function apiGetMarche(
         MarcheRepository $marcheRepository,
         Request $request,
     ){
+        $current_uri= $request->getUri();
+        $pathname= parse_url($current_uri, PHP_URL_PATH);
+        // if( str_contains($pathname, "fetch_data")){}
         
         if($request->query->has("minx") && $request->query->has("miny") ){
 
