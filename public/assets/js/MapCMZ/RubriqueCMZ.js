@@ -146,7 +146,24 @@ class RubriqueCMZ extends MapCMZ {
 		this.defaultData = {}; /// { 'ferme' : [ ], 'restaurant' : [ ] , ... } ///original data
 		this.data = {}; /// { 'ferme' : [ ], 'restaurant' : [ ] , ... }        ///data filtered.
 
-		this.dataMarkerDisplay = {};
+		// this is the base of filter data in map based on the user zooming.
+		/// ratio is the number precisious for the float on latitude ( ex lat= 47.5125400012145  if ratio= 3 => lat = 47.512
+		//// dataMax is the number maximun of the data to show after grouping the all data by lat with ratio.
+		///// this must objectRatioAndDataMax is must be order by zoomMin DESC
+		this.objectRatioAndDataMax = [
+			{ zoomMin: 20, dataMax: 20, ratio: 4 },
+			{ zoomMin: 19, dataMax: 15, ratio: 3 },
+			{ zoomMin: 18, dataMax: 13, ratio: 3 },
+			{ zoomMin: 16, dataMax: 7, ratio: 3 },
+			{ zoomMin: 14, dataMax: 6, ratio: 2 },
+			{ zoomMin: 12, dataMax: 5, ratio: 2 },
+			{ zoomMin: 10, dataMax: 4, ratio: 2 },
+			{ zoomMin: 8, dataMax: 3, ratio: 1 },
+			{ zoomMin: 6, dataMax: 2, ratio: 1 },
+			{ zoomMin: 1, dataMax: 1, ratio: 1 },
+		];
+
+		this.markers_display = [];
 	}
 
 	createMarkersCluster() {
@@ -271,6 +288,104 @@ class RubriqueCMZ extends MapCMZ {
 		// ///REMOVE THE OUTSIDE THE BOX
 		this.removeMarkerOutSideTheBox(newSize);
 
+		const zoom = this.map._zoom;
+		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		const { dataMax, ratio } = current_object_dataMax;
+
+		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast()); ///lat
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth()); ///lng
+
+		let markers_display = this.markers_display;
+		if (this.markers_display.length > 0 && ratio !== this.markers_display[0]["ratio"]) {
+			markers_display = this.generateTableDataFiltered(y.min, y.max, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
+			for (const key_rubrique_type in this.defaultData) {
+				const rubrique_type = this.defaultData[key_rubrique_type];
+
+				rubrique_type.data.forEach((item_rubrique) => {
+					let lat_item_rubrique = parseFloat(parseFloat(item_rubrique.lat).toFixed(ratio));
+					let lng_item_rubrique = parseFloat(parseFloat(item_rubrique.long).toFixed(ratio));
+
+					if (x.min <= lng_item_rubrique && x.max >= lng_item_rubrique) {
+						markers_display = markers_display.map((item_marker_display) => {
+							if (item_marker_display.lat.toString() === lat_item_rubrique.toString()) {
+								let count_data_per_rubrique = item_marker_display.data.reduce((sum, item) => {
+									if (item.rubrique_type === rubrique_type) {
+										sum = sum + 1;
+									}
+									return sum;
+								}, 0);
+
+								if (count_data_per_rubrique < dataMax) {
+									item_marker_display.data.push({
+										...item_rubrique,
+										rubrique_type: key_rubrique_type,
+									});
+								}
+							}
+							return item_marker_display;
+						});
+					}
+				});
+			}
+			this.markers_display = markers_display;
+		}
+
+		let count_remove = 0;
+		this.markers.eachLayer((marker) => {
+			const marker_options_id = marker.options.id;
+			const marker_options_rubrique_type = marker.options.type;
+
+			const latLng = marker.getLatLng();
+			const key_lat = parseFloat(parseFloat(latLng.lat).toFixed(ratio)).toString();
+
+			if (this.markers_display.some((item_marker_display) => item_marker_display.lat.toString() === key_lat)) {
+				const item_marker_display_data = this.markers_display.find(
+					(item_marker_display) => item_marker_display.lat.toString() === key_lat
+				);
+
+				if (
+					!item_marker_display_data.data.some(
+						(item_marker_data) =>
+							item_marker_data.id === marker_options_id &&
+							item_marker_data.rubrique_type === marker_options_rubrique_type
+					)
+				) {
+					this.markers.removeLayer(marker);
+					count_remove++;
+				}
+			} else {
+				this.markers.removeLayer(marker);
+				count_remove++;
+			}
+		});
+		console.log("count_remove: " + count_remove);
+
+		let count_new_add = 0;
+		this.markers_display.forEach((marker_to_display) => {
+			marker_to_display.data.forEach((item_marker_to_display) => {
+				///check if already in the markers
+				let isAlreadyDisplay = false; ///check if this already displayed on the map (already in the markers)
+				this.markers.eachLayer((marker) => {
+					if (
+						parseInt(marker.options.id) === parseInt(item_marker_to_display.id) &&
+						marker.options.type === item_marker_to_display.rubrique_type
+					) {
+						isAlreadyDisplay = true;
+					}
+				});
+				if (!isAlreadyDisplay) {
+					const rubrique_object_type = this.allRubriques.find(
+						(item) => item.api_name === item_marker_to_display.rubrique_type
+					);
+					rubrique_object_type.setSingleMarker(item_marker_to_display);
+					count_new_add++;
+				}
+			});
+		});
+		console.log("count_new_add: " + count_new_add);
+
+		// console.log(data_filter);
 		//// Update icon size while zoom in or zoom out
 		// const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
 		// this.synchronizeAllIconSize();
@@ -293,6 +408,7 @@ class RubriqueCMZ extends MapCMZ {
 		const { minx, maxx, miny, maxy } = newSize;
 
 		let countMarkersRemoved = 0;
+
 		//// REMOVE the outside the box
 		this.markers.eachLayer((marker) => {
 			const { lat, lng } = marker.getLatLng();
@@ -300,12 +416,23 @@ class RubriqueCMZ extends MapCMZ {
 				lat > parseFloat(miny) && lat < parseFloat(maxy) && lng > parseFloat(minx) && lng < parseFloat(maxx);
 
 			if (!isInDisplay) {
+				this.markers_display = this.markers_display.map((item) => {
+					const ratio = item.ratio;
+
+					if (item.lat.toString() === lat.toFixed(ratio).toString()) {
+						item.data = [
+							...item.data.filter(
+								(jtem) => !(jtem.id === marker.options.id && jtem.rubrique_type === marker.options.type)
+							),
+						];
+					}
+					return item;
+				});
+
 				this.markers.removeLayer(marker);
 				countMarkersRemoved++;
 			}
 		});
-
-		console.log("Marker Removed: " + countMarkersRemoved);
 	}
 
 	/**
@@ -487,6 +614,14 @@ class RubriqueCMZ extends MapCMZ {
 				this.markers.removeLayer(marker);
 			}
 		});
+
+		this.markers_display = this.markers_display.map((item) => {
+			item.data = item.data.filter(
+				(jtem) => jtem.rubrique_type.toLowerCase() !== rubrique_api_name.toLowerCase()
+			);
+
+			return item;
+		});
 	}
 
 	async fetchDataRubrique(rubrique_type) {
@@ -528,13 +663,74 @@ class RubriqueCMZ extends MapCMZ {
 		this.updateMapAddRubrique(rubrique_api_name);
 	}
 
-	updateMapAddRubrique(rubrique_type) {
-		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+	generateTableDataFiltered(ratioMin, ratioMax, ratio) {
+		const dataFiltered = [];
 
+		let iterate_ratio = 1 / 10 ** ratio;
+
+		let init_iterate_ratio = ratioMin;
+
+		while (
+			parseFloat(init_iterate_ratio.toFixed(ratio)) <
+			parseFloat(parseFloat(ratioMax + iterate_ratio).toFixed(ratio))
+		) {
+			if (!dataFiltered.some((jtem) => parseFloat(init_iterate_ratio.toFixed(ratio)) === parseFloat(jtem.lat))) {
+				dataFiltered.push({ ratio: ratio, lat: parseFloat(init_iterate_ratio.toFixed(ratio)), data: [] });
+			}
+
+			init_iterate_ratio += iterate_ratio;
+		}
+
+		return dataFiltered;
+	}
+
+	updateMapAddRubrique(rubrique_type) {
+		/**
+		 * { rubrique_type:  [ { lat_lon: ..., data: [ ... ] }, ...]}
+		 */
+		const zoom = this.map._zoom;
+		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		const { dataMax, ratio } = current_object_dataMax;
+
+		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast()); ///lat
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth()); ///lng
+
+		this.markers_display =
+			this.markers_display.length === 0 /// [ { lat: ( with ratio ), data: [] } ]
+				? this.generateTableDataFiltered(y.min, y.max, ratio)
+				: this.markers_display;
+
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 		const data_rubrique_add = this.defaultData[rubrique_type]["data"];
 
 		data_rubrique_add?.forEach((item) => {
-			rubrique_type_object.setSingleMarker(item);
+			const lat_item = parseFloat(item.lat).toFixed(ratio);
+
+			const data_filter_state = this.markers_display.find(
+				(jtem) => jtem.lat.toString() === parseFloat(lat_item).toString()
+			);
+
+			const item_rubrique_count = data_filter_state.data.reduce((sum, item) => {
+				if (item.rubrique_type === rubrique_type) {
+					return sum + 1;
+				}
+				return sum;
+			}, 0);
+
+			if (item_rubrique_count < dataMax) {
+				const lng_item = parseFloat(item.long).toFixed(ratio);
+
+				if (x.min <= lng_item && x.max >= lng_item) {
+					rubrique_type_object.setSingleMarker(item);
+
+					this.markers_display = this.markers_display.map((ktem) => {
+						if (ktem.lat.toString() === parseFloat(lat_item).toString()) {
+							ktem.data.push({ ...item, rubrique_type: rubrique_type });
+						}
+						return ktem;
+					});
+				}
+			}
 		});
 	}
 
