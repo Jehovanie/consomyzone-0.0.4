@@ -153,12 +153,18 @@ class RubriqueCMZ extends MapCMZ {
 		this.objectRatioAndDataMax = [
 			{ zoomMin: 20, dataMax: 20, ratio: 4 },
 			{ zoomMin: 19, dataMax: 15, ratio: 3 },
-			{ zoomMin: 18, dataMax: 13, ratio: 3 },
-			{ zoomMin: 16, dataMax: 7, ratio: 3 },
-			{ zoomMin: 14, dataMax: 6, ratio: 2 },
-			{ zoomMin: 12, dataMax: 5, ratio: 2 },
-			{ zoomMin: 10, dataMax: 4, ratio: 2 },
-			{ zoomMin: 8, dataMax: 3, ratio: 1 },
+			{ zoomMin: 18, dataMax: 14, ratio: 3 },
+			{ zoomMin: 17, dataMax: 13, ratio: 3 },
+			{ zoomMin: 16, dataMax: 12, ratio: 3 },
+			{ zoomMin: 15, dataMax: 11, ratio: 3 },
+			{ zoomMin: 14, dataMax: 10, ratio: 3 },
+			{ zoomMin: 13, dataMax: 9, ratio: 2 },
+			{ zoomMin: 12, dataMax: 8, ratio: 2 },
+			{ zoomMin: 11, dataMax: 7, ratio: 2 },
+			{ zoomMin: 10, dataMax: 6, ratio: 2 },
+			{ zoomMin: 9, dataMax: 5, ratio: 1 },
+			{ zoomMin: 8, dataMax: 4, ratio: 1 },
+			{ zoomMin: 7, dataMax: 3, ratio: 1 },
 			{ zoomMin: 6, dataMax: 2, ratio: 1 },
 			{ zoomMin: 1, dataMax: 1, ratio: 1 },
 		];
@@ -274,6 +280,19 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	/**
+	 * @author Jehovanie RAMANDIRJOEL <jehovanieramd@gmail.com>
+	 *
+	 * Goal: Calculate and show the number of the marker in the map.
+	 */
+	countMarkerInCart() {
+		let countMarkerst = 0;
+		this.markers.eachLayer((marker) => {
+			countMarkerst++;
+		});
+		console.log("Total marker afficher: " + countMarkerst);
+	}
+
+	/**
 	 * @author Jehovanie RAMANDRIJOEL
 	 * où: on Utilise cette fonction dans la rubrique resto,
 	 * localisation du fichier: dans MarkerClusterResto.js,
@@ -287,47 +306,60 @@ class RubriqueCMZ extends MapCMZ {
 	updateMarkersDisplay(newSize) {
 		// ///REMOVE THE OUTSIDE THE BOX
 		this.removeMarkerOutSideTheBox(newSize);
+		console.clear();
 
 		const zoom = this.map._zoom;
 		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
 		const { dataMax, ratio } = current_object_dataMax;
 
+		console.log("current zoom: " + zoom);
+		console.log(current_object_dataMax);
+
 		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast()); ///lat
 		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth()); ///lng
 
 		let markers_display = this.markers_display;
-		if (this.markers_display.length > 0 && ratio !== this.markers_display[0]["ratio"]) {
+		if (this.markers_display.length > 0 && dataMax !== this.markers_display[0]["dataMax"]) {
 			markers_display = this.generateTableDataFiltered(y.min, y.max, ratio); /// [ { lat: ( with ratio ), data: [] } ]
 
 			for (const key_rubrique_type in this.defaultData) {
-				const rubrique_type = this.defaultData[key_rubrique_type];
+				console.log();
+				///check if this rubrique_type is active...
+				let is_rubrique_type_active = this.allRubriques.some(
+					(item) => item.api_name === key_rubrique_type && item.is_active === true
+				);
 
-				rubrique_type.data.forEach((item_rubrique) => {
-					let lat_item_rubrique = parseFloat(parseFloat(item_rubrique.lat).toFixed(ratio));
-					let lng_item_rubrique = parseFloat(parseFloat(item_rubrique.long).toFixed(ratio));
+				if (is_rubrique_type_active) {
+					const rubrique_type = this.defaultData[key_rubrique_type];
 
-					if (x.min <= lng_item_rubrique && x.max >= lng_item_rubrique) {
-						markers_display = markers_display.map((item_marker_display) => {
-							if (item_marker_display.lat.toString() === lat_item_rubrique.toString()) {
-								let count_data_per_rubrique = item_marker_display.data.reduce((sum, item) => {
-									if (item.rubrique_type === rubrique_type) {
-										sum = sum + 1;
+					rubrique_type.data.forEach((item_rubrique) => {
+						let lat_item_rubrique = parseFloat(parseFloat(item_rubrique.lat).toFixed(ratio));
+						let lng_item_rubrique = parseFloat(parseFloat(item_rubrique.long).toFixed(ratio));
+
+						if (x.min <= lng_item_rubrique && x.max >= lng_item_rubrique) {
+							markers_display = markers_display.map((item_marker_display) => {
+								if (item_marker_display.lat.toString() === lat_item_rubrique.toString()) {
+									let count_data_per_rubrique = item_marker_display.data.reduce((sum, item) => {
+										if (item.rubrique_type === rubrique_type) {
+											sum = sum + 1;
+										}
+										return sum;
+									}, 0);
+
+									if (count_data_per_rubrique < dataMax) {
+										item_marker_display.data.push({
+											...item_rubrique,
+											rubrique_type: key_rubrique_type,
+										});
 									}
-									return sum;
-								}, 0);
-
-								if (count_data_per_rubrique < dataMax) {
-									item_marker_display.data.push({
-										...item_rubrique,
-										rubrique_type: key_rubrique_type,
-									});
 								}
-							}
-							return item_marker_display;
-						});
-					}
-				});
+								return item_marker_display;
+							});
+						}
+					});
+				}
 			}
+
 			this.markers_display = markers_display;
 		}
 
@@ -374,6 +406,7 @@ class RubriqueCMZ extends MapCMZ {
 						isAlreadyDisplay = true;
 					}
 				});
+
 				if (!isAlreadyDisplay) {
 					const rubrique_object_type = this.allRubriques.find(
 						(item) => item.api_name === item_marker_to_display.rubrique_type
@@ -391,7 +424,7 @@ class RubriqueCMZ extends MapCMZ {
 		// this.synchronizeAllIconSize();
 
 		////count marker in map
-		// this.countMarkerInCart();
+		this.countMarkerInCart();
 	}
 
 	/**
@@ -685,9 +718,8 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	updateMapAddRubrique(rubrique_type) {
-		/**
-		 * { rubrique_type:  [ { lat_lon: ..., data: [ ... ] }, ...]}
-		 */
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+
 		const zoom = this.map._zoom;
 		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
 		const { dataMax, ratio } = current_object_dataMax;
@@ -700,9 +732,7 @@ class RubriqueCMZ extends MapCMZ {
 				? this.generateTableDataFiltered(y.min, y.max, ratio)
 				: this.markers_display;
 
-		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 		const data_rubrique_add = this.defaultData[rubrique_type]["data"];
-
 		data_rubrique_add?.forEach((item) => {
 			const lat_item = parseFloat(item.lat).toFixed(ratio);
 
