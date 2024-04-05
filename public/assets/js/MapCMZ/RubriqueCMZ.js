@@ -16,8 +16,8 @@ class RubriqueCMZ extends MapCMZ {
 				api_name: "restaurant",
 				icon: "assets/icon/NewIcons/restaurant.png",
 				poi_icon: {
-					selected: "assets/icon/NewIcons/icon-resto-new-Rr.png",
-					not_selected: "assets/icon/NewIcons/icon-resto-new-B.png",
+					selected: "assets/icon/NewIcons/mini_logo_resto_selected.png",
+					not_selected: "assets/icon/NewIcons/mini_logo_resto.png",
 				},
 				is_active: false,
 				setSingleMarker: (item, options = {}) => {
@@ -29,8 +29,8 @@ class RubriqueCMZ extends MapCMZ {
 				api_name: "ferme",
 				icon: "assets/icon/NewIcons/restaurant.png",
 				poi_icon: {
-					selected: "assets/icon/NewIcons/icon-ferme-new-R.png",
-					not_selected: "assets/icon/NewIcons/icon-ferme-new-B.png",
+					selected: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
+					not_selected: "assets/icon/NewIcons/mini_logo_ferme.png",
 				},
 				is_active: false,
 				setSingleMarker: (item, options = {}) => {
@@ -42,12 +42,12 @@ class RubriqueCMZ extends MapCMZ {
 				api_name: "station",
 				icon: "assets/icon/NewIcons/restaurant.png",
 				poi_icon: {
-					selected: "assets/icon/NewIcons/icon-station-new-R.png",
-					not_selected: "assets/icon/NewIcons/icon-station-new-B.png",
+					selected: "assets/icon/NewIcons/mini_logo_station_selected.png",
+					not_selected: "assets/icon/NewIcons/mini_logo_station.png",
 				},
 				is_active: false,
 				setSingleMarker: (item, options = {}) => {
-					this.settingSingleMarker(item, options);
+					this.setSingleMarkerStation(item, options);
 				},
 			},
 			{
@@ -55,12 +55,12 @@ class RubriqueCMZ extends MapCMZ {
 				api_name: "golf",
 				icon: "assets/icon/NewIcons/restaurant.png",
 				poi_icon: {
-					selected: "assets/icon/NewIcons/icon-rouge-golf-C.png",
-					not_selected: "assets/icon/NewIcons/icon-blanc-golf-vertC.png",
+					selected: "assets/icon/NewIcons/mini_logo_golf_selected.png",
+					not_selected: "assets/icon/NewIcons/mini_logo_golf.png",
 				},
 				is_active: false,
 				setSingleMarker: (item, options = {}) => {
-					this.settingSingleMarker(item, options);
+					this.settingSingleMarkerGolf(item, options);
 				},
 			},
 			{
@@ -68,12 +68,12 @@ class RubriqueCMZ extends MapCMZ {
 				api_name: "tabac",
 				icon: "assets/icon/NewIcons/restaurant.png",
 				poi_icon: {
-					selected: "assets/icon/NewIcons/tabac_red0.png",
-					not_selected: "assets/icon/NewIcons/tabac_black0.png",
+					selected: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
+					not_selected: "assets/icon/NewIcons/mini_logo_tabac.png",
 				},
 				is_active: false,
 				setSingleMarker: (item, options = {}) => {
-					this.settingSingleMarker(item, options);
+					this.setSingleMarkerTabac(item, options);
 				},
 			},
 			{
@@ -81,12 +81,12 @@ class RubriqueCMZ extends MapCMZ {
 				api_name: "marche",
 				icon: "assets/icon/NewIcons/restaurant.png",
 				poi_icon: {
-					selected: "assets/icon/NewIcons/icon_marche_selected.png",
-					not_selected: "assets/icon/NewIcons/icon_marche.png",
+					selected: "assets/icon/NewIcons/mini_logo_marche_selected.png",
+					not_selected: "assets/icon/NewIcons/mini_logo_marche.png",
 				},
 				is_active: false,
 				setSingleMarker: (item, options = {}) => {
-					this.settingSingleMarker(item, options);
+					this.setSingleMarkerMarche(item, options);
 				},
 			},
 			{
@@ -815,10 +815,104 @@ class RubriqueCMZ extends MapCMZ {
 		this.markers.addLayer(marker);
 	}
 
-	newMarkerPOI(rubrique_type, singleData, poi_icon, options = {}) {
-		poi_icon = "assets/icon/NewIcons/mini_logo_ferme.png";
+	setSingleMarkerStation(item, options = {}) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "station");
+		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		let [w, h] = [26, 25];
+		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon);
+
+		const miniFicheOnHover = setMiniFicheForStation(
+			item.nom,
+			item.adresse,
+			item.prixE85,
+			item.prixGplc,
+			item.prixSp95,
+			item.prixSp95E10,
+			item.prixGasoil,
+			item.prixSp98
+		);
+
+		marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
+
+		this.markers.addLayer(marker);
+	}
+
+	setSingleMarkerTabac(item, options = {}) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "tabac");
+		const icon = rubrique_type_object.poi_icon.not_selected;
+
+		let poi_options = { isPastille: true, is_pastille_vert: true, is_pastille_rouge: false };
+		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
+
+		const title = `
+			<span class='fw-bolder'> 
+				Tabac: ${item.name}
+			</span>
+			<br>
+			<span class='fw-boler'>
+				Departement: ${item.dep} ${item.depName}
+			</span>
+			<br>
+			<span class='fw-bolder'> 
+				Adresse: ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}
+			</span>
+		`;
+
+		marker.bindTooltip(title, { direction: "top", offset: L.point(20, -30) }).openTooltip();
+
+		this.markers.addLayer(marker);
+	}
+
+	setSingleMarkerMarche(item, options = {}) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "marche");
+		const icon = rubrique_type_object.poi_icon.not_selected;
+
+		let poi_options = { isPastille: true, is_pastille_vert: false, is_pastille_rouge: false };
+		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
+
+		const title = `
+			<span class='fw-bolder'> 
+				Marché: ${item.denominationF}
+			</span>
+			<br>
+			<span class='fw-bolder'> 
+				Adresse: ${item.adresse}
+			</span>
+		`;
+
+		marker.bindTooltip(title, { direction: "top", offset: L.point(20, -30) }).openTooltip();
+
+		this.markers.addLayer(marker);
+	}
+
+	settingSingleMarkerGolf(item, options = {}) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "golf");
+		const icon = rubrique_type_object.poi_icon.not_selected;
+
+		let poi_options = { isPastille: true, is_pastille_vert: true, is_pastille_rouge: false };
+		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
+
+		const title = `
+			<span class='fw-bolder'>
+				Golf: ${item.name}
+			</span>
+			<br>
+			<span class='fw-boler'>
+				Departement: ${item.dep} ${item.nom_dep}
+			</span>
+			<br>
+			<span class='fw-bolder'> 
+				Adresse: ${item.commune} ${item.adress}
+			</span>
+		`;
+
+		marker.bindTooltip(title, { direction: "top", offset: L.point(20, -30) }).openTooltip();
+
+		this.markers.addLayer(marker);
+	}
+
+	newMarkerPOI(rubrique_type, singleData, poi_icon, options = {}) {
+		let [w, h] = [25, 30];
 		const path_icon = IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`;
 
 		let point_pastille = "";

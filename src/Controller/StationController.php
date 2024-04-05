@@ -417,7 +417,6 @@ class StationController extends AbstractController
     /**
      * DON'T CHANGE THIS ROUTE: This use in js file.
      */
-    #[Route("/fetch_data/station", name: "fetch_data_station" , methods: [ "GET"])]
     #[Route("/getLatitudeLongitudeStation", name: "getLatitudeLongitudeStation" , methods: [ "GET"])]
     public function getLatitudeLongitudeStation(
         StationServiceFrGeomRepository $stationServiceFrGeomRepository, 
@@ -468,6 +467,35 @@ class StationController extends AbstractController
         }
         return $this->json($datas, 200);
     }
+
+    #[Route("/fetch_data/station", name: "fetch_data_station" , methods: [ "GET"])]
+    public function fetchDataStationAction(
+        Request $request,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository, 
+    ){
+
+        if($request->query->has("minx") && $request->query->has("miny") ){
+
+            $minx = $request->query->get("minx");
+            $maxx = $request->query->get("maxx");
+            $miny = $request->query->get("miny");
+            $maxy = $request->query->get("maxy");
+
+            $datas= $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+
+            
+            return $this->json([
+                "data" => $datas
+            ], 200);
+        }
+
+
+        $datas= $stationServiceFrGeomRepository->getSomeDataShuffle(2000);
+        return $this->json([
+            "data" => $datas
+        ]);
+    }
+
 
     /**
      * @Route("/station_in_peripherique", name="station_in_peripherique", methods={"GET"})
