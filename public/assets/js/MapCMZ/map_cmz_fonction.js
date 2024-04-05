@@ -107,3 +107,7 @@ function removeRubriqueActivNavbar(name) {
 		removeNewElement(parseInt(index_deleted));
 	}
 }
+
+function calculeProgression(y_bord, x_bord, x_var) {
+	return ((y_bord.max - y_bord.min) / (x_bord.max - x_bord.min)) * (x_var - x_bord.min) + y_bord.min;
+}

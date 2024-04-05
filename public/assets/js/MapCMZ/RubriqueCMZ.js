@@ -9,6 +9,8 @@ class RubriqueCMZ extends MapCMZ {
 		this.zoom_max_for_count_per_dep = 8;
 
 		this.geos = [];
+		this.zoom_min = 8;
+		this.zoom_max = 20;
 
 		this.allRubriques = [
 			{
@@ -421,10 +423,108 @@ class RubriqueCMZ extends MapCMZ {
 		// console.log(data_filter);
 		//// Update icon size while zoom in or zoom out
 		// const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
-		// this.synchronizeAllIconSize();
+		this.synchronizeAllIconSize();
 
 		////count marker in map
 		this.countMarkerInCart();
+	}
+
+	synchronizeAllIconSize() {
+		this.markers.eachLayer((marker) => {
+			this.synchronizeSingeIconSize(marker);
+		});
+	}
+
+	synchronizeSingeIconSize(marker) {
+		const zoom_size = { min: this.zoom_min, max: this.zoom_max };
+		const zoom = this.map._zoom;
+
+		console.clear();
+		console.log(zoom);
+		const divIcon = marker.options.icon.options;
+		const lastDivIcon = divIcon.html;
+
+		const parser = new DOMParser();
+		const div_icon_html_page = parser.parseFromString(lastDivIcon, "text/html");
+		const lastDivIcon_html = div_icon_html_page.querySelector(".single_marker_poi");
+
+		console.log(lastDivIcon_html);
+
+		const w_m_poi_size = { min: 50, max: 75 };
+		const h_m_poi_size = { min: 20, max: 38 };
+		const rad_m_poi_size = { min: 10, max: 20 };
+
+		let w_m_poi = calculeProgression(w_m_poi_size, zoom_size, zoom);
+		let h_m_poi = calculeProgression(h_m_poi_size, zoom_size, zoom);
+		let br_m_poi = calculeProgression(rad_m_poi_size, zoom_size, zoom);
+
+		let style_m_poi = `width:${w_m_poi.toFixed(1)}px!important;`;
+		style_m_poi = `${style_m_poi}height:${h_m_poi.toFixed(1)}px!important;`;
+		style_m_poi = `${style_m_poi}border-radius:${br_m_poi.toFixed(1)}px!important;`;
+
+		lastDivIcon_html.setAttribute("style", style_m_poi);
+
+		const single_marker_point = lastDivIcon_html.querySelector(".single_marker_point");
+
+		const pb_m_point_size = { min: 104, max: 297 };
+		const wh_m_point_size = { min: 9, max: 21 };
+
+		let wh_m_point = calculeProgression(wh_m_point_size, zoom_size, zoom);
+		let pb_m_point = calculeProgression(pb_m_point_size, zoom_size, zoom);
+
+		let style_marker_point = `width:${wh_m_point.toFixed(1)}px!important;`;
+		style_marker_point = `${style_marker_point}height:${wh_m_point.toFixed(1)}px!important;`;
+		style_marker_point = `${style_marker_point}bottom:-${pb_m_point.toFixed(1)}%!important;`;
+
+		single_marker_point.setAttribute("style", style_marker_point);
+
+		const single_marker_image = lastDivIcon_html.querySelector(".single_marker_image");
+		const style_wh_image = single_marker_image.getAttribute("style");
+
+		const w_image_size = { min: 12, max: 34 };
+
+		const h_image_size = { min: 15, max: 40 };
+
+		let wh = style_wh_image.split(";").map((i) => i.trim().split(":"));
+		wh = wh.map((i) => {
+			let value = parseFloat(i[1]);
+			let prog = 0.0;
+
+			if (i[0] === "width") {
+				prog = calculeProgression(w_image_size, zoom_size, zoom);
+			} else if (i[0] === "height") {
+				prog = calculeProgression(h_image_size, zoom_size, zoom);
+			}
+			i[1] = `${prog.toFixed(1)}px`;
+
+			return i.join(":");
+		});
+
+		single_marker_image.setAttribute("style", wh.join(";"));
+
+		if (lastDivIcon_html.querySelector(".single_marker_point_pastille")) {
+			const m_point_pastille = lastDivIcon_html.querySelector(".single_marker_point_pastille");
+
+			const wh_m_poi_pas_size = { min: 7, max: 12 };
+			const left_pos_m_poi_size = { min: 342, max: 482 };
+
+			let wh_m_poi_pas = calculeProgression(wh_m_poi_pas_size, zoom_size, zoom);
+			let left_pos_m_poi = calculeProgression(left_pos_m_poi_size, zoom_size, zoom);
+
+			let style_m_poi_pas = m_point_pastille.getAttribute("style");
+			style_m_poi_pas = `${style_m_poi_pas};width:${wh_m_poi_pas.toFixed(1)}px!important;`;
+			style_m_poi_pas = `${style_m_poi_pas}height:${wh_m_poi_pas.toFixed(1)}px!important;`;
+			style_m_poi_pas = `${style_m_poi_pas}left:${left_pos_m_poi.toFixed(1)}%!important;`;
+
+			m_point_pastille.setAttribute("style", style_m_poi_pas);
+		}
+
+		marker.setIcon(
+			new L.DivIcon({
+				...divIcon,
+				html: `${lastDivIcon_html.outerHTML}`,
+			})
+		);
 	}
 
 	/**
