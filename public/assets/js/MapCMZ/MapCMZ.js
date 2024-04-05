@@ -275,8 +275,6 @@ class MapCMZ {
 			map_zoom = this.defaultZoom;
 		}
 
-		map_zoom = 5;
-
 		this.map = L.map("map", {
 			zoomControl: false,
 			center:

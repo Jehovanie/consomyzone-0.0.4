@@ -16,7 +16,7 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Restaurant",
 				api_name: "restaurant",
-				icon: "assets/icon/NewIcons/restaurant.png",
+				icon: "assets/icon/NewIcons/mini_logo_resto_selected.png",
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_resto_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_resto.png",
@@ -29,7 +29,7 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Ferme",
 				api_name: "ferme",
-				icon: "assets/icon/NewIcons/restaurant.png",
+				icon: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_ferme.png",
@@ -42,7 +42,7 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Station",
 				api_name: "station",
-				icon: "assets/icon/NewIcons/restaurant.png",
+				icon: "assets/icon/NewIcons/mini_logo_station.png",
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_station_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_station.png",
@@ -55,7 +55,7 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Golf",
 				api_name: "golf",
-				icon: "assets/icon/NewIcons/restaurant.png",
+				icon: "assets/icon/NewIcons/mini_logo_golf_selected.png",
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_golf_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_golf.png",
@@ -68,7 +68,7 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Tabac",
 				api_name: "tabac",
-				icon: "assets/icon/NewIcons/restaurant.png",
+				icon: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_tabac.png",
@@ -81,7 +81,7 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Marché",
 				api_name: "marche",
-				icon: "assets/icon/NewIcons/restaurant.png",
+				icon: "assets/icon/NewIcons/mini_logo_marche_selected.png",
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_marche.png",
@@ -728,7 +728,9 @@ class RubriqueCMZ extends MapCMZ {
 						}),
 					];
 
-					addRubriqueActivNavbar(rubrique_type);
+					addRubriqueActivNavbar(
+						this.allRubriques.find((item) => item.api_name === rubrique_api_name.toLowerCase())
+					);
 
 					this.addRubriqueMarker(rubrique_api_name);
 				}

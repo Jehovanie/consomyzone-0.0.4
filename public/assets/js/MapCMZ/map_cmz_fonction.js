@@ -88,10 +88,14 @@ function updateGeoJson(couche, index, e) {
 	}
 }
 
-function addRubriqueActivNavbar(name) {
+function addRubriqueActivNavbar(object_rubrique) {
+	const { name, icon } = object_rubrique;
 	const key_name = name.trim().split(" ").join("_");
 	const rubrique = `
-		<button id="ID_nav_${key_name}_jheo_js" type="button" class="btn btn-primary btn-sm me-1 rounded-pill">${name}</button>
+		<button id="ID_nav_${key_name}_jheo_js" type="button" class="btn btn-primary btn-sm me-1 rounded-pill d-flex justify-content-center align-items-center">
+			<img class="image_icon_rubrique" style="border:none!important" src="${icon}" alt="nav_${key_name}_rubrique" />
+			${name}
+		</button>
 	`;
 
 	if (document.querySelector(".content_list_rubrique_active_jheo_js")) {

@@ -4200,3 +4200,11 @@ span.btn_event:hover {
 	top: -30%;
 	left: 400%;
 }
+
+.slick-slide {
+	height: 40px !important;
+}
+
+.slick-track button {
+	min-width: 120px !important;
+}
