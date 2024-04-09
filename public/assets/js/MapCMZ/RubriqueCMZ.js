@@ -308,7 +308,6 @@ class RubriqueCMZ extends MapCMZ {
 	updateMarkersDisplay(newSize) {
 		// ///REMOVE THE OUTSIDE THE BOX
 		this.removeMarkerOutSideTheBox(newSize);
-		console.clear();
 
 		const zoom = this.map._zoom;
 		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
@@ -325,7 +324,6 @@ class RubriqueCMZ extends MapCMZ {
 			markers_display = this.generateTableDataFiltered(y.min, y.max, ratio); /// [ { lat: ( with ratio ), data: [] } ]
 
 			for (const key_rubrique_type in this.defaultData) {
-				console.log();
 				///check if this rubrique_type is active...
 				let is_rubrique_type_active = this.allRubriques.some(
 					(item) => item.api_name === key_rubrique_type && item.is_active === true
@@ -363,6 +361,7 @@ class RubriqueCMZ extends MapCMZ {
 			}
 
 			this.markers_display = markers_display;
+			console.log(this.markers_display);
 		}
 
 		let count_remove = 0;
@@ -373,7 +372,11 @@ class RubriqueCMZ extends MapCMZ {
 			const latLng = marker.getLatLng();
 			const key_lat = parseFloat(parseFloat(latLng.lat).toFixed(ratio)).toString();
 
-			if (this.markers_display.some((item_marker_display) => item_marker_display.lat.toString() === key_lat)) {
+			if (
+				this.markers_display.some(
+					(item_marker_display) => item_marker_display.lat.toString() === key_lat.toString()
+				)
+			) {
 				const item_marker_display_data = this.markers_display.find(
 					(item_marker_display) => item_marker_display.lat.toString() === key_lat
 				);
@@ -640,9 +643,11 @@ class RubriqueCMZ extends MapCMZ {
 
 		if (this.map.getZoom() < this.zoom_max_for_count_per_dep) {
 			this.map.addLayer(this.markerClusterForCounterPerDep);
+		} else {
+			this.map.addLayer(this.markers);
 		}
-
 		this.addEventMapOnZoomend();
+		this.bindActionToShowNavLeft();
 	}
 
 	async initData() {
@@ -790,7 +795,36 @@ class RubriqueCMZ extends MapCMZ {
 			...this.defaultData?.rubrique_api_name,
 		};
 
+		console.log(this.defaultData);
+
 		this.updateMapAddRubrique(rubrique_api_name);
+	}
+
+	bindActionToShowNavLeft() {
+		if (!document.querySelector(".cta_show_list_nav_left_jheo_js")) {
+			console.log("Selector not found: 'cta_show_list_nav_left_jheo_js'");
+			return;
+		}
+
+		const cta_show_list_nav_left = document.querySelector(".cta_show_list_nav_left_jheo_js");
+		cta_show_list_nav_left.innerHTML = `
+			<i class="fa-solid fa-list fa_solid_icon_nav_left_jheo_js" data-type="show"></i>
+		`;
+
+		cta_show_list_nav_left.addEventListener("click", () => {
+			const fa_solid_icon_nav_left = document.querySelector(".fa_solid_icon_nav_left_jheo_js");
+			if (fa_solid_icon_nav_left.getAttribute("data-type") === "show") {
+				cta_show_list_nav_left.innerHTML = `
+					<i class="fa-solid fa-xmark fa_solid_icon_nav_left_jheo_js" data-type="hide"></i>
+				`;
+			} else {
+				cta_show_list_nav_left.innerHTML = `
+					<i class="fa-solid fa-list fa_solid_icon_nav_left_jheo_js" data-type="show"></i>
+				`;
+			}
+
+			document.querySelector(".content_list_nav_left_jheo_js").classList.toggle("d-none");
+		});
 	}
 
 	generateTableDataFiltered(ratioMin, ratioMax, ratio) {
@@ -819,6 +853,8 @@ class RubriqueCMZ extends MapCMZ {
 
 		const zoom = this.map._zoom;
 		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		console.log(current_object_dataMax);
+
 		const { dataMax, ratio } = current_object_dataMax;
 
 		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast()); ///lat
@@ -859,6 +895,9 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			}
 		});
+
+		console.log(this.markers_display);
+		this.countMarkerInCart();
 	}
 
 	setSingleMarkerResto(item, options = {}) {

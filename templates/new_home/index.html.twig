@@ -26,9 +26,13 @@
 
 
 {% block body %}
-    {% include 'new_home/_navbar.html.twig' %}
+    {% include 'new_home/_navbar.html.twig' %} 
 
     <div class="content_body">
+        <div class="content_list_nav_left content_list_nav_left_jheo_js">
+            {% include 'new_home/_content_list_nav_left.html.twig' %}
+        </div>
+
         {% if (app.user) %}
             <div class="content content_tous_js_jheo" id="tout-dem"  data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
                 <div class="content_cart_map content_cart_map-respons content_cart_map_jheo_js">

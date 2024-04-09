@@ -1330,7 +1330,10 @@ class MapCMZ {
 		this.createBottomSideControl();
 
 		this.addEventOnMap();
-		
+	}
+
+	addEventOnMap() {
+		console.log("This class must implement on class fils...");
 	}
 
 	updateGeoJson(couche, indexInJson) {
