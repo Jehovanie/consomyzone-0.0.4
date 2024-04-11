@@ -128,9 +128,13 @@ class GolfFranceController extends AbstractController
             $minx = $request->query->get("minx");
             $maxx = $request->query->get("maxx");
             $miny = $request->query->get("miny");
-            $maxy = $request->query->get("maxy");
+            $maxy = $request->query->get("maxy"); 
 
-            $datas = $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+            $data_max = $request->query->get("data_max"); 
+            $data_max = $data_max ? intval($data_max) : null;
+
+
+            $datas = $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, null, $data_max);
             
             $ids=array_map('App\Service\SortResultService::getIdFromData', $datas);
             $moyenneNote = $avisGolfRepository->getAllNoteById($ids);

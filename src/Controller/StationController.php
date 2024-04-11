@@ -481,7 +481,10 @@ class StationController extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
-            $datas= $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+            $data_max = $request->query->get("data_max"); 
+            $data_max = $data_max ? intval($data_max) : null;
+
+            $datas= $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $data_max);
 
             
             return $this->json([

@@ -11,3 +11,7 @@ function updateGeoJsonAdd(couche, index) {
 function removeSpecGeoJson(couche, index) {
 	MAP_CMZ.removeSpecGeoJson(couche, index);
 }
+
+function getNumberMarkerDefault() {
+	return MAP_CMZ.getNumberMarkerDefault();
+}

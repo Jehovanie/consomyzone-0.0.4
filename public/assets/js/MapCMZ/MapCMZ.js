@@ -597,23 +597,25 @@ class MapCMZ {
 	bindEventChangeTiles() {
 		this.listTales.forEach((item) => {
 			const singleTile = document.querySelector(`.ID_${item.id}_jheo_js`);
-			singleTile.addEventListener("click", () => {
-				this.changeTiles(item.id);
+			if (!singleTile) {
+				singleTile.addEventListener("click", () => {
+					this.changeTiles(item.id);
 
-				this.id_listTales_selected = item.id;
-				if (!singleTile.classList.contains("card_type_layer_selected")) {
-					singleTile.classList.add("card_type_layer_selected");
-				}
-
-				this.listTales.forEach(({ id }) => {
-					if (id !== this.id_listTales_selected) {
-						const tempTile = document.querySelector(`.ID_${id}_jheo_js`);
-						if (tempTile.classList.contains("card_type_layer_selected")) {
-							tempTile.classList.remove("card_type_layer_selected");
-						}
+					this.id_listTales_selected = item.id;
+					if (!singleTile.classList.contains("card_type_layer_selected")) {
+						singleTile.classList.add("card_type_layer_selected");
 					}
+
+					this.listTales.forEach(({ id }) => {
+						if (id !== this.id_listTales_selected) {
+							const tempTile = document.querySelector(`.ID_${id}_jheo_js`);
+							if (tempTile.classList.contains("card_type_layer_selected")) {
+								tempTile.classList.remove("card_type_layer_selected");
+							}
+						}
+					});
 				});
-			});
+			}
 		});
 	}
 

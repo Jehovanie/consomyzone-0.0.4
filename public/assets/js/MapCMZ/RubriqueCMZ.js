@@ -21,10 +21,16 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_resto_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_resto.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerResto(item, options);
 				},
+				setListItemRubriqueActive: (item, options = {}) => {
+					return this.setListItemRubriqueActiveResto(item, options);
+				},
+				setMiniFiche: (item, options= {}) => {
+					return this.setMiniFicheResto(item, options)
+				}
 			},
 			{
 				name: "Ferme",
@@ -34,9 +40,12 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_ferme.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerFerme(item, options);
+				},
+				setListItemRubriqueActive: (item, options = {}) => {
+					return this.setListItemRubriqueActiveFerme(item, options);
 				},
 			},
 			{
@@ -47,9 +56,12 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_station_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_station.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerStation(item, options);
+				},
+				setListItemRubriqueActive: (item, options = {}) => {
+					return this.setListItemRubriqueActiveStation(item, options);
 				},
 			},
 			{
@@ -64,6 +76,9 @@ class RubriqueCMZ extends MapCMZ {
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarkerGolf(item, options);
 				},
+				setListItemRubriqueActive: (item, options = {}) => {
+					return this.setListItemRubriqueActiveResto(item, options);
+				},
 			},
 			{
 				name: "Tabac",
@@ -77,6 +92,9 @@ class RubriqueCMZ extends MapCMZ {
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerTabac(item, options);
 				},
+				setListItemRubriqueActive: (item, options = {}) => {
+					return this.setListItemRubriqueActiveResto(item, options);
+				},
 			},
 			{
 				name: "Marché",
@@ -86,9 +104,12 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_marche.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerMarche(item, options);
+				},
+				setListItemRubriqueActive: (item, options = {}) => {
+					return this.setListItemRubriqueActiveMarche(item, options);
 				},
 			},
 			{
@@ -103,6 +124,9 @@ class RubriqueCMZ extends MapCMZ {
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
 				},
+				setListItemRubriqueActive: (item, options = {}) => {
+					return this.setListItemRubriqueActiveResto(item, options);
+				},
 			},
 			{
 				name: "Extra Pizza",
@@ -115,6 +139,9 @@ class RubriqueCMZ extends MapCMZ {
 				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
+				},
+				setListItemRubriqueActive: (item, options = {}) => {
+					return this.setListItemRubriqueActiveResto(item, options);
 				},
 			},
 			{
@@ -129,6 +156,9 @@ class RubriqueCMZ extends MapCMZ {
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
 				},
+				setListItemRubriqueActive: (item, options = {}) => {
+					return this.setListItemRubriqueActiveResto(item, options);
+				},
 			},
 			{
 				name: "Gastro",
@@ -141,6 +171,9 @@ class RubriqueCMZ extends MapCMZ {
 				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
+				},
+				setListItemRubriqueActive: (item, options = {}) => {
+					return this.setListItemRubriqueActiveResto(item, options);
 				},
 			},
 		];
@@ -172,6 +205,15 @@ class RubriqueCMZ extends MapCMZ {
 		];
 
 		this.markers_display = [];
+	}
+
+	getNumberMarkerDefault() {
+		return this.allRubriques.reduce((sum, item) => {
+			if (item.is_active) {
+				sum = sum + 1;
+			}
+			return sum;
+		}, 0);
 	}
 
 	createMarkersCluster() {
@@ -210,7 +252,47 @@ class RubriqueCMZ extends MapCMZ {
 		////create new marker Cluster special for count per dep.
 		this.createMarkersClusterForCountPerDep();
 
+		this.addRubriqueActiveByDefault();
+
 		this.addEventOnMap();
+	}
+
+	addRubriqueActiveByDefault() {
+		this.allRubriques.forEach((item) => {
+			if (item.is_active) {
+				addRubriqueActivNavbar(item);
+			}
+		});
+
+		this.fetchDataIterator();
+	}
+
+	fetchDataIterator() {
+		const default_rubrique_active = this.allRubriques.filter((item) => item.is_active === true);
+		const rubrique_iterator = default_rubrique_active[Symbol.iterator]();
+
+		this.fetchOriginDataItem(rubrique_iterator);
+	}
+
+	async fetchOriginDataItem(rubrique_iterator) {
+		const data_rubrique = rubrique_iterator.next().value;
+
+		if (data_rubrique !== undefined) {
+			const api_name = data_rubrique.api_name;
+
+			const response = await this.fetchDataRubrique(api_name.toLowerCase(), { data_max: 50 });
+			this.defaultData[api_name] = {
+				data: response.data,
+				...this.defaultData[api_name],
+			};
+
+			this.updateMapAddRubrique(api_name);
+
+			this.fetchOriginDataItem(rubrique_iterator);
+		} else {
+			this.bindActionToShowNavLeft();
+			return false;
+		}
 	}
 
 	/**
@@ -313,9 +395,6 @@ class RubriqueCMZ extends MapCMZ {
 		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
 		const { dataMax, ratio } = current_object_dataMax;
 
-		console.log("current zoom: " + zoom);
-		console.log(current_object_dataMax);
-
 		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast()); ///lat
 		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth()); ///lng
 
@@ -361,7 +440,6 @@ class RubriqueCMZ extends MapCMZ {
 			}
 
 			this.markers_display = markers_display;
-			console.log(this.markers_display);
 		}
 
 		let count_remove = 0;
@@ -396,7 +474,6 @@ class RubriqueCMZ extends MapCMZ {
 				count_remove++;
 			}
 		});
-		console.log("count_remove: " + count_remove);
 
 		let count_new_add = 0;
 		this.markers_display.forEach((marker_to_display) => {
@@ -421,11 +498,8 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			});
 		});
-		console.log("count_new_add: " + count_new_add);
 
-		// console.log(data_filter);
 		//// Update icon size while zoom in or zoom out
-		// const iconSize= zoom > 16 ? [35, 45 ] : ( zoom > 14 ? [25,35] : [15, 25])
 		this.synchronizeAllIconSize();
 
 		////count marker in map
@@ -647,7 +721,6 @@ class RubriqueCMZ extends MapCMZ {
 			this.map.addLayer(this.markers);
 		}
 		this.addEventMapOnZoomend();
-		this.bindActionToShowNavLeft();
 	}
 
 	async initData() {
@@ -663,7 +736,6 @@ class RubriqueCMZ extends MapCMZ {
 
 		//// api get all data from server and return objects
 		const response = await fetch(`${this.api_data}${param}`);
-		console.log(response);
 		//// api get all data from server;
 	}
 
@@ -759,7 +831,7 @@ class RubriqueCMZ extends MapCMZ {
 		});
 	}
 
-	async fetchDataRubrique(rubrique_type) {
+	async fetchDataRubrique(rubrique_type, options = {}) {
 		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
 		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
 
@@ -767,6 +839,10 @@ class RubriqueCMZ extends MapCMZ {
 		param = `${param}&miny=${encodeURIComponent(y.min)}`;
 		param = `${param}&maxx=${encodeURIComponent(x.max)}`;
 		param = `${param}&maxy=${encodeURIComponent(y.max)}`;
+
+		if (options && options.data_max) {
+			param = `${param}&data_max=${options.data_max}`;
+		}
 
 		let link = `/fetch_data/${rubrique_type}?${param}`;
 
@@ -792,10 +868,8 @@ class RubriqueCMZ extends MapCMZ {
 		const response = await this.fetchDataRubrique(rubrique_api_name.toLowerCase());
 		this.defaultData[rubrique_api_name] = {
 			data: response.data,
-			...this.defaultData?.rubrique_api_name,
+			...this.defaultData[rubrique_api_name],
 		};
-
-		console.log(this.defaultData);
 
 		this.updateMapAddRubrique(rubrique_api_name);
 	}
@@ -808,23 +882,235 @@ class RubriqueCMZ extends MapCMZ {
 
 		const cta_show_list_nav_left = document.querySelector(".cta_show_list_nav_left_jheo_js");
 		cta_show_list_nav_left.innerHTML = `
-			<i class="fa-solid fa-list fa_solid_icon_nav_left_jheo_js" data-type="show"></i>
+			<i class="fa-solid fa-xmark fa_solid_icon_nav_left_jheo_js" data-type="show"></i>
 		`;
+		this.bindListItemRubriqueActive();
 
 		cta_show_list_nav_left.addEventListener("click", () => {
 			const fa_solid_icon_nav_left = document.querySelector(".fa_solid_icon_nav_left_jheo_js");
 			if (fa_solid_icon_nav_left.getAttribute("data-type") === "show") {
 				cta_show_list_nav_left.innerHTML = `
-					<i class="fa-solid fa-xmark fa_solid_icon_nav_left_jheo_js" data-type="hide"></i>
+					<i class="fa-solid fa-list fa_solid_icon_nav_left_jheo_js" data-type="hide"></i>
 				`;
+
+				const list_nav_left = document.querySelector(".list_nav_left_jheo_js");
+				if (!list_nav_left) {
+					console.log("Selector not found: 'list_nav_left_jheo_js'");
+					return false;
+				}
+
+				list_nav_left.innerHTML = "";
 			} else {
 				cta_show_list_nav_left.innerHTML = `
-					<i class="fa-solid fa-list fa_solid_icon_nav_left_jheo_js" data-type="show"></i>
+					<i class="fa-solid fa-xmark fa_solid_icon_nav_left_jheo_js" data-type="show"></i>
 				`;
+
+				this.bindListItemRubriqueActive();
 			}
 
 			document.querySelector(".content_list_nav_left_jheo_js").classList.toggle("d-none");
 		});
+	}
+
+	bindListItemRubriqueActive() {
+		const all_rubrique_active = this.allRubriques.filter((item) => item.is_active === true);
+
+		let data_transform = [];
+		all_rubrique_active.forEach((rubrique) => {
+			let { api_name, name: name_rubrique } = rubrique;
+
+			let data_rubrique = this.defaultData[api_name];
+			let data_rubrique_data = data_rubrique["data"];
+
+			data_rubrique_data = data_rubrique_data.map((item) => {
+				return { ...item, name_rubrique: name_rubrique, rubrique_type: api_name };
+			});
+
+			data_transform = data_transform.concat(data_rubrique_data);
+		});
+
+		this.injectLitemRubriqueActive(data_transform);
+	}
+
+	injectLitemRubriqueActive(data) {
+		const list_nav_left = document.querySelector(".list_nav_left_jheo_js");
+		if (!list_nav_left) {
+			console.log("Selector not found: 'list_nav_left_jheo_js'");
+			return false;
+		}
+
+		console.log(data);
+
+		let body_table_list_rubrique_active = "";
+		data.forEach((item_data) => {
+			body_table_list_rubrique_active += `
+				<tr style="border: 1px solid transparent;">
+					<td>${this.createItemRubriqueActive(item_data)}</td>
+				</tr>
+			`;
+		});
+
+		list_nav_left.innerHTML = `
+			<table id="list_item_rubrique_active_nav_left" class="table">
+				<thead>
+					<tr>
+						<th scope="col">#</th>
+					</tr>
+				</thead>
+				<tbody>
+					${body_table_list_rubrique_active}
+				</tbody>
+			</table>
+		`;
+
+		activeDataTableOnList("#list_item_rubrique_active_nav_left");
+	}
+
+	createItemRubriqueActive(item_data) {
+		const rubrique_active = this.allRubriques.find((item) => item.api_name === item_data.rubrique_type);
+
+		const item_rubrique = rubrique_active.setListItemRubriqueActive(item_data);
+		return item_rubrique;
+	}
+
+	cardItemRubriqueNameNoteAddress(name, note, address) {
+		return `
+			<figure>
+				<blockquote class="blockquote mb-0">
+					<p>${name}</p>
+				</blockquote>
+				<div class="stars">
+					<i class="fa-solid fa-star"></i>
+					<i class="fa-solid fa-star"></i>
+					<i class="fa-solid fa-star"></i>
+					<i class="fa-solid fa-star"></i>
+					<i class="fa-solid fa-star"></i>
+				</div>
+				<figcaption class="blockquote-footer mt-0 mb-0">
+					Adresse: <br> <cite title="Source Title">${address}</cite>
+				</figcaption>
+			</figure>
+		`;
+	}
+
+	cardItemRubriqueImage() {
+		return `
+			<img class="img-fluid rounded" alt="image"
+				src="https://images.unsplash.com/photo-1592861956120-e524fc739696?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+		`;
+	}
+
+	setListItemRubriqueActiveResto(item_data) {
+		const { denominationF, name_rubrique, numvoie, typevoie, nomvoie, codpost, villenorm } = item_data;
+		const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codpost} ${villenorm}`;
+		const nom = denominationF;
+		const note = 5;
+
+		const item_rubrique = `
+			<div class="card" style="max-width: 540px;">
+				<div class="card-body">
+					<div class="row g-0">
+						<div class="col-12">
+							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+						</div>
+					</div>
+					<div class="row g-0">
+						<div class="col-md-8">
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+						</div>
+						<div class="col-md-4">
+							${this.cardItemRubriqueImage()}
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+
+		return item_rubrique;
+	}
+
+	setListItemRubriqueActiveFerme(item_data) {
+		const { name_rubrique, adresseFerme, nomFerme } = item_data;
+		const adresse = `${adresseFerme}`;
+		const nom = nomFerme;
+		const note = 5;
+
+		const item_rubrique = `
+			<div class="card" style="max-width: 540px;">
+				<div class="card-body">
+					<div class="row g-0">
+						<div class="col-12">
+							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+						</div>
+					</div>
+					<div class="row g-0">
+						<div class="col-md-8">
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+						</div>
+						<div class="col-md-4">
+							${this.cardItemRubriqueImage()}
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+
+		return item_rubrique;
+	}
+
+	setListItemRubriqueActiveStation(item_data) {
+		const { name_rubrique, adresse, nom } = item_data;
+		const note = 5;
+
+		const item_rubrique = `
+			<div class="card" style="max-width: 540px;">
+				<div class="card-body">
+					<div class="row g-0">
+						<div class="col-12">
+							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+						</div>
+					</div>
+					<div class="row g-0">
+						<div class="col-md-8">
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+						</div>
+						<div class="col-md-4">
+							${this.cardItemRubriqueImage()}
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+
+		return item_rubrique;
+	}
+
+	setListItemRubriqueActiveMarche(item_data) {
+		const { denominationF, name_rubrique, adresse } = item_data;
+		const nom = denominationF;
+		const note = 5;
+
+		const item_rubrique = `
+			<div class="card" style="max-width: 540px;">
+				<div class="card-body">
+					<div class="row g-0">
+						<div class="col-12">
+							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+						</div>
+					</div>
+					<div class="row g-0">
+						<div class="col-md-8">
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+						</div>
+						<div class="col-md-4">
+							${this.cardItemRubriqueImage()}
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+
+		return item_rubrique;
 	}
 
 	generateTableDataFiltered(ratioMin, ratioMax, ratio) {
@@ -853,7 +1139,6 @@ class RubriqueCMZ extends MapCMZ {
 
 		const zoom = this.map._zoom;
 		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
-		console.log(current_object_dataMax);
 
 		const { dataMax, ratio } = current_object_dataMax;
 
@@ -896,7 +1181,6 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		});
 
-		console.log(this.markers_display);
 		this.countMarkerInCart();
 	}
 

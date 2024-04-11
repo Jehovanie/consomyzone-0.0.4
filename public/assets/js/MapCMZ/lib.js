@@ -11,7 +11,6 @@ const slickElement = $(".content_list_rubrique_active_jheo_js").slick(slickConfi
 
 function updateSlidesToShow() {
 	let max_slidesToScroll = slickElement[0].slick.slideCount;
-	console.log(max_slidesToScroll);
 
 	// Adjust slidesToShow based on the number of child elements
 	slickConfig.slidesToShow = Math.min(max_slidesToScroll, 5); // Limit to maximum of 5 slidesToShow
@@ -29,4 +28,13 @@ function removeNewElement(index) {
 	console.log("remove: " + index);
 	slickElement.slick("slickRemove", index);
 	updateSlidesToShow();
+}
+
+function activeDataTableOnList(id_table_to_active_data_table) {
+	$(id_table_to_active_data_table).DataTable({
+		searching: false, // Ceci désactive la barre de recherche
+		language: {
+			url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+		},
+	});
 }

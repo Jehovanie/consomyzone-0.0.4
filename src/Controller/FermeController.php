@@ -350,7 +350,10 @@ class FermeController extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
-            $datas= $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+            $data_max = $request->query->get("data_max"); 
+            $data_max = $data_max ? intval($data_max) : null;
+
+            $datas= $fermeGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $data_max);
 
             if( str_contains($pathname, "fetch_data")){
                 return $this->json([

@@ -4244,3 +4244,21 @@ span.btn_event:hover {
 	background-color: #fff;
 	background-image: -webkit-gradient(linear, 40% 0%, 75% 84%, from(#4d9c41), to(#19911d), color-stop(0.6, #54de5d));
 }
+
+.content_chargement_nav_left {
+	width: 100%;
+	height: 100%;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.dataTables_paginate,
+.dataTables_info,
+.dataTables_length {
+	font-size: 0.8rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+	padding: 5px;
+}

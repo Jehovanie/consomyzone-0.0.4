@@ -132,7 +132,10 @@ class RestaurantController extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
-            $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+            $data_max = $request->query->get("data_max"); 
+            $data_max = $data_max ? intval($data_max) : 250;
+
+            $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, null, $data_max);
 
             if( $request->query->has("isFirstResquest")){
                 //// update data result to add all resto pastille in the Tribu T
