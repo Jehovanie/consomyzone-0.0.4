@@ -4283,3 +4283,31 @@ span.btn_event:hover {
 #list_item_rubrique_active_nav_left_filter label input:focus {
 	outline: none;
 }
+
+.content_details_rubrique{
+	position: absolute;
+    top: 15%;
+    z-index: 1100;
+    left: 2.8%;
+    height: 75% !important;
+    width: 30%;
+    background-color: white;
+    border-radius: 5px;
+    border-radius: 10px;
+    box-shadow: 0px 2px 7px 0px black;
+    border-radius: 10px;
+}
+
+.details_rubrique{
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+.content_chargment_details{
+	display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+}

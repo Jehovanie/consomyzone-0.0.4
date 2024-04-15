@@ -40,7 +40,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_ferme.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerFerme(item, options);
 				},
@@ -59,7 +59,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_station_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_station.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerStation(item, options);
 				},
@@ -78,7 +78,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_golf_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_golf.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarkerGolf(item, options);
 				},
@@ -97,7 +97,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_tabac.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerTabac(item, options);
 				},
@@ -116,7 +116,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_marche.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerMarche(item, options);
 				},
@@ -232,6 +232,8 @@ class RubriqueCMZ extends MapCMZ {
 		];
 
 		this.markers_display = [];
+
+		this.marker_last_selected = null;
 	}
 
 	getNumberMarkerDefault() {
@@ -1320,6 +1322,8 @@ class RubriqueCMZ extends MapCMZ {
 		marker.bindTooltip(mini_fiche, { direction: "auto", offset: L.point(20, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+
+		this.bindEventClickOnMarker(marker);
 	}
 
 	setMiniFicheFerme(nom, departement, adresse, options = {}) {
@@ -1479,8 +1483,17 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	newMarkerPOI(rubrique_type, singleData, poi_icon, options = {}) {
-		const zoom_size = { min: this.zoom_min, max: this.zoom_max };
+		return new L.Marker(L.latLng(parseFloat(singleData.lat), parseFloat(singleData.long)), {
+			icon: this.setDivIconMarker(poi_icon, 2.1, options),
+			id: singleData.id,
+			type: rubrique_type,
+		});
+	}
 
+	setDivIconMarker(poi_icon, note, options = {}) {
+		const path_icon = IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`;
+
+		const zoom_size = { min: this.zoom_min, max: this.zoom_max };
 		const zoom = this.map._zoom;
 
 		const w_m_poi_size = { min: 50, max: 75 };
@@ -1512,8 +1525,6 @@ class RubriqueCMZ extends MapCMZ {
 		style_marker_point = `${style_marker_point}height:${wh_m_point.toFixed(1)}px!important;`;
 		style_marker_point = `${style_marker_point}bottom:-${pb_m_point.toFixed(1)}%!important;`;
 
-		const path_icon = IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`;
-
 		let point_pastille = "";
 		if (options?.isPastille) {
 			const wh_m_poi_pas_size = { min: 7, max: 12 };
@@ -1533,31 +1544,50 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		}
 
-		return new L.Marker(L.latLng(parseFloat(singleData.lat), parseFloat(singleData.long)), {
-			icon: new L.DivIcon({
-				className: "content_single_marker_poi",
-				html: ` 
+		return new L.DivIcon({
+			className: "content_single_marker_poi",
+			html: ` 
 					<div class="single_marker_poi" style="${style_m_poi}">
 						${point_pastille}
 						<img class="single_marker_image" style="${style_image}" src="${path_icon}"/>
-						<div class="single_marker_note">2.1</div>
+						<div class="single_marker_note">${note}</div>
 						<div class="single_marker_point" style="${style_marker_point}"></div>
 					</div>
 				`,
-				iconAnchor: [11, 30],
-				popupAnchor: [0, -20],
-				shadowSize: [68, 95],
-				shadowAnchor: [22, 94],
-			}),
-			id: singleData.id,
-			type: rubrique_type,
+			iconAnchor: [11, 30],
+			popupAnchor: [0, -20],
+			shadowSize: [68, 95],
+			shadowAnchor: [22, 94],
 		});
+	}
 
-		// <div class="single_marker_poi" style="width:52.1px!important;height:21.5px!important;border-radius:10.8px!important;">
-		// 	<div class="single_marker_point_pastille" style="background-color: red;width:7.4px!important;height:7.4px!important;left:353.7%!important;"></div>
-		// 	<img class="single_marker_image" style="width:13.8px;height:17.1px" src="/assets/icon/NewIcons/mini_logo_resto.png">
-		// 	<div class="single_marker_note">2.1</div>
-		// 	<div class="single_marker_point" style="width:10.0px!important;height:10.0px!important;bottom:-120.1%!important;"></div>
-		// </div>
+	bindEventClickOnMarker(markerRubrique) {
+		markerRubrique.on("click", (e) => {
+			this.resetLastMarkerClicked();
+
+			const { id, type: rubrique_type } = markerRubrique.options;
+
+			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+			const icon_selected = rubrique_type_object.poi_icon.selected;
+
+			let poi_options = { isPastille: true, is_pastille_vert: true, is_pastille_rouge: false };
+
+			markerRubrique.setIcon(this.setDivIconMarker(icon_selected, 2.1, poi_options));
+
+			this.marker_last_selected = { marker: markerRubrique, type: rubrique_type, id: id };
+		});
+	}
+
+	resetLastMarkerClicked() {
+		if (this.marker_last_selected != null) {
+			const { marker: markerLastClicked, type, id } = this.marker_last_selected;
+
+			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === type);
+			const icon_not_selected = rubrique_type_object.poi_icon.not_selected;
+
+			let poi_options = { isPastille: true, is_pastille_vert: false, is_pastille_rouge: true };
+
+			markerLastClicked.setIcon(this.setDivIconMarker(icon_not_selected, 2.1, poi_options));
+		}
 	}
 }

@@ -7529,8 +7529,61 @@ if (document.querySelector(".icon_draggable_jheo_js")) {
 		div_message_tooltip_drag.classList.add("d-none");
 	});
 }
+
+
 if (document.querySelector(".key_draggable_details_jheo_js")) {
 	dragElement(document.querySelector(".key_draggable_details_jheo_js"));
+
+	function dragElement(elmnt) {
+		var pos1 = 0,
+			pos2 = 0,
+			pos3 = 0,
+			pos4 = 0;
+
+		if (document.querySelector(".content_icon_draggable_jheo_js")) {
+			document.querySelector(".content_icon_draggable_jheo_js").onmousedown = dragMouseDown;
+		} else {
+			elmnt.onmousedown = dragMouseDown;
+		}
+
+		function dragMouseDown(e) {
+			e = e || window.event;
+			e.preventDefault();
+			// get the mouse cursor position at startup:
+			pos3 = e.clientX;
+			pos4 = e.clientY;
+			document.onmouseup = closeDragElement;
+			// call a function whenever the cursor moves:
+			document.onmousemove = elementDrag;
+		}
+
+		function elementDrag(e) {
+			e = e || window.event;
+			e.preventDefault();
+
+			// calculate the new cursor position:
+			pos1 = pos3 - e.clientX;
+			pos2 = pos4 - e.clientY;
+			pos3 = e.clientX;
+			pos4 = e.clientY;
+			// set the element's new position:
+			elmnt.style.top = elmnt.offsetTop - pos2 + "px";
+			elmnt.style.left = elmnt.offsetLeft - pos1 + "px";
+
+			// elmnt.style.top = percent_y + "%";
+			// elmnt.style.left = percent_x + "%";
+		}
+
+		function closeDragElement() {
+			// stop moving when mouse button is released:
+			document.onmouseup = null;
+			document.onmousemove = null;
+		}
+	}
+}
+
+if (document.querySelector(".content_details_rubrique_jheo_js")) {
+	dragElement(document.querySelector(".content_details_rubrique_jheo_js"));
 
 	function dragElement(elmnt) {
 		var pos1 = 0,
