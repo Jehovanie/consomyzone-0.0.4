@@ -28,9 +28,9 @@ class RubriqueCMZ extends MapCMZ {
 				setListItemRubriqueActive: (item, options = {}) => {
 					return this.setListItemRubriqueActiveResto(item, options);
 				},
-				setMiniFiche: (item, options= {}) => {
-					return this.setMiniFicheResto(item, options)
-				}
+				setMiniFiche: (nom, departement, adresse, options = {}) => {
+					return this.setMiniFicheResto(nom, departement, adresse, options);
+				},
 			},
 			{
 				name: "Ferme",
@@ -46,6 +46,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				setListItemRubriqueActive: (item, options = {}) => {
 					return this.setListItemRubriqueActiveFerme(item, options);
+				},
+				setMiniFiche: (nom, departement, adresse, options = {}) => {
+					return this.setMiniFicheFerme(nom, departement, adresse, options);
 				},
 			},
 			{
@@ -63,6 +66,9 @@ class RubriqueCMZ extends MapCMZ {
 				setListItemRubriqueActive: (item, options = {}) => {
 					return this.setListItemRubriqueActiveStation(item, options);
 				},
+				setMiniFiche: (nom, departement, adresse, options = {}) => {
+					return this.setMiniFicheStation(nom, departement, adresse, options);
+				},
 			},
 			{
 				name: "Golf",
@@ -72,12 +78,15 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_golf_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_golf.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarkerGolf(item, options);
 				},
 				setListItemRubriqueActive: (item, options = {}) => {
-					return this.setListItemRubriqueActiveResto(item, options);
+					return this.setListItemRubriqueActiveGolf(item, options);
+				},
+				setMiniFiche: (nom, departement, adresse, options = {}) => {
+					return this.setMiniFicheGolf(nom, departement, adresse, options);
 				},
 			},
 			{
@@ -88,12 +97,15 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_tabac.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerTabac(item, options);
 				},
 				setListItemRubriqueActive: (item, options = {}) => {
-					return this.setListItemRubriqueActiveResto(item, options);
+					return this.setListItemRubriqueActiveTabac(item, options);
+				},
+				setMiniFiche: (nom, departement, adresse, options = {}) => {
+					return this.setMiniFicheTabac(nom, departement, adresse, options);
 				},
 			},
 			{
@@ -111,6 +123,9 @@ class RubriqueCMZ extends MapCMZ {
 				setListItemRubriqueActive: (item, options = {}) => {
 					return this.setListItemRubriqueActiveMarche(item, options);
 				},
+				setMiniFiche: (nom, departement, adresse, options = {}) => {
+					return this.setMiniFicheMarche(nom, departement, adresse, options);
+				},
 			},
 			{
 				name: "Boulangerie",
@@ -126,6 +141,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				setListItemRubriqueActive: (item, options = {}) => {
 					return this.setListItemRubriqueActiveResto(item, options);
+				},
+				setMiniFiche: (nom, departement, adresse, options = {}) => {
+					return this.setMiniFicheResto(nom, departement, adresse, options);
 				},
 			},
 			{
@@ -143,6 +161,9 @@ class RubriqueCMZ extends MapCMZ {
 				setListItemRubriqueActive: (item, options = {}) => {
 					return this.setListItemRubriqueActiveResto(item, options);
 				},
+				setMiniFiche: (nom, departement, adresse, options = {}) => {
+					return this.setMiniFicheResto(nom, departement, adresse, options);
+				},
 			},
 			{
 				name: "KFC",
@@ -159,6 +180,9 @@ class RubriqueCMZ extends MapCMZ {
 				setListItemRubriqueActive: (item, options = {}) => {
 					return this.setListItemRubriqueActiveResto(item, options);
 				},
+				setMiniFiche: (nom, departement, adresse, options = {}) => {
+					return this.setMiniFicheResto(nom, departement, adresse, options);
+				},
 			},
 			{
 				name: "Gastro",
@@ -174,6 +198,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				setListItemRubriqueActive: (item, options = {}) => {
 					return this.setListItemRubriqueActiveResto(item, options);
+				},
+				setMiniFiche: (nom, departement, adresse, options = {}) => {
+					return this.setMiniFicheResto(nom, departement, adresse, options);
 				},
 			},
 		];
@@ -953,7 +980,7 @@ class RubriqueCMZ extends MapCMZ {
 		list_nav_left.innerHTML = `
 			<table id="list_item_rubrique_active_nav_left" class="table">
 				<thead>
-					<tr>
+					<tr style="display: none">
 						<th scope="col">#</th>
 					</tr>
 				</thead>
@@ -977,7 +1004,7 @@ class RubriqueCMZ extends MapCMZ {
 		return `
 			<figure>
 				<blockquote class="blockquote mb-0">
-					<p>${name}</p>
+					<p>${name.toUpperCase()}</p>
 				</blockquote>
 				<div class="stars">
 					<i class="fa-solid fa-star"></i>
@@ -1085,8 +1112,72 @@ class RubriqueCMZ extends MapCMZ {
 		return item_rubrique;
 	}
 
+	setListItemRubriqueActiveGolf(item_data) {
+		const { name: nom, name_rubrique, adress: adresse } = item_data;
+		const note = 5;
+
+		const item_rubrique = `
+			<div class="card" style="max-width: 540px;">
+				<div class="card-body">
+					<div class="row g-0">
+						<div class="col-12">
+							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+						</div>
+					</div>
+					<div class="row g-0">
+						<div class="col-md-8">
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+						</div>
+						<div class="col-md-4">
+							${this.cardItemRubriqueImage()}
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+
+		return item_rubrique;
+	}
+
 	setListItemRubriqueActiveMarche(item_data) {
 		const { denominationF, name_rubrique, adresse } = item_data;
+		const nom = denominationF;
+		const note = 5;
+
+		const item_rubrique = `
+			<div class="card" style="max-width: 540px;">
+				<div class="card-body">
+					<div class="row g-0">
+						<div class="col-12">
+							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+						</div>
+					</div>
+					<div class="row g-0">
+						<div class="col-md-8">
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+						</div>
+						<div class="col-md-4">
+							${this.cardItemRubriqueImage()}
+						</div>
+					</div>
+				</div>
+			</div>
+		`;
+
+		return item_rubrique;
+	}
+
+	setListItemRubriqueActiveTabac(item_data) {
+		const {
+			denomination_f: denominationF,
+			name_rubrique,
+			numvoie,
+			typevoie,
+			nomvoie,
+			codpost,
+			villenorm,
+		} = item_data;
+		const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codpost} ${villenorm}`;
 		const nom = denominationF;
 		const note = 5;
 
@@ -1184,6 +1275,35 @@ class RubriqueCMZ extends MapCMZ {
 		this.countMarkerInCart();
 	}
 
+	setMiniFicheGlobal(type, nom, departement, adresse) {
+		const mini_fiche_global = `
+			<span> 
+				${type}: <span class="badge bg-info text-dark">${nom}</span>
+			</span>
+			<br>
+			<span>
+				Departement: <span class="badge bg-info text-dark">${departement}</span>
+			</span>
+			<br>
+			<span>
+				Adresse:<br>
+				<span class="badge bg-warning text-dark">${adresse}</span>
+			</span>
+		`;
+
+		return mini_fiche_global;
+	}
+
+	setMiniFicheResto(nom, departement, adresse, options = {}) {
+		const mini_fiche = `
+			<button type="button" class="btn btn-primary btn-sm m-1" style="text-align: start;">
+				${this.setMiniFicheGlobal("Restaurant", nom, departement, adresse)}
+			</button>
+		`;
+
+		return mini_fiche;
+	}
+
 	setSingleMarkerResto(item, options = {}) {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
 		const icon = rubrique_type_object.poi_icon.not_selected;
@@ -1191,23 +1311,25 @@ class RubriqueCMZ extends MapCMZ {
 		let poi_options = { isPastille: true, is_pastille_vert: false, is_pastille_rouge: true };
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
-		const title = `
-			<span class='fw-bolder'> 
-				Restaurant: ${item.denominationF}
-			</span>
-			<br>
-			<span class='fw-bolder'>
-				Departement: ${item.depName}
-			</span>
-			<br>
-			<span class='fw-bolder'>
-				Adresse: ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}
-			</span>
-		`;
+		const mini_fiche = rubrique_type_object.setMiniFiche(
+			item.denominationF,
+			item.depName,
+			`${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
+		);
 
-		marker.bindTooltip(title, { direction: "top", offset: L.point(20, -30) }).openTooltip();
+		marker.bindTooltip(mini_fiche, { direction: "auto", offset: L.point(20, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+	}
+
+	setMiniFicheFerme(nom, departement, adresse, options = {}) {
+		const mini_fiche = `
+			<button type="button" class="btn btn-primary btn-sm m-1" style="text-align: start;">
+				${this.setMiniFicheGlobal("Restaurant", nom, departement, adresse)}
+			</button>
+		`;
+
+		return mini_fiche;
 	}
 
 	setSingleMarkerFerme(item, options = {}) {
@@ -1216,23 +1338,39 @@ class RubriqueCMZ extends MapCMZ {
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon);
 
-		const title = `
-			<span class='fw-bolder'>
-				Ferme: ${item.nomFerme}
-			</span>
-			<br>
-			<span class='fw-bolder'> 
-				Departement: ${item.departement}
-			</span>
-			<br>
-			<span class='fw-bolder'> 
-				Adresse: ${item.adresseFerme}
-			</span>
-		`;
+		const mini_fiche = rubrique_type_object.setMiniFiche(item.nomFerme, item.departement, item.adresseFerme);
 
-		marker.bindTooltip(title, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
+		marker.bindTooltip(mini_fiche, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+	}
+
+	setMiniFicheStation(nom, departement, adresse, options = {}) {
+		let spec_other_options = "";
+		if (Object.keys(options).length != 0) {
+			for (const key of Object.keys(options)) {
+				if (parseFloat(options[key]) != 0) {
+					spec_other_options += `
+						<span class="badge rounded-pill bg-secondary me-1">
+							${key.replace("prix", "Prix ")}: € ${options[key]}
+						</span>
+						<br>
+					`;
+				}
+			}
+		}
+
+		const mini_fiche = `
+			<button type="button" class="btn btn-primary btn-sm m-1" style="text-align: start;">
+				${this.setMiniFicheGlobal("Station", nom, departement, adresse)}
+				<hr>
+				<div class="d-flex justify-content-start align-items-center flex-wrap mt-1">
+					${spec_other_options}
+				</div>
+			</button>
+		`;
+
+		return mini_fiche;
 	}
 
 	setSingleMarkerStation(item, options = {}) {
@@ -1241,20 +1379,33 @@ class RubriqueCMZ extends MapCMZ {
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon);
 
-		const miniFicheOnHover = setMiniFicheForStation(
+		const mini_fiche = rubrique_type_object.setMiniFiche(
 			item.nom,
+			`${item.departementCode} ${item.departementName}`,
 			item.adresse,
-			item.prixE85,
-			item.prixGplc,
-			item.prixSp95,
-			item.prixSp95E10,
-			item.prixGasoil,
-			item.prixSp98
+			{
+				prixE85: item.prixE85,
+				prixGplc: item.prixGplc,
+				prixSp95: item.prixSp95,
+				prixSp95E10: item.prixSp95E10,
+				prixGasoil: item.prixGasoil,
+				prixSp98: item.prixSp98,
+			}
 		);
 
-		marker.bindTooltip(miniFicheOnHover, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
+		marker.bindTooltip(mini_fiche, { direction: "top", offset: L.point(0, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+	}
+
+	setMiniFicheTabac(nom, departement, adresse, options = {}) {
+		const mini_fiche = `
+			<button type="button" class="btn btn-primary btn-sm m-1" style="text-align: start;">
+				${this.setMiniFicheGlobal("Tabac", nom, departement, adresse)}
+			</button>
+		`;
+
+		return mini_fiche;
 	}
 
 	setSingleMarkerTabac(item, options = {}) {
@@ -1264,23 +1415,25 @@ class RubriqueCMZ extends MapCMZ {
 		let poi_options = { isPastille: true, is_pastille_vert: true, is_pastille_rouge: false };
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
-		const title = `
-			<span class='fw-bolder'> 
-				Tabac: ${item.name}
-			</span>
-			<br>
-			<span class='fw-boler'>
-				Departement: ${item.dep} ${item.depName}
-			</span>
-			<br>
-			<span class='fw-bolder'> 
-				Adresse: ${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}
-			</span>
-		`;
+		const miniFiche = rubrique_type_object.setMiniFiche(
+			item.name,
+			`${item.dep} ${item.depName}`,
+			`${item.numvoie} ${item.typevoie} ${item.nomvoie} ${item.codpost} ${item.villenorm}`
+		);
 
-		marker.bindTooltip(title, { direction: "top", offset: L.point(20, -30) }).openTooltip();
+		marker.bindTooltip(miniFiche, { direction: "top", offset: L.point(20, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+	}
+
+	setMiniFicheMarche(nom, departement, adresse, options = {}) {
+		const mini_fiche = `
+			<button type="button" class="btn btn-primary btn-sm m-1" style="text-align: start;">
+				${this.setMiniFicheGlobal("Tabac", nom, departement, adresse)}
+			</button>
+		`;
+
+		return mini_fiche;
 	}
 
 	setSingleMarkerMarche(item, options = {}) {
@@ -1290,19 +1443,21 @@ class RubriqueCMZ extends MapCMZ {
 		let poi_options = { isPastille: true, is_pastille_vert: false, is_pastille_rouge: false };
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
-		const title = `
-			<span class='fw-bolder'> 
-				Marché: ${item.denominationF}
-			</span>
-			<br>
-			<span class='fw-bolder'> 
-				Adresse: ${item.adresse}
-			</span>
-		`;
+		const miniFiche = rubrique_type_object.setMiniFiche(item.denominationF, item.dep, item.adresse);
 
-		marker.bindTooltip(title, { direction: "top", offset: L.point(20, -30) }).openTooltip();
+		marker.bindTooltip(miniFiche, { direction: "top", offset: L.point(20, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+	}
+
+	setMiniFicheGolf(nom, departement, adresse, options = {}) {
+		const mini_fiche = `
+			<button type="button" class="btn btn-primary btn-sm m-1" style="text-align: start;">
+				${this.setMiniFicheGlobal("Tabac", nom, departement, adresse)}
+			</button>
+		`;
+
+		return mini_fiche;
 	}
 
 	settingSingleMarkerGolf(item, options = {}) {
@@ -1312,21 +1467,13 @@ class RubriqueCMZ extends MapCMZ {
 		let poi_options = { isPastille: true, is_pastille_vert: true, is_pastille_rouge: false };
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
-		const title = `
-			<span class='fw-bolder'>
-				Golf: ${item.name}
-			</span>
-			<br>
-			<span class='fw-boler'>
-				Departement: ${item.dep} ${item.nom_dep}
-			</span>
-			<br>
-			<span class='fw-bolder'> 
-				Adresse: ${item.commune} ${item.adress}
-			</span>
-		`;
+		const miniFiche = rubrique_type_object.setMiniFiche(
+			item.name,
+			`${item.dep} ${item.nom_dep}`,
+			`${item.commune} ${item.adress}`
+		);
 
-		marker.bindTooltip(title, { direction: "top", offset: L.point(20, -30) }).openTooltip();
+		marker.bindTooltip(miniFiche, { direction: "top", offset: L.point(20, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
 	}

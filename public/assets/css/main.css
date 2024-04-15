@@ -4262,3 +4262,24 @@ span.btn_event:hover {
 .dataTables_wrapper .dataTables_paginate .paginate_button {
 	padding: 5px;
 }
+
+.dataTables_length {
+	display: none !important;
+}
+
+#list_item_rubrique_active_nav_left_filter {
+	width: 100%;
+	text-align: start;
+	padding-left: 9px;
+}
+#list_item_rubrique_active_nav_left_filter label {
+	width: 100%;
+}
+#list_item_rubrique_active_nav_left_filter label input {
+	width: 72%;
+	border-radius: 5px;
+}
+
+#list_item_rubrique_active_nav_left_filter label input:focus {
+	outline: none;
+}
