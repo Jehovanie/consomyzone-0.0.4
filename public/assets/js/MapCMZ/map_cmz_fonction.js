@@ -115,3 +115,35 @@ function removeRubriqueActivNavbar(name) {
 function calculeProgression(y_bord, x_bord, x_var) {
 	return ((y_bord.max - y_bord.min) / (x_bord.max - x_bord.min)) * (x_var - x_bord.min) + y_bord.min;
 }
+
+function openDetailsContainer() {
+	if (!document.querySelector(".content_details_rubrique_jheo_js")) {
+		console.log("Selector not found : 'content_details_rubrique_jheo_js'");
+		return false;
+	}
+	const content_details_rubrique = document.querySelector(".content_details_rubrique_jheo_js");
+	if (content_details_rubrique.classList.contains("d-none")) {
+		content_details_rubrique.classList.remove("d-none");
+	}
+}
+
+function closeDetailsContainer() {
+	if (!document.querySelector(".content_details_rubrique_jheo_js")) {
+		console.log("Selector not found : 'content_details_rubrique_jheo_js'");
+		return false;
+	}
+	const content_details_rubrique = document.querySelector(".content_details_rubrique_jheo_js");
+	if (!content_details_rubrique.classList.contains("d-none")) {
+		content_details_rubrique.classList.add("d-none");
+	}
+
+	content_details_rubrique.querySelector("#content_detail_rubrique_jheo_js").innerHTML = `
+		<div class="content_chargment_details content_chargment_details_jheo_js">
+			<div class="containt">
+				<div class="word word-1">C</div>
+				<div class="word word-2">M</div>
+				<div class="word word-3">Z</div>
+			</div>
+		</div>
+	`;
+}

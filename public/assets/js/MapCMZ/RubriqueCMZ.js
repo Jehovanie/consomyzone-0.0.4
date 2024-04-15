@@ -11,6 +11,7 @@ class RubriqueCMZ extends MapCMZ {
 		this.geos = [];
 		this.zoom_min = 8;
 		this.zoom_max = 20;
+		this.zoomDetails = this.zoom_max;
 
 		this.allRubriques = [
 			{
@@ -1323,7 +1324,7 @@ class RubriqueCMZ extends MapCMZ {
 
 		this.markers.addLayer(marker);
 
-		this.bindEventClickOnMarker(marker);
+		this.bindEventClickOnMarker(marker, item);
 	}
 
 	setMiniFicheFerme(nom, departement, adresse, options = {}) {
@@ -1561,9 +1562,11 @@ class RubriqueCMZ extends MapCMZ {
 		});
 	}
 
-	bindEventClickOnMarker(markerRubrique) {
+	bindEventClickOnMarker(markerRubrique, item) {
 		markerRubrique.on("click", (e) => {
 			this.resetLastMarkerClicked();
+
+			this.updateCenter(parseFloat(item.lat), parseFloat(item.long), this.zoomDetails);
 
 			const { id, type: rubrique_type } = markerRubrique.options;
 
@@ -1575,6 +1578,8 @@ class RubriqueCMZ extends MapCMZ {
 			markerRubrique.setIcon(this.setDivIconMarker(icon_selected, 2.1, poi_options));
 
 			this.marker_last_selected = { marker: markerRubrique, type: rubrique_type, id: id };
+
+			openDetailsContainer();
 		});
 	}
 

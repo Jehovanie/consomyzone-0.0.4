@@ -4286,11 +4286,11 @@ span.btn_event:hover {
 
 .content_details_rubrique{
 	position: absolute;
-    top: 15%;
+    top: 14%;
     z-index: 1100;
-    left: 2.8%;
-    height: 75% !important;
-    width: 30%;
+	right: 5.8%;
+    height: 77% !important;
+    width: 25%;
     background-color: white;
     border-radius: 5px;
     border-radius: 10px;
@@ -4310,4 +4310,13 @@ span.btn_event:hover {
     justify-content: center;
     height: 100%;
     width: 100%;
+}
+
+.close_content_details_rubrique{
+	position: absolute;
+    right: 23px;
+    z-index: 1000;
+    top: 10px;
+    font-size: 1.1rem;
+    cursor: pointer;
 }
