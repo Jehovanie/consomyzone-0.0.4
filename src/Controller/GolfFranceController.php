@@ -475,7 +475,6 @@ class GolfFranceController extends AbstractController
         ], 200);
     }
 
-    #[Route("/details/golf/{golfID}", name:"get_details_golf", methods: ["GET"] )]
     #[Route("/api/golf/one_data/{golfID}" , name:"api_one_data_golf" , methods:"GET" )]
     public function getOneDataGolf(
         $golfID,
@@ -513,8 +512,6 @@ class GolfFranceController extends AbstractController
             "avisPerso" => $avis
         ];
 
-
-        dd($details);
 
         return $this->json([
             "details" => $details,
@@ -651,6 +648,135 @@ class GolfFranceController extends AbstractController
             "isHaveTribuPastille" => $isHaveTribuPastille
         ]);
     }
+
+    #[Route("/details/golf/{golfID}", name:"get_details_golf", methods: ["GET"] )]
+    public function getDetailsRubriqueFerme(
+        $golfID,
+        GolfFranceRepository $golfFranceRepository,
+        AvisGolfRepository $avisGolfRepository,
+        UserRepository $userRepository,
+        Status $status,
+        Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
+        Filesystem $filesyst,
+    ){
+        ///current user connected
+        $user = $this->getUser();
+        $userID = ($user) ? intval($user->getId()) : null;
+
+        $details = $golfFranceRepository->getOneGolf(intval($golfID),$userID);
+
+        $nbr_avis_resto = $avisGolfRepository->getNombreAvis($details["id"]);
+
+        $global_note  = $avisGolfRepository->getNoteGlobale($details["id"]);
+
+        $isAlreadyCommented= false;
+        $isHaveTribuPastille= false;
+
+        $avis= ["note" => null, "text" => null  ];
+
+        $note_temp=0;
+        foreach ($global_note as $note ) {
+            if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
+                $isAlreadyCommented = true;
+                $avis = [ "note" => $note["note"], "text" => $note["avis"] ];
+            }
+            $note_temp += $note["note"]; 
+        }
+
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto,
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
+        ];
+
+        $arrayTribu = []; // tribut T (own) pastille
+        $arrayTribuJoined= []; // tribut T join pastille
+        $array_tribug_pastilled= [];  // tribut G pastille
+
+        if ($this->getUser()) {
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+
+            foreach ($tribu_t_owned as $key) {
+                // dd($key);
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable =  array_key_exists("name_tribu_t_muable", $key) ? $key["name_tribu_t_muable"] : null;
+                $tableExtension = $tableTribu . "_golf";
+
+                if ($tribu_T_Service->checkExtension($tableTribu, "_golf") > 0) {
+                    if (!$tribu_T_Service->checkIfCurrentGolfPastilled($tableExtension, $golfID, true)) {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => false]);
+                    } else {
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "name_tribu_t_muable" => $name_tribu_t_muable, "logo_path" => $logo_path, "isPastilled" => true]);
+                        $isHaveTribuPastille= true;
+                    }
+                }
+            }
+
+            $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+            foreach ($tribu_t_joined as $key) {
+                $tbtJoined = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                $tableExtensionTbtJoined = $tbtJoined . "_golf";
+                if($tribu_T_Service->checkExtension($tbtJoined, "_golf") > 0){
+                    if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"], true)){
+                        array_push($arrayTribuJoined, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => true]);
+                        $isHaveTribuPastille= true;
+                    }else{
+                        array_push($arrayTribuJoined, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable, "isPastilled" => false]);
+                    }
+                }
+            }
+
+            $statusProfile = $status->statusFondateur($this->getUser());
+
+            $current_profil= $statusProfile["profil"][0];
+            $tributG_table_name= $current_profil->getTributG();
+
+            $isPastilled = $tributGService->isPastilled($tributG_table_name."_golf", $golfID);
+
+            if( count($isPastilled) > 0 ){
+                $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
+                array_push($array_tribug_pastilled, ["table_name" => $profil_tribuG["table_name"], "logo_path" => $profil_tribuG["avatar"], "name_tribu_g_muable" => $profil_tribuG["name"], "isPastilled" => true]);
+                $isHaveTribuPastille= true;
+            }
+        }
+
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/golf/".$details["id"]."/";
+
+        $tabPhoto = [];
+
+        $dir_exist = $filesyst->exists($folder);
+
+        // dd($folder);
+
+
+        if($dir_exist){
+            $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
+
+            // dd($images);
+            foreach ($images as $image) {
+                $photo = explode("uploads/valider",$image)[1];
+                $photo = "/public/uploads/valider".$photo;
+                array_push($tabPhoto, ["photo"=>$photo]);
+            }
+        }
+
+        return $this->render("golf/details_golf.html.twig", [
+            "id_dep" => $details["dep"],
+            "nom_dep" => $details["nom_dep"],
+            "details" => $details,
+            "tribu_t_pastilleds" => $arrayTribu,
+            "tribu_t_joined_pastille" => $arrayTribuJoined,
+            "tribu_g_pastilleds" => $array_tribug_pastilled,
+            "photos" => $tabPhoto,
+            "isHaveTribuPastille" => $isHaveTribuPastille
+        ]);
+    }
+
 
     #[Route('/golf-mobile/departement/{nom_dep}/{id_dep}/details/{golfID}', name: 'single_golf_france_mobile', methods: ["GET"])]
     public function oneGolfMobile(

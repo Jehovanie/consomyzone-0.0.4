@@ -20,7 +20,7 @@ class MarcheController extends AbstractController
 {
     #[Route('/marche', name: 'app_marche')]
     public function getAllDepartementMarche(
-Status $status,
+        Status $status,
         EntityManagerInterface $entityManager,
         TributGService $tributGService,
         UserRepository $userRepository,
@@ -161,7 +161,7 @@ Status $status,
     ) {
 
         $marche_details= $marcheRepository->getOneItemByID($id_marche);
-        
+
         $temp = $marche_details["specificite"];
 
         $temp = json_decode('"'.$temp.'"', true);
@@ -176,7 +176,7 @@ Status $status,
 
         return $this->render("marche/detail_marche.html.twig", [
             "id_marche" => $id_marche,
-            "id_dep" => $id_dep,
+            "id_dep" => $marche_details["dep"],
             "details" => [
                 ...$marche_details
             ]

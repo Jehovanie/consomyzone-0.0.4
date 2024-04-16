@@ -32,7 +32,7 @@ function removeNewElement(index) {
 
 function activeDataTableOnList(id_table_to_active_data_table) {
 	$(id_table_to_active_data_table).DataTable({
-		searching: false, // Ceci désactive la barre de recherche
+		searching: true, // Ceci désactive la barre de recherche
 		pageLength: 50,
 		language: {
 			url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",

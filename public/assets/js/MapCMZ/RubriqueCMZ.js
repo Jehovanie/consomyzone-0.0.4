@@ -22,7 +22,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_resto_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_resto.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerResto(item, options);
 				},
@@ -66,7 +66,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_station_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_station.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerStation(item, options);
 				},
@@ -75,6 +75,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				setMiniFiche: (nom, departement, adresse, options = {}) => {
 					return this.setMiniFicheStation(nom, departement, adresse, options);
+				},
+				fetchDetails: (id_rubrique) => {
+					this.fetchDetailsStation(id_rubrique);
 				},
 			},
 			{
@@ -85,7 +88,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_golf_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_golf.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarkerGolf(item, options);
 				},
@@ -94,6 +97,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				setMiniFiche: (nom, departement, adresse, options = {}) => {
 					return this.setMiniFicheGolf(nom, departement, adresse, options);
+				},
+				fetchDetails: (id_rubrique) => {
+					this.fetchDetailsGolf(id_rubrique);
 				},
 			},
 			{
@@ -104,7 +110,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_tabac.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerTabac(item, options);
 				},
@@ -113,6 +119,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				setMiniFiche: (nom, departement, adresse, options = {}) => {
 					return this.setMiniFicheTabac(nom, departement, adresse, options);
+				},
+				fetchDetails: (id_rubrique) => {
+					this.fetchDetailsTabac(id_rubrique);
 				},
 			},
 			{
@@ -123,7 +132,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_marche.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerMarche(item, options);
 				},
@@ -132,6 +141,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				setMiniFiche: (nom, departement, adresse, options = {}) => {
 					return this.setMiniFicheMarche(nom, departement, adresse, options);
+				},
+				fetchDetails: (id_rubrique) => {
+					this.fetchDetailsMarche(id_rubrique);
 				},
 			},
 			{
@@ -152,6 +164,9 @@ class RubriqueCMZ extends MapCMZ {
 				setMiniFiche: (nom, departement, adresse, options = {}) => {
 					return this.setMiniFicheResto(nom, departement, adresse, options);
 				},
+				fetchDetails: (id_rubrique) => {
+					this.fetchDetailsMarche(id_rubrique);
+				},
 			},
 			{
 				name: "Extra Pizza",
@@ -170,6 +185,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				setMiniFiche: (nom, departement, adresse, options = {}) => {
 					return this.setMiniFicheResto(nom, departement, adresse, options);
+				},
+				fetchDetails: (id_rubrique) => {
+					this.fetchDetailsMarche(id_rubrique);
 				},
 			},
 			{
@@ -190,6 +208,9 @@ class RubriqueCMZ extends MapCMZ {
 				setMiniFiche: (nom, departement, adresse, options = {}) => {
 					return this.setMiniFicheResto(nom, departement, adresse, options);
 				},
+				fetchDetails: (id_rubrique) => {
+					this.fetchDetailsMarche(id_rubrique);
+				},
 			},
 			{
 				name: "Gastro",
@@ -208,6 +229,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				setMiniFiche: (nom, departement, adresse, options = {}) => {
 					return this.setMiniFicheResto(nom, departement, adresse, options);
+				},
+				fetchDetails: (id_rubrique) => {
+					this.fetchDetailsMarche(id_rubrique);
 				},
 			},
 		];
@@ -1411,6 +1435,8 @@ class RubriqueCMZ extends MapCMZ {
 		marker.bindTooltip(mini_fiche, { direction: "top", offset: L.point(0, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+
+		this.bindEventClickOnMarker(marker, item);
 	}
 
 	setMiniFicheTabac(nom, departement, adresse, options = {}) {
@@ -1439,6 +1465,8 @@ class RubriqueCMZ extends MapCMZ {
 		marker.bindTooltip(miniFiche, { direction: "top", offset: L.point(20, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+
+		this.bindEventClickOnMarker(marker, item);
 	}
 
 	setMiniFicheMarche(nom, departement, adresse, options = {}) {
@@ -1463,6 +1491,8 @@ class RubriqueCMZ extends MapCMZ {
 		marker.bindTooltip(miniFiche, { direction: "top", offset: L.point(20, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+
+		this.bindEventClickOnMarker(marker, item);
 	}
 
 	setMiniFicheGolf(nom, departement, adresse, options = {}) {
@@ -1491,6 +1521,8 @@ class RubriqueCMZ extends MapCMZ {
 		marker.bindTooltip(miniFiche, { direction: "top", offset: L.point(20, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+
+		this.bindEventClickOnMarker(marker, item);
 	}
 
 	newMarkerPOI(rubrique_type, singleData, poi_icon, options = {}) {
@@ -1637,6 +1669,110 @@ class RubriqueCMZ extends MapCMZ {
 	async fetchDetailsFerme(id_rubrique) {
 		try {
 			const link_details = `/details/ferme/${id_rubrique}`;
+			const response = await fetch(link_details);
+
+			if (!response.ok) {
+				throw new Error(`Erreur de réseaux: ${response.status}`);
+			}
+
+			const response_text = await response.text();
+
+			const dom_parse = new DOMParser();
+			const rubrique_details = dom_parse.parseFromString(response_text, "text/html");
+
+			const content_details_rubrique = document.querySelector("#content_detail_rubrique_jheo_js");
+			if (!content_details_rubrique) {
+				console.log("Selector not found: 'content_detail_rubrique_jheo_js'");
+				return false;
+			}
+
+			content_details_rubrique.innerHTML = rubrique_details.querySelector("body").innerHTML;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	async fetchDetailsMarche(id_rubrique) {
+		try {
+			const link_details = `/details/marche/${id_rubrique}`;
+			const response = await fetch(link_details);
+
+			if (!response.ok) {
+				throw new Error(`Erreur de réseaux: ${response.status}`);
+			}
+
+			const response_text = await response.text();
+
+			const dom_parse = new DOMParser();
+			const rubrique_details = dom_parse.parseFromString(response_text, "text/html");
+
+			const content_details_rubrique = document.querySelector("#content_detail_rubrique_jheo_js");
+			if (!content_details_rubrique) {
+				console.log("Selector not found: 'content_detail_rubrique_jheo_js'");
+				return false;
+			}
+
+			content_details_rubrique.innerHTML = rubrique_details.querySelector("body").innerHTML;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	async fetchDetailsStation(id_rubrique) {
+		try {
+			const link_details = `/details/station/${id_rubrique}`;
+			const response = await fetch(link_details);
+
+			if (!response.ok) {
+				throw new Error(`Erreur de réseaux: ${response.status}`);
+			}
+
+			const response_text = await response.text();
+
+			const dom_parse = new DOMParser();
+			const rubrique_details = dom_parse.parseFromString(response_text, "text/html");
+
+			const content_details_rubrique = document.querySelector("#content_detail_rubrique_jheo_js");
+			if (!content_details_rubrique) {
+				console.log("Selector not found: 'content_detail_rubrique_jheo_js'");
+				return false;
+			}
+
+			content_details_rubrique.innerHTML = rubrique_details.querySelector("body").innerHTML;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	async fetchDetailsGolf(id_rubrique) {
+		try {
+			const link_details = `/details/golf/${id_rubrique}`;
+			const response = await fetch(link_details);
+
+			if (!response.ok) {
+				throw new Error(`Erreur de réseaux: ${response.status}`);
+			}
+
+			const response_text = await response.text();
+
+			const dom_parse = new DOMParser();
+			const rubrique_details = dom_parse.parseFromString(response_text, "text/html");
+
+			const content_details_rubrique = document.querySelector("#content_detail_rubrique_jheo_js");
+			if (!content_details_rubrique) {
+				console.log("Selector not found: 'content_detail_rubrique_jheo_js'");
+				return false;
+			}
+
+			content_details_rubrique.innerHTML = rubrique_details.querySelector("body").innerHTML;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	async fetchDetailsTabac(id_rubrique) {
+		try {
+			const link_details = `/details/tabac/${id_rubrique}`;
 			const response = await fetch(link_details);
 
 			if (!response.ok) {

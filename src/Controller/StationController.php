@@ -421,11 +421,10 @@ class StationController extends AbstractController
         $statusProfile = $status->statusFondateur($this->getUser());
 
         $details_station= $stationServiceFrGeomRepository->getDetailsRubriqueStation($id_station);
-        dd($details_station);
 
         return $this->render("station/detail_station.html.twig", [
-            "departCode" => $depart_code,
-            "departName" => $depart_name,
+            "departCode" => $details_station["departementCode"],
+            "departName" => $details_station["departementName"],
             "station" => $details_station,
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],

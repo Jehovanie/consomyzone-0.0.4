@@ -320,8 +320,8 @@ class TabacContoller extends AbstractController
         $details_tabac=  $tabacRepository->getOneTabac(intval($id_tabac));
 
         return $this->render("tabac/details_tabac.html.twig", [
-            "id_dep" => $id_dep,
-            "nom_dep" => $nom_dep,
+            "id_dep" => $details_tabac["dep"],
+            "nom_dep" => $details_tabac["dep_name"],
             "details" => $details_tabac,
         ]);
     }
