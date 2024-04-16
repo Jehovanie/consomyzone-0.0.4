@@ -42,7 +42,7 @@ class MapCMZ {
 		this.defaultLongitude = this.longitude;
 		this.defaultZoom = 7;
 
-		this.maxZoom = 20;
+		this.maxZoom = 19;
 
 		this.objectGeoJson = [];
 		// REFERENCES : https://gist.github.com/frankrowe/9007567

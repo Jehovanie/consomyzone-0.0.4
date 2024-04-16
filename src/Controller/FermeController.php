@@ -314,7 +314,7 @@ class FermeController extends AbstractController
         return $this->render("ferme/details_ferme.html.twig", [
             "details" => $ferme_details,
             "userConnected" => $userConnected,
-            "nom_dep" => $nom_dep,
+            "nom_dep" => $ferme_details["departementName"],
             "profil" => $statusProfile["profil"],
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode()

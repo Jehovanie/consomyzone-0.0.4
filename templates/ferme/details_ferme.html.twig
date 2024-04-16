@@ -7,85 +7,72 @@
                     <p class="rubriqueNameDetail" data-name="{{details.nomFerme | upper}}">   {{details.nomFerme | upper}}</p>
                 </blockquote>
                 <figcaption class="blockquote-footer">
-                    <a href="#" class="small text-center ">Contact : {{details.nomProprietaire }} </a>
+                    <a href="#" class="small text-center ">Adresse : {{details.adresseFerme }} </a>
                 </figcaption>
                 <figcaption class="blockquote-footer">
-                    <a href="#" class="small text-center ">Adresse : {{details.adresseFerme }} </a>
+                    <a href="#" class="small text-center ">Contact : {{details.nomProprietaire }} </a>
                 </figcaption>
             </figure>
 
+            <div class="d-flex justify-content-center align-items-stretch flex-gap-2 content_btn_avis mb-2">
+                <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary">
+                    0 avis
+                </button>
+               
+                {% if (app.user and app.user.type!='Type') %}
+                    <button class="btn btn-primary" id="givs-avis-ferme-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button>
+                {% else %}
+                    <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()">
+                        Donner votre avis
+                    </button>
+                {% endif %}    
+            </div>
         </div>
     </div>
 
-    <div class="p-4">
+    <div class="content_other_detail_rubrique mt-3 p-2">
 
-        <div class="content_note text-center mb-3">
+        <hr>
+        <div class="content_note text-center my-1">
             <div class="start">
                 <i class="fa-solid fa-star" data-rank="1"></i>
                 <i class="fa-solid fa-star" data-rank="2"></i>
                 <i class="fa-solid fa-star" data-rank="3"></i>
                 <i class="fa-solid fa-star" data-rank="4"></i>
             </div>
-            
-            <div class="nombre_avis">
-                {# <button class="btn btn-warning btn-md see-avis"  data-bs-toggle="modal" data-bs-target="#staticBackdrop">Avis</button> #}
-                <button class="btn btn-secondary btn-md see-avis btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()">Avis</button>
+        </div>
+        <hr>
+
+        {# ///content cta #}
+        <div class="content_tow_cta my-1">
+            <div class="site_web">
+                <a class="badge bg-success" href="{{'https://'}}{{details.lienSiteWeb | raw}}" target="_blank">Lien :  site Web</a>
             </div>
         </div>
+        <hr>
 
         {# ///activiter #}
         {% if details.activite %}
-            <div class="content_activite">
-                <p class="activite">
+            <div class="content_activite my-1">
+                <p class="activite d-flex justify-content-between align-items-center">
                     <span class="fw-bold">Activite:</span>
-                    {{details.activite | raw}}
-                </p>
-            </div>
-        {% endif %}
-     
-        {% if details.agricultureBio %}
-            <div class="row">
-                <div class="col-8">
-                    <p class="agribio fw-bold">
-                        Agri biologie
-                    </p>
-                </div>
-                <div class="col-2">
-                    <img src="{{asset('assets/icon/icon-agri.png') | raw}}" alt="icon" width="50">
-                </div>
-                <div class="col-2">
-                    <i class="fa-solid fa-check" aria-hidden="true"></i>
-                </div>
-            </div>
-
-            <hr>
-        {% endif %}
-
-
-        {# ///codePostal #}
-        {% if details.codePostal %}
-            <div class="content_activite">
-                <p class="activite">
-                    <span class="fw-bold">Code Postal:</span>
-                    {{details.codePostal  | raw}}
+                    <span>
+                        <span class="badge bg-warning text-dark me-1">
+                            {{details.activite | raw}}
+                        </span>
+                        {% if details.agricultureBio %}
+                            <span class="badge bg-warning text-dark">
+                                Agri biologie
+                            </span>
+                        {% endif %}
+                    </span>
                 </p>
             </div>
             <hr>
         {% endif %}
-
-        {% if details.ville %}
-            <div class="content_activite">
-                <p class="activite">
-                    <span class="fw-bold">Ville:</span>
-                    {{details.ville  | raw}}
-                </p>
-            </div>
-            <hr>
-        {% endif %}
-
 
         {# genre  #}
-        <div class="content_genre">
+        <div class="content_genre my-1">
             <p class="genre">
                 <span class="fw-bold">Genre:</span>
                 {{details.genre | raw}}
@@ -93,10 +80,8 @@
         </div>
 
         <hr>
-        <div class="produit">
-            <h5>
-                <span class="fw-bold">Produit:</span>
-            </h5>
+        <div class="produit my-1">
+            <span class="fw-bold">Produit:</span>
             <ul>
                 {% if details.produit1 %}
                     <li>{{details.produit1 | raw}}</li>
@@ -123,16 +108,43 @@
                     <li>{{details.produit8 | raw}}</li>
                 {% endif %}
             </ul>
-
-            <p>{{details.produitFerme | raw}}</p>
         </div>
-
         <hr>
 
+        {% if details.produitFerme %}
+            <div class="content_genre my-1">
+                <p class="genre">
+                    <span class="fw-bold">Autre produit:</span>
+                    {{details.produitFerme | raw}}
+                </p>
+            </div>
+            <hr>
+        {% endif %}
+
+        <div class="content_tel my-1">
+            <span class="fw-bold">Contact rapide:</span>
+            <ul>
+                {% if details.telephoneDomicile %}
+                    <li>
+                        <span>Tel Domicile:</span>
+                        {{details.telephoneDomicile | raw}}</li>
+                {% endif %}
+                {% if details.telephoneMobile %}
+                    <li>
+                        <span>Tel Mobile:</span>
+                        {{details.telephoneMobile | raw}}</li>
+                {% endif %}
+                {% if details.telephoneTravail %}
+                    <li>
+                        <span>Tel Travail:</span>
+                        {{details.telephoneTravail | raw}}</li>
+                {% endif %}
+            </ul>
+            <hr>
+        </div>
+
         <div class="particularite">
-            <h5>
-                Particularité:
-            </h5>
+            <span class="fw-bold">Particularité:</span>
             <ul>
                 {% if details.carteBancaire %}
                     <li>Carte Bancaire possible.</li>
@@ -149,43 +161,13 @@
                 {% if details.venteEnLigne %}
                     <li>Vente en ligne possible.</li>
                 {% endif %}
-
             </ul>
         </div>
-
         <hr>
 
-        <div class="content_tel">
-            <h5>
-                Contact rapide:
-            </h5>
-            <ul>
-                {% if details.telephoneDomicile %}
-                    <li>
-                        <span class="fw-bold">Tel Domicile:</span>
-                        {{details.telephoneDomicile | raw}}</li>
-                {% endif %}
-                {% if details.telephoneMobile %}
-                    <li>
-                        <span class="fw-bold">Tel Mobile:</span>
-                        {{details.telephoneMobile | raw}}</li>
-                {% endif %}
-                {% if details.telephoneTravail %}
-                    <li>
-                        <span class="fw-bold">Tel Travail:</span>
-                        {{details.telephoneTravail | raw}}</li>
-                {% endif %}
-            </ul>
-            <hr>
-
-        </div>
-
-        <hr>
         {% if details.horairesVenteAuMarche or details.horairesVenteMagasinProd or details.horairesVenteAFerme  %}
             <div class="mb-3">
-                <h3>
-                    Horaires:
-                </h3>
+                <span class="fw-bold">Horaires:</span>
                 <ul class="horaires">
                     {% if details.horairesVenteAuMarche %}
                         <li>
@@ -211,15 +193,6 @@
                 </ul>
             </div>
         {% endif %}
-
-             {# ///content cta #}
-        <div class="content_tow_cta mb-3">
-            <div class="site_web">
-                <a class="btn btn-outline-success" href="{{'https://'}}{{details.lienSiteWeb | raw}}" target="_blank">Lien :  site Web</a>
-            </div>
-
-        </div>
-        <hr>
 
         {% if (app.user and app.user.type!='Type') %}
             <div class="content_one_cta mt-2">

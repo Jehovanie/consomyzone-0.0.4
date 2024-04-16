@@ -10,7 +10,7 @@ class RubriqueCMZ extends MapCMZ {
 
 		this.geos = [];
 		this.zoom_min = 8;
-		this.zoom_max = 20;
+		this.zoom_max = 19;
 		this.zoomDetails = this.zoom_max;
 
 		this.allRubriques = [
@@ -22,7 +22,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_resto_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_resto.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerResto(item, options);
 				},
@@ -44,7 +44,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_ferme.png",
 				},
-				is_active: false,
+				is_active: true,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerFerme(item, options);
 				},
@@ -53,6 +53,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				setMiniFiche: (nom, departement, adresse, options = {}) => {
 					return this.setMiniFicheFerme(nom, departement, adresse, options);
+				},
+				fetchDetails: (id_rubrique) => {
+					this.fetchDetailsFerme(id_rubrique);
 				},
 			},
 			{
@@ -1335,7 +1338,7 @@ class RubriqueCMZ extends MapCMZ {
 	setMiniFicheFerme(nom, departement, adresse, options = {}) {
 		const mini_fiche = `
 			<button type="button" class="btn btn-primary btn-sm m-1" style="text-align: start;">
-				${this.setMiniFicheGlobal("Restaurant", nom, departement, adresse)}
+				${this.setMiniFicheGlobal("Ferme", nom, departement, adresse)}
 			</button>
 		`;
 
@@ -1353,6 +1356,8 @@ class RubriqueCMZ extends MapCMZ {
 		marker.bindTooltip(mini_fiche, { direction: "auto", offset: L.point(0, -30) }).openTooltip();
 
 		this.markers.addLayer(marker);
+
+		this.bindEventClickOnMarker(marker, item);
 	}
 
 	setMiniFicheStation(nom, departement, adresse, options = {}) {
@@ -1606,6 +1611,32 @@ class RubriqueCMZ extends MapCMZ {
 	async fetchDetailsResto(id_rubrique) {
 		try {
 			const link_details = `/details/restaurant/${id_rubrique}`;
+			const response = await fetch(link_details);
+
+			if (!response.ok) {
+				throw new Error(`Erreur de réseaux: ${response.status}`);
+			}
+
+			const response_text = await response.text();
+
+			const dom_parse = new DOMParser();
+			const rubrique_details = dom_parse.parseFromString(response_text, "text/html");
+
+			const content_details_rubrique = document.querySelector("#content_detail_rubrique_jheo_js");
+			if (!content_details_rubrique) {
+				console.log("Selector not found: 'content_detail_rubrique_jheo_js'");
+				return false;
+			}
+
+			content_details_rubrique.innerHTML = rubrique_details.querySelector("body").innerHTML;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	async fetchDetailsFerme(id_rubrique) {
+		try {
+			const link_details = `/details/ferme/${id_rubrique}`;
 			const response = await fetch(link_details);
 
 			if (!response.ok) {
