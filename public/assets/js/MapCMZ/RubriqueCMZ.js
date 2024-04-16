@@ -941,6 +941,59 @@ class RubriqueCMZ extends MapCMZ {
 					this.addRubriqueMarker(rubrique_api_name);
 				}
 			});
+
+			btn_rubrique.addEventListener("dblclick", () => {
+				all_button_rubrique.forEach((item) => {
+					if (item.classList.contains("btn-primary")) {
+						item.classList.remove("btn-primary");
+						item.classList.add("btn-light");
+
+						const rubrique_type = item.getAttribute("data-type");
+						const rubrique_not_clicked = this.allRubriques.find((item) => item.name === rubrique_type);
+
+						const rubrique_api_name = item.getAttribute("data-api_name");
+
+						if (rubrique_not_clicked.is_active === true) {
+							this.allRubriques = [
+								...this.allRubriques.map((item) => {
+									if (item.name === rubrique_type) {
+										item.is_active = false;
+									}
+									return item;
+								}),
+							];
+							removeRubriqueActivNavbar(rubrique_type);
+							this.removeRubriqueMarker(rubrique_api_name);
+						}
+					}
+				});
+
+				if (btn_rubrique.classList.contains("btn-light")) {
+					btn_rubrique.classList.remove("btn-light");
+				}
+
+				if (!btn_rubrique.classList.contains("btn-primary")) {
+					btn_rubrique.classList.add("btn-primary");
+				}
+
+				const rubrique_type = btn_rubrique.getAttribute("data-type");
+				const rubrique_api_name = btn_rubrique.getAttribute("data-api_name");
+
+				this.allRubriques = [
+					...this.allRubriques.map((item) => {
+						if (item.name === rubrique_type) {
+							item.is_active = true;
+						}
+						return item;
+					}),
+				];
+
+				addRubriqueActivNavbar(
+					this.allRubriques.find((item) => item.api_name === rubrique_api_name.toLowerCase())
+				);
+
+				this.addRubriqueMarker(rubrique_api_name);
+			});
 		});
 	}
 
