@@ -101,7 +101,8 @@ class TabacContoller extends AbstractController
             $miny = $request->query->get("miny");
             $maxy = $request->query->get("maxy");
 
-            $datas= $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
+            $taille=$request->query->get("data_max") ? intval($request->query->get("data_max")) :  50;
+            $datas= $tabacRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, $taille);
 
             return $this->json([
                 "data" => $datas
