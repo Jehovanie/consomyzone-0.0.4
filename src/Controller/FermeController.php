@@ -298,6 +298,29 @@ class FermeController extends AbstractController
         ]);
     }
 
+    #[Route("/details/ferme/{id_ferme}", name:"get_details_ferme", methods: ["GET"] )]
+    public function getDetailsRubriqueFerme(
+        $id_ferme,
+        CodeapeRepository $codeApeRep, 
+        Status $status, 
+        FermeGeomRepository $fermeGeomRepository, 
+    ): Response
+    {
+        $statusProfile = $status->statusFondateur($this->getUser());
+        $userConnected = $status->userProfilService($this->getUser());
+
+        $ferme_details= $fermeGeomRepository->getDetailsRubriqueFerme($id_ferme);
+        
+        return $this->render("ferme/details_ferme.html.twig", [
+            "details" => $ferme_details,
+            "userConnected" => $userConnected,
+            "nom_dep" => $nom_dep,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode()
+        ]);
+    }
+
     /** 
      * DON'T CHANGE THIS ROUTE: It's use in js file. 
      * @Route("ferme-mobile/departement/{nom_dep}/{id_dep}/details/{id_ferme}" , name="detail_ferme_mobile" , methods="GET" )

@@ -410,6 +410,29 @@ class StationController extends AbstractController
         ]);
     }
 
+    #[Route("/details/station/{id_station}", name:"get_details_station", methods: ["GET"] )]
+    public function getDetailsRubriqueStation(
+        $id_station,
+        CodeapeRepository $codeApeRep, 
+        Status $status, 
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository, 
+    ){
+
+        $statusProfile = $status->statusFondateur($this->getUser());
+
+        $details_station= $stationServiceFrGeomRepository->getDetailsRubriqueStation($id_station);
+        dd($details_station);
+
+        return $this->render("station/detail_station.html.twig", [
+            "departCode" => $depart_code,
+            "departName" => $depart_name,
+            "station" => $details_station,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode()
+        ]);
+    }
+
 
 
 

@@ -153,6 +153,36 @@ Status $status,
         ]);
     }
 
+    #[Route("/details/marche/{id_marche}", name:"get_details_marche", methods: ["GET"] )]
+    public function getDetailsRubriqueMarche(
+        $id_marche,
+        MarcheRepository $marcheRepository,
+        PDOConnexionService $pdoConnexionService
+    ) {
+
+        $marche_details= $marcheRepository->getOneItemByID($id_marche);
+        
+        $temp = $marche_details["specificite"];
+
+        $temp = json_decode('"'.$temp.'"', true);
+        if (json_last_error() === JSON_ERROR_NONE) {
+            $temp= $pdoConnexionService->convertUnicodeToUtf8($temp);
+            $temp=mb_convert_encoding($temp, 'UTF-8', 'UTF-8');
+        }else{
+            $temp = $marche_details["specificite"];
+        }
+
+        $marche_details["specificite"]= $temp;
+
+        return $this->render("marche/detail_marche.html.twig", [
+            "id_marche" => $id_marche,
+            "id_dep" => $id_dep,
+            "details" => [
+                ...$marche_details
+            ]
+        ]);
+    }
+
 
     #[Route("/fetch_data/marche", name: "fetch_data_marche" , methods: [ "GET"])]
     #[Route("/api/marche", name: "app_api_marche", methods: ["GET"])]

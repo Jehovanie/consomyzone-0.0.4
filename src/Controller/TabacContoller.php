@@ -306,4 +306,23 @@ class TabacContoller extends AbstractController
             "details" => $tabacRepository->getOneTabac(intval($tabacID)),
         ]);
     }
+
+
+    #[Route("/details/tabac/{id_tabac}", name:"get_details_tabac", methods: ["GET"] )]
+    public function getDetailsRubriqueTabac(
+        $id_tabac,
+        TabacRepository $tabacRepository,
+        Status $status, 
+    ){
+        ///current user connected
+        $user = $this->getUser();
+        
+        $details_tabac=  $tabacRepository->getOneTabac(intval($id_tabac));
+
+        return $this->render("tabac/details_tabac.html.twig", [
+            "id_dep" => $id_dep,
+            "nom_dep" => $nom_dep,
+            "details" => $details_tabac,
+        ]);
+    }
 }

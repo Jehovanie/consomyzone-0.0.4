@@ -987,16 +987,6 @@ class RestaurantController extends AbstractController
             "avisPerso" => $avis
         ];
 
-        // return $this->json([
-        //     "details" => $bddResto->getOneRestaurant($id_dep, $id_restaurant)[0],
-        //     "id_dep" => $id_dep,
-        //     "nom_dep" => $nom_dep,
-        //     "profil" => $statusProfile["profil"],
-        //     "statusTribut" => $statusProfile["statusTribut"],
-        //     "codeApes" => $codeApeRep->getCode()
-
-        // ], 200);
-
         return $this->render("shard/restaurant/details.js.twig", [
             "details" => $details,
             "id_dep" => $id_dep,
@@ -1005,6 +995,160 @@ class RestaurantController extends AbstractController
             "statusTribut" => $statusProfile["statusTribut"],
             "codeApes" => $codeApeRep->getCode()
 
+        ]);
+    }
+
+    #[Route("/details/restaurant/{id_restaurant}", name:"get_details_restaurant", methods: ["GET"] )]
+    public function getDetailsRubriqueRestaurant(
+        $id_restaurant,
+        Request $request,
+        CodeapeRepository $codeApeRep,
+        BddRestoRepository $bddResto,
+        Status $status,
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
+        AvisRestaurantRepository $avisRestaurantRepository,
+        Filesystem $filesyst,
+        BddRestoUserModifRepository $bddRestoUserModifRepository,
+    ): Response {
+
+        $statusProfile = $status->statusFondateur($this->getUser());
+
+        $details = $bddResto->getDetailsRubriqueRestaurant($id_restaurant);
+
+        $nbr_avis_resto = $avisRestaurantRepository->getNombreAvis($details["id"]);
+
+        $global_note  = $avisRestaurantRepository->getNoteGlobale($details["id"]);
+
+        $isAlreadyCommented= false;
+        $avis= ["note" => null, "text" => null  ];
+        
+        $note_temp=0;
+        foreach ($global_note as $note ) {
+            if($this->getUser() && $this->getUser()->getID() === $note["user"]["id"]){
+                $isAlreadyCommented = true;
+                $avis = [ "note" => $note["note"], "text" => $note["avis"] ];
+            }
+            $note_temp += $note["note"]; 
+        }
+
+        $details["avis"] = [
+            "nbr" => $nbr_avis_resto,
+            "note" => $global_note ?  $note_temp / count($global_note) : 0,
+            "isAlreadyCommented" => $isAlreadyCommented,
+            "avisPerso" => $avis
+        ];
+
+
+        $field = $bddRestoUserModifRepository->findOneBy(["restoId" => $id_restaurant ]);
+        $isWaiting = $field && $field->getStatus() === -1 ? true : false;
+        
+        
+        if(str_contains($request->getPathInfo(), '/api/restaurant')){
+            return $this->json([
+                "details" => $details,
+                "id_dep" => $details["dep"],
+                "nom_dep" => $details["depName"],
+                "isWaiting" => $isWaiting
+            ], 200);
+        }
+
+        $arrayTribu = [];
+        $arrayTribuRestoPast = [];
+        $arrayTribuRestoJoinedPast = [];
+        $arrayTribuGRestoPastille = [];
+        
+        if($this->getUser()){
+            $user= $this->getUser();
+
+            //// list tribu T owned
+            $tribu_t_owned = $userRepository->getListTableTribuT_owned();
+            
+            foreach ($tribu_t_owned as $key) {
+                $tableTribu = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                $tableExtension = $tableTribu . "_restaurant";
+                if($tribu_T_Service->checkExtension($tableTribu, "_restaurant") > 0){
+                    if(!$tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtension, $details["id"], true)){
+                        array_push($arrayTribu, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => false]);
+                    }else{
+                        array_push($arrayTribuRestoPast, ["table_name" => $tableTribu, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable , "isPastilled" => true]);
+                    }
+                }
+            }
+
+            /// list tribu T joined
+            $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
+            // dd($tribu_t_joined);
+            foreach ($tribu_t_joined as $key) {
+                $tbtJoined = $key["table_name"];
+                $logo_path = $key["logo_path"];
+                $name_tribu_t_muable = $key["name_tribu_t_muable"];
+                $tableExtensionTbtJoined = $tbtJoined . "_restaurant";
+                if($tribu_T_Service->checkExtension($tbtJoined, "_restaurant") > 0){
+                    if($tribu_T_Service->checkIfCurrentRestaurantPastilled($tableExtensionTbtJoined, $details["id"], true)){
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" =>$name_tribu_t_muable, "isPastilled" => true]);
+                    }else{
+                        array_push($arrayTribuRestoJoinedPast, ["table_name" => $tbtJoined, "logo_path" => $logo_path, "name_tribu_t_muable" => $name_tribu_t_muable, "isPastilled" => false]);
+                    }
+                }
+            }
+
+            // tribut G pastille
+            $current_profil= $statusProfile["profil"][0];
+            $tributG_table_name= $current_profil->getTributG();
+            $isPastilled = $tributGService->isPastilled($tributG_table_name."_restaurant", $id_restaurant);
+            if( count($isPastilled) > 0 ){
+                $profil_tribuG= $tributGService->getProfilTributG($tributG_table_name, $user->getId());
+                array_push($arrayTribuGRestoPastille, $profil_tribuG);
+            }
+
+        }
+
+        $folder = $this->getParameter('kernel.project_dir') . "/public/uploads/valider/restaurant/".$id_restaurant."/";
+
+        $tabPhoto = [];
+
+        $dir_exist = $filesyst->exists($folder);
+
+        // dd($folder);
+
+
+        if($dir_exist){
+            $images = glob($folder . '*.{jpg,JPG,jpeg,JPEG,png,PNG,gif,GIF,webp}', GLOB_BRACE);
+
+            // dd($images);
+            foreach ($images as $image) {
+                $photo = explode("uploads/valider",$image)[1];
+                $photo = "/public/uploads/valider".$photo;
+                array_push($tabPhoto, ["photo"=>$photo]);
+            }
+        }
+
+        $tabPhoto= [
+            [ "photo" => "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ],
+            [ "photo" => "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ],
+            [ "photo" => "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ],
+            [ "photo" => "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ],
+            [ "photo" => "https://images.unsplash.com/photo-1600891964599-f61ba0e24092?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" ],
+        ];
+
+        return $this->render("restaurant/detail_resto.html.twig", [
+            "id_restaurant"=>$id_restaurant,
+            "details" => $details,
+            "isWaiting" => $isWaiting,
+            "id_dep" => $details["dep"],
+            "nom_dep" => $details["depName"],
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode(),
+            "tribu_t_can_pastille" => $arrayTribu,
+            "tribu_t_resto_pastille" => $arrayTribuRestoPast,
+            "tribu_t_resto_joined_pastille" => $arrayTribuRestoJoinedPast,
+            "tribu_g_resto_pastille" => $arrayTribuGRestoPastille,
+            "photos" => $tabPhoto,
         ]);
     }
 
@@ -1068,7 +1212,7 @@ class RestaurantController extends AbstractController
         $id_restaurant,
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
-TributGService $tributGService,
+        TributGService $tributGService,
         AvisRestaurantRepository $avisRestaurantRepository,
         Filesystem $filesyst,
         BddRestoUserModifRepository $bddRestoUserModifRepository,
@@ -1139,7 +1283,7 @@ TributGService $tributGService,
                 }
             }
 
-/// list tribu T joined
+            /// list tribu T joined
             $tribu_t_joined = $userRepository->getListTalbeTribuT_joined();
             // dd($tribu_t_joined);
             foreach ($tribu_t_joined as $key) {

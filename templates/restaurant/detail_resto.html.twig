@@ -1,12 +1,18 @@
 <div class="content_home content_body_details_jheo_js" data-toggle-user-id="{{app.user ? app.user.id : 0}}">
 	<div class="left_content_home">
-		<div class="description" id="details-coord" data-toggle-type="resto" data-toggle-id-resto="{{details.id}}" data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" data-longitude="{{((details.poiX) ? details.poiX : '0') |format_number({fraction_digit: 15})}}" data-nom="{{details.denominationF}}" data-codeinsee="{{details.codinsee}}">
+		<div class="description" id="details-coord"
+			data-toggle-type="resto" data-toggle-id-resto="{{details.id}}" 
+			data-toggle-id-dep="{{id_dep}}" data-latitude="{{((details.poiY) ? details.poiY : '0' )|format_number({fraction_digit: 14}) }}" 
+			data-longitude="{{((details.poiX) ? details.poiX : '0') |format_number({fraction_digit: 15})}}" 
+			data-nom="{{details.denominationF}}" 
+			data-codeinsee="{{details.codinsee}}">
+
 			<div class="content_titre_details">
 				<div class="titre text-center">
 					<div class="restoNameWithLogoTribu mb-2 mt-2">
-						<div class="col-12 mt-2">
-							<div class="text-center">
-								<p class="rubriqueNameDetail" data-name="{{details.denominationF | raw}}">{{details.denominationF | raw}}</p>
+						<div class="col-9 mt-2">
+							<div class="text-center mb-1">
+								<h1 class="rubriqueNameDetail" data-name="{{details.denominationF | raw}}">{{details.denominationF | raw}}</h1>
 							</div>
 						</div>
 					</div>
@@ -214,30 +220,31 @@
 					</div>
 
 					{% set adresse = details.numvoie|lower ~" "~ details.typevoie|lower ~" "~ details.nomvoie|lower ~" "~ details.codpost|lower ~" "~ details.villenorm|lower %}
-					{# <button class="btn btn-outline-primary mx-auto w-50 mb-2 mt-2" onclick="openVoirPlusChearch('{{details.denominationF | raw}}','{{adresse | trim}}', 'resto')">
-															                        <img class="fa-search-elie" src="/public/assets/icon/google_icon.png">
-															                        <img class="fa-search-elie" src="/public/assets/icon/googlemap_icon.png">
-															                        <img class="fa-search-elie" src="/public/assets/icon/tripadvisor_icon.png">
-															                        <img class="fa-search-elie" src="/public/assets/icon/michelin_icon.png">
-															                    </button> #}
+					
 					<div class="d-flex justify-content-center mt-3 mb-3">
 						<div class="d-flex flex-column align-items-center m-2">
-							<img class="fa-search-elie" src="/public/assets/icon/google_icon.png" onclick="findInNet('google','{{details.denominationF | raw}}','{{adresse | trim}}')">
+							{# <img class="fa-search-elie" src="/public/assets/icon/google_icon.png" onclick="findInNet('google','{{details.denominationF | raw}}','{{adresse | trim}}')"> #}
+							<img class="fa-search-elie" src="/assets/icon/google_icon.png" onclick="findInNet('google','{{details.denominationF | raw}}','{{adresse | trim}}')">
 						</div>
 						<div class="d-flex flex-column align-items-center m-2">
-							<img class="fa-search-elie" src="/public/assets/icon/googlemap_icon.png" onclick="findInNet('map','{{details.denominationF | raw}}','{{adresse | trim}}')">
+							{# <img class="fa-search-elie" src="/public/assets/icon/googlemap_icon.png" onclick="findInNet('map','{{details.denominationF | raw}}','{{adresse | trim}}')"> #}
+							<img class="fa-search-elie" src="/assets/icon/googlemap_icon.png" onclick="findInNet('map','{{details.denominationF | raw}}','{{adresse | trim}}')">
 						</div>
 						<div class="d-flex flex-column align-items-center m-2">
-							<img class="fa-search-elie" src="/public/assets/icon/tripadvisor_icon.png" onclick="findInNet('tripadvisor','{{details.denominationF | raw}}','{{adresse | trim}}')">
+							{# <img class="fa-search-elie" src="/public/assets/icon/tripadvisor_icon.png" onclick="findInNet('tripadvisor','{{details.denominationF | raw}}','{{adresse | trim}}')"> #}
+							<img class="fa-search-elie" src="/assets/icon/tripadvisor_icon.png" onclick="findInNet('tripadvisor','{{details.denominationF | raw}}','{{adresse | trim}}')">
 						</div>
 						<div class="d-flex flex-column align-items-center m-2">
-							<img class="fa-search-elie" src="/public/assets/icon/michelin_icon.png" onclick="findInNet('michelin','{{details.denominationF | raw}}','{{adresse | trim}}')">
+							{# <img class="fa-search-elie" src="/public/assets/icon/michelin_icon.png" onclick="findInNet('michelin','{{details.denominationF | raw}}','{{adresse | trim}}')"> #}
+							<img class="fa-search-elie" src="/assets/icon/michelin_icon.png" onclick="findInNet('michelin','{{details.denominationF | raw}}','{{adresse | trim}}')">
 						</div>
 						<div class="d-flex flex-column align-items-center m-2">
-							<img class="fa-search-elie" src="/public/assets/icon/bing_icon.jpg" onclick="findInNet('bing','{{details.denominationF | raw}}','{{adresse | trim}}')">
+							{# <img class="fa-search-elie" src="/public/assets/icon/bing_icon.jpg" onclick="findInNet('bing','{{details.denominationF | raw}}','{{adresse | trim}}')"> #}
+							<img class="fa-search-elie" src="/assets/icon/bing_icon.jpg" onclick="findInNet('bing','{{details.denominationF | raw}}','{{adresse | trim}}')">
 						</div>
 						<div class="d-flex flex-column align-items-center m-2">
-							<img class="fa-search-elie the-fork-tomm-js" src="/public/assets/icon/thefork_icon.png" onclick="findInNet('thefork','{{details.denominationF | raw}}', '{{ details.depName | raw}}')">
+							{# <img class="fa-search-elie the-fork-tomm-js" src="/public/assets/icon/thefork_icon.png" onclick="findInNet('thefork','{{details.denominationF | raw}}', '{{ details.depName | raw}}')"> #}
+							<img class="fa-search-elie the-fork-tomm-js" src="/assets/icon/thefork_icon.png" onclick="findInNet('thefork','{{details.denominationF | raw}}', '{{ details.depName | raw}}')">
 						</div>
 					</div>
 					{# <div class="mb-3 text-center">
@@ -246,17 +253,18 @@
 				</div>
 			</div>
 
-			<div class="p-4">
+			<div class="content_other_detail_rubrique p-2">
 				{% set len = photos|length %}
 				{% set height = len > 0 ? "" : "h-40" %}
 				<div class="content_images {{height}}">
 					{% if app.user %}
-					<label type="button" for="photo-upload-detail" class="add-photo-detail">
-						<i class="fa-solid fa-camera"></i>
-						 Ajouter des photos
-					</label>
-					<input type="file" id="photo-upload-detail" class="d-none" onchange='addPhotoToGallery(this,"restaurant")' data-id="{{details.id}}" accept="image/*"/>
+						<label type="button" for="photo-upload-detail" class="add-photo-detail">
+							<i class="fa-solid fa-camera"></i>
+							Ajouter des photos
+						</label>
+						<input type="file" id="photo-upload-detail" class="d-none" onchange='addPhotoToGallery(this,"restaurant")' data-id="{{details.id}}" accept="image/*"/>
 					{% endif %}
+
 					{% if len > 0 %}
 
 						<img class="preview-photo-detail" src="{{photos[len - 1].photo}}" alt="photo"/>
@@ -266,17 +274,16 @@
 								{% set autre_image_len = len - 1 %}
 
 								{% if autre_image_len > 0 %}
-									<span class="nombre-photo-detail">+
-										{{autre_image_len}}</span>
+									<span class="nombre-photo-detail">
+										+{{autre_image_len}}
+									</span>
 								{% endif %}
 
 							{% endif %}
 
 							<div class="gallery-photo-detail d-none">
 								{% for img in photos %}
-
 									<img src="{{img.photo}}" alt="photo"/>
-
 								{% endfor %}
 							</div>
 						</div>
@@ -310,307 +317,151 @@
 				</div>
 
 				<hr>
-				{# ///activiter #}
+				{% if details.site1 != "" %}
+					<div class="site_web my-1">
+						{% if 'http://' in details.site1 or 'https://' in details.site1 %}
+							<a class="badge bg-success" href="{{details.site1 | raw}}" target="_blank">Lien :  site Web</a>
+						{% else %}
+							<a class="badge bg-success" href="{{ 'https://' ~ details.site1 | raw}} " target="_blank">Lien :  site Web</a>
+						{% endif %}
+					</div>
+				<hr>
+				{% endif %}
 
-				<div class="content_activite">
-					<p class="activite">
+				<div class="content_activite my-1">
+					<p class="activite d-flex justify-content-between align-items-center">
 						<span class="fw-bold">Type restaurant:</span>
 						{% if details.restaurant %}
-							<i class="fa-solid fa-utensils"></i>
-							restaurant
+							<span class="badge bg-warning text-dark">
+								<i class="fa-solid fa-utensils me-1"></i>restaurant
+							</span>
 						{% endif %}
 						{% if details.brasserie %}
-							<i class="fa-solid fa-beer-mug-empty"></i>
-							Brasserie
+							<span class="badge bg-warning text-dark">
+								<i class="fa-solid fa-beer-mug-empty"></i>
+								Brasserie
+							</span>
 						{% endif %}
 						{% if details.creperie %}
-							<i class="fa-solid fa-pancakes"></i>
-							creperie
+							<span class="badge bg-warning text-dark">
+								<i class="fa-solid fa-pancakes"></i>
+								creperie
+							</span>
 						{% endif %}
 						{% if details.fastFood %}
+							<span class="badge bg-warning text-dark">
 							<i class="fa-solid fa-burger"></i>
 							fastFood
+							</span>
 						{% endif %}
 						{% if details.pizzeria %}
-							<i class="fa-solid fa-pizza-slice"></i>
-							pizzeria
+							<span class="badge bg-warning text-dark">
+								<i class="fa-solid fa-pizza-slice"></i>
+								pizzeria
+							</span>
 						{% endif %}
 						{% if details.boulangerie %}
-							<i class="fa-solid fa-pie"></i>
-							boulangerie
+							<span class="badge bg-warning text-dark">
+								<i class="fa-solid fa-pie"></i>
+								boulangerie
+							</span>
 						{% endif %}
 						{% if details.bar %}
-							<i class="fa-solid fa-martini-glass-empty"></i>
-							bar
+							<span class="badge bg-warning text-dark">
+								<i class="fa-solid fa-martini-glass-empty"></i>
+								bar
+							</span>
 						{% endif %}
 						{% if details.cuisineMonde %}
-							<i class="fa-solid fa-hat-chef"></i>
-							cuisine du monde
+							<span class="badge bg-warning text-dark">
+								<i class="fa-solid fa-hat-chef"></i>
+								cuisine du monde
+							</span>
 						{% endif %}
 						{% if details.cafe %}
-							<i class="fa-solid fa-coffee-pot"></i>
-							café
+							<span class="badge bg-warning text-dark">
+								<i class="fa-solid fa-coffee-pot"></i>
+								café
 						{% endif %}
 						{% if details.salonThe %}
-							<i class="fa-solid fa-mug-tea"></i>
-							salon de thé
+							<span class="badge bg-warning text-dark">
+								<i class="fa-solid fa-mug-tea"></i>
+								salon de thé
+							</span>
 						{% endif %}
 					</p>
 				</div>
+				<hr>
 
-				{# ///content cta #}
-				<div class="content_tow_cta">
-					{% if details.site1 != "" %}
-						<div class="site_web">
-							{% if 'http://' in details.site1 or 'https://' in details.site1 %}
-								<a class="btn btn-success" href="{{details.site1 | raw}}" target="_blank">Lien :  site Web</a>
-							{% else %}
-								<a class="btn btn-success" href="{{ 'https://' ~ details.site1 | raw}} " target="_blank">Lien :  site Web</a>
-							{% endif %}
+				{% if details.fonctionalite1 %}
+					<div class="fonctionnalite my-1">
+						<div class="three">
+							<span class="fw-bold">Fonctionalités:</span>
+							<p>
+								{{details.fonctionalite1 | raw}}
+							</p>
 						</div>
-					{% endif %}
-				</div>
-
-				<hr>
-
-				<div
-					class="fonctionnalite">
-					{#ancien class produit#}
-					<h5>
-						Fonctionalités:
-					</h5>
-					<ul>
-						{% if details.fonctionalite1 %}
-							<li>{{details.fonctionalite1 | raw}}</li>
-						{% endif %}
-
-					</ul>
-
-
-				</div>
-
-				<hr>
-
-				<div class="fourchette_de_prix">
-					<h5>
-						Fourchette de prix:
-					</h5>
-					<ul>
-						{% if details.fourchettePrix1 %}
-							<li>{{details.fourchettePrix1 | raw}}</li>
-						{% endif %}
-
-					</ul>
-				</div>
-
-				<hr>
-
-				<div class="horaire">
-					<h5>
-						Horaires :
-					</h5>
-					<ul>
-						{% if details.horaires1 %}
-							<li>{{details.horaires1 | raw}}</li>
-						{% endif %}
-					</ul>
+					</div>
 					<hr>
-
-				</div>
-
-				<div class="prestation">
-					<h5>
-						Prestation :
-					</h5>
-					<ul>
-						{% if details.prestation1 %}
-							<li>{{details.prestation1 | raw}}</li>
-						{% endif %}
-					</ul>
+				{% endif %}
+				
+				{% if details.fourchettePrix1 %}
+					<div class="fourchette_de_prix my-1 d-flex justify-content-between align-items-center">
+						<span class="fw-bold">Fourchette de prix:</span>
+						<span class="badge bg-info text-dark">{{details.fourchettePrix1 | raw}}</span>
+					</div>
 					<hr>
+				{% endif %}
 
-				</div>
-
-				<div class="regime_speciaux">
-					<h5>
-						Régime spécial :
-					</h5>
-					<ul>
-						{% if details.regimeSpeciaux1 %}
-							<li>{{details.regimeSpeciaux1 | raw}}</li>
-						{% endif %}
-					</ul>
+				{% if details.horaires1 %}
+					<div class="horaire my-1">
+						<span class="fw-bold">Horaires:</span>
+						<p>
+							{{details.horaires1 | raw}}
+						</p>
+					</div>
 					<hr>
+				{% endif %}
 
-				</div>
-
-				<div class="repas">
-					<h5>
-						Repas :
-					</h5>
-					<ul>
-						{% if details.repas1 %}
-							<li>{{details.repas1 | raw}}</li>
-						{% endif %}
-					</ul>
+				{% if details.prestation1 %}
+					<div class="prestation my-1">
+						<span class="fw-bold">Prestation:</span>
+						<p>
+							{{details.prestation1 | raw}}
+						</p>
+					</div>
 					<hr>
+				{% endif %}
 
-				</div>
-
-				<div class="tel">
-					<h5>
-						Téléphone :
-					</h5>
-					<ul>
-						{% if details.tel %}
-							<li>{{details.tel | raw}}</li>
-						{% endif %}
-					</ul>
+				{% if details.regimeSpeciaux1 %}
+					<div class="regime_speciaux my-1">
+						<span class="fw-bold"> Régime spécial:</span>
+						<p>
+							{{details.regimeSpeciaux1 | raw}}
+						</p>
+					</div>
 					<hr>
-				</div>
+				{% endif %}
 
+				{% if details.repas1 %}
+					<div class="repas my-1">
+						<span class="fw-bold"> Repas:</span>
+						<p>
+							{{details.repas1 | raw}}
+						</p>
+					</div>
+					<hr>
+				{% endif %}
 
-				<hr>
-
-				{#{% if (app.user) %}
-												
-												                    <div class="d-none content_one_cta text-center mt-3 mb-3" data-dem="rxbifbn:123nrtntntn:,ttt:cft{{app.user.id}}jker:bdyt">
-												                        <button class="btn btn-success " id="givs-avis-resto-tom-js" data-bs-toggle="modal" data-bs-target="#modalAvisRestaurant">Donné votre avis</button>
-												                    </div>
-												
-												                    <div class="pastileThisResto p-3 mt-3 d-none">
-												                        {% if tribu_t_resto_pastille|length > 0 %}
-												                            <div class="containerPastilleResto">
-												                                {% for item in tribu_t_resto_pastille %}
-												                                <div class="row">
-												                                        <div class="nomTribuTPastilleResto col-6">
-												                                            <b>Tribu T {{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b>
-												                                        </div>
-												                                        <div class="me-auto col-6">
-												                                            <span class="lioTe non_active">
-												                                                <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
-												                                            </span>
-												                                            <a href="#" class="text-secondary avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
-												                                        </div>
-												                                    </div>
-												                                {% endfor %}
-												                            </div>
-												                        {% endif %}
-												
-												                        {% if tribu_t_resto_joined_pastille|length > 0 %}
-												                            <div class="containerPastilleResto">
-												                                {% for item in tribu_t_resto_joined_pastille %}
-												                                    <div class="row">
-												                                        <div class="nomTribuTPastilleResto col-6">
-												                                            <b>Tribu T {{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b>
-												                                        </div>
-												                                        <div class="me-auto col-6">
-												                                            <span class="lioTe non_active">
-												                                                <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
-												                                            </span>
-												                                            <a href="#" class="text-secondary avisRestoTribu non_active">&nbsp;&nbsp;Voir les avis</a>
-												                                        </div>
-												                                    </div>
-												                                {% endfor %}
-												                            </div>
-												                        {% endif %}
-												
-												                        {% if tribu_t_can_pastille|length > 0 %}
-												                            <div class="containerPastilleResto">
-												                                {% for item in tribu_t_can_pastille %}
-												                                <span><b>{{ item["table_name"] }}</b> Voulez-vous pastiller ce restaurant? <button id="btnPastilleCarte" class="btn btn-primary" onclick="showTribuTForRestoPast(this)" type="button">Oui</button></span>
-												                                    <div class="row">
-												                                        <div class="col-12">
-												                                            <b>Tribu T {{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</b> Voulez-vous pastiller ce restaurant? 
-												                                            <button data-name="{{details.denominationF | raw}}" data-tbname = {{item["table_name"]}} data-id="{{details.id}}" id="btnPastilleCarte" class="btn btn-primary" onclick="pastilleRestoForTribuT(this)" type="button" data-velona="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}">Oui</button>
-												                                        </div>
-												                                    </div>
-												                                {% endfor %}
-												                            </div>
-												                        {% endif %}
-												                    </div>
-												
-												                    <table class="table table-striped d-none" id="restoPastilleTable">
-												                        <thead>
-												                            <tr>
-												                                <th scope="col">Logo</th>
-												                                <th scope="col">Tribu T</th>
-												                                <th scope="col">Action</th>
-												                            </tr>
-												                        </thead>
-												                        <tbody>
-												                            {% if tribu_t_resto_pastille|length > 0 %}
-												                                {% for item in tribu_t_resto_pastille %}
-												                                    <tr style="vertical-align: middle;">
-												                                        <td class="col-logo">
-												                                        </td>
-												                                            <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}" alt="">
-												                                        <td class="col-tribuT">{{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</td>
-												                                         <td class="col-note">
-												                                            <span class="lioTe non_active">
-												                                                <i class="fa-solid fa-star checked starNote"></i>
-												                                                <i class="fa-solid fa-star checked starNote"></i>
-												                                                <i class="fa-solid fa-star checked starNote"></i>
-												                                                <i class="fa-solid fa-star checked starNote"></i>
-												                                                <b>0</b>/4
-												                                            </span>
-												                                        </td>
-												                                        <td class="col-avis">
-												                                            <a href="#" class="text-secondary non_active">Voir</a>
-												                                        </td> 
-												                                        <td class="col-action">
-												                                            <button type="button" class="mx-2 btn btn-secondary" disabled>Pastillé</button>
-												                                        </td>
-												                                    </tr>
-												                                {% endfor %}
-												                            {% endif %}
-												
-												                            {% if tribu_t_resto_joined_pastille|length > 0 %}
-												                                {% for item in tribu_t_resto_joined_pastille %}
-												                                    <tr style="vertical-align: middle;">
-												                                        <td class="col-logo">
-												                                            <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}" alt="">
-												                                        </td>
-												                                        <td class="col-tribuT">{{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</td>
-												                                        <td class="col-note">
-												                                            <span class="lioTe non_active">
-												                                                <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
-												                                            </span>
-												                                        </td>
-												                                        <td class="col-avis">
-												                                            <a href="#" class="text-secondary non_active">Voir</a>
-												                                        </td> 
-												                                        <td class="col-action">
-												                                            <button type="button" class="mx-2 btn btn-secondary" disabled>Pastillé</button>
-												                                        </td>
-												                                    </tr>
-												                                {% endfor %}
-												                            {% endif %}
-												
-												                            {% if tribu_t_can_pastille|length > 0 %}
-												                                {% for item in tribu_t_can_pastille %}
-												                                    <tr style="vertical-align: middle;">
-												                                        <td class="col-logo">
-												                                            <img style="max-height:70px;max-width:70px;clip-path: circle(40%);" src="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}" alt="">
-												                                        </td>
-												                                        <td class="col-tribuT">{{ item["table_name"]|split('_', 4)|last|replace({'_':' '})|capitalize }}</td>
-												                                         <td class="col-note">
-												                                            <span class="lioTe non_active">
-												                                                <i class="fa-solid fa-star checked starNote"></i><b>0</b>/4
-												                                            </span>
-												                                        </td>
-												                                        <td class="col-avis">
-												                                            <a href="#" class="text-secondary non_active">Voir</a>
-												                                        </td> 
-												                                        <td class="col-action">
-												                                            <button data-name="{{details.denominationF | raw}}" data-tbname = {{item["table_name"]}} data-id="{{details.id}}" class="btn btn-success" onclick="pastilleRestoForTribuT(this)" type="button" data-velona="{{item["logo_path"] != "" ? asset(item["logo_path"]) : asset('/public/uploads/tribu_t/photo/avatar_tribu.jpg')}}">Pastiller</button>
-												                                        </td>
-												                                    </tr>
-												                                {% endfor %}
-												                            {% endif %}
-												                        </tbody>
-												                    </table>
-												                {% endif %}#}
+				{% if details.tel %}
+					<div class="tel my-1">
+						<span class="fw-bold"> Téléphone:</span>
+						<p>
+							{{details.tel | raw}}
+						</p>
+					</div>
+					<hr>
+				{% endif %}
 			</div>
 		</div>
 	</div>

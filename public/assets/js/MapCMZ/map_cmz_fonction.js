@@ -125,6 +125,16 @@ function openDetailsContainer() {
 	if (content_details_rubrique.classList.contains("d-none")) {
 		content_details_rubrique.classList.remove("d-none");
 	}
+
+	content_details_rubrique.querySelector("#content_detail_rubrique_jheo_js").innerHTML = `
+		<div class="content_chargment_details content_chargment_details_jheo_js">
+			<div class="containt">
+				<div class="word word-1">C</div>
+				<div class="word word-2">M</div>
+				<div class="word word-3">Z</div>
+			</div>
+		</div>
+	`;
 }
 
 function closeDetailsContainer() {
@@ -146,4 +156,9 @@ function closeDetailsContainer() {
 			</div>
 		</div>
 	`;
+}
+
+function openDetailsRubriqueFromLeft(id_rubrique, rubrique_type) {
+	openDetailsContainer();
+	displayFicheRubrique(id_rubrique, rubrique_type);
 }

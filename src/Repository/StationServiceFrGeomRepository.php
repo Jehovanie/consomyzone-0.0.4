@@ -254,6 +254,34 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
 
     }
 
+    public function getDetailsRubriqueStation($id_station)
+    {
+        $qb = $this->createQueryBuilder('p')
+            ->select(
+                'p.id',
+                'p.adresse',
+                'p.automate2424',
+                'p.departementCode',
+                'p.departementName',
+                'p.horaies',
+                'p.nom',
+                'p.prixE85',
+                'p.prixGplc',
+                'p.prixSp95',
+                'p.prixSp95E10',
+                'p.prixSp98',
+                'p.prixGasoil',
+                'p.latitude',
+                'p.longitude',
+                'p.services')
+            ->where('p.id = :t')
+            ->setParameter('t',$id_station)
+            ->getQuery();
+
+        return $qb->getOneOrNullResult();
+
+    }
+
     ///jheo : getLatitudeLongitude
     public function getLatitudeLongitudeStation($min=null,$max=null,$type=null, $nom_dep=null, $id_dep=null, $limit=2000)
     {

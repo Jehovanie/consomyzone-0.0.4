@@ -32,6 +32,9 @@ class RubriqueCMZ extends MapCMZ {
 				setMiniFiche: (nom, departement, adresse, options = {}) => {
 					return this.setMiniFicheResto(nom, departement, adresse, options);
 				},
+				fetchDetails: (id_rubrique) => {
+					this.fetchDetailsResto(id_rubrique);
+				},
 			},
 			{
 				name: "Ferme",
@@ -969,8 +972,6 @@ class RubriqueCMZ extends MapCMZ {
 			return false;
 		}
 
-		console.log(data);
-
 		let body_table_list_rubrique_active = "";
 		data.forEach((item_data) => {
 			body_table_list_rubrique_active += `
@@ -1003,11 +1004,14 @@ class RubriqueCMZ extends MapCMZ {
 		return item_rubrique;
 	}
 
-	cardItemRubriqueNameNoteAddress(name, note, address) {
+	cardItemRubriqueNameNoteAddress(name, note, address, options = {}) {
+		const { id: id_rubrique, type: rubrique_type } = options;
 		return `
 			<figure>
 				<blockquote class="blockquote mb-0">
-					<p>${name.toUpperCase()}</p>
+					<p class="name_rubrique_nav_left" onclick="openDetailsRubriqueFromLeft('${id_rubrique}', '${rubrique_type}')">
+						${name.toUpperCase()}
+					</p>
 				</blockquote>
 				<div class="stars">
 					<i class="fa-solid fa-star"></i>
@@ -1017,7 +1021,7 @@ class RubriqueCMZ extends MapCMZ {
 					<i class="fa-solid fa-star"></i>
 				</div>
 				<figcaption class="blockquote-footer mt-0 mb-0">
-					Adresse: <br> <cite title="Source Title">${address}</cite>
+					Adresse: <br> <cite title="Source Title">${address.toLowerCase()}</cite>
 				</figcaption>
 			</figure>
 		`;
@@ -1031,7 +1035,7 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveResto(item_data) {
-		const { denominationF, name_rubrique, numvoie, typevoie, nomvoie, codpost, villenorm } = item_data;
+		const { id, denominationF, name_rubrique, numvoie, typevoie, nomvoie, codpost, villenorm } = item_data;
 		const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codpost} ${villenorm}`;
 		const nom = denominationF;
 		const note = 5;
@@ -1046,7 +1050,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "restaurant" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -1060,7 +1064,7 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveFerme(item_data) {
-		const { name_rubrique, adresseFerme, nomFerme } = item_data;
+		const { id, name_rubrique, adresseFerme, nomFerme } = item_data;
 		const adresse = `${adresseFerme}`;
 		const nom = nomFerme;
 		const note = 5;
@@ -1075,7 +1079,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "ferme" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -1089,7 +1093,7 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveStation(item_data) {
-		const { name_rubrique, adresse, nom } = item_data;
+		const { id, name_rubrique, adresse, nom } = item_data;
 		const note = 5;
 
 		const item_rubrique = `
@@ -1102,7 +1106,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "station" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -1116,7 +1120,7 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveGolf(item_data) {
-		const { name: nom, name_rubrique, adress: adresse } = item_data;
+		const { id, name: nom, name_rubrique, adress: adresse } = item_data;
 		const note = 5;
 
 		const item_rubrique = `
@@ -1129,7 +1133,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "golf" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -1143,7 +1147,7 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveMarche(item_data) {
-		const { denominationF, name_rubrique, adresse } = item_data;
+		const { id, denominationF, name_rubrique, adresse } = item_data;
 		const nom = denominationF;
 		const note = 5;
 
@@ -1157,7 +1161,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "marche" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -1172,6 +1176,7 @@ class RubriqueCMZ extends MapCMZ {
 
 	setListItemRubriqueActiveTabac(item_data) {
 		const {
+			id,
 			denomination_f: denominationF,
 			name_rubrique,
 			numvoie,
@@ -1194,7 +1199,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse)}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "tabac" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -1580,6 +1585,8 @@ class RubriqueCMZ extends MapCMZ {
 			this.marker_last_selected = { marker: markerRubrique, type: rubrique_type, id: id };
 
 			openDetailsContainer();
+
+			rubrique_type_object.fetchDetails(item.id);
 		});
 	}
 
@@ -1593,6 +1600,57 @@ class RubriqueCMZ extends MapCMZ {
 			let poi_options = { isPastille: true, is_pastille_vert: false, is_pastille_rouge: true };
 
 			markerLastClicked.setIcon(this.setDivIconMarker(icon_not_selected, 2.1, poi_options));
+		}
+	}
+
+	async fetchDetailsResto(id_rubrique) {
+		try {
+			const link_details = `/details/restaurant/${id_rubrique}`;
+			const response = await fetch(link_details);
+
+			if (!response.ok) {
+				throw new Error(`Erreur de réseaux: ${response.status}`);
+			}
+
+			const response_text = await response.text();
+
+			const dom_parse = new DOMParser();
+			const rubrique_details = dom_parse.parseFromString(response_text, "text/html");
+
+			const content_details_rubrique = document.querySelector("#content_detail_rubrique_jheo_js");
+			if (!content_details_rubrique) {
+				console.log("Selector not found: 'content_detail_rubrique_jheo_js'");
+				return false;
+			}
+
+			content_details_rubrique.innerHTML = rubrique_details.querySelector("body").innerHTML;
+		} catch (error) {
+			console.log(error);
+		}
+	}
+
+	displayFicheRubrique(id_rubrique, type_rubrique) {
+		let is_clicked = false;
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(id_rubrique) && marker.options.type === type_rubrique) {
+				is_clicked = true;
+				marker.fire("click");
+			}
+		});
+
+		if (!is_clicked) {
+			const data_rubrique = this.defaultData[type_rubrique];
+			const data_item = data_rubrique.data.find((item) => item.id === parseInt(id_rubrique));
+
+			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === type_rubrique);
+
+			rubrique_type_object.setSingleMarker(data_item);
+
+			this.markers.eachLayer((marker) => {
+				if (parseInt(marker.options.id) === parseInt(id_rubrique) && marker.options.type === type_rubrique) {
+					marker.fire("click");
+				}
+			});
 		}
 	}
 }

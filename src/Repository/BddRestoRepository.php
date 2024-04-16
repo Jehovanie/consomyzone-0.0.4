@@ -1028,6 +1028,56 @@ class BddRestoRepository extends ServiceEntityRepository
         return $resto;
     }
 
+    public function getDetailsRubriqueRestaurant($id)
+    {
+        $resto =  $this->createQueryBuilder("r")
+                ->select(
+                    "r.id,
+                    r.denominationF,
+                    r.denominationF as nameFilter,
+                    r.numvoie,
+                    r.typevoie,
+                    r.nomvoie,
+                    r.compvoie,
+                    r.codinsee,
+                    r.codpost,
+                    r.villenorm,
+                    r.commune,
+                    r.restaurant,
+                    r.restaurant as resto,
+                    r.brasserie,
+                    r.creperie,
+                    r.fastFood,
+                    r.pizzeria,
+                    r.boulangerie,
+                    r.bar,
+                    r.cuisineMonde,
+                    r.cafe,
+                    r.salonThe,
+                    r.site1,
+                    r.fonctionalite1,
+                    r.fourchettePrix1,
+                    r.horaires1,
+                    r.prestation1,
+                    r.regimeSpeciaux1,
+                    r.repas1,
+                    r.typeCuisine1,
+                    r.dep,
+                    r.depName,
+                    r.tel,
+                    r.poiX,
+                    r.poiY,
+                    r.poiX as long,
+                    r.poiY as lat"
+                )
+                ->where("r.id =:id")
+                ->setParameter("id", $id)
+                ->getQuery()
+                ->getOneOrNullResult();
+
+        return $resto;
+    }
+
     public function getOneRestaurantById($id)
     {
         return $this->createQueryBuilder("r")

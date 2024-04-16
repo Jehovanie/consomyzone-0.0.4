@@ -390,6 +390,63 @@ class FermeGeomRepository extends ServiceEntityRepository
         return $query->execute();
     }
 
+    public function getDetailsRubriqueFerme($id_ferme){
+        $query = $this->createQueryBuilder('p')
+            ->select(
+                'p.genre',
+                'p.activite',
+                'p.codePostal',
+                'p.lienSiteWeb',
+                'p.nomFerme',
+                'p.nomProprietaire',
+                'p.adresseFerme',
+                'p.produit1',
+                'p.produit2',
+                'p.produit3',
+                'p.produit4',
+                'p.produit5',
+                'p.produit6',
+                'p.produit7',
+                'p.produit8',
+                'p.produitFerme',
+                'p.animauxAutoriser',
+                'p.carteBancaire',
+                'p.chequeVacance',
+                'p.degustation',
+                'p.venteEnLigne',
+                'p.siteWeb',
+                'p.telephoneDomicile',
+                'p.telephoneMobile',
+                'p.horairesVenteAFerme',
+                'p.horairesVenteMagasinProd',
+                'p.horairesVenteAuMarche',
+                'p.accesHandicape',
+                'p.accesHandicapAuditif',
+                'p.accesHandicapMental',
+                'p.accesHandicapMotrice',
+                'p.accesHandicapVisuel',
+                'p.accesVoiture',
+                'p.adherentAdeve',
+                'p.agricultureBio',
+                'p.atelier',
+                'p.marcherProduit',
+                'p.stationVerte',
+                'p.ticketsRestaurant',
+                'p.motDuFermier',
+                'p.ville',
+                'p.telephoneTravail',
+                'p.latitude',
+                'p.longitude',
+                'p.departement',
+                'p.departementName'
+            )
+            ->where('p.id = :id_ferme')
+            ->setParameter('id_ferme', $id_ferme)
+            ->getQuery();
+
+        return $query->getOneOrNullResult();
+    }
+
     ///jheo : getLatitudeLongitude
     public function getLatitudeLongitudeFerme($limits= 1000)
     {

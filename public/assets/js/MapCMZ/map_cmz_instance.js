@@ -15,3 +15,7 @@ function removeSpecGeoJson(couche, index) {
 function getNumberMarkerDefault() {
 	return MAP_CMZ.getNumberMarkerDefault();
 }
+
+function displayFicheRubrique(id_rubrique, type_rubrique) {
+	MAP_CMZ.displayFicheRubrique(id_rubrique, type_rubrique);
+}

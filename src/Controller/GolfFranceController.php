@@ -475,6 +475,7 @@ class GolfFranceController extends AbstractController
         ], 200);
     }
 
+    #[Route("/details/golf/{golfID}", name:"get_details_golf", methods: ["GET"] )]
     #[Route("/api/golf/one_data/{golfID}" , name:"api_one_data_golf" , methods:"GET" )]
     public function getOneDataGolf(
         $golfID,
@@ -511,6 +512,9 @@ class GolfFranceController extends AbstractController
             "isAlreadyCommented" => $isAlreadyCommented,
             "avisPerso" => $avis
         ];
+
+
+        dd($details);
 
         return $this->json([
             "details" => $details,
