@@ -4360,3 +4360,31 @@ span.btn_event:hover {
 	background-color: #fff;
 	background-image: -webkit-gradient(linear, 40% 0%, 75% 84%, from(#4d9c41), to(#19911d), color-stop(0.6, #54de5d));
 }
+
+.tooltip_rubrique_filter {
+	display: block;
+	position: absolute;
+	top: 40px;
+	left: 0;
+	/* width: 250px; */
+	background-color: lightgreen;
+	color: black;
+	padding: 6px;
+	border-radius: 5px;
+	z-index: 10;
+}
+.tooltip_rubrique_filter:after {
+	position: absolute;
+	content: "";
+	top: -25%;
+	right: 9px;
+	border-top: 5px solid transparent;
+	border-right: 5px solid transparent;
+	border-bottom: 20px solid lightgreen;
+	border-left: 5px solid transparent;
+}
+
+
+.cursor_pointer{
+	cursor: pointer;
+}

@@ -39,3 +39,31 @@ function activeDataTableOnList(id_table_to_active_data_table) {
 		},
 	});
 }
+
+function injectSlider() {
+	var skipSlider = document.getElementById("skipstep");
+	var skipValues = [document.getElementById("skip-value-lower"), document.getElementById("skip-value-upper")];
+
+	noUiSlider.create(skipSlider, {
+		start: [0, 5],
+		connect: true,
+		behaviour: "drag",
+		step: 0.1,
+		range: {
+			min: 0,
+			max: 5,
+		},
+		format: {
+			from: function (value) {
+				return parseFloat(value).toFixed(1);
+			},
+			to: function (value) {
+				return parseFloat(value).toFixed(1);
+			},
+		},
+	});
+
+	skipSlider.noUiSlider.on("update", function (values, handle) {
+		skipValues[handle].innerHTML = values[handle];
+	});
+}

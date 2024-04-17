@@ -1082,7 +1082,7 @@ class MapCMZ {
 				"rubrique_type_jheo_js",
 				"fa-solid fa-group-arrows-rotate",
 				"btn btn-success mb-2",
-				"Sélectionne ou désélectionne une rubrique."
+				"Sélectionner ou désélectionner une rubrique."
 			)}
 			${this.createBtnControl(
 				"favoris_elie_js",
@@ -1172,7 +1172,24 @@ class MapCMZ {
 		container.className = "content_legende content_legende_jheo_js";
 
 		container.innerHTML = `
-            <div class="content_header_right_side">
+            ${this.defaultHTMLRightSide()}
+        `;
+
+		document.querySelector(".content_cart_map_jheo_js").appendChild(container);
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 * @whereIUseIt [
+	 * 	this.createRightSideControl(),
+	 *  this.openRubriqueFilter()
+	 * ]
+	 *
+	 * @returns default HTML right side control
+	 */
+	defaultHTMLRightSide() {
+		const body_default_html_right_side = `
+			<div class="content_header_right_side">
                 <div class="header_right_side">
                     <div class="title_right_side text-black title_right_side_jheo_js">
                         CONTROL RIGHT SIDE
@@ -1188,9 +1205,9 @@ class MapCMZ {
             <div class="content_right_side_body content_right_side_body_jheo_js">
                 
             </div>
-        `;
+		`;
 
-		document.querySelector(".content_cart_map_jheo_js").appendChild(container);
+		return body_default_html_right_side;
 	}
 
 	createBottomSideControl() {

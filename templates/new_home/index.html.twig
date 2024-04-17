@@ -8,17 +8,19 @@
 	<link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/home/app.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/home/responsif_home.css')}}">
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css"/>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.css"/>
+	<link rel="stylesheet" href="{{asset('assets/css/new_home/slider.css')}}">
 
 {% endblock %}
 
 {% block javascripts %}
-    <script type="text/javascript" src="//cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js"></script>
     <script type="text/javascript" src="{{asset('assets/js/module/leaflet.shpfile.js')}}" defer></script>
 	<script type="text/javascript" src="{{asset('assets/js/module/shp.js')}}" defer></script>
-
-	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/nouislider@15.7.1/dist/nouislider.min.js" defer></script>
+	<script type="text/javascript" src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
 
 	<script type="text/javascript" src="{{ asset('assets/js/MapCMZ/lib.js') }}" defer></script>
 	<script type="text/javascript" src="{{ asset('assets/js/MapCMZ/map_cmz_fonction.js') }}" defer></script>

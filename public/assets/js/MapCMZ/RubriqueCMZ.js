@@ -44,7 +44,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_ferme.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerFerme(item, options);
 				},
@@ -66,7 +66,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_station_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_station.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerStation(item, options);
 				},
@@ -88,7 +88,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_golf_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_golf.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarkerGolf(item, options);
 				},
@@ -110,7 +110,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_tabac.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerTabac(item, options);
 				},
@@ -132,7 +132,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_marche.png",
 				},
-				is_active: true,
+				is_active: false,
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerMarche(item, options);
 				},
@@ -890,6 +890,15 @@ class RubriqueCMZ extends MapCMZ {
 		//// api get all data from server;
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+	 *
+	 * @whereIUseIt [
+	 *      this.openRightSide() [ MapCMZ ]
+	 * 		this.openRubriqueFilter()
+	 * ]
+	 * @returns list HTML rubrique to select on the right
+	 */
 	injectListRubriqueType() {
 		if (!document.querySelector(".content_right_side_body_jheo_js")) {
 			console.log("Selector not found : '.content_right_side_body_body'");
@@ -900,11 +909,17 @@ class RubriqueCMZ extends MapCMZ {
 			const icon_image = IS_DEV_MODE ? `/${item.icon}` : `/public/${item.icon}`;
 			const class_active = item.is_active ? "btn-primary" : "btn-light";
 			return `<button type="button" 
-						class="d-flex justify-content-center align-items-center rubrique_list_item rubrique_list_item_jheo_js btn ${class_active} btn-sm mb-1 me-1"
+						class="position-relative d-flex justify-content-center align-items-center rubrique_list_item rubrique_list_item_jheo_js btn ${class_active} btn-sm mb-1 me-1"
 						data-type="${item.name}" data-api_name="${item.api_name}"
 					>
-						<img class="image_icon_rubrique" src="${icon_image}" alt="${item.name}_rubrique" />
-						${item.name}
+						<span class="d-flex justify-content-center align-items-center rubrique_icon_text_jheo_js me-1">
+							<img class="image_icon_rubrique" src="${icon_image}" alt="${item.name}_rubrique" />
+							${item.name}
+						</span>
+						<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1" onclick="openRubriqueFilter()"></i>
+                		<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
+							Cliquez ici pour voir les filtres
+						</div>
 					</button>`;
 		});
 
@@ -926,7 +941,15 @@ class RubriqueCMZ extends MapCMZ {
 		const all_button_rubrique = Array.from(document.querySelectorAll(".rubrique_list_item_jheo_js"));
 
 		all_button_rubrique.forEach((btn_rubrique) => {
-			btn_rubrique.addEventListener("click", () => {
+			btn_rubrique.addEventListener("mouseover", () => {
+				btn_rubrique.querySelector(".tooltip_rubrique_filter_jheo_js").classList.remove("d-none");
+			});
+
+			btn_rubrique.addEventListener("mouseout", () => {
+				btn_rubrique.querySelector(".tooltip_rubrique_filter_jheo_js").classList.add("d-none");
+			});
+
+			btn_rubrique.querySelector(".rubrique_icon_text_jheo_js").addEventListener("click", () => {
 				btn_rubrique.classList.toggle("btn-light");
 				btn_rubrique.classList.toggle("btn-primary");
 
@@ -1017,6 +1040,119 @@ class RubriqueCMZ extends MapCMZ {
 				this.addRubriqueMarker(rubrique_api_name);
 			});
 		});
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+	 *
+	 * @returns
+	 */
+	openRubriqueFilter() {
+		document.querySelector(".content_legende_jheo_js").innerHTML = `
+			${this.defaultHTMLFilterBody()}
+		`;
+
+		///inject filter departement
+		document.querySelector(".content_body_filter_jheo_js").innerHTML = `
+			${this.htmlFilterDepartement()}
+			${this.htmlSliderPerNote()}
+		`;
+
+		if (!this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
+			document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+				document.querySelector(".content_legende_jheo_js").innerHTML = `
+					${this.defaultHTMLRightSide()}
+				`;
+				this.closeRightSide();
+			});
+		}
+
+		if (!this.isRightSideAlreadyOpen && document.querySelector(".cta_back_select_rubrique_jheo_js")) {
+			document.querySelector(".cta_back_select_rubrique_jheo_js").addEventListener("click", () => {
+				document.querySelector(".content_legende_jheo_js").innerHTML = `
+					${this.defaultHTMLRightSide()}
+				`;
+				this.injectListRubriqueType();
+
+				document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+					this.closeRightSide();
+				});
+			});
+		}
+
+		injectSlider();
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+	 *
+	 * @whereIUseIt [
+	 * 		this.openRubriqueFilter()
+	 * ]
+	 *
+	 * @returns HTML default body for the filtre rubrique
+	 */
+	defaultHTMLFilterBody() {
+		const default_html_filter_body = `
+			<div class="mt-5">
+				<div class="content_headers mb-1">
+					<div style="width: 100%;">
+						<nav class="d-flex justify-content-between align-items-center">
+							<div class="d-flex justify-content-between align-items-center">
+								<i class="fa-solid fa-arrow-left cursor_pointer cta_back_select_rubrique_jheo_js"></i>
+								<a class="navbar-brand ms-2 fs-4 text-black" href="#">Les filtres</a>
+							</div>
+							<div class="content_close_right_side">
+								<div class="close_right_side close_right_side_jheo_js">
+									<i class="fa-solid fa-xmark cursor_pointer"></i>
+								</div>
+							</div>
+						</nav>
+					</div>
+				</div>
+				<hr>
+				<div class="content_body content_body_filter_jheo_js">
+
+				</div>
+			</div>
+		`;
+
+		return default_html_filter_body;
+	}
+
+	htmlFilterDepartement() {
+		const html_filter_departement = `
+			<div class="mt-2 mb-3 p-1">
+				<label for="filter_departement" class="form-label text-black">Sélectionner un département</label>
+				<select id="filter_departement" name="filter_departement" class="form-select form-control-sm" aria-label="Default select example">
+					<option selected>Open this select menu</option>
+					<option value="1">One</option>
+					<option value="2">Two</option>
+					<option value="3">Three</option>
+				</select>
+			</div>
+			<hr>
+		`;
+
+		return html_filter_departement;
+	}
+
+	htmlSliderPerNote() {
+		const html_filter_by_note = `
+			<div class="content mt-2 mb-3 p-1">
+				<h2 class="text-black">Filtrer selon la notation</h2>
+				<div class="slider-area mt-1">
+					<div class="slider-area-wrapper">
+						<span id="skip-value-lower"></span>
+						<div id="skipstep" class="slider"></div>
+						<span id="skip-value-upper"></span>
+					</div>
+				</div>
+			</div>
+			<hr>
+		`;
+
+		return html_filter_by_note;
 	}
 
 	removeRubriqueMarker(rubrique_api_name) {

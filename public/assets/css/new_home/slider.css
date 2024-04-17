@@ -1,0 +1,83 @@
+
+.slider-area {
+  width: 100%;
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.slider-area .slider-title {
+  font-size: 16px;
+  font-weight: bold;
+}
+.slider-area-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  -moz-column-gap: 20px;
+       column-gap: 20px;
+}
+.slider-area #skip-value-lower,
+.slider-area #skip-value-upper {
+  font-size: 16px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.slider-area .noUi-target {
+  flex: 1;
+  position: relative;
+  background: #e3e3e3;
+  border-radius: 50px;
+}
+.slider-area .noUi-target.noUi-horizontal {
+  height: 10px;
+}
+.slider-area .noUi-target .noUi-base,
+.slider-area .noUi-target .noUi-connects {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  z-index: 1;
+}
+.slider-area .noUi-target .noUi-connects {
+  border-radius: 3px;
+  overflow: hidden;
+  z-index: 0;
+}
+.slider-area .noUi-target .noUi-connects .noUi-connect {
+  height: 100%;
+  width: 100%;
+  transform-style: preserve-3d;
+  transform-origin: 0 0;
+  transform-style: flat;
+  background-color: blue;
+}
+.slider-area .noUi-target .noUi-origin {
+  will-change: transform;
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  height: 0;
+  width: 100%;
+}
+.slider-area .noUi-target .noUi-origin .noUi-handle {
+  border-radius: 50px;
+  background: #fff;
+  cursor: default;
+  background-color: blue;
+  -webkit-backface-visibility: hidden;
+          backface-visibility: hidden;
+  position: absolute;
+  width: 21px;
+  height: 21px;
+  right: -10px;
+  top: -6px;
+}
+.slider-area .noUi-target .noUi-origin .noUi-handle .noUi-touch-area {
+  height: 100%;
+  width: 100%;
+}
+.slider-area .noUi-draggable {
+  cursor: ew-resize;
+}
