@@ -412,14 +412,21 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	addEventOnMap() {
-		this.map.on("movestart", () => {
-			const fa_solid_icon_nav_left = document.querySelector(".fa_solid_icon_nav_left_jheo_js");
-			if (fa_solid_icon_nav_left.getAttribute("data-type") === "show") {
-				fa_solid_icon_nav_left.click();
-			}
+		this.map.on("movestart", (e) => {
+			this.map.off("movestart");
+
+			// const fa_solid_icon_nav_left = document.querySelector(".fa_solid_icon_nav_left_jheo_js");
+			// if (fa_solid_icon_nav_left.getAttribute("data-type") === "show") {
+			// 	fa_solid_icon_nav_left.click();
+			// }
+
+			this.handleEventMoveStartForMemoryCenter(e);
 		});
 
-		this.map.on("moveend", () => {
+		this.map.on("moveend", (e) => {
+			this.map.off("moveend");
+			this.handleEventMoveendForMemoryCenter(e);
+
 			const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
 			const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
 
@@ -432,6 +439,7 @@ class RubriqueCMZ extends MapCMZ {
 
 	addPeripheriqueMarker() {
 		const default_rubrique_active = this.allRubriques.filter((item) => item.is_active === true);
+
 		const rubrique_iterator = default_rubrique_active[Symbol.iterator]();
 
 		this.fetchDataOnPeripherique(rubrique_iterator);
@@ -455,6 +463,7 @@ class RubriqueCMZ extends MapCMZ {
 				console.log(error);
 			}
 		} else {
+			this.addEventOnMap();
 			return false;
 		}
 	}
@@ -468,6 +477,10 @@ class RubriqueCMZ extends MapCMZ {
 			return false;
 		}
 
+		const zoom = this.map._zoom;
+		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		const { dataMax, ratio } = current_object_dataMax;
+
 		let count_temp = 0;
 		data.forEach((item) => {
 			let is_already_in_markers = false;
@@ -480,6 +493,15 @@ class RubriqueCMZ extends MapCMZ {
 			if (!is_already_in_markers) {
 				count_temp++;
 				rubrique_type_object.setSingleMarker(item, {});
+
+				const item_lat_with_ratio = parseFloat(parseFloat(item.lat).toFixed(ratio)).toString();
+
+				this.markers_display = this.markers_display.map((md_item) => {
+					if (md_item.lat.toString() === item_lat_with_ratio) {
+						md_item["data"] = [item, ...md_item["data"]];
+					}
+					return md_item;
+				});
 			}
 		});
 

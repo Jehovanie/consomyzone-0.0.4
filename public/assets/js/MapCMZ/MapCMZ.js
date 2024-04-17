@@ -766,9 +766,6 @@ class MapCMZ {
 
 		this.map.flyTo(L.latLng(before.lat, before.lng), before.zoom, { animation: true, noMoveStart: true });
 
-		// console.log(`I ${backOrAfter} here ${this.indexCurrentOnLisPositionBeforeAndAfter}`);
-		// console.log(before)
-
 		if (this.indexCurrentOnLisPositionBeforeAndAfter === 1) {
 			const parentIconControl = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
 			if (!parentIconControl.classList.contains("d-none")) {
@@ -1222,80 +1219,92 @@ class MapCMZ {
 		document.querySelector(".content_cart_map_jheo_js").appendChild(container);
 	}
 
+	handleEventMoveendForMemoryCenter(event) {
+		console.log("handleEventMoveendForMemoryCenter...");
+
+		const center = event.target.getCenter();
+		const coordAndZoom = {
+			zoom: event.target._zoom ? event.target._zoom : this.defaultZoom,
+			coord: center,
+		};
+		setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom));
+
+		if (getDataInSessionStorage("lastSearchPosition")) {
+			const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+			const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+			const lastSearchPosition = {
+				zoom: 13,
+				position: { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max },
+			};
+			setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition));
+		}
+
+		/// check and add polylines s'il faut
+		// this.customiSpyderfyWithoutMousePosition();
+	}
+
+	handleEventMoveStartForMemoryCenter(event) {
+		console.log("handleEventMoveStartForMemoryCenter...");
+
+		const center = event.target.getCenter();
+		const coordAndZoom = {
+			zoom: event.target._zoom ? event.target._zoom : this.defaultZoom,
+			coord: center,
+		};
+
+		if (document.querySelector(".icon_close_nav_left_jheo_js")) {
+			if (!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")) {
+				document.querySelector(".content_navleft_jheo_js").classList.add("d-none");
+				iconsChange();
+			}
+		}
+
+		////object of the current position
+		this.currentPositionOnMap = {
+			/// { zoom : 0, lat: 0, lng: 0 }
+			zoom: coordAndZoom.zoom,
+			...center,
+		};
+
+		////array contains history current position...
+		this.listPositionBeforAndAfter.push(this.currentPositionOnMap); /// [ { zoom : 0, lat: 0, lng: 0 }, ... ]
+
+		if (this.listPositionBeforAndAfter.length > 10) {
+			this.listPositionBeforAndAfter.shift();
+		}
+
+		this.indexCurrentOnLisPositionBeforeAndAfter = this.listPositionBeforAndAfter.length;
+		const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
+		if (!parentIconControlAfter.classList.contains("d-none")) {
+			parentIconControlAfter.classList.add("d-none");
+		}
+
+		if (this.listPositionBeforAndAfter.length > 1) {
+			const parentIconControl = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
+			if (parentIconControl.classList.contains("d-none")) {
+				parentIconControl.classList.remove("d-none");
+			}
+		}
+
+		///remove polyline
+		// this.removePolylineWithoutMousePosition();
+
+		///REMOVE THE OUTSIDE THE BOX
+		/// if not bind data.
+		// const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+		// const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+		// const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
+		// this.removeMarkerOutSideTheBox(new_size);
+	}
+
 	settingMemoryCenter() {
 		this.map.on("moveend", (e) => {
-			const center = e.target.getCenter();
-			const coordAndZoom = {
-				zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
-				coord: center,
-			};
-			setDataInSessionStorage("memoryCenter", JSON.stringify(coordAndZoom));
-
-			if (getDataInSessionStorage("lastSearchPosition")) {
-				const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
-				const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
-				const lastSearchPosition = {
-					zoom: 13,
-					position: { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max },
-				};
-				setDataInSessionStorage("lastSearchPosition", JSON.stringify(lastSearchPosition));
-			}
-
-			/// check and add polylines s'il faut
-			// this.customiSpyderfyWithoutMousePosition();
+			this.handleEventMoveendForMemoryCenter(e);
 		});
 
 		this.map.on("movestart", (e) => {
-			const center = e.target.getCenter();
-			const coordAndZoom = {
-				zoom: e.target._zoom ? e.target._zoom : this.defaultZoom,
-				coord: center,
-			};
-
-			if (document.querySelector(".icon_close_nav_left_jheo_js")) {
-				if (!document.querySelector(".content_navleft_jheo_js").classList.contains("d-none")) {
-					document.querySelector(".content_navleft_jheo_js").classList.add("d-none");
-					iconsChange();
-				}
-			}
-
-			////object of the current position
-			this.currentPositionOnMap = {
-				/// { zoom : 0, lat: 0, lng: 0 }
-				zoom: coordAndZoom.zoom,
-				...center,
-			};
-
-			////array contains history current position...
-			this.listPositionBeforAndAfter.push(this.currentPositionOnMap); /// [ { zoom : 0, lat: 0, lng: 0 }, ... ]
-
-			if (this.listPositionBeforAndAfter.length > 10) {
-				this.listPositionBeforAndAfter.shift();
-			}
-
-			this.indexCurrentOnLisPositionBeforeAndAfter = this.listPositionBeforAndAfter.length;
-			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
-			if (!parentIconControlAfter.classList.contains("d-none")) {
-				parentIconControlAfter.classList.add("d-none");
-			}
-
-			if (this.listPositionBeforAndAfter.length > 1) {
-				const parentIconControl = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
-				if (parentIconControl.classList.contains("d-none")) {
-					parentIconControl.classList.remove("d-none");
-				}
-			}
-
-			///remove polyline
-			// this.removePolylineWithoutMousePosition();
-
-			///REMOVE THE OUTSIDE THE BOX
-			/// if not bind data.
-			// const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
-			// const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
-
-			// const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
-			// this.removeMarkerOutSideTheBox(new_size);
+			this.handleEventMoveStartForMemoryCenter(e);
 		});
 	}
 
