@@ -113,17 +113,7 @@ class RestaurantController extends AbstractController
         // if( str_contains($pathname, "fetch_data")){}
 
         $arrayIdResto = [];
-
-        //// all my tribu t.
-        $tribu_t_owned = $userRepository->getListTableTribuT_owned(); /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
-
-        //// description tribu T with ID restaurant pastille
-        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
         
-        //// list resto pastille dans le tribu G
-        $restoPastilleInTribuG= $tributGService->getEntityRestoPastilled($this->getUser()); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
-        
-        $arrayIdResto= array_merge( $arrayIdResto, $restoPastilleInTribuG );
 
         if($request->query->has("minx") && $request->query->has("miny") ){
 
@@ -133,24 +123,39 @@ class RestaurantController extends AbstractController
             $maxy = $request->query->get("maxy");
 
             $data_max = $request->query->get("data_max"); 
-            $data_max = $data_max ? intval($data_max) : 250;
+            $data_max = $data_max ? intval($data_max) : 50;
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, null, $data_max);
 
-            if( $request->query->has("isFirstResquest")){
+            // if( $request->query->has("isFirstResquest") && $request->query->get("isFirstResquest") === "true" ){
+
+            if( $this->getUser() ){
+                //// all my tribu t.
+                $tribu_t_owned = $userRepository->getListTableTribuT_owned(); 
+                /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+
+                //// description tribu T with ID restaurant pastille
+                $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); 
+                /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+
+                //// list resto pastille dans le tribu G
+                $restoPastilleInTribuG= $tributGService->getEntityRestoPastilled($this->getUser()); 
+
+                /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+                $arrayIdResto= array_merge($arrayIdResto, $restoPastilleInTribuG);
+
                 //// update data result to add all resto pastille in the Tribu T
                 $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
             }
+            // }
 
-            $ids=array_map('self::getIdAvisResto',$datas);
-
+            $ids=array_map('self::getIdAvisResto', $datas);
             $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
-            //merge of resto data and note 
-            // $l=array_map("self::mergeDatasAndAvis",$datas,$moyenneNote);
 
             if( str_contains($pathname, "fetch_data")){
                 return $this->json([
-                    "data" =>self::mergeDatasAndAvis($datas,$moyenneNote)
+                    "data" =>self::mergeDatasAndAvis($datas,$moyenneNote),
+                    "pastille" => $arrayIdResto,
                 ], 200);
             }
 

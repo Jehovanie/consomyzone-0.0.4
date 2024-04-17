@@ -23,3 +23,6 @@ function displayFicheRubrique(id_rubrique, type_rubrique) {
 function openRubriqueFilter() {
 	MAP_CMZ.openRubriqueFilter();
 }
+
+
+ 

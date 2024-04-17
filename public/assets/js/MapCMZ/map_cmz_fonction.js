@@ -162,3 +162,154 @@ function openDetailsRubriqueFromLeft(id_rubrique, rubrique_type) {
 	openDetailsContainer();
 	displayFicheRubrique(id_rubrique, rubrique_type);
 }
+
+/**
+ * @author Elie
+ * afiichege de la list de resto pastillé par tribu
+ * @param {*} name
+ * @param {*} tribu
+ * @returns
+ */
+function itemRestoPastielleV2(name, tribu) {
+	let item;
+	let tribu_htm = "";
+
+	let nb_tribu = tribu.length;
+
+	item = tribu[0];
+
+	let logo_path = item.logo_path ? item.logo_path : "/uploads/tribu_t/photo/avatar_tribu.jpg";
+	logo_path = IS_DEV_MODE ? logo_path : "/public" + logo_path;
+
+	let default_name_muable = !item.name_tribu_t_muable
+		? item.tableName
+				.replace("tribu_t_", "")
+				.replace("tribug_", "")
+				.replace("_restaurant", "")
+				.replace(/[0-9]_/g, "")
+				.replace("_", " ")
+		: item.name_tribu_t_muable;
+
+	let default_name =
+		`Tribu ${item.tableName.includes("tribu_t") ? "T" : "G"} ${default_name_muable}` +
+		(nb_tribu > 1 ? ` et ${nb_tribu - 1} autre(s) tribu(s)` : "");
+
+	for (let t of tribu) {
+		let type = t.tableName.includes("tribu_t") ? "T" : "G";
+
+		let name_muable = !t.name_tribu_t_muable
+			? t.tableName
+					.replace("tribu_t_", "")
+					.replace("tribug_", "")
+					.replace("_restaurant", "")
+					.replace(/[0-9]_/g, "")
+					.replace("_", " ")
+					.replace("0", "")
+			: t.name_tribu_t_muable;
+
+		name_muable = name_muable.replace("undefined", "").replace("_restaurant", "");
+
+		let name_tribu = `Tribu ${type} ${name_muable}`;
+
+		let log = t.logo_path ? t.logo_path : "/uploads/tribu_t/photo/avatar_tribu.jpg";
+
+		tribu_htm += `<a href="#" data-name="${name_tribu}" onclick="openModalDetailPastille(this)" class="list-group-item list-group-item-action d-flex align-items-center tribu_${type}" data-bs-toggle="modal" data-bs-target="#modalCreatePopUp">
+			<img class="icon_resto_legend" data-name="${name_tribu}" style="clip-path:circle()" src="/public${log}" alt="Icon Resto">
+			<label class="ms-2">${name_tribu}</label>
+		</a>`;
+	}
+
+	const items = `
+        <tr>
+			<td class="td_pastille d-flex flex-column">
+                <div class="d-flex position-relative align-items-center">
+					<img class="icon_resto_legend cursor-pointer" data-bs-placement="top" title="${default_name}"style="clip-path:circle()" src="${logo_path}" alt="Icon Resto" data-bs-toggle="collapse" data-bs-target="#collapseExample${
+		item.id
+	}">
+					${
+						nb_tribu > 1
+							? `<span class="other_nb_tribu" data-bs-toggle="collapse" data-bs-target="#collapseExample${
+									item.id
+							  }">+${nb_tribu - 1}</span>`
+							: ""
+					}
+					<a href="#" class="link-primary ms-4" onclick="getDetailFromListRightUpdate('${item.id}', 'restaurant')">${name}</a>
+				</div>
+				<div class="collapse list-group" id="collapseExample${item.id}">${tribu_htm}</div>
+            </td>
+
+        </tr>
+    `;
+	return items;
+}
+
+function dataListMarker(data) {
+	const result = Object.groupBy(data, ({ id }) => id);
+	let dataTable = "";
+	// data.forEach((item, index) => {
+	// 	dataTable += itemRestoPastielle(index, item.depName, item.dep, item.name, item.id, item.logo_path, item.name_tribu_t_muable);
+	// });
+
+	/** Edited by Elie */
+	for (const [key, value] of Object.entries(result)) {
+		dataTable += itemRestoPastielleV2(value[0].name, value);
+	}
+
+	return dataTable;
+}
+
+function injectListMarker(data, isInSearch = false) {
+	if (!document.querySelector(".content_right_side_body_jheo_js")) {
+		console.log("Selector not found : '.content_right_side_body_body'");
+		return false;
+	}
+
+	let message = isInSearch
+		? "Il semble que vos restaurants pastilles ne figurent pas parmi les résultats de recherche ou n'avez aucun restaurant pastille."
+		: "Vous n'avez pas de restaurant pastille ou vous n'avez pas encore de tribu T avec une extension restaurant.";
+	let dataHTML =
+		data.length > 0
+			? dataListMarker(data)
+			: document.querySelector(".cta_to_actualite_jheo_js")
+			? `
+        <tr>
+            <td colspan="3">
+                <div class="alert alert-info text-center" role="alert">
+                    ${message}
+                </div>
+            </td>
+        </tr>
+    `
+			: `
+        <tr>
+            <td colspan="3">
+                <div class="alert alert-danger text-center" role="alert">
+                   <a class="text-primary" href="/connexion" style="text-decoration:underline">Veuillez-vous connecter</a> pour voir la liste des restaurants pastillés dans vos tribus T.
+
+                </div>
+            </td>
+        </tr>
+    `;
+
+	document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+        <div class="right_side_body right_side_body_jheo_js">
+            <table class="table table_info_marker">
+                <thead>
+                    <tr>
+                        <!--<th scope="col">#</th>-->
+                        <th scope="col">Tribu <label class="ms-2">Restaurant</label></th>
+                    
+                        <!--<th scope="col">Restaurant</th>-->
+                    </tr>
+                </thead>
+                <tbody>
+                    ${dataHTML}
+                </tbody>
+            </table>
+        </div>
+    `;
+}
+
+function getDetailFromListRightUpdate(id_rubrique, type_rubrique) {
+	displayFicheRubrique(id_rubrique, type_rubrique);
+}

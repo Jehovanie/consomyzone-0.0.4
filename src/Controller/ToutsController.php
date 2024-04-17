@@ -416,11 +416,35 @@ class ToutsController extends AbstractController
 
 
     #[Route('/new_home', name: 'for_explore_cat_tous', methods:["GET", "POST"])]
-    public function new_page_home(){
-        $userConnected= null;
+    public function new_page_home(
+        CodeapeRepository $codeApeRep,
+        Status $status,
+        Request $request,
+        UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        TributGService $tributGService,
+        MessageService $messageService
+    ){
+
+        ///current user connected
+        $user = $this->getUser();
+        $statusProfile = $status->statusFondateur($user);
+
+        $userConnected = $status->userProfilService($this->getUser());
+
+        $amis_in_tributG = $messageService->getListAmisToChat(
+            $user, 
+            $tributGService, 
+            $entityManager, 
+            $userRepository
+        );
         
         return $this->render("new_home/index.html.twig", [
             "userConnected" => $userConnected,
+            "profil" => $statusProfile["profil"],
+            "statusTribut" => $statusProfile["statusTribut"],
+            "codeApes" => $codeApeRep->getCode(),
+            "amisTributG" => $amis_in_tributG
         ]);
     }
 }

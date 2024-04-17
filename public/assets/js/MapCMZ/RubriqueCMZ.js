@@ -18,6 +18,7 @@ class RubriqueCMZ extends MapCMZ {
 				name: "Restaurant",
 				api_name: "restaurant",
 				icon: "assets/icon/NewIcons/mini_logo_resto_selected.png",
+				isFirstResquest: true,
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_resto_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_resto.png",
@@ -40,6 +41,7 @@ class RubriqueCMZ extends MapCMZ {
 				name: "Ferme",
 				api_name: "ferme",
 				icon: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
+				isFirstResquest: true,
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_ferme.png",
@@ -62,6 +64,7 @@ class RubriqueCMZ extends MapCMZ {
 				name: "Station",
 				api_name: "station",
 				icon: "assets/icon/NewIcons/mini_logo_station.png",
+				isFirstResquest: true,
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_station_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_station.png",
@@ -84,6 +87,7 @@ class RubriqueCMZ extends MapCMZ {
 				name: "Golf",
 				api_name: "golf",
 				icon: "assets/icon/NewIcons/mini_logo_golf_selected.png",
+				isFirstResquest: true,
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_golf_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_golf.png",
@@ -106,6 +110,7 @@ class RubriqueCMZ extends MapCMZ {
 				name: "Tabac",
 				api_name: "tabac",
 				icon: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
+				isFirstResquest: true,
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_tabac.png",
@@ -128,6 +133,7 @@ class RubriqueCMZ extends MapCMZ {
 				name: "Marché",
 				api_name: "marche",
 				icon: "assets/icon/NewIcons/mini_logo_marche_selected.png",
+				isFirstResquest: true,
 				poi_icon: {
 					selected: "assets/icon/NewIcons/mini_logo_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_marche.png",
@@ -150,6 +156,7 @@ class RubriqueCMZ extends MapCMZ {
 				name: "Boulangerie",
 				api_name: "boulangerie",
 				icon: "assets/icon/NewIcons/restaurant.png",
+				isFirstResquest: true,
 				poi_icon: {
 					selected: "assets/icon/NewIcons/icon_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
@@ -172,6 +179,7 @@ class RubriqueCMZ extends MapCMZ {
 				name: "Extra Pizza",
 				api_name: "extra_pizza",
 				icon: "assets/icon/NewIcons/restaurant.png",
+				isFirstResquest: true,
 				poi_icon: {
 					selected: "assets/icon/NewIcons/icon_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
@@ -194,6 +202,7 @@ class RubriqueCMZ extends MapCMZ {
 				name: "KFC",
 				api_name: "kfc",
 				icon: "assets/icon/NewIcons/restaurant.png",
+				isFirstResquest: true,
 				poi_icon: {
 					selected: "assets/icon/NewIcons/icon_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
@@ -216,6 +225,7 @@ class RubriqueCMZ extends MapCMZ {
 				name: "Gastro",
 				api_name: "gastro",
 				icon: "assets/icon/NewIcons/restaurant.png",
+				isFirstResquest: true,
 				poi_icon: {
 					selected: "assets/icon/NewIcons/icon_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
@@ -339,10 +349,31 @@ class RubriqueCMZ extends MapCMZ {
 
 		if (data_rubrique !== undefined) {
 			const api_name = data_rubrique.api_name;
+			const isFirstResquest = data_rubrique.isFirstResquest;
 
-			const response = await this.fetchDataRubrique(api_name.toLowerCase(), { data_max: 50 });
+			const response = await this.fetchDataRubrique(api_name.toLowerCase(), { isFirstResquest, data_max: 50 });
 			this.defaultData[api_name] = {
 				data: response.data,
+				pastille: [
+					...response.pastille,
+					// ...response.pastille?.filter((item) => {
+					// 	const object_api_name = this.defaultData[api_name];
+					// 	if (object_api_name.hasOwnProperty("pastille")) {
+					// 		const data_pastille = this.defaultData[api_name]["pastille"];
+					// 		return !data_pastille.some((item_data_pastille) => {
+					// 			if (
+					// 				item_data_pastille.id_resto === item.id_resto &&
+					// 				item_data_pastille.tableName === item_data_pastille.tableName
+					// 			) {
+					// 				return false;
+					// 			}
+					// 			return true;
+					// 		});
+					// 	}
+					// 	return true;
+					// }),
+					// ...this.defaultData[api_name]["pastille"],
+				],
 				...this.defaultData[api_name],
 			};
 
@@ -1184,6 +1215,10 @@ class RubriqueCMZ extends MapCMZ {
 			param = `${param}&data_max=${options.data_max}`;
 		}
 
+		if (options && options.isFirstResquest === true) {
+			param = `${param}&isFirstResquest=${options.isFirstResquest}`;
+		}
+
 		let link = `/fetch_data/${rubrique_type}?${param}`;
 
 		const request = new Request(link, {
@@ -1625,7 +1660,21 @@ class RubriqueCMZ extends MapCMZ {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		let poi_options = { isPastille: true, is_pastille_vert: false, is_pastille_rouge: true };
+		const data_resto_pastille = this.defaultData["restaurant"]["pastille"];
+
+		const count_pastille = data_resto_pastille.reduce((sum, item_resto_pastille) => {
+			if (parseInt(item_resto_pastille.id_resto) === parseInt(item.id)) {
+				sum = sum + 1;
+			}
+			return sum;
+		}, 0);
+
+		let poi_options = count_pastille > 0 ?  { 
+			isPastille: true, 
+			is_pastille_vert: count_pastille === 1 ? true : false, 
+			is_pastille_rouge: count_pastille === 2 ? true : false
+		}: {}
+		
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
 		const mini_fiche = rubrique_type_object.setMiniFiche(
@@ -1897,7 +1946,22 @@ class RubriqueCMZ extends MapCMZ {
 			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 			const icon_selected = rubrique_type_object.poi_icon.selected;
 
-			let poi_options = { isPastille: true, is_pastille_vert: true, is_pastille_rouge: false };
+
+			const data_resto_pastille = this.defaultData[rubrique_type]["pastille"];
+
+			const count_pastille = data_resto_pastille.reduce((sum, item_resto_pastille) => {
+				if (parseInt(item_resto_pastille.id_resto) === parseInt(item.id)) {
+					sum = sum + 1;
+				}
+				return sum;
+			}, 0);
+
+			let poi_options = count_pastille > 0 ?  { 
+				isPastille: true, 
+				is_pastille_vert: count_pastille === 1 ? true : false, 
+				is_pastille_rouge: count_pastille === 2 ? true : false
+			}: {}
+
 
 			markerRubrique.setIcon(this.setDivIconMarker(icon_selected, 2.1, poi_options));
 
@@ -2101,5 +2165,28 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			});
 		}
+	}
+
+	injectListRestoPastille() {
+		const restoPastilleTab = [];
+
+		const data_resto = this.defaultData["restaurant"];
+
+		data_resto["pastille"].forEach((item) => {
+			const restoPastille = data_resto["data"].find((jtem) => parseInt(item.id_resto) === parseInt(jtem.id));
+			if (restoPastille) {
+				restoPastilleTab.push({
+					id: restoPastille.id,
+					name: restoPastille.denominationF,
+					depName: restoPastille.depName,
+					dep: restoPastille.dep,
+					logo_path: item.logo_path,
+					name_tribu_t_muable: item.name_tribu_t_muable,
+					tableName: item.tableName,
+				});
+			}
+		});
+		// this.default_data
+		injectListMarker(restoPastilleTab);
 	}
 }
