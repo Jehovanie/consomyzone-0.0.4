@@ -4287,7 +4287,7 @@ span.btn_event:hover {
 .content_details_rubrique {
 	position: absolute;
 	top: 14%;
-	z-index: 1100;
+	z-index: 1050;
 	right: 5.8%;
 	height: 77% !important;
 	width: 30%;

@@ -351,7 +351,6 @@ class MarckerClusterResto extends MapModule {
 
 			this.updateMarkersDisplay(new_size);
 			this.addPeripheriqueMarker(new_size);
-
 		});
 	}
 
@@ -442,14 +441,17 @@ class MarckerClusterResto extends MapModule {
 		return data;
 	}
 
-	updateListRestoPastille(idResto, tribuName, logo=null) {
-		this.listRestoPastille.push({ id_resto: idResto.toString(), tableName: tribuName, logo_path:logo});
+	updateListRestoPastille(idResto, tribuName, logo = null) {
+		this.listRestoPastille.push({ id_resto: idResto.toString(), tableName: tribuName, logo_path: logo });
 		this.updateStateResto(idResto);
 	}
 
 	updateListRestoDepastille(idResto, tribuName) {
 		this.listRestoPastille = this.listRestoPastille.filter((item) => {
-			return parseInt(item.id_resto) != parseInt(idResto) || item.tableName.replaceAll('_restaurant','') != tribuName.replaceAll('_restaurant','');
+			return (
+				parseInt(item.id_resto) != parseInt(idResto) ||
+				item.tableName.replaceAll("_restaurant", "") != tribuName.replaceAll("_restaurant", "")
+			);
 		});
 		this.updateStateResto(idResto);
 	}
@@ -540,13 +542,13 @@ class MarckerClusterResto extends MapModule {
 	}
 
 	/**
-     *@author Nantenaina a ne pas contacté pendant les congés 
-      où: on Utilise cette fonction dans la rubrique resto et tous carte cmz, 
-     * localisation du fichier: dans MarkerClusterResto.js,
-     * je veux: rendre le marker draggable
-     * si un utilisateur veut modifier une ou des informations
-     * @param {} id 
-     */
+	 * @author Nantenaina a ne pas contacté pendant les congés
+	 * où: on Utilise cette fonction dans la rubrique resto et tous carte cmz,
+	 * localisation du fichier: dans MarkerClusterResto.js,
+	 * je veux: rendre le marker draggable
+	 * si un utilisateur veut modifier une ou des informations
+	 * @param {} id
+	 */
 	makeMarkerDraggable(id) {
 		this.markers.eachLayer((marker) => {
 			if (parseInt(marker.options.id) === parseInt(id)) {

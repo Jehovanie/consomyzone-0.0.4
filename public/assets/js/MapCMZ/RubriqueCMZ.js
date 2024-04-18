@@ -1669,12 +1669,15 @@ class RubriqueCMZ extends MapCMZ {
 			return sum;
 		}, 0);
 
-		let poi_options = count_pastille > 0 ?  { 
-			isPastille: true, 
-			is_pastille_vert: count_pastille === 1 ? true : false, 
-			is_pastille_rouge: count_pastille === 2 ? true : false
-		}: {}
-		
+		let poi_options =
+			count_pastille > 0
+				? {
+						isPastille: true,
+						is_pastille_vert: count_pastille === 1 ? true : false,
+						is_pastille_rouge: count_pastille === 2 ? true : false,
+				  }
+				: {};
+
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
 		const mini_fiche = rubrique_type_object.setMiniFiche(
@@ -1861,6 +1864,7 @@ class RubriqueCMZ extends MapCMZ {
 			icon: this.setDivIconMarker(poi_icon, 2.1, options),
 			id: singleData.id,
 			type: rubrique_type,
+			draggable: false,
 		});
 	}
 
@@ -1946,7 +1950,6 @@ class RubriqueCMZ extends MapCMZ {
 			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 			const icon_selected = rubrique_type_object.poi_icon.selected;
 
-
 			const data_resto_pastille = this.defaultData[rubrique_type]["pastille"];
 
 			const count_pastille = data_resto_pastille.reduce((sum, item_resto_pastille) => {
@@ -1956,12 +1959,14 @@ class RubriqueCMZ extends MapCMZ {
 				return sum;
 			}, 0);
 
-			let poi_options = count_pastille > 0 ?  { 
-				isPastille: true, 
-				is_pastille_vert: count_pastille === 1 ? true : false, 
-				is_pastille_rouge: count_pastille === 2 ? true : false
-			}: {}
-
+			let poi_options =
+				count_pastille > 0
+					? {
+							isPastille: true,
+							is_pastille_vert: count_pastille === 1 ? true : false,
+							is_pastille_rouge: count_pastille === 2 ? true : false,
+					  }
+					: {};
 
 			markerRubrique.setIcon(this.setDivIconMarker(icon_selected, 2.1, poi_options));
 
@@ -2188,5 +2193,76 @@ class RubriqueCMZ extends MapCMZ {
 		});
 		// this.default_data
 		injectListMarker(restoPastilleTab);
+	}
+
+	/**
+	 * @author Nantenaina a ne pas contacté pendant les congés
+	 * où: on Utilise cette fonction dans la rubrique resto et tous carte cmz,
+	 * localisation du fichier: dans MarkerClusterResto.js,
+	 * je veux: rendre le marker draggable
+	 * si un utilisateur veut modifier une ou des informations
+	 * @param {} id
+	 */
+	makeMarkerDraggable(id, rubrique_type) {
+		let tab = "ivelany";
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === rubrique_type) {
+				let initialPos = marker.getLatLng();
+				marker.dragging.enable();
+
+				tab = "anatiny";
+				marker.on("dragend", (e) => {
+					let position = marker.getLatLng();
+					let lat = position.lat;
+					let lng = position.lng;
+					$("#userModifResto").modal("show");
+					document.querySelector("#newLatitude").value = lat;
+					document.querySelector("#newLongitude").value = lng;
+					document.querySelector("#newIdResto").value = id;
+
+					setTimeout(() => {
+						swal(
+							"Ça fait 10 minutes que vous n'avez effectué aucune modification sur le marquer, le mode interactif sur le marquer sera désactivé."
+						).then(() => {
+							marker.setLatLng(initialPos, {
+								draggable: "false",
+							});
+							marker.dragging.disable();
+						});
+					}, 600000);
+
+					console.log(position);
+				});
+
+				console.log(marker);
+			}
+		});
+
+		console.log(tab);
+	}
+
+	updateListRestoPastille(idResto, tribuName, logo = null) {
+		this.defaultData["restaurant"]["pastille"] = [
+			{ id_resto: idResto.toString(), tableName: tribuName, logo_path: logo },
+			...this.defaultData["restaurant"]["pastille"],
+		];
+
+		// this.updateStateResto(idResto);
+	}
+
+	updateListRestoDepastille(idResto, tribuName) {
+		this.defaultData["restaurant"]["pastille"] = [
+			...this.defaultData["restaurant"]["pastille"].filter((item) => {
+				if (
+					parseInt(item.id_resto) === parseInt(idResto) &&
+					item.tableName.replaceAll("_restaurant", "") === tribuName.replaceAll("_restaurant", "")
+				) {
+					return false;
+				}
+				return true;
+			}),
+		];
+
+		// this.updateStateResto(idResto);
 	}
 }
