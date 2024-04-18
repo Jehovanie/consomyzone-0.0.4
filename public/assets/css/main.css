@@ -4174,6 +4174,8 @@ span.btn_event:hover {
 .single_marker_note {
 	padding: 3px;
 	font-weight: bolder;
+	color: blue;
+	font-size: 0.9rem;
 }
 
 .single_marker_point {
@@ -4384,7 +4386,6 @@ span.btn_event:hover {
 	border-left: 5px solid transparent;
 }
 
-
-.cursor_pointer{
+.cursor_pointer {
 	cursor: pointer;
 }

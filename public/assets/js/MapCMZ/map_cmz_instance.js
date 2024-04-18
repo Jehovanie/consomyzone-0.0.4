@@ -20,8 +20,8 @@ function displayFicheRubrique(id_rubrique, type_rubrique) {
 	MAP_CMZ.displayFicheRubrique(id_rubrique, type_rubrique);
 }
 
-function openRubriqueFilter() {
-	MAP_CMZ.openRubriqueFilter();
+function openRubriqueFilter(rubrique_type) {
+	MAP_CMZ.openRubriqueFilter(rubrique_type);
 }
 
 /**
@@ -244,4 +244,14 @@ function pastilleRestoForTribuT(element, isPastilled) {
 			}
 		})
 		.catch((error) => console.log(error));
+}
+
+/**
+ * Get global note avis resto  and setting
+ * @param {*} id
+ */
+function showNoteGlobaleOnMarker(id, globalNote, type) {
+	type = type === "resto" ? "restaurant" : type;
+
+	MAP_CMZ.showNoteMoyenneRealTime(id, globalNote, type);
 }

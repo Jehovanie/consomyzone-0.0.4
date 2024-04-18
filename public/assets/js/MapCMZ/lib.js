@@ -65,5 +65,6 @@ function injectSlider() {
 
 	skipSlider.noUiSlider.on("update", function (values, handle) {
 		skipValues[handle].innerHTML = values[handle];
+		
 	});
 }

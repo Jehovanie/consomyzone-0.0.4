@@ -767,25 +767,25 @@ class MapCMZ {
 		this.map.flyTo(L.latLng(before.lat, before.lng), before.zoom, { animation: true, noMoveStart: true });
 
 		if (this.indexCurrentOnLisPositionBeforeAndAfter === 1) {
-			const parentIconControl = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
-			if (!parentIconControl.classList.contains("d-none")) {
+			const parentIconControl = document.querySelector(".cart_before_jheo_js")?.parentElement?.parentElement;
+			if (parentIconControl && !parentIconControl.classList.contains("d-none")) {
 				parentIconControl.classList.add("d-none");
 			}
 
-			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
-			if (parentIconControlAfter.classList.contains("d-none")) {
+			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js")?.parentElement?.parentElement;
+			if (parentIconControlAfter && parentIconControlAfter.classList.contains("d-none")) {
 				parentIconControlAfter.classList.remove("d-none");
 			}
 		}
 
 		if (this.indexCurrentOnLisPositionBeforeAndAfter === this.listPositionBeforAndAfter.length) {
-			const parentIconControl = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
-			if (!parentIconControl.classList.contains("d-none")) {
+			const parentIconControl = document.querySelector(".cart_after_jheo_js")?.parentElement?.parentElement;
+			if (parentIconControl && !parentIconControl.classList.contains("d-none")) {
 				parentIconControl.classList.add("d-none");
 			}
 
-			const parentIconControlBefore = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
-			if (parentIconControlBefore.classList.contains("d-none")) {
+			const parentIconControlBefore = document.querySelector(".cart_before_jheo_js")?.parentElement?.parentElement;
+			if (parentIconControlBefore && parentIconControlBefore.classList.contains("d-none")) {
 				parentIconControlBefore.classList.remove("d-none");
 			}
 		}
@@ -794,13 +794,13 @@ class MapCMZ {
 			this.indexCurrentOnLisPositionBeforeAndAfter > 1 &&
 			this.indexCurrentOnLisPositionBeforeAndAfter < this.listPositionBeforAndAfter.length
 		) {
-			const parentIconControlBefore = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
-			if (parentIconControlBefore.classList.contains("d-none")) {
+			const parentIconControlBefore = document.querySelector(".cart_before_jheo_js")?.parentElement?.parentElement;
+			if (parentIconControlBefore && parentIconControlBefore.classList.contains("d-none")) {
 				parentIconControlBefore.classList.remove("d-none");
 			}
 
-			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
-			if (parentIconControlAfter.classList.contains("d-none")) {
+			const parentIconControlAfter = document.querySelector(".cart_after_jheo_js")?.parentElement?.parentElement;
+			if (parentIconControlAfter && parentIconControlAfter.classList.contains("d-none")) {
 				parentIconControlAfter.classList.remove("d-none");
 			}
 		}
@@ -1291,14 +1291,14 @@ class MapCMZ {
 		}
 
 		this.indexCurrentOnLisPositionBeforeAndAfter = this.listPositionBeforAndAfter.length;
-		const parentIconControlAfter = document.querySelector(".cart_after_jheo_js").parentElement.parentElement;
-		if (!parentIconControlAfter.classList.contains("d-none")) {
+		const parentIconControlAfter = document.querySelector(".cart_after_jheo_js")?.parentElement?.parentElement;
+		if (parentIconControlAfter && !parentIconControlAfter.classList.contains("d-none")) {
 			parentIconControlAfter.classList.add("d-none");
 		}
 
 		if (this.listPositionBeforAndAfter.length > 1) {
-			const parentIconControl = document.querySelector(".cart_before_jheo_js").parentElement.parentElement;
-			if (parentIconControl.classList.contains("d-none")) {
+			const parentIconControl = document.querySelector(".cart_before_jheo_js")?.parentElement?.parentElement;
+			if (parentIconControl && parentIconControl.classList.contains("d-none")) {
 				parentIconControl.classList.remove("d-none");
 			}
 		}

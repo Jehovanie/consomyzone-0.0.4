@@ -275,6 +275,8 @@ class RubriqueCMZ extends MapCMZ {
 		this.markers_display = [];
 
 		this.marker_last_selected = null;
+
+		this.list_departements = [];
 	}
 
 	getNumberMarkerDefault() {
@@ -947,7 +949,7 @@ class RubriqueCMZ extends MapCMZ {
 							<img class="image_icon_rubrique" src="${icon_image}" alt="${item.name}_rubrique" />
 							${item.name}
 						</span>
-						<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1" onclick="openRubriqueFilter()"></i>
+						<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1" onclick="openRubriqueFilter('${item.api_name}')"></i>
                 		<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
 							Cliquez ici pour voir les filtres
 						</div>
@@ -1078,40 +1080,66 @@ class RubriqueCMZ extends MapCMZ {
 	 *
 	 * @returns
 	 */
-	openRubriqueFilter() {
-		document.querySelector(".content_legende_jheo_js").innerHTML = `
-			${this.defaultHTMLFilterBody()}
-		`;
+	async openRubriqueFilter(rubrique_type) {
+		try {
+			if (this.list_departements.length === 0) {
+				await this.fetchDepartement();
+			}
 
-		///inject filter departement
-		document.querySelector(".content_body_filter_jheo_js").innerHTML = `
-			${this.htmlFilterDepartement()}
-			${this.htmlSliderPerNote()}
-		`;
+			document.querySelector(".content_legende_jheo_js").innerHTML = `
+				${this.defaultHTMLFilterBody(rubrique_type)}
+			`;
 
-		if (!this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
-			document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
-				document.querySelector(".content_legende_jheo_js").innerHTML = `
-					${this.defaultHTMLRightSide()}
-				`;
-				this.closeRightSide();
-			});
-		}
+			///inject filter departement and filter for notation
+			document.querySelector(".content_body_filter_jheo_js").innerHTML = `
+				${this.htmlFilterDepartement()}
+				${this.htmlSliderPerNote()}
+			`;
 
-		if (!this.isRightSideAlreadyOpen && document.querySelector(".cta_back_select_rubrique_jheo_js")) {
-			document.querySelector(".cta_back_select_rubrique_jheo_js").addEventListener("click", () => {
-				document.querySelector(".content_legende_jheo_js").innerHTML = `
-					${this.defaultHTMLRightSide()}
-				`;
-				this.injectListRubriqueType();
-
+			//// close filter
+			if (!this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
 				document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+					document.querySelector(".content_legende_jheo_js").innerHTML = `
+					${this.defaultHTMLRightSide()}
+				`;
 					this.closeRightSide();
 				});
-			});
-		}
+			}
 
-		injectSlider();
+			/// came back to list rubriques
+			if (!this.isRightSideAlreadyOpen && document.querySelector(".cta_back_select_rubrique_jheo_js")) {
+				document.querySelector(".cta_back_select_rubrique_jheo_js").addEventListener("click", () => {
+					document.querySelector(".content_legende_jheo_js").innerHTML = `
+					${this.defaultHTMLRightSide()}
+				`;
+					this.injectListRubriqueType();
+
+					document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
+						this.closeRightSide();
+					});
+				});
+			}
+
+			injectSlider();
+		} catch (e) {
+			console.log(error);
+		}
+	}
+
+	async fetchDepartement() {
+		try {
+			const response = await fetch("/api/alldepartements");
+			if (!response.ok) {
+				throw new Error(`Erreur de reseaur: ${response.status}`);
+			}
+
+			const response_dep = await response.json();
+			const { departements } = response_dep;
+
+			this.list_departements = departements;
+		} catch (e) {
+			console.log(error);
+		}
 	}
 
 	/**
@@ -1123,7 +1151,9 @@ class RubriqueCMZ extends MapCMZ {
 	 *
 	 * @returns HTML default body for the filtre rubrique
 	 */
-	defaultHTMLFilterBody() {
+	defaultHTMLFilterBody(rubrique_type) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+
 		const default_html_filter_body = `
 			<div class="mt-5">
 				<div class="content_headers mb-1">
@@ -1131,7 +1161,7 @@ class RubriqueCMZ extends MapCMZ {
 						<nav class="d-flex justify-content-between align-items-center">
 							<div class="d-flex justify-content-between align-items-center">
 								<i class="fa-solid fa-arrow-left cursor_pointer cta_back_select_rubrique_jheo_js"></i>
-								<a class="navbar-brand ms-2 fs-4 text-black" href="#">Les filtres</a>
+								<a class="navbar-brand ms-2 fs-6 text-black" href="#">Les filtres pour ${rubrique_type_object.name}</a>
 							</div>
 							<div class="content_close_right_side">
 								<div class="close_right_side close_right_side_jheo_js">
@@ -1152,14 +1182,34 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	htmlFilterDepartement() {
-		const html_filter_departement = `
+		if (this.list_departements.length === 0) {
+			html_filter_departement = `
+				<div class="mt-2 mb-3 p-1">
+					<div class="alert alert-secondary text-center" role="alert">
+						Une erreur est survenue sur votre réseau.
+					</div>
+				</div>
+				<hr>
+			`;
+			return 0;
+		}
+
+		let options_dep = "";
+		this.list_departements.forEach((item) => {
+			options_dep += `
+				<option value="${item.id}">
+					${item.departement.replaceAll("-", " ")}
+				</option>
+			`;
+		});
+
+		let html_filter_departement = "";
+
+		html_filter_departement = `
 			<div class="mt-2 mb-3 p-1">
 				<label for="filter_departement" class="form-label text-black">Sélectionner un département</label>
 				<select id="filter_departement" name="filter_departement" class="form-select form-control-sm" aria-label="Default select example">
-					<option selected>Open this select menu</option>
-					<option value="1">One</option>
-					<option value="2">Two</option>
-					<option value="3">Three</option>
+					${options_dep}
 				</select>
 			</div>
 			<hr>
@@ -1860,8 +1910,9 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	newMarkerPOI(rubrique_type, singleData, poi_icon, options = {}) {
+		const note = singleData.hasOwnProperty("moyenne_note") ? parseFloat(singleData.moyenne_note).toFixed(1) : "0.0";
 		return new L.Marker(L.latLng(parseFloat(singleData.lat), parseFloat(singleData.long)), {
-			icon: this.setDivIconMarker(poi_icon, 2.1, options),
+			icon: this.setDivIconMarker(poi_icon, note, options),
 			id: singleData.id,
 			type: rubrique_type,
 			draggable: false,
@@ -1968,7 +2019,9 @@ class RubriqueCMZ extends MapCMZ {
 					  }
 					: {};
 
-			markerRubrique.setIcon(this.setDivIconMarker(icon_selected, 2.1, poi_options));
+			const note = item.hasOwnProperty("moyenne_note") ? parseFloat(item.moyenne_note).toFixed(1) : "0.0";
+
+			markerRubrique.setIcon(this.setDivIconMarker(icon_selected, note, poi_options));
 
 			this.marker_last_selected = { marker: markerRubrique, type: rubrique_type, id: id };
 
@@ -1985,9 +2038,33 @@ class RubriqueCMZ extends MapCMZ {
 			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === type);
 			const icon_not_selected = rubrique_type_object.poi_icon.not_selected;
 
-			let poi_options = { isPastille: true, is_pastille_vert: false, is_pastille_rouge: true };
+			const last_rubrique_item = this.defaultData[type]["data"].find(
+				(item) => parseInt(item.id) === parseInt(id)
+			);
 
-			markerLastClicked.setIcon(this.setDivIconMarker(icon_not_selected, 2.1, poi_options));
+			const note = last_rubrique_item.hasOwnProperty("moyenne_note")
+				? parseFloat(last_rubrique_item.moyenne_note).toFixed(1)
+				: "0.0";
+
+			const data_resto_pastille = this.defaultData[type]["pastille"];
+
+			const count_pastille = data_resto_pastille.reduce((sum, item_resto_pastille) => {
+				if (parseInt(item_resto_pastille.id_resto) === parseInt(id)) {
+					sum = sum + 1;
+				}
+				return sum;
+			}, 0);
+
+			let poi_options =
+				count_pastille > 0
+					? {
+							isPastille: true,
+							is_pastille_vert: count_pastille === 1 ? true : false,
+							is_pastille_rouge: count_pastille === 2 ? true : false,
+					  }
+					: {};
+
+			markerLastClicked.setIcon(this.setDivIconMarker(icon_not_selected, note, poi_options));
 		}
 	}
 
@@ -2264,5 +2341,43 @@ class RubriqueCMZ extends MapCMZ {
 		];
 
 		// this.updateStateResto(idResto);
+	}
+
+	showNoteMoyenneRealTime(idResto, global_note, type) {
+		this.defaultData[type]["data"] = [
+			...this.defaultData[type]["data"].map((item) => {
+				if (parseInt(item.id) === parseInt(idResto)) {
+					item["moyenne_note"] = global_note;
+				}
+				return item;
+			}),
+		];
+
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === type);
+		const icon_selected = rubrique_type_object.poi_icon.selected;
+
+		const data_resto_pastille = this.defaultData[type]["pastille"];
+
+		const count_pastille = data_resto_pastille.reduce((sum, item_resto_pastille) => {
+			if (parseInt(item_resto_pastille.id_resto) === parseInt(idResto)) {
+				sum = sum + 1;
+			}
+			return sum;
+		}, 0);
+
+		let poi_options =
+			count_pastille > 0
+				? {
+						isPastille: true,
+						is_pastille_vert: count_pastille === 1 ? true : false,
+						is_pastille_rouge: count_pastille === 2 ? true : false,
+				  }
+				: {};
+
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(idResto) && marker.options.type === type) {
+				marker.setIcon(this.setDivIconMarker(icon_selected, global_note, poi_options));
+			}
+		});
 	}
 }

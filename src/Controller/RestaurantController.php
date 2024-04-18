@@ -110,11 +110,8 @@ class RestaurantController extends AbstractController
 
         $current_uri= $request->getUri();
         $pathname= parse_url($current_uri, PHP_URL_PATH);
-        // if( str_contains($pathname, "fetch_data")){}
 
         $arrayIdResto = [];
-        
-
         if($request->query->has("minx") && $request->query->has("miny") ){
 
             $minx = $request->query->get("minx");
@@ -126,8 +123,6 @@ class RestaurantController extends AbstractController
             $data_max = $data_max ? intval($data_max) : 50;
 
             $datas = $bddResto->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, null, $data_max);
-
-            // if( $request->query->has("isFirstResquest") && $request->query->get("isFirstResquest") === "true" ){
 
             if( $this->getUser() ){
                 //// all my tribu t.
@@ -147,20 +142,21 @@ class RestaurantController extends AbstractController
                 //// update data result to add all resto pastille in the Tribu T
                 $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
             }
-            // }
 
             $ids=array_map('self::getIdAvisResto', $datas);
             $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
 
+            $data_resto= self::mergeDatasAndAvis($datas,$moyenneNote);
+
             if( str_contains($pathname, "fetch_data")){
                 return $this->json([
-                    "data" =>self::mergeDatasAndAvis($datas,$moyenneNote),
+                    "data" => $data_resto,
                     "pastille" => $arrayIdResto,
                 ], 200);
             }
 
             return $this->json([
-                "data" => self::mergeDatasAndAvis($datas,$moyenneNote),
+                "data" => $data_resto,
                 "allIdRestoPastille" => $arrayIdResto
             ], 200);
         }
