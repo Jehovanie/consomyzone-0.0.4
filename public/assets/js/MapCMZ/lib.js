@@ -40,12 +40,12 @@ function activeDataTableOnList(id_table_to_active_data_table) {
 	});
 }
 
-function injectSlider() {
+function injectSlider(start_min_max = { min: 0, max: 5 }) {
 	var skipSlider = document.getElementById("skipstep");
 	var skipValues = [document.getElementById("skip-value-lower"), document.getElementById("skip-value-upper")];
 
 	noUiSlider.create(skipSlider, {
-		start: [0, 5],
+		start: [start_min_max.min, start_min_max.max],
 		connect: true,
 		behaviour: "drag",
 		step: 0.1,
@@ -65,6 +65,10 @@ function injectSlider() {
 
 	skipSlider.noUiSlider.on("update", function (values, handle) {
 		skipValues[handle].innerHTML = values[handle];
-		
 	});
+}
+
+function resetSliderNotation() {
+	var skipSlider = document.getElementById("skipstep");
+	skipSlider.noUiSlider.set([0, 5]);
 }

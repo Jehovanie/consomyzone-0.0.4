@@ -24,6 +24,14 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_resto.png",
 				},
 				is_active: true,
+				filter: {
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						min: 0,
+						max: 5,
+					},
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerResto(item, options);
 				},
@@ -47,6 +55,14 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_ferme.png",
 				},
 				is_active: false,
+				filter: {
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						min: 0,
+						max: 5,
+					},
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerFerme(item, options);
 				},
@@ -70,6 +86,14 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_station.png",
 				},
 				is_active: false,
+				filter: {
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						min: 0,
+						max: 5,
+					},
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerStation(item, options);
 				},
@@ -93,6 +117,14 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_golf.png",
 				},
 				is_active: false,
+				filter: {
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						min: 0,
+						max: 5,
+					},
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarkerGolf(item, options);
 				},
@@ -116,6 +148,14 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_tabac.png",
 				},
 				is_active: false,
+				filter: {
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						min: 0,
+						max: 5,
+					},
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerTabac(item, options);
 				},
@@ -139,6 +179,14 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_marche.png",
 				},
 				is_active: false,
+				filter: {
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						min: 0,
+						max: 5,
+					},
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerMarche(item, options);
 				},
@@ -162,6 +210,14 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
+				filter: {
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						min: 0,
+						max: 5,
+					},
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
 				},
@@ -185,6 +241,14 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
+				filter: {
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						min: 0,
+						max: 5,
+					},
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
 				},
@@ -208,6 +272,14 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
+				filter: {
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						min: 0,
+						max: 5,
+					},
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
 				},
@@ -231,6 +303,14 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
+				filter: {
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						min: 0,
+						max: 5,
+					},
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
 				},
@@ -1092,9 +1172,11 @@ class RubriqueCMZ extends MapCMZ {
 
 			///inject filter departement and filter for notation
 			document.querySelector(".content_body_filter_jheo_js").innerHTML = `
-				${this.htmlFilterDepartement()}
+				${this.htmlFilterDepartement(rubrique_type)}
 				${this.htmlSliderPerNote()}
 			`;
+			///inject filter for notation
+			this.htmlFilterForNotation(rubrique_type);
 
 			//// close filter
 			if (!this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
@@ -1120,10 +1202,81 @@ class RubriqueCMZ extends MapCMZ {
 				});
 			}
 
-			injectSlider();
+			this.handleActionFilter(rubrique_type);
 		} catch (e) {
 			console.log(error);
 		}
+	}
+
+	handleActionFilter(rubrique_type) {
+		if (!document.querySelector(".filter_departement_jheo_js")) {
+			console.log("Selector not found: 'filter_departement_jheo_js'");
+			return false;
+		}
+
+		if (!document.querySelector(".cta_to_filter_jheo_js")) {
+			console.log("Selector not found: 'cta_to_filter_jheo_js'");
+			return false;
+		}
+
+		const skipSlider = document.getElementById("skipstep");
+		const filter_departement = document.querySelector(".filter_departement_jheo_js");
+		const cta_to_filter = document.querySelector(".cta_to_filter_jheo_js");
+
+		cta_to_filter.addEventListener("click", () => {
+			// cta_to_filter.innerText = "Recherche en cours...";
+			// cta_to_filter.classList.remove("btn-primary");
+			// cta_to_filter.classList.add("btn-secondary");
+
+			const filter_price = skipSlider.noUiSlider.get();
+			const filter_dep_value = filter_departement.value;
+
+			this.allRubriques = this.allRubriques.map((rubrique) => {
+				if (rubrique.api_name === rubrique_type) {
+					rubrique = {
+						...rubrique,
+						filter: {
+							is_filtered: true,
+							departement: filter_dep_value,
+							notation: {
+								...rubrique.filter.notation,
+								min: parseFloat(filter_price[0]).toFixed(2),
+								max: parseFloat(filter_price[1]).toFixed(2),
+							},
+						},
+					};
+				}
+				return rubrique;
+			});
+
+			console.log(this.allRubriques);
+		});
+
+		const cta_to_cancel_filter = document.querySelector(".cta_to_cancel_filter_jheo_js");
+		cta_to_cancel_filter.addEventListener("click", () => {
+			this.allRubriques = this.allRubriques.map((rubrique) => {
+				if (rubrique.api_name === rubrique_type) {
+					rubrique = {
+						...rubrique,
+						filter: {
+							is_filtered: false,
+							departement: "tous",
+							notation: {
+								...rubrique.filter.notation,
+								min: 0,
+								max: 5,
+							},
+						},
+					};
+				}
+				return rubrique;
+			});
+
+			filter_departement.querySelector("option").setAttribute("selected", true);
+
+			///inject filter for notation
+			this.resetSliderNotation();
+		});
 	}
 
 	async fetchDepartement() {
@@ -1136,7 +1289,7 @@ class RubriqueCMZ extends MapCMZ {
 			const response_dep = await response.json();
 			const { departements } = response_dep;
 
-			this.list_departements = departements;
+			this.list_departements = [{ id: "tous", departement: "Tous les départements" }, ...departements];
 		} catch (e) {
 			console.log(error);
 		}
@@ -1172,16 +1325,20 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 				</div>
 				<hr>
-				<div class="content_body content_body_filter_jheo_js">
+				<div class="content_body_filter content_body_filter_jheo_js">
 
 				</div>
+				<nav class="navbar navbar-light bg-light d-flex justify-content-between align-items-center">
+					<a class="navbar-brand cancel_filter cta_to_cancel_filter_jheo_js" href="#">Annuler tout</a>
+					<button type="button" class="btn btn-primary cta_to_filter cta_to_filter_jheo_js">Voir les résultats</button>
+				</nav>
 			</div>
 		`;
 
 		return default_html_filter_body;
 	}
 
-	htmlFilterDepartement() {
+	htmlFilterDepartement(rubrique_type) {
 		if (this.list_departements.length === 0) {
 			html_filter_departement = `
 				<div class="mt-2 mb-3 p-1">
@@ -1194,11 +1351,16 @@ class RubriqueCMZ extends MapCMZ {
 			return 0;
 		}
 
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+		let dep_selected = rubrique_type_object.filter.departement;
+
 		let options_dep = "";
 		this.list_departements.forEach((item) => {
+			let selected = item.id === dep_selected ? "selected" : "";
+
 			options_dep += `
-				<option value="${item.id}">
-					${item.departement.replaceAll("-", " ")}
+				<option value="${item.id}" ${selected}>
+					${item.id != "tous" ? item.id : ""} ${item.departement.replaceAll("-", " ")}
 				</option>
 			`;
 		});
@@ -1208,7 +1370,9 @@ class RubriqueCMZ extends MapCMZ {
 		html_filter_departement = `
 			<div class="mt-2 mb-3 p-1">
 				<label for="filter_departement" class="form-label text-black">Sélectionner un département</label>
-				<select id="filter_departement" name="filter_departement" class="form-select form-control-sm" aria-label="Default select example">
+				<select id="filter_departement" name="filter_departement" class="form-select form-control-sm filter_departement_jheo_js"
+					aria-label="Default select example"
+				>
 					${options_dep}
 				</select>
 			</div>
@@ -1234,6 +1398,32 @@ class RubriqueCMZ extends MapCMZ {
 		`;
 
 		return html_filter_by_note;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @whereIUseIt [
+	 * 	 this.openRubriqueFilter()
+	 * ]
+	 */
+	htmlFilterForNotation(rubrique_type) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+		let dep_selected = rubrique_type_object.filter.notation;
+
+		////fonction dans la lib.js
+		injectSlider({ min: dep_selected.min, max: dep_selected.max });
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @whereIUseIt [
+	 * 	 this.handleActionFilter()
+	 * ]
+	 */
+	resetSliderNotation() {
+		resetSliderNotation();
 	}
 
 	removeRubriqueMarker(rubrique_api_name) {
