@@ -412,6 +412,7 @@ class RubriqueCMZ extends MapCMZ {
 	addRubriqueActiveByDefault() {
 		this.allRubriques.forEach((item) => {
 			if (item.is_active) {
+				///add rubrique active on the nav bar (in map_cmz_fonction.js)
 				addRubriqueActivNavbar(item);
 			}
 		});
@@ -1018,27 +1019,49 @@ class RubriqueCMZ extends MapCMZ {
 			return false;
 		}
 
-		let btn_rugbrique = this.allRubriques.map((item) => {
+		let btn_rubrique = this.allRubriques.map((item) => {
 			const icon_image = IS_DEV_MODE ? `/${item.icon}` : `/public/${item.icon}`;
 			const class_active = item.is_active ? "btn-primary" : "btn-light";
-			return `<button type="button" 
-						class="position-relative d-flex justify-content-center align-items-center rubrique_list_item rubrique_list_item_jheo_js btn ${class_active} btn-sm mb-1 me-1"
-						data-type="${item.name}" data-api_name="${item.api_name}"
+
+			let badge_filter = "";
+			if (item.filter.is_filtered === true) {
+				badge_filter = `
+					<span class="badge_position_filter cursor_pointer translate-middle badge rounded-pill bg-danger" 
+						onclick="openRubriqueFilter('${item.api_name}')"
 					>
-						<span class="d-flex justify-content-center align-items-center rubrique_icon_text_jheo_js me-1">
-							<img class="image_icon_rubrique" src="${icon_image}" alt="${item.name}_rubrique" />
-							${item.name}
-						</span>
-						<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1" onclick="openRubriqueFilter('${item.api_name}')"></i>
-                		<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
-							Cliquez ici pour voir les filtres
-						</div>
-					</button>`;
+						Filtre
+					</span>
+				`;
+			}
+
+			let open_filter = "";
+			if (item.is_active === true) {
+				open_filter = `
+					<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1 fa_solide_open_rubrique_jheo_js" onclick="openRubriqueFilter('${item.api_name}')"></i>
+					<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
+						Cliquez ici pour voir les filtres
+					</div>
+				`;
+			}
+
+			return `
+				<button type="button" 
+					class="position-relative d-flex justify-content-between align-items-center rubrique_list_item rubrique_list_item_jheo_js btn ${class_active} btn-sm mb-1 me-1"
+					data-type="${item.name}" data-api_name="${item.api_name}"
+				>
+					${badge_filter}
+					<span class="d-flex justify-content-center align-items-center rubrique_icon_text_jheo_js me-1">
+						<img class="image_icon_rubrique" src="${icon_image}" alt="${item.name}_rubrique" />
+						${item.name}
+					</span>
+					${open_filter}
+				</button>
+			`;
 		});
 
 		document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
             <div class="rubrique_list right_side_body_jheo_js">
-                ${btn_rugbrique.join("")}
+                ${btn_rubrique.join("")}
             </div>
         `;
 
@@ -1055,11 +1078,11 @@ class RubriqueCMZ extends MapCMZ {
 
 		all_button_rubrique.forEach((btn_rubrique) => {
 			btn_rubrique.addEventListener("mouseover", () => {
-				btn_rubrique.querySelector(".tooltip_rubrique_filter_jheo_js").classList.remove("d-none");
+				btn_rubrique.querySelector(".tooltip_rubrique_filter_jheo_js")?.classList?.remove("d-none");
 			});
 
 			btn_rubrique.addEventListener("mouseout", () => {
-				btn_rubrique.querySelector(".tooltip_rubrique_filter_jheo_js").classList.add("d-none");
+				btn_rubrique.querySelector(".tooltip_rubrique_filter_jheo_js")?.classList?.add("d-none");
 			});
 
 			btn_rubrique.querySelector(".rubrique_icon_text_jheo_js").addEventListener("click", () => {
@@ -1080,8 +1103,14 @@ class RubriqueCMZ extends MapCMZ {
 							return item;
 						}),
 					];
+
+					///remove rubrique active on the nav bar (in map_cmz_fonction.js)
 					removeRubriqueActivNavbar(rubrique_type);
+
 					this.removeRubriqueMarker(rubrique_api_name);
+
+					btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js").remove();
+					btn_rubrique.querySelector(".tooltip_rubrique_filter_jheo_js").remove();
 				} else {
 					this.allRubriques = [
 						...this.allRubriques.map((item) => {
@@ -1092,11 +1121,22 @@ class RubriqueCMZ extends MapCMZ {
 						}),
 					];
 
+					///add rubrique active on the nav bar (in map_cmz_fonction.js)
 					addRubriqueActivNavbar(
 						this.allRubriques.find((item) => item.api_name === rubrique_api_name.toLowerCase())
 					);
 
 					this.addRubriqueMarker(rubrique_api_name);
+
+					if( !btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js")){
+						btn_rubrique.insertAdjacentHTML( "beforeend", `
+								<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1 fa_solide_open_rubrique_jheo_js" onclick="openRubriqueFilter('${rubrique_api_name}')"></i>
+								<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
+									Cliquez ici pour voir les filtres
+								</div>
+							`
+						);
+					}
 				}
 			});
 
@@ -1120,8 +1160,15 @@ class RubriqueCMZ extends MapCMZ {
 									return item;
 								}),
 							];
+
+							///remove rubrique active on the nav bar (in map_cmz_fonction.js)
 							removeRubriqueActivNavbar(rubrique_type);
+
 							this.removeRubriqueMarker(rubrique_api_name);
+
+							item.querySelector(".fa_solide_open_rubrique_jheo_js").remove();
+							item.querySelector(".tooltip_rubrique_filter_jheo_js").remove();
+							
 						}
 					}
 				});
@@ -1146,11 +1193,22 @@ class RubriqueCMZ extends MapCMZ {
 					}),
 				];
 
+				///add rubrique active on the nav bar (in map_cmz_fonction.js)
 				addRubriqueActivNavbar(
 					this.allRubriques.find((item) => item.api_name === rubrique_api_name.toLowerCase())
 				);
 
 				this.addRubriqueMarker(rubrique_api_name);
+
+				if( !btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js")){
+					btn_rubrique.insertAdjacentHTML("beforeend", `
+							<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1 fa_solide_open_rubrique_jheo_js" onclick="openRubriqueFilter('${rubrique_api_name}')"></i>
+							<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
+								Cliquez ici pour voir les filtres
+							</div>
+						`
+					);
+				}
 			});
 		});
 	}
@@ -1162,6 +1220,10 @@ class RubriqueCMZ extends MapCMZ {
 	 */
 	async openRubriqueFilter(rubrique_type) {
 		try {
+			if (!this.isRightSideAlreadyOpen) {
+				this.openRightSideWidth();
+			}
+
 			if (this.list_departements.length === 0) {
 				await this.fetchDepartement();
 			}
@@ -1179,7 +1241,7 @@ class RubriqueCMZ extends MapCMZ {
 			this.htmlFilterForNotation(rubrique_type);
 
 			//// close filter
-			if (!this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
+			if (this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
 				document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
 					document.querySelector(".content_legende_jheo_js").innerHTML = `
 					${this.defaultHTMLRightSide()}
@@ -1189,7 +1251,7 @@ class RubriqueCMZ extends MapCMZ {
 			}
 
 			/// came back to list rubriques
-			if (!this.isRightSideAlreadyOpen && document.querySelector(".cta_back_select_rubrique_jheo_js")) {
+			if (this.isRightSideAlreadyOpen && document.querySelector(".cta_back_select_rubrique_jheo_js")) {
 				document.querySelector(".cta_back_select_rubrique_jheo_js").addEventListener("click", () => {
 					document.querySelector(".content_legende_jheo_js").innerHTML = `
 					${this.defaultHTMLRightSide()}
@@ -1203,7 +1265,7 @@ class RubriqueCMZ extends MapCMZ {
 			}
 
 			this.handleActionFilter(rubrique_type);
-		} catch (e) {
+		} catch (error) {
 			console.log(error);
 		}
 	}
@@ -1224,9 +1286,9 @@ class RubriqueCMZ extends MapCMZ {
 		const cta_to_filter = document.querySelector(".cta_to_filter_jheo_js");
 
 		cta_to_filter.addEventListener("click", () => {
-			// cta_to_filter.innerText = "Recherche en cours...";
-			// cta_to_filter.classList.remove("btn-primary");
-			// cta_to_filter.classList.add("btn-secondary");
+			cta_to_filter.innerText = "Recherche en cours...";
+			cta_to_filter.classList.remove("btn-primary");
+			cta_to_filter.classList.add("btn-secondary");
 
 			const filter_price = skipSlider.noUiSlider.get();
 			const filter_dep_value = filter_departement.value;
@@ -1249,7 +1311,12 @@ class RubriqueCMZ extends MapCMZ {
 				return rubrique;
 			});
 
-			console.log(this.allRubriques);
+			if (document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`)) {
+				const badge_navbar_rubrique = document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`);
+				if (badge_navbar_rubrique.classList.contains("d-none")) {
+					badge_navbar_rubrique.classList.remove("d-none");
+				}
+			}
 		});
 
 		const cta_to_cancel_filter = document.querySelector(".cta_to_cancel_filter_jheo_js");
@@ -1276,6 +1343,13 @@ class RubriqueCMZ extends MapCMZ {
 
 			///inject filter for notation
 			this.resetSliderNotation();
+
+			if (document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`)) {
+				const badge_navbar_rubrique = document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`);
+				if (!badge_navbar_rubrique.classList.contains("d-none")) {
+					badge_navbar_rubrique.classList.add("d-none");
+				}
+			}
 		});
 	}
 
@@ -1544,10 +1618,10 @@ class RubriqueCMZ extends MapCMZ {
 			data_transform = data_transform.concat(data_rubrique_data);
 		});
 
-		this.injectLitemRubriqueActive(data_transform);
+		this.injectListemRubriqueActive(data_transform);
 	}
 
-	injectLitemRubriqueActive(data) {
+	injectListemRubriqueActive(data) {
 		const list_nav_left = document.querySelector(".list_nav_left_jheo_js");
 		if (!list_nav_left) {
 			console.log("Selector not found: 'list_nav_left_jheo_js'");

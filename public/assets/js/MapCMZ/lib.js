@@ -3,8 +3,8 @@ var slickConfig = {
 	slidesToScroll: 1,
 	infinite: false,
 	arrows: true,
-	prevArrow: `<i class="fa-solid fa-circle-chevron-left fs-3 cursor-pointer"></i>`,
-	nextArrow: `<i class="fa-solid fa-circle-chevron-right fs-3 cursor-pointer"></i>`,
+	prevArrow: `<i class="fa-solid fa-circle-chevron-left fs-3 cursor-pointer color_blue"></i>`,
+	nextArrow: `<i class="fa-solid fa-circle-chevron-right fs-3 cursor-pointer color_blue"></i>`,
 };
 
 const slickElement = $(".content_list_rubrique_active_jheo_js").slick(slickConfig);

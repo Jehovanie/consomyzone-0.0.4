@@ -88,26 +88,55 @@ function updateGeoJson(couche, index, e) {
 	}
 }
 
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * @goal add rubrique active on the nav bar
+ *
+ * @whereIUseIt [
+ * 		bindSelectRubrique ( RubriqueCMZ.js ) (2)
+ * 		addRubriqueActiveByDefault ( RubriqueCMZ.js)
+ * ]
+ * @param {*} object_rubrique
+ */
 function addRubriqueActivNavbar(object_rubrique) {
-	const { name, icon } = object_rubrique;
+	const { name, icon, api_name } = object_rubrique;
 	const key_name = name.trim().split(" ").join("_");
 	const rubrique = `
-		<button id="ID_nav_${key_name}_jheo_js" type="button" class="btn btn-primary btn-sm me-1 rounded-pill d-flex justify-content-center align-items-center">
+		<button id="ID_nav_${key_name}_jheo_js" type="button" class="position-relative btn btn-light btn-sm me-1 rounded-pill d-flex justify-content-center align-items-center">
+			<span class="badge_position_filter_navbar d-none badge_navbar_${api_name}_jheo_js cursor_pointer translate-middle badge rounded-pill bg-danger"
+				onclick="openRubriqueFilter('${api_name}')"
+			>
+				Filtre
+			</span>
 			<img class="image_icon_rubrique" style="border:none!important" src="${icon}" alt="nav_${key_name}_rubrique" />
 			${name}
 		</button>
 	`;
 
 	if (document.querySelector(".content_list_rubrique_active_jheo_js")) {
+		/// in lib.js
 		addNewElement(rubrique);
 	}
 }
 
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * @goal remove rubrique active on the nav bar
+ *
+ * @whereIUseIt [
+ * 		bindSelectRubrique ( RubriqueCMZ.js ) (2)
+ * 		addRubriqueActiveByDefault ( RubriqueCMZ.js)
+ * ]
+ * @param {*} object_rubrique
+ */
 function removeRubriqueActivNavbar(name) {
 	if (document.querySelector(".content_list_rubrique_active_jheo_js")) {
 		const key_name = name.trim().split(" ").join("_");
 		const index_deleted = $(`#ID_nav_${key_name}_jheo_js`).index();
 
+		/// in lib.js
 		removeNewElement(parseInt(index_deleted));
 	}
 }

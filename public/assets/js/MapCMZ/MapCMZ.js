@@ -76,6 +76,9 @@ class MapCMZ {
 		/// this use for to know the current index in the history navigation in the carte
 		/// by default it is the length of the this.listPositionBeforAndAfter.
 		this.indexCurrentOnLisPositionBeforeAndAfter = 0;
+
+		/// we use this for help in right section
+		this.isRightSideAlreadyOpen = false;
 	}
 
 	initTales() {
@@ -631,6 +634,8 @@ class MapCMZ {
 
 	closeRightSide() {
 		if (document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js")) {
+			this.isRightSideAlreadyOpen = false;
+
 			document.querySelector(".cart_map_jheo_js").style.width = "100%";
 			document.querySelector(".content_legende_jheo_js").style.width = "0%";
 			document.querySelector(".content_legende_jheo_js").style.padding = "0";
@@ -642,6 +647,42 @@ class MapCMZ {
 
 	injectListRubriqueType() {
 		console.log("Fonction inject on class filles...");
+	}
+
+	/**
+	 * @author Jehovanie RAMANRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal setting the size of the map and the right side contains
+	 *
+	 * @whereIUseIt [
+	 * 	 this.openRightSide(),
+	 * ]
+	 *
+	 */
+	openRightSideWidth() {
+		if (!document.querySelector(".cart_map_jheo_js")) {
+			console.log("Selector not found: 'cart_map_jheo_js'");
+			return false;
+		}
+
+		if (!document.querySelector(".content_legende_jheo_js")) {
+			console.log("Selector not found: 'content_legende_jheo_js'");
+			return false;
+		}
+
+		if (!document.querySelector(".content_legende_jheo_js")) {
+			console.log("Selector not found: 'content_legende_jheo_js'");
+			return false;
+		}
+
+		this.isRightSideAlreadyOpen = true;
+
+		const cart_width = "75%";
+		const cont_legent_width = "25%";
+
+		document.querySelector(".cart_map_jheo_js").style.width = cart_width;
+		document.querySelector(".content_legende_jheo_js").style.width = cont_legent_width;
+		document.querySelector(".content_legende_jheo_js").style.padding = "25px";
 	}
 
 	openRightSide(rightSideContentType) {
@@ -659,9 +700,6 @@ class MapCMZ {
 			if (document.querySelector(".icon_close_nav_left_jheo_js")) {
 				document.querySelector(".icon_close_nav_left_jheo_js").click();
 			}
-
-			const cart_width = "75%";
-			const cont_legent_width = "25%";
 
 			if (document.querySelector(".cart_map_jheo_js") && document.querySelector(".content_legende_jheo_js")) {
 				if (!document.querySelector(".title_right_side_jheo_js")) {
@@ -711,15 +749,13 @@ class MapCMZ {
 					this.injectTilesType();
 				}
 
-				document.querySelector(".cart_map_jheo_js").style.width = cart_width;
-				document.querySelector(".content_legende_jheo_js").style.width = cont_legent_width;
-				document.querySelector(".content_legende_jheo_js").style.padding = "25px";
+				this.openRightSideWidth();
 			} else {
 				console.log("Selector not found");
 				console.log("cart_map_jheo_js", "content_legende_jheo_js");
 			}
 
-			if (!this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
+			if (this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
 				document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
 					this.closeRightSide();
 				});
@@ -784,7 +820,8 @@ class MapCMZ {
 				parentIconControl.classList.add("d-none");
 			}
 
-			const parentIconControlBefore = document.querySelector(".cart_before_jheo_js")?.parentElement?.parentElement;
+			const parentIconControlBefore =
+				document.querySelector(".cart_before_jheo_js")?.parentElement?.parentElement;
 			if (parentIconControlBefore && parentIconControlBefore.classList.contains("d-none")) {
 				parentIconControlBefore.classList.remove("d-none");
 			}
@@ -794,7 +831,8 @@ class MapCMZ {
 			this.indexCurrentOnLisPositionBeforeAndAfter > 1 &&
 			this.indexCurrentOnLisPositionBeforeAndAfter < this.listPositionBeforAndAfter.length
 		) {
-			const parentIconControlBefore = document.querySelector(".cart_before_jheo_js")?.parentElement?.parentElement;
+			const parentIconControlBefore =
+				document.querySelector(".cart_before_jheo_js")?.parentElement?.parentElement;
 			if (parentIconControlBefore && parentIconControlBefore.classList.contains("d-none")) {
 				parentIconControlBefore.classList.remove("d-none");
 			}
