@@ -30,15 +30,69 @@ function removeNewElement(index) {
 	updateSlidesToShow();
 }
 
+//// data table object //////////////////////////////////////
+let DataTableObject = function () {
+	dataTableInstance = null;
+};
+
+DataTableObject.prototype = {
+	activeDataTableOnList: (id_table_to_active_data_table) => {
+		dataTableInstance = $(id_table_to_active_data_table).DataTable({
+			searching: true, // Ceci désactive la barre de recherche
+			pageLength: 50,
+			language: {
+				url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+			},
+		});
+	},
+
+	addDataTableOnList: (data) => {
+		data.forEach((item_data) => {
+			dataTableInstance?.row.add([item_data]);
+		});
+
+		dataTableInstance.draw();
+	},
+
+	removeOneElement: (element) => {
+		// console.log(dataTableInstance.rows().eq(0));
+
+		// dataTableInstance.rows().data().each((rowData) => {
+		// 	// rowData contient les données de la ligne actuelle
+		// 	console.log(rowData);
+		// });
+
+		const domparse = new DOMParser();
+		dataTableInstance.rows().every(function (rowIdx, tableLoop, rowLoop) {
+			var rowData = this.data(); // Données de la ligne actuelle
+			var card_list = rowData[0]; // Accès à la deuxième colonne (indice 1)
+
+			let text_html = domparse.parseFromString(card_list, "text/html"); //
+			var text = text_html.querySelector(`.${element.type}_${element.id}`);
+
+			if (text !== null) {
+				console.log(card_list);
+				console.log(text);
+			}
+		});
+	},
+};
+
+const dataTable = new DataTableObject();
+
 function activeDataTableOnList(id_table_to_active_data_table) {
-	$(id_table_to_active_data_table).DataTable({
-		searching: false, // Ceci désactive la barre de recherche
-		pageLength: 50,
-		language: {
-			url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
-		},
-	});
+	dataTable.activeDataTableOnList(id_table_to_active_data_table);
 }
+
+function addDataTableOnList(data) {
+	dataTable.addDataTableOnList(data);
+}
+
+function removeOneElement(element) {
+	dataTable.removeOneElement(element);
+}
+
+///// end of datatable
 
 function injectSlider(start_min_max = { min: 0, max: 5 }) {
 	var skipSlider = document.getElementById("skipstep");

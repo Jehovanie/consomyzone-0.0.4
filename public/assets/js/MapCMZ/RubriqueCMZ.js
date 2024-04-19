@@ -54,7 +54,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_ferme.png",
 				},
-				is_active: false,
+				is_active: true,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -85,7 +85,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_station_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_station.png",
 				},
-				is_active: false,
+				is_active: true,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -116,7 +116,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_golf_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_golf.png",
 				},
-				is_active: false,
+				is_active: true,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -147,7 +147,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_tabac.png",
 				},
-				is_active: false,
+				is_active: true,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -178,7 +178,7 @@ class RubriqueCMZ extends MapCMZ {
 					selected: "assets/icon/NewIcons/mini_logo_marche_selected.png",
 					not_selected: "assets/icon/NewIcons/mini_logo_marche.png",
 				},
-				is_active: false,
+				is_active: true,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -435,10 +435,12 @@ class RubriqueCMZ extends MapCMZ {
 			const isFirstResquest = data_rubrique.isFirstResquest;
 
 			const response = await this.fetchDataRubrique(api_name.toLowerCase(), { isFirstResquest, data_max: 50 });
+			const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
+
 			this.defaultData[api_name] = {
 				data: response.data,
 				pastille: [
-					...response.pastille,
+					...data_pastille,
 					// ...response.pastille?.filter((item) => {
 					// 	const object_api_name = this.defaultData[api_name];
 					// 	if (object_api_name.hasOwnProperty("pastille")) {
@@ -624,6 +626,28 @@ class RubriqueCMZ extends MapCMZ {
 		);
 
 		this.defaultData[rubrique_type]["data"] = [...new_data_rubrique, ...this.defaultData[rubrique_type]["data"]];
+
+		this.addDataToTableListLeft(new_data_rubrique, rubrique_type);
+	}
+
+	addDataToTableListLeft(new_data_rubrique, rubrique_type) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+		let { name: name_rubrique } = rubrique_type_object;
+
+		new_data_rubrique = new_data_rubrique.map((item) => {
+			return { ...item, name_rubrique, rubrique_type };
+		});
+
+		let body_table_list_rubrique_active = [];
+		new_data_rubrique.forEach((item_data) => {
+			body_table_list_rubrique_active.push(`
+				<tr style="border: 1px solid transparent;">
+					<td>${this.createItemRubriqueActive(item_data)}</td>
+				</tr>
+			`);
+		});
+
+		addDataTableOnList(body_table_list_rubrique_active);
 	}
 
 	/**
@@ -730,10 +754,14 @@ class RubriqueCMZ extends MapCMZ {
 					)
 				) {
 					this.markers.removeLayer(marker);
+
+					removeOneElement({ id: marker_options_id, type: marker_options_rubrique_type });
 					count_remove++;
 				}
 			} else {
 				this.markers.removeLayer(marker);
+				removeOneElement({ id: marker_options_id, type: marker_options_rubrique_type });
+
 				count_remove++;
 			}
 		});
@@ -898,6 +926,8 @@ class RubriqueCMZ extends MapCMZ {
 				});
 
 				this.markers.removeLayer(marker);
+				removeOneElement({ id: marker.options.id, type: marker.options.type });
+
 				countMarkersRemoved++;
 			}
 		});
@@ -1128,8 +1158,10 @@ class RubriqueCMZ extends MapCMZ {
 
 					this.addRubriqueMarker(rubrique_api_name);
 
-					if( !btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js")){
-						btn_rubrique.insertAdjacentHTML( "beforeend", `
+					if (!btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js")) {
+						btn_rubrique.insertAdjacentHTML(
+							"beforeend",
+							`
 								<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1 fa_solide_open_rubrique_jheo_js" onclick="openRubriqueFilter('${rubrique_api_name}')"></i>
 								<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
 									Cliquez ici pour voir les filtres
@@ -1168,7 +1200,6 @@ class RubriqueCMZ extends MapCMZ {
 
 							item.querySelector(".fa_solide_open_rubrique_jheo_js").remove();
 							item.querySelector(".tooltip_rubrique_filter_jheo_js").remove();
-							
 						}
 					}
 				});
@@ -1200,8 +1231,10 @@ class RubriqueCMZ extends MapCMZ {
 
 				this.addRubriqueMarker(rubrique_api_name);
 
-				if( !btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js")){
-					btn_rubrique.insertAdjacentHTML("beforeend", `
+				if (!btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js")) {
+					btn_rubrique.insertAdjacentHTML(
+						"beforeend",
+						`
 							<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1 fa_solide_open_rubrique_jheo_js" onclick="openRubriqueFilter('${rubrique_api_name}')"></i>
 							<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
 								Cliquez ici pour voir les filtres
@@ -1663,7 +1696,7 @@ class RubriqueCMZ extends MapCMZ {
 	cardItemRubriqueNameNoteAddress(name, note, address, options = {}) {
 		const { id: id_rubrique, type: rubrique_type } = options;
 		return `
-			<figure>
+			<figure id="${rubrique_type}_${id_rubrique}">
 				<blockquote class="blockquote mb-0">
 					<p class="name_rubrique_nav_left" onclick="openDetailsRubriqueFromLeft('${id_rubrique}', '${rubrique_type}')">
 						${name.toUpperCase()}
