@@ -1275,8 +1275,6 @@ class MapCMZ {
 	}
 
 	handleEventMoveendForMemoryCenter(event) {
-		console.log("handleEventMoveendForMemoryCenter...");
-
 		const center = event.target.getCenter();
 		const coordAndZoom = {
 			zoom: event.target._zoom ? event.target._zoom : this.defaultZoom,
@@ -1299,8 +1297,6 @@ class MapCMZ {
 	}
 
 	handleEventMoveStartForMemoryCenter(event) {
-		console.log("handleEventMoveStartForMemoryCenter...");
-
 		const center = event.target.getCenter();
 		const coordAndZoom = {
 			zoom: event.target._zoom ? event.target._zoom : this.defaultZoom,

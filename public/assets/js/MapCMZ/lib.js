@@ -51,7 +51,7 @@ DataTableObject.prototype = {
 			dataTableInstance?.row.add([item_data]);
 		});
 
-		dataTableInstance.draw();
+		dataTableInstance?.draw();
 	},
 
 	removeOneElement: (element) => {
@@ -63,7 +63,7 @@ DataTableObject.prototype = {
 		// });
 
 		const domparse = new DOMParser();
-		dataTableInstance.rows().every(function (rowIdx, tableLoop, rowLoop) {
+		dataTableInstance?.rows()?.every(function (rowIdx, tableLoop, rowLoop) {
 			var rowData = this.data(); // Données de la ligne actuelle
 			var card_list = rowData[0]; // Accès à la deuxième colonne (indice 1)
 
