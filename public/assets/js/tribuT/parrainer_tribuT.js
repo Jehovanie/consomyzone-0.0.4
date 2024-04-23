@@ -1,3 +1,6 @@
+let instanceDataTableListTribuParrainer = null;
+let instanceDataTableListInvitationParrainer = null;
+
 function bindActionTribuTParrainer(tribuTName) {
 	if (document.querySelector("#action_tribuT_parrainer_jheo_js")) {
 		const callActionTribuParrainer = document.querySelector("#action_tribuT_parrainer_jheo_js");
@@ -48,7 +51,7 @@ function bindActionTribuTParrainer(tribuTName) {
 												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js  active nav_demand_adhesion_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-code-pull-request fa-beat-fade"></i>
-														Demande d'adhésion
+														Envoyer une demande
 													</span>
 												</span>
 											</li>
@@ -56,7 +59,7 @@ function bindActionTribuTParrainer(tribuTName) {
 												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-users-viewfinder fa-beat-fade"></i>
-														Invitation d'adhésion
+														Validation de demande
 													</span>
 												</span>
 											</li>
@@ -121,7 +124,7 @@ function bindActionTribuTParrainer(tribuTName) {
 					tribuTContainer.innerHTML = body;
 
 					$.fn.dataTable.ext.errMode = "throw";
-					$("#list_tribu_parrainer_jheo_js").DataTable({
+					instanceDataTableListTribuParrainer = $("#list_tribu_parrainer_jheo_js").DataTable({
 						language: {
 							url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
 						},
@@ -208,7 +211,7 @@ function fetchListInvitationParrainer(tribuTName) {
 				content_list.innerHTML = current_list_html_invitation_parrainer;
 			}
 
-			$("#list_invitation_parrainer_jheo_js").DataTable({
+			instanceDataTableListInvitationParrainer = $("#list_invitation_parrainer_jheo_js").DataTable({
 				language: {
 					url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
 				},
@@ -310,6 +313,8 @@ function generateListHtmlTribuTParrainer(list_tribu_parrainer, table_name_curren
 	}
 	let list_html_tribuT_parrainer = "";
 
+	/// check if one élement in the table is already send demand or ( accept or pedding)
+	/// if true the user can't send again an invitation.
 	let isHaveRequestAcceptOrPedding = list_tribu_parrainer.some(
 		({ status }) => parseInt(status) === 1 || parseInt(status) === 0
 	);
@@ -455,7 +460,8 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 			btn_action = `
 				<button type="button"
 					class="btn btn-secondary btn-sm cta_request_parrainer_jheo_js cta_request_${table_name}_jheo_js"
-					onclick="ctaRequestTribuParrainer('${table_name}', '${table_tribu_current}')"
+					onclick="ctaRequestTribuParrainer('${table_name}', '${table_tribu_current}')";
+					disabled=true
 				>
 					Envoyer une demande parrainer
 				</button>
@@ -464,6 +470,15 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 	}
 
 	return btn_action;
+}
+
+function openSwalAssertInvationExist() {
+	swal({
+		title: "Impossible,",
+		text: "Nous avons trouvé que vous avez déja un parent.",
+		icon: "error",
+		button: "OK",
+	});
 }
 
 function ctaRequestTribuParrainer(table_tribu_futur_parrain, table_tribu_current) {
@@ -479,17 +494,24 @@ function ctaRequestTribuParrainer(table_tribu_futur_parrain, table_tribu_current
 
 	cta_request.setAttribute("disabled", true);
 
+	instanceDataTableListTribuParrainer.destroy();
+
 	const all_content_btn = document.querySelectorAll(".content_cta_action_parrainer_jheo_js");
 	all_content_btn.forEach((item_content_btn) => {
 		if (!item_content_btn.classList.contains(`cta_parrainer_${table_tribu_futur_parrain}_jheo_js`)) {
 			const btn_action = item_content_btn.querySelector(`.cta_request_parrainer_jheo_js`);
-			if (btn_action.classList.contains("btn-primary")) {
+			if (btn_action && btn_action.classList.contains("btn-primary")) {
 				btn_action.classList.remove("btn-primary");
 				btn_action.classList.add("btn-secondary");
-
-				btn_action.setAttribute("disabled", false);
+				btn_action.setAttribute("disabled", true);
 			}
 		}
+	});
+
+	instanceDataTableListTribuParrainer = $("#list_tribu_parrainer_jheo_js").DataTable({
+		language: {
+			url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+		},
 	});
 
 	const url = `/tributT/request_tribu_parrainer`;
@@ -590,6 +612,8 @@ function ctaCancelTribuParrainer(table_tribu_futur_parrain, table_tribu_current)
 			const parent_cta_cancel = cta_cancel_.parentElement;
 			parent_cta_cancel.innerHTML = btn_action;
 
+			instanceDataTableListTribuParrainer.destroy();
+
 			const all_content_btn = document.querySelectorAll(".content_cta_action_parrainer_jheo_js");
 			all_content_btn.forEach((item_content_btn) => {
 				if (!item_content_btn.classList.contains(`cta_parrainer_${table_tribu_futur_parrain}_jheo_js`)) {
@@ -601,6 +625,12 @@ function ctaCancelTribuParrainer(table_tribu_futur_parrain, table_tribu_current)
 						btn_action.removeAttribute("disabled");
 					}
 				}
+			});
+
+			instanceDataTableListTribuParrainer = $("#list_tribu_parrainer_jheo_js").DataTable({
+				language: {
+					url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+				},
 			});
 		})
 		.catch((error) => console.log(error));
@@ -656,7 +686,7 @@ function generateItemHtmlTribuTInvitationParrainer(tribu_futur_sous_tribut, tabl
 	let btn_action = getBtnStateActionInvitation({ table_name, status }, table_tribu_current);
 
 	const item_html_invitation_tribuT_tr = `
-		<tr>
+		<tr id='${table_tribu_current}_${table_name}_jheo_js'>
 			<th>
 				<div class="col-auto">
 					<img class="img50_50" src="${photo_avatar}" class="width-90 rounded-3" alt="tribuT">
@@ -779,6 +809,23 @@ function ctaAcceptInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 			let btn_action = getBtnStateActionInvitation({ table_name, status }, table_tribu_current);
 
 			parent_cta_invitation.innerHTML = btn_action;
+
+			setTimeout(() => {
+				instanceDataTableListInvitationParrainer.destroy();
+
+				if (document.querySelector(`#${table_tribu_current}_${table_futur_sous_tribu}_jheo_js`)) {
+					document.querySelector(`#${table_tribu_current}_${table_futur_sous_tribu}_jheo_js`).remove();
+					console.log("niala...");
+				} else {
+					console.log("tsy hita...");
+				}
+
+				instanceDataTableListInvitationParrainer = $("#list_invitation_parrainer_jheo_js").DataTable({
+					language: {
+						url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+					},
+				});
+			}, 1500);
 		})
 		.catch((error) => console.log(error));
 }

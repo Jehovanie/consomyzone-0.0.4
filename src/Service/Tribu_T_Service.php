@@ -3423,21 +3423,22 @@ class Tribu_T_Service extends PDOConnexionService
      */
     public function getAllUnderTableTribuT($table_parent, $memo= []){
 
-        if( in_array($table_parent, $memo)) return [];
-
         $table_parent_list_sub= $table_parent . "_list_sub";
         if (!$this->isTableExist($table_parent_list_sub)) {
             $this->createTableSousTribu($table_parent);
             return [];
         }
         
-
         $sub_list_tribu_t = $this->getPDO()->prepare("SELECT name FROM $table_parent_list_sub");
         $sub_list_tribu_t->execute();
         $all_sub_list_tribu_t = $sub_list_tribu_t->fetchAll(PDO::FETCH_ASSOC);
 
         if( count($all_sub_list_tribu_t) === 0 ){
-            return [];
+            if( in_array($table_parent, $memo)){
+                return [];
+            }else{
+                return [$table_parent];
+            }
         }
 
         $results= [];
@@ -3445,7 +3446,8 @@ class Tribu_T_Service extends PDOConnexionService
             array_push($results, strtolower($sub_list['name']));
         }
 
-        foreach($all_sub_list_tribu_t as $sub_list){
+        for( $i= 0; $i < count($all_sub_list_tribu_t); $i++){
+            $sub_list= $all_sub_list_tribu_t[$i];
             $result_temp= $this->getAllUnderTableTribuT($sub_list['name'], $results);
             $results= array_merge($results, $result_temp );
         }

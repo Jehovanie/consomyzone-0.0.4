@@ -729,7 +729,7 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 		let request_parainer_tribut = `
 			<li class="listNavBarTribu">
 				<a style="cursor:pointer;" id="action_tribuT_parrainer_jheo_js" class="dropdown-item">
-					Adhésion sous Tribu T
+					Rattachement Tribu T
 				</a>
 			</li>
 		`;
@@ -927,7 +927,6 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 
 			let _fullName = data[i].user_profil.firstname + " " + data[i].user_profil.lastname;
 
-			
 			let _profilImg = data[i].user_profil.photo_profil
 				? "/public" + data[i].user_profil.photo_profil
 				: "/public/assets/image/img_avatar3.png";

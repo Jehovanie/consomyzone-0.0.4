@@ -3940,11 +3940,18 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         UserService $userService
     ){
         $table_tribu_parent= $tribuTService->getSingleTableParent($table_tribuT);
-
+        
         $all_invitation_parrainer_tribuT= [];
         $invitation_parrainer_tribuT= $tribuTService->getInvitationParrainer($table_tribuT);
+
         if( count($invitation_parrainer_tribuT) > 0){
             foreach( $invitation_parrainer_tribuT as $parrainer_tribuT ){
+
+                //// ignore les invitations acceptée.
+                if( intval($parrainer_tribuT["status"]) === 1 || intval($parrainer_tribuT["status"]) === -1 ){
+                    continue;
+                }
+
                 $data_tribuT= $tribuTService->getAproposUpdate($parrainer_tribuT["name"]);
                 if( $data_tribuT){
                     $user_fondateur= $userRepository->find(["id" => intval($data_tribuT["fondateurId"])]);
