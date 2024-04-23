@@ -1,0 +1,28 @@
+<ul>
+    {% for tribus in tribu_t_owned_hiearchy %}
+        <li class="mb-4">
+            <div class="row card-my-tribu-t mb-2">
+                <div class="col-2">
+                    <img class="avatar-tribu" src="{{ tribus.apropos.avatar is not same as("") ? '/public'~ tribus.apropos.avatar: '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
+                </div>
+                <div class="col-9">
+                    <p>
+                        <a href="{{path('app_my_tribu_t',{ type :"owned", tribu: tribus.tribut})}}" class="tribu_t owned tribu_T_owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.tribut}}">Tribu T {{ tribus.apropos.name|capitalize }}</a>
+                    </p>
+                    {% if tribus.children is defined and tribus.children is not empty and tribus.children|length > 0 %}
+                        <span class="badge text-bg-warning float-right" data-bs-toggle="collapse" href="#{{tribus.tribut}}_collapse_jheo_js" role="button" aria-expanded="false" aria-controls="{{tribus.tribut}}_collapse_jheo_js">
+                            {{tribus.children|length}} tribu fil(s)
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+            {% if tribus.children is defined and tribus.children is not empty %}
+                <div class="collapse" id="{{tribus.tribut}}_collapse_jheo_js">
+                    <div class="card card-body">
+                        {% include _self with {'tribu_t_owned_hiearchy': tribus.children} %}
+                    </div>
+                </div>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>

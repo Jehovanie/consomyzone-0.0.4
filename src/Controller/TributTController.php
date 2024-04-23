@@ -2584,6 +2584,19 @@ $pdo=new PDOConnexionService();
         $tribu_t_owned = !is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
         $tribu_t_joined = !is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
 
+        if( $tribu_t_owned !== null ){
+            $tribu_t_owned_hiearchy= [];
+            if( !isset($tribu_t_owned["tribu_t"]["logo_path"])){
+                foreach($tribu_t_owned["tribu_t"] as $item_tribu_t_owned){
+                    $data_temp= $tribu_T_Service->getHiearchiclalTribuT($item_tribu_t_owned["name"]);
+                    array_push($tribu_t_owned_hiearchy, $data_temp);
+                }
+                
+                $tribu_t_owned_hiearchy= $tribu_T_Service->refactorHiearchicalTribuT($tribu_t_owned_hiearchy);
+            }
+        }
+        // dd($tribu_t_owned_hiearchy);
+
         /**
          * CONTAINER LIST PUBLICATION
          */
@@ -2613,6 +2626,7 @@ $pdo=new PDOConnexionService();
                 "kernels_dir" => $this->getParameter('kernel.project_dir'),
                 "tribu_T_owned" => $tribu_t_owned,
                 "tribu_T_joined" => $tribu_t_joined,
+                "tribu_t_owned_hiearchy" => $tribu_t_owned_hiearchy,
                 "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
                 "form" => $form->createView(),
             ]);
@@ -2624,6 +2638,7 @@ $pdo=new PDOConnexionService();
             "kernels_dir" => $this->getParameter('kernel.project_dir'),
             "tribu_T_owned" => $tribu_t_owned,
             "tribu_T_joined" => $tribu_t_joined,
+            "tribu_t_owned_hiearchy" => $tribu_t_owned_hiearchy,
             "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
             "form" => $form->createView(),
         ]);

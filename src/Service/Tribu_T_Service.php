@@ -3455,6 +3455,76 @@ class Tribu_T_Service extends PDOConnexionService
         return $results;
     }
 
+
+    public function getHiearchiclalTribuT($table_parent, $results= []){
+
+        $table_parent_list_sub= $table_parent . "_list_sub";
+        if (!$this->isTableExist($table_parent_list_sub)) {
+            $this->createTableSousTribu($table_parent);
+
+            return ['tribut' => $table_parent,'apropos' => $this->getAproposUpdate($table_parent), 'children' => []];
+        }
+
+        $sub_list_tribu_t = $this->getPDO()->prepare("SELECT name FROM $table_parent_list_sub WHERE status=1");
+        $sub_list_tribu_t->execute();
+        $all_sub_list_tribu_t = $sub_list_tribu_t->fetchAll(PDO::FETCH_ASSOC);
+
+
+        if( count($all_sub_list_tribu_t) === 0 ){
+            return ['tribut' => $table_parent, 'apropos' => $this->getAproposUpdate($table_parent), 'children' => []];
+
+        }else{
+            $results= [ 'tribut' => $table_parent, 'apropos' => $this->getAproposUpdate($table_parent), 'children' => []];
+            for( $i= 0; $i < count($all_sub_list_tribu_t); $i++){
+                $sub_list= $all_sub_list_tribu_t[$i];
+
+                $result_temp= $this->getHiearchiclalTribuT($sub_list['name'], $results);
+
+                array_push($results['children'], $result_temp);
+            }
+        }
+
+        return $results;
+    }
+
+
+    public function refactorHiearchicalTribuT($tribu_t_owned_hiearchy){
+
+        $result = [];
+        foreach($tribu_t_owned_hiearchy as $item_tribu_t_owned_hiearchy){
+            $count= $this->iterationCount($item_tribu_t_owned_hiearchy['tribut'], $tribu_t_owned_hiearchy);
+            if( $count === 1 ){
+                array_push($result, $item_tribu_t_owned_hiearchy);
+            }
+        }
+
+        return $result;
+    }
+
+
+    public function iterationCount( $table_name, $data ){
+        $count= 0;
+        foreach($data as $item_data ){
+            $count += $this->countNumberDublication($table_name, $item_data);
+        }
+        return $count;
+    }
+
+    public function countNumberDublication($table_name, $data, $count= 0){  //[ tribu => ..., children => [] ]
+        
+        if( $data['tribut']  === $table_name ){
+            $count++;
+        }
+
+        if( count($data['children']) > 0 ){
+            foreach($data['children'] as $item_data_children ){
+                $count = $this->countNumberDublication($table_name, $item_data_children, $count);
+            }
+        }
+
+        return $count;
+    }
+
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanie@gmail.com>
      * 
