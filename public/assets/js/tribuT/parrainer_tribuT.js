@@ -23,11 +23,13 @@ function bindActionTribuTParrainer(tribuTName) {
 			callActionTribuParrainer.classList.add("active");
 
 			/// show loading indicator
-			tribuTContainer.innerHTML = `
-				<div class="spinner-grow text-info d-block mx-auto" role="status">
-					<span class="visually-hidden">Loading...</span>
-				</div>
-			`;
+			// tribuTContainer.innerHTML = `
+			// 	<div class="spinner-grow text-info d-block mx-auto" role="status">
+			// 		<span class="visually-hidden">Loading...</span>
+			// 	</div>
+			// `;
+
+			createChargement(tribuTContainer, "chargement_content_sous_tribu");
 
 			const url = `/tributT/listTribuParrainer/${tribuTName}`;
 
@@ -102,8 +104,12 @@ function bindActionTribuTParrainer(tribuTName) {
 										<tbody class="mt-2 content_list_sub_tribuT content_list_invitation_parrainer_jheo_js">
 											<tr>
 												<td colspan="4">
-													<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
-														<span class="visually-hidden">Loading...</span>
+													<div class="chargement_content_sous_tribu">
+														<div class="containt">
+															<div class="word word-1">C</div>
+															<div class="word word-2">M</div>
+															<div class="word word-3">Z</div>
+														</div>
 													</div>
 												</td>
 											</tr>
@@ -112,8 +118,12 @@ function bindActionTribuTParrainer(tribuTName) {
 								</div>
 								<div id="hierarchy_tribu_jheo_js" class="d-none hierarchy_tribu content_list_sub_tribu_jheo_js content_list_parrent_tribuT_tribuT_jheo_js">
 									<ul class="list-group list-group-flush mt-2 content_list_hierarchy_tribu_jheo_js">
-										<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
-											<span class="visually-hidden">Loading...</span>
+										<div class="chargement_content_sous_tribu">
+											<div class="containt">
+												<div class="word word-1">C</div>
+												<div class="word word-2">M</div>
+												<div class="word word-3">Z</div>
+											</div>
 										</div>
 									</ul>
 								</div>
@@ -186,13 +196,18 @@ function activeOnglet(action_type, table_name) {
 function fetchListInvitationParrainer(tribuTName) {
 	if (document.querySelector(".content_list_invitation_parrainer_jheo_js")) {
 		const content_list = document.querySelector(".content_list_invitation_parrainer_jheo_js");
-		content_list.innerHTML = `
-			<td colspan="4">
-				<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
-					<span class="visually-hidden">Loading...</span>
-				</div>
-			</td>
-		`;
+		// content_list.innerHTML = `
+		// 	<td colspan="4">
+		// 		<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
+		// 			<span class="visually-hidden">Loading...</span>
+		// 		</div>
+		// 	</td>
+		// `;
+		const td = document.createElement("td");
+		td.setAttribute("colspan", "4");
+		content_list.appendChild(td);
+
+		createChargement(content_list.querySelector("td"), "chargement_content_sous_tribu");
 	}
 
 	const url = `/tributT/listInvitationParrainer/${tribuTName}`;
@@ -222,11 +237,12 @@ function fetchListInvitationParrainer(tribuTName) {
 function fetchParentHierachyParrainer(tribuTName) {
 	if (document.querySelector(".content_list_hierarchy_tribu_jheo_js")) {
 		const content_list = document.querySelector(".content_list_hierarchy_tribu_jheo_js");
-		content_list.innerHTML = `
-			<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
-				<span class="visually-hidden">Loading...</span>
-			</div>
-		`;
+		// content_list.innerHTML = `
+		// 	<div class="spinner-border spinner-border-sm text-info d-block mx-auto" role="status">
+		// 		<span class="visually-hidden">Loading...</span>
+		// 	</div>
+		// `;
+		createChargement(content_list, "chargement_content_sous_tribu");
 	}
 	const url = `/tributT/listHierarchyTribu/${tribuTName}`;
 	fetch(url)
@@ -611,6 +627,8 @@ function ctaCancelTribuParrainer(table_tribu_futur_parrain, table_tribu_current)
 
 			const parent_cta_cancel = cta_cancel_.parentElement;
 			parent_cta_cancel.innerHTML = btn_action;
+			
+			location.reload();
 
 			instanceDataTableListTribuParrainer.destroy();
 
@@ -809,6 +827,7 @@ function ctaAcceptInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 			let btn_action = getBtnStateActionInvitation({ table_name, status }, table_tribu_current);
 
 			parent_cta_invitation.innerHTML = btn_action;
+			location.reload();
 
 			setTimeout(() => {
 				instanceDataTableListInvitationParrainer.destroy();
