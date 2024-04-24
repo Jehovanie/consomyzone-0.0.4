@@ -1,0 +1,50 @@
+<ul>
+    {% for tribus in tribu_t_owned_hiearchy %}
+        <li class="mb-4">
+            <div class="row card-my-tribu-t mb-2">
+                <div class="col-2">
+                    <img class="avatar-tribu" src="{{ tribus.apropos.avatar is not same as("") ? '/public'~ tribus.apropos.avatar: '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
+                </div>
+                <div class="col-9">
+                    <p>
+                        {% if tribus.apropos.status is same as("owned") %}
+                            <a href="{{path('app_my_tribu_t', { type: tribus.apropos.status, tribu: tribus.tribut})}}" 
+                               class="tribu_t owned tribu_T_owned" 
+                               data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.tribut}}"
+                            >
+                                Tribu T {{ tribus.apropos.name|capitalize }}
+                            </a>
+                        {% else %}
+                            <a href="{{path('app_my_tribu_t', { type: tribus.apropos.status, tribu: tribus.tribut})}}" 
+                               class="tribu_t joined tribu_T_joined other" 
+                               data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.tribut}}"
+                            >
+                                Tribu T {{ tribus.apropos.name|capitalize }}
+                            </a>
+                        {% endif %}
+                    </p>
+                    <div class="d-flex justify-content-start align-items-center">
+                        {% if tribus.children is defined and tribus.children is not empty and tribus.children|length > 0 %}
+                            <span class="badge text-bg-warning float-right" data-bs-toggle="collapse" href="#{{tribus.tribut}}_owned_collapse_jheo_js" role="button" aria-expanded="false" aria-controls="{{tribus.tribut}}_owned_collapse_jheo_js">
+                                {{tribus.children|length}} tribu(s) fils
+                            </span>
+                        {% endif %}
+
+                        {% if tribus.apropos.status is same as("joined") %}
+                            <span class="ms-1 badge text-bg-info">
+                                Adhérer
+                            </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% if tribus.children is defined and tribus.children is not empty %}
+                <div class="collapse" id="{{tribus.tribut}}_owned_collapse_jheo_js">
+                    <hr class="mb-2">
+                    {% include _self with {'tribu_t_owned_hiearchy': tribus.children} %}
+                    <hr>
+                </div>
+            {% endif %}
+        </li>
+    {% endfor %}
+</ul>

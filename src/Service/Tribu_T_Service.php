@@ -1165,7 +1165,7 @@ class Tribu_T_Service extends PDOConnexionService
 
 
 
-    public function testSiMembre($table, $user_id,$email="")
+    public function testSiMembre($table, $user_id, $email="")
 
     {
         if($user_id){
@@ -3456,13 +3456,22 @@ class Tribu_T_Service extends PDOConnexionService
     }
 
 
-    public function getHiearchiclalTribuT($table_parent, $results= []){
+    public function getHiearchiclalTribuT($table_parent, $userId, $results= []){
+
+        // if( $this->testSiMembre($table_parent, $userId) !== "accepted"){
+        //     return $results;
+        // }
 
         $table_parent_list_sub= $table_parent . "_list_sub";
         if (!$this->isTableExist($table_parent_list_sub)) {
             $this->createTableSousTribu($table_parent);
 
-            return ['tribut' => $table_parent,'apropos' => $this->getAproposUpdate($table_parent), 'children' => []];
+            $checkTribuIsOwnedOrJoined= $this->checkTribuIsOwnedOrJoined($table_parent, $userId);
+
+            $tribuApropos= $this->getAproposUpdate($table_parent);
+            $statu= $checkTribuIsOwnedOrJoined["owned"] ? "owned" : "joined";
+
+            return ['tribut' => $table_parent,'apropos' => [...$tribuApropos, "status" => $statu ], 'children' => []];
         }
 
         $sub_list_tribu_t = $this->getPDO()->prepare("SELECT name FROM $table_parent_list_sub WHERE status=1");
@@ -3471,20 +3480,93 @@ class Tribu_T_Service extends PDOConnexionService
 
 
         if( count($all_sub_list_tribu_t) === 0 ){
-            return ['tribut' => $table_parent, 'apropos' => $this->getAproposUpdate($table_parent), 'children' => []];
+
+            $checkTribuIsOwnedOrJoined= $this->checkTribuIsOwnedOrJoined($table_parent, $userId);
+            
+            $tribuApropos= $this->getAproposUpdate($table_parent);
+            $statu= $checkTribuIsOwnedOrJoined["owned"] ? "owned" : "joined";
+
+            return ['tribut' => $table_parent, 'apropos' => [...$tribuApropos, "status" => $statu ], 'children' => []];
 
         }else{
-            $results= [ 'tribut' => $table_parent, 'apropos' => $this->getAproposUpdate($table_parent), 'children' => []];
+            $checkTribuIsOwnedOrJoined= $this->checkTribuIsOwnedOrJoined($table_parent, $userId);
+            
+            $tribuApropos= $this->getAproposUpdate($table_parent);
+            $statu= $checkTribuIsOwnedOrJoined["owned"] ? "owned" : "joined";
+
+            $results= [ 'tribut' => $table_parent, 'apropos' => [ ...$tribuApropos, "status" => $statu ], 'children' => []];
+
             for( $i= 0; $i < count($all_sub_list_tribu_t); $i++){
                 $sub_list= $all_sub_list_tribu_t[$i];
-
-                $result_temp= $this->getHiearchiclalTribuT($sub_list['name'], $results);
-
-                array_push($results['children'], $result_temp);
+                if( $statu === "joined"){
+                    $check_if_current_use_member= $this->testSiMembre($sub_list["name"], $userId);
+                    if( $check_if_current_use_member === "accepted"){
+                        $result_temp= $this->getHiearchiclalTribuT($sub_list['name'], $userId, $results);
+                        array_push($results['children'], $result_temp);
+                    }
+                }else if( $statu === "owned") { //// parent owned, but child must check if i member.
+                    $check_if_current_use_member= $this->testSiMembre($sub_list["name"], $userId);
+                    if( $check_if_current_use_member === "accepted"){
+                        $result_temp= $this->getHiearchiclalTribuT($sub_list['name'], $userId, $results);
+                        array_push($results['children'], $result_temp);
+                    }
+                }
             }
         }
 
         return $results;
+    }
+
+
+    public function checkTribuIsOwnedOrJoined($table_tribu_t, $user_id ){
+        $result= [ "owned" => false, "joined" => false ];
+        
+        $tribuT_user_id = $this->getPDO()->prepare("SELECT tribu_t_joined, tribu_t_owned FROM user WHERE id=$user_id");
+        $tribuT_user_id->execute();
+        $tribuT_user_id = $tribuT_user_id->fetch(PDO::FETCH_ASSOC);
+
+        if(!$tribuT_user_id){
+            return false;
+        }
+
+        $tribu_t_owned= json_decode($tribuT_user_id["tribu_t_owned"], true);
+        if($tribu_t_owned){
+            $tribu_t_owned= $tribu_t_owned['tribu_t'];
+            if( !isset($tribu_t_owned["logo_path"])){
+                foreach($tribu_t_owned as $item_tribu_t_owned ){
+                    if( $item_tribu_t_owned["name"] === $table_tribu_t){
+                        $result= [ "owned" => true, "joined" => false ];
+                        break;
+                    }
+                }
+            }else{
+                if( $tribu_t_owned["name"] === $table_tribu_t){
+                    $result= [ "owned" => true, "joined" => false ];
+                }
+            }
+        }
+
+        if( $result["owned"] === false ){
+            $tribuT_joined= json_decode($tribuT_user_id["tribu_t_joined"], true);
+            if( $tribuT_joined){
+                $tribuT_joined= $tribuT_joined['tribu_t'];
+
+                if( !isset($tribuT_joined["logo_path"])){
+                    foreach($tribuT_joined as $item_tribuT_joined ){
+                        if( $item_tribuT_joined["name"] === $table_tribu_t){
+                            $result= [ "owned" => false, "joined" => true ];
+                            break;
+                        }
+                    }
+                }else{
+                    if( $tribuT_joined["name"] === $table_tribu_t){
+                        $result= [ "owned" => false, "joined" => true ];
+                    }
+                }
+            }
+        }
+
+        return $result;
     }
 
 

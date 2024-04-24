@@ -55,23 +55,21 @@
 			{% endfor %}
 		</ul> #}
 
-		{% include "shard/recursive_list.html.twig" with {'tribu_t_owned_hiearchy': tribu_t_owned_hiearchy} %}
-
+		{% include "shard/recursive_list_tribu_owned.html.twig" with {'tribu_t_owned_hiearchy': tribu_t_owned_hiearchy} %}
 		<hr class="mt-1 mb-1">
 
 		<p class="fw-bold mb-2">Tribu-T dont vous êtes membre</p>
-		<ul>
+		{# <ul>
 			{% for  tribus in tribu_T_joined %}
 				{% if tribus.logo_path  is defined %}
 						<li class="mb-2">
 							<div class="row card-my-tribu-t">
 								<div class="col-2">
-										<img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? '/public' ~ tribus.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt=""> 
-										{# <img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? tribus.logo_path: asset('uploads/tribus/photos/avatar_tribu.jpg')}}" alt="">  #}
+									<img class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? '/public' ~ tribus.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt=""> 
 								</div>
 								<div class="col-9">
 									<p>
-											<a href="{{path('app_my_tribu_t',{type:"joined", tribu:tribus.name})}}" class="tribu_t joined tribu_T_joined other" data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
+										<a href="{{path('app_my_tribu_t',{type:"joined", tribu:tribus.name})}}" class="tribu_t joined tribu_T_joined other" data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
 									</p>
 								</div>
 							</div>
@@ -85,7 +83,6 @@
 							<div class="row card-my-tribu-t">
 								<div class="col-2">
 									<img class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public' ~ tribu.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
-									{# <img class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? tribu.logo_path : asset('/uploads/tribus/photos/avatar_tribu.jpg')}}" alt=""> #}
 								</div>
 								<div class="col-9">
 									<p>
@@ -99,7 +96,8 @@
 				
 			{% endfor %}
 			
-		</ul>
-
+		</ul> #}
+		
+		{% include "shard/recursive_list_tribu_joined.html.twig" with {'tribu_t_joined_hiearchy': tribu_t_joined_hiearchy} %}
 	</div>
 </div>

@@ -2583,20 +2583,37 @@ $pdo=new PDOConnexionService();
 
         $tribu_t_owned = !is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
         $tribu_t_joined = !is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
-
+        
+        $tribu_t_owned_hiearchy= [];
         if( $tribu_t_owned !== null ){
-            $tribu_t_owned_hiearchy= [];
             if( !isset($tribu_t_owned["tribu_t"]["logo_path"])){
                 foreach($tribu_t_owned["tribu_t"] as $item_tribu_t_owned){
-                    $data_temp= $tribu_T_Service->getHiearchiclalTribuT($item_tribu_t_owned["name"]);
+                    $data_temp= $tribu_T_Service->getHiearchiclalTribuT($item_tribu_t_owned["name"], $userId);
                     array_push($tribu_t_owned_hiearchy, $data_temp);
                 }
-                
-                $tribu_t_owned_hiearchy= $tribu_T_Service->refactorHiearchicalTribuT($tribu_t_owned_hiearchy);
+            }else{
+                $data_temp= $tribu_T_Service->getHiearchiclalTribuT($tribu_t_owned["name"], $userId);
+                array_push($tribu_t_owned_hiearchy, $data_temp);
             }
         }
-        // dd($tribu_t_owned_hiearchy);
+        $tribu_t_owned_hiearchy= $tribu_T_Service->refactorHiearchicalTribuT($tribu_t_owned_hiearchy);
 
+
+        $tribu_t_joined_hiearchy= [];
+        if( $tribu_t_joined !== null ){
+            if( !isset($tribu_t_joined["tribu_t"]["logo_path"])){
+                foreach($tribu_t_joined["tribu_t"] as $item_tribu_t_joined){
+                    $data_temp= $tribu_T_Service->getHiearchiclalTribuT($item_tribu_t_joined["name"], $userId);
+                    array_push($tribu_t_joined_hiearchy, $data_temp);
+                }
+            }else{
+                $data_temp= $tribu_T_Service->getHiearchiclalTribuT($tribu_t_joined["name"], $userId);
+                array_push($tribu_t_joined_hiearchy, $data_temp);
+            }
+        }
+        $tribu_t_joined_hiearchy= $tribu_T_Service->refactorHiearchicalTribuT($tribu_t_joined_hiearchy);
+        
+        // dd($tribu_t_joined_hiearchy);
         /**
          * CONTAINER LIST PUBLICATION
          */
@@ -2626,27 +2643,28 @@ $pdo=new PDOConnexionService();
                 "kernels_dir" => $this->getParameter('kernel.project_dir'),
                 "tribu_T_owned" => $tribu_t_owned,
                 "tribu_T_joined" => $tribu_t_joined,
-                "tribu_t_owned_hiearchy" => $tribu_t_owned_hiearchy,
+                "tribu_t_owned_hiearchy" => $tribu_t_owned_hiearchy, 
+                "tribu_t_joined_hiearchy" => $tribu_t_joined_hiearchy, 
                 "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
                 "form" => $form->createView(),
             ]);
         }else{
-        return $this->render('tribu_t/tribuT.html.twig', [
-            "publications" => $publications,
-            "userConnected" => $userConnected,
-            "profil" => $profil,
-            "kernels_dir" => $this->getParameter('kernel.project_dir'),
-            "tribu_T_owned" => $tribu_t_owned,
-            "tribu_T_joined" => $tribu_t_joined,
-            "tribu_t_owned_hiearchy" => $tribu_t_owned_hiearchy,
-            "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
-            "form" => $form->createView(),
-        ]);
-}
-        
-
-        //end publication seding 
+            return $this->render('tribu_t/tribuT.html.twig', [
+                "publications" => $publications,
+                "userConnected" => $userConnected,
+                "profil" => $profil,
+                "kernels_dir" => $this->getParameter('kernel.project_dir'),
+                "tribu_T_owned" => $tribu_t_owned,
+                "tribu_T_joined" => $tribu_t_joined,
+                "tribu_t_owned_hiearchy" => $tribu_t_owned_hiearchy,
+                "tribu_t_joined_hiearchy" => $tribu_t_joined_hiearchy, 
+                "statusTribut" => $tributGService->getStatusAndIfValid($profil[0]->getTributg(), $profil[0]->getIsVerifiedTributGAdmin(), $userId),
+                "form" => $form->createView(),
+            ]);
+        }
     }
+
+
     #[Route("/user/create-one/publication", name: "user_create_publication")]
     public function createOnePublication(
         Request $request,
