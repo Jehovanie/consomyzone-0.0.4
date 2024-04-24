@@ -278,8 +278,9 @@ class UserController extends AbstractController
 
         UserRepository $userRepository,
 
-        UserService $userService
-
+        UserService $userService,
+        
+        Tribu_T_Service $tribu_T_Service,
     ): Response {
         $userConnected= $status->userProfilService($this->getUser());
         
@@ -308,18 +309,40 @@ class UserController extends AbstractController
         $tribu_t_owned = !is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
         $tribu_t_joined = !is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
 
+
+        //// tribu Hierachical add by Jehovanie RAMANDRIJOEL 
+        $tribu_t_owned_hiearchy= [];
+        if( $tribu_t_owned !== null ){
+            if( !isset($tribu_t_owned["tribu_t"]["logo_path"])){
+                foreach($tribu_t_owned["tribu_t"] as $item_tribu_t_owned){
+                    $data_temp= $tribu_T_Service->getHiearchiclalTribuT($item_tribu_t_owned["name"], $userId);
+                    array_push($tribu_t_owned_hiearchy, $data_temp);
+                }
+            }else{
+                $data_temp= $tribu_T_Service->getHiearchiclalTribuT($tribu_t_owned["name"], $userId);
+                array_push($tribu_t_owned_hiearchy, $data_temp);
+            }
+        }
+        $tribu_t_owned_hiearchy= $tribu_T_Service->refactorHiearchicalTribuT($tribu_t_owned_hiearchy);
+
+
+        $tribu_t_joined_hiearchy= [];
+        if( $tribu_t_joined !== null ){
+            if( !isset($tribu_t_joined["tribu_t"]["logo_path"])){
+                foreach($tribu_t_joined["tribu_t"] as $item_tribu_t_joined){
+                    $data_temp= $tribu_T_Service->getHiearchiclalTribuT($item_tribu_t_joined["name"], $userId);
+                    array_push($tribu_t_joined_hiearchy, $data_temp);
+                }
+            }else{
+                $data_temp= $tribu_T_Service->getHiearchiclalTribuT($tribu_t_joined["name"], $userId);
+                array_push($tribu_t_joined_hiearchy, $data_temp);
+            }
+        }
+        $tribu_t_joined_hiearchy= $tribu_T_Service->refactorHiearchicalTribuT($tribu_t_joined_hiearchy);
+
+
         $new_publication = $this->createForm(PublicationType::class, [], []);
-
-
-
         $new_publication->handleRequest($request);
-
-
-
-        //$flash = [];
-
-
-
         if ($new_publication->isSubmitted() && $new_publication->isValid()) {
 
 
@@ -392,8 +415,6 @@ class UserController extends AbstractController
 
             return $this->redirect($request->getUri());
         }
-
-        // dd($tributGService->getAllPublicationsUpdate($profil[0]->getTributg()));
         
         return $this->render("tribu_g/account.html.twig", [
             "userConnected" => $userConnected,
@@ -420,7 +441,9 @@ class UserController extends AbstractController
 
             "new_publication" => $new_publication->createView(),
             "tribu_T_owned" => $tribu_t_owned,
-            "tribu_T_joined" => $tribu_t_joined
+            "tribu_T_joined" => $tribu_t_joined,
+            "tribu_t_owned_hiearchy" => $tribu_t_owned_hiearchy,
+            "tribu_t_joined_hiearchy" => $tribu_t_joined_hiearchy, 
         ]);
     }
 

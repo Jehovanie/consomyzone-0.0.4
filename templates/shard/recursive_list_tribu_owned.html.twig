@@ -39,7 +39,7 @@
                 </div>
             </div>
             {% if tribus.children is defined and tribus.children is not empty %}
-                <div class="collapse" id="{{tribus.tribut}}_owned_collapse_jheo_js">
+                <div class="collapse collapse_list_child_tribu_jheo_js" id="{{tribus.tribut}}_owned_collapse_jheo_js">
                     <hr class="mb-2">
                     {% include _self with {'tribu_t_owned_hiearchy': tribus.children} %}
                     <hr>

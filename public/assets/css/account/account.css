@@ -980,7 +980,8 @@ thead > tr{
     height: 42vw;
 }
 
-.back-tribu-t .avatar-tribu{
+.back-tribu-t .avatar-tribu,
+.list_tribu_owned_joined_tribuG .avatar-tribu{
     width: 35px;
     height: 35px;
     border-radius: 15px;

@@ -627,7 +627,7 @@ function ctaCancelTribuParrainer(table_tribu_futur_parrain, table_tribu_current)
 
 			const parent_cta_cancel = cta_cancel_.parentElement;
 			parent_cta_cancel.innerHTML = btn_action;
-			
+
 			location.reload();
 
 			instanceDataTableListTribuParrainer.destroy();
@@ -969,4 +969,21 @@ function generateItemHierarchical(list_hierarchical) {
 			</li>
 		</ul>
 	`;
+}
+
+function openCollapseForChildTribuT(element) {
+	let parent = element.parentElement;
+	while (parent) {
+		if (parent.classList.contains("content_list_menu_right_jheo_js")) {
+			break;
+		}
+
+		if (parent.classList.contains("collapse_list_child_tribu_jheo_js")) {
+			if (!parent.classList.contains("show")) {
+				parent.classList.add("show");
+			}
+		}
+		parent = parent.parentElement;
+	}
+	return null;
 }

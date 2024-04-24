@@ -218,6 +218,9 @@ async function showBlockPubV2(type, tribu_t_name, id_c_u) {
 		}
 
 		currentTribuSelected.id = "activeTribu";
+
+		openCollapseForChildTribuT(currentTribuSelected);
+
 		currentTribuSelected.classList.add("p-2");
 		currentTribuSelected.classList.add("list-nav-left");
 		currentTribuSelected.classList.add("active"); //p-2 list-nav-left active

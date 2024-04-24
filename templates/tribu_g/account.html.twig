@@ -147,16 +147,16 @@
 					
 					<h4 class ="fw-bold mb-2">Vos Tribus T</h3>
 
-					<div>
-						<p class ="fw-bold mb-2">Tribu-T que vous aviez créée.</>
-						<ul>
-							{% for  tribus in tribu_T_owned %}
-								
-								{% if tribus.logo_path  is defined %}
+					<div class="list_tribu_owned_joined_tribuG content_list_menu_right_jheo_js">
+						<p class ="fw-bold mb-2">Tribu-T que vous aviez créée.</p>
+						    {# <ul>
+								{% for  tribus in tribu_T_owned %}
+									
+									{% if tribus.logo_path  is defined %}
 										<li class="mb-2">
-							<div class="row card-my-tribu-t">
-								<div class="col-2">
-												
+											<div class="row card-my-tribu-t">
+												<div class="col-2">
+																
 													<img style="width:35px ; height:35px; clip-path:circle(40%)" class="avatar-tribu" src="{{ tribus.logo_path is not same as("") ? '/public' ~ tribus.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg' }}" alt=""> 
 												</div>
 												<div class="col-9">
@@ -164,36 +164,32 @@
 														<a href="{{path('app_my_tribu_t',{type:"owned", tribu:tribus.name})}}" class="tribu_t owned tribu_T_owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.name}}">Tribu T {{ tribus.name_tribu_t_muable is defined ? tribus.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribus.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a> 
 													</p>
 												</div>
-							</div>
-</li>
-								{% else %}
-									{% for tribu in tribus %}
-										<li class="mb-2">
-											<div class="row card-my-tribu-t">
-												<div class="col-2">
-												
-												<img style="width:35px ; height:35px; clip-path:circle(40%)" class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public'~ tribu.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
-												
-						</div>
-						<div class="col-9">
-							<p>
+											</div>
+										</li>
+									{% else %}
+										{% for tribu in tribus %}
+											<li class="mb-2">
+												<div class="row card-my-tribu-t">
+													<div class="col-2">
+													<img style="width:35px ; height:35px; clip-path:circle(40%)" class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public'~ tribu.logo_path: '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
+												</div>
+												<div class="col-9">
+													<p>
 														<a href="{{path('app_my_tribu_t',{type:"owned", tribu:tribu.name})}}" class="tribu_t owned tribu_T_owned" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :  tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
 													</p>
 												</div>
 											</div>
-                                    </li>
-{% endfor %}
-                                {% endif %}
-
-{% endfor %}
-
-							</ul>
-							
+											</li>
+										{% endfor %}
+									{% endif %}
+								{% endfor %}
+							</ul> #}
+						{% include "shard/recursive_list_tribu_owned.html.twig" with {'tribu_t_owned_hiearchy': tribu_t_owned_hiearchy} %}
 						<hr class="mt-1 mb-1">
-								<p class="fw-bold mb-2">Tribu-T dont vous êtes membre</p>
-						<ul>
-							{% for  tribus in tribu_T_joined %}
-								{% if tribus.logo_path  is defined %}
+						<p class="fw-bold mb-2">Tribu-T dont vous êtes membre</p>
+							{# <ul>
+								{% for  tribus in tribu_T_joined %}
+									{% if tribus.logo_path  is defined %}
 										<li class="mb-2">
 											<div class="row card-my-tribu-t">
 												<div class="col-2">
@@ -205,29 +201,28 @@
 													</p>
 												</div>
 											</div>
-									</li>
-{% else %}
-									{% for tribu in tribus %}
-									
-										{% set nameTribu = tribu.name|split('_') %}
-										{% set index = nameTribu|length -1  %}
-										<li class="mb-2">
-											<div class="row card-my-tribu-t">
-												<div class="col-2">
-													<img style="width:35px ; height:35px; clip-path:circle(40%)" class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public' ~ tribu.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
+										</li>
+									{% else %}
+										{% for tribu in tribus %}
+											{% set nameTribu = tribu.name|split('_') %}
+											{% set index = nameTribu|length -1  %}
+											<li class="mb-2">
+												<div class="row card-my-tribu-t">
+													<div class="col-2">
+														<img style="width:35px ; height:35px; clip-path:circle(40%)" class="avatar-tribu" src="{{ tribu.logo_path is not same as("") ? '/public' ~ tribu.logo_path : '/public/uploads/tribu_t/photo/avatar_tribu.jpg'}}" alt="">
+													</div>
+													<div class="col-9">
+														<p>
+															<a href="{{path('app_my_tribu_t',{type:"joined", tribu:tribu.name})}}" class="tribu_t owned tribu_T_joined other" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :   tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
+														</p>
+													</div>
 												</div>
-												<div class="col-9">
-													<p>
-														<a href="{{path('app_my_tribu_t',{type:"joined", tribu:tribu.name})}}" class="tribu_t owned tribu_T_joined other" data-tribu-rank="{{app.user.id}}" data-table-name="{{tribu.name}}">Tribu T {{ tribu.name_tribu_t_muable is defined ? tribu.name_tribu_t_muable|split('_', 4)|last|replace({'_':' '}) :   tribu.name|split('_', 4)|last|replace({'_':' '})|capitalize }}</a>
-													</p>
-												</div>
-											</div>
-									</li>
-{% endfor %}
-								{% endif %}
-				
-							{% endfor %}
-								</ul>
+											</li>
+										{% endfor %}
+									{% endif %}
+								{% endfor %}
+							</ul> #}
+						{% include "shard/recursive_list_tribu_joined.html.twig" with {'tribu_t_joined_hiearchy': tribu_t_joined_hiearchy} %}
 					</div>
 				</div>
 				<!-- ====== Chart Two End -->
