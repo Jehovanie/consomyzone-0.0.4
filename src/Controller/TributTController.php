@@ -2613,7 +2613,6 @@ $pdo=new PDOConnexionService();
         }
         $tribu_t_joined_hiearchy= $tribu_T_Service->refactorHiearchicalTribuT($tribu_t_joined_hiearchy);
         
-        // dd($tribu_t_joined_hiearchy);
         /**
          * CONTAINER LIST PUBLICATION
          */
@@ -3917,40 +3916,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         Tribu_T_Service $tribuTService,
         UserRepository $userRepository,
         UserService $userService,
-        MailService $mailService,
     ){
-        // //// test send email.
-        // $tribu_future_parent= "tribu_t_2_literature_de_ma_patri";
-        // $tribu_to_child= 'tribu_t_2_F';
-
-        // $trub_future_parent_apropos= $tribuTService->getAproposUpdate($tribu_future_parent);
-        
-        // $user_fondateur_tribu_parent= $userRepository->find(["id" => intval($trub_future_parent_apropos["fondateurId"])]);
-        // $email_user_fondateur_tribu_parent= $user_fondateur_tribu_parent->getEmail();
-        // $pseudo_user_fondateur_tribu_parent= $user_fondateur_tribu_parent->getPseudo();
-        
-        
-        // $tribu_to_child_apropos= $tribuTService->getAproposUpdate($tribu_to_child);
-
-        // $context_demand_parainer= [
-        //     "object" => "Demande d'adhére dans un Tribu T",
-        //     "template" => "emails/sous_tribuT_notif_demand.html.twig",
-        //     "tribuT_futur_parent" => [
-        //         "name" => $trub_future_parent_apropos["name"]
-        //     ],
-        //     "tribuT_futur_child" => [
-        //         "name" => $tribu_to_child_apropos["name"]
-        //     ]
-        // ];
-
-        // $mailService->sendEmailForActionSubTribuT(
-        //     $email_user_fondateur_tribu_parent,
-        //     $pseudo_user_fondateur_tribu_parent,
-        //     $context_demand_parainer
-        // );
-
-        // dd("lasa....");
-        // //// end of the test send email.
 
         $list_tribu_parrainer= [];
 

@@ -61,7 +61,7 @@ function bindActionTribuTParrainer(tribuTName) {
 												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-users-viewfinder fa-beat-fade"></i>
-														Validation de demande
+														Validation de la demande
 													</span>
 												</span>
 											</li>
@@ -839,22 +839,20 @@ function ctaAcceptInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 			parent_cta_invitation.innerHTML = btn_action;
 			location.reload();
 
-			setTimeout(() => {
-				instanceDataTableListInvitationParrainer.destroy();
+			instanceDataTableListInvitationParrainer.destroy();
 
-				if (document.querySelector(`#${table_tribu_current}_${table_futur_sous_tribu}_jheo_js`)) {
-					document.querySelector(`#${table_tribu_current}_${table_futur_sous_tribu}_jheo_js`).remove();
-					console.log("niala...");
-				} else {
-					console.log("tsy hita...");
-				}
+			if (document.querySelector(`#${table_tribu_current}_${table_futur_sous_tribu}_jheo_js`)) {
+				document.querySelector(`#${table_tribu_current}_${table_futur_sous_tribu}_jheo_js`).remove();
+				console.log("niala...");
+			} else {
+				console.log("tsy hita...");
+			}
 
-				instanceDataTableListInvitationParrainer = $("#list_invitation_parrainer_jheo_js").DataTable({
-					language: {
-						url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
-					},
-				});
-			}, 1500);
+			instanceDataTableListInvitationParrainer = $("#list_invitation_parrainer_jheo_js").DataTable({
+				language: {
+					url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
+				},
+			});
 		})
 		.catch((error) => console.log(error));
 }

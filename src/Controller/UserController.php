@@ -253,8 +253,6 @@ class UserController extends AbstractController
             return $this->redirect($request->getUri());
         }
 
-
-        $test= $tribuTService->getAllTribuTJoinedAndOwned($this->getUser()->getId());
         return $this->render("user/actualite.html.twig", [
             "userConnected" => $userConnected,
             "publications" => $publicationSorted,
@@ -309,7 +307,7 @@ class UserController extends AbstractController
         $tribu_t_owned = !is_null($tibu_T_data_owned) ?  $tibu_T_data_owned : null;
         $tribu_t_joined = !is_null($tibu_T_data_joined) ?  $tibu_T_data_joined : null;
 
-
+         
         //// tribu Hierachical add by Jehovanie RAMANDRIJOEL 
         $tribu_t_owned_hiearchy= [];
         if( $tribu_t_owned !== null ){
@@ -339,7 +337,7 @@ class UserController extends AbstractController
             }
         }
         $tribu_t_joined_hiearchy= $tribu_T_Service->refactorHiearchicalTribuT($tribu_t_joined_hiearchy);
-
+        //// end Jehovanie.
 
         $new_publication = $this->createForm(PublicationType::class, [], []);
         $new_publication->handleRequest($request);

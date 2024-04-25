@@ -708,7 +708,7 @@ return 250;
     }
 
 
-        /**
+    /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
      * Goal: Send an email with templated email with non param other the use received.
@@ -747,9 +747,5 @@ return 250;
 
     }
 
-
-
 }
-
-
 ?>

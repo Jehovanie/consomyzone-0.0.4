@@ -219,6 +219,7 @@ async function showBlockPubV2(type, tribu_t_name, id_c_u) {
 
 		currentTribuSelected.id = "activeTribu";
 
+		/// add by Jehovanie to open collapse tribu T (tache 220)
 		openCollapseForChildTribuT(currentTribuSelected);
 
 		currentTribuSelected.classList.add("p-2");

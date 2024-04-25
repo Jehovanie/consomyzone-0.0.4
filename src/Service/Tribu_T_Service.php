@@ -311,6 +311,12 @@ class Tribu_T_Service extends PDOConnexionService
 
 
                     $this->addListTribuT($output, $user_id);
+
+                    $table_parent_list_sub= $output . "_list_sub";
+                    if (!$this->isTableExist($table_parent_list_sub)) {
+                        $this->createTableSousTribu($output);
+                    }
+                    
                 }
             }
         }

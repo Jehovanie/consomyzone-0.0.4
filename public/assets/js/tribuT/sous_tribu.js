@@ -26,11 +26,13 @@ function bindActionSousTribuT(tribuTName) {
 			callActionSousTribu.classList.add("active");
 
 			/// show loading indicator
-			tribuTContainer.innerHTML = `
-				<div class="spinner-grow text-info d-block mx-auto" role="status">
-					<span class="visually-hidden">Loading...</span>
-				</div>
-			`;
+			// tribuTContainer.innerHTML = `
+			// 	<div class="spinner-grow text-info d-block mx-auto" role="status">
+			// 		<span class="visually-hidden">Loading...</span>
+			// 	</div>
+			// `;
+
+			createChargement(tribuTContainer, "chargement_content_sous_tribu");
 
 			const url = `/tributT/mes_sous_tribu/${tribuTName}`;
 
