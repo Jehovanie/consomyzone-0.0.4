@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ConsoMyZone</title>
+
+    <style>
+        {# here, define your CSS styles as usual #}
+        .title {
+            color: blue;
+        }
+
+        .container_fluid{
+            background: rgba(0,54,246,0);
+            background: linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+            background: -webkit-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+            background: -moz-linear-gradient(189deg,rgba(0,54,246,0) 10%, rgba(0,111,255,0.64) 80%);
+            width: 100%;
+            z-index: 1;
+            height: 65vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .container{
+            display: block;
+            width: 80%;
+            min-height: 80%;
+            margin: auto;
+
+            display: block;
+            border-radius: 15px;
+            padding: 25px;
+            background: rgba(0,54,246,0);
+            background: linear-gradient(88deg,rgba(0,54,246,0) 10%, #cdcdcd 80%);
+            background: -webkit-linear-gradient(90deg,rgba(0,54,246,0) 10%, #cdcdcd 80%);
+        }
+
+        .image_logo{
+            display: block;
+            width: 160px;
+            height: 80px;
+        }
+
+        .content_date_current{
+            text-align: end;
+        }
+
+        .text_strong{
+            font-weight: bolder;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div class="container_fluid">
+    
+        <div class="container">
+            <img class="image_logo" src="{{ email.image('@images/logo.png') }}" alt="Logo">
+            <p class="content_date_current" >{{ today }}</p>
+
+            <h3 class="content_nom_destination" >Chers {{fullNameTo}},</h3>
+            <p class="text_introduction">
+                Nous vous notifions que la tribu <span class="text_strong">{{name_tribuT_futur_parent}}</span> a accepté la demande d'adhésion de votre tribu <span class="text_strong">{{name_tribuT_futur_child}}</span>
+                en tant que sous-groupe.
+            </p>
+          
+            <p>Cordialement,</p>
+            <p>ConsoMyZone</p>
+        </div>
+    </div>
+</body>
+</html>
+

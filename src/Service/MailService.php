@@ -708,6 +708,46 @@ return 250;
     }
 
 
+        /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+     * 
+     * Goal: Send an email with templated email with non param other the use received.
+     * Use in: SecurityController.php, AgendaController.php
+     * 
+     * @param string $email_to: Email address to send the link
+     * @param string $fullName_to: Full name of the user to send the link
+     * @param array $context : [ [ "object" => ... "template" => ... ]]
+     * 
+     * @return void
+     */
+    public function sendEmailForActionSubTribuT($email_to, $fullName_to, $context)
+    {
+        $customMailer =  $this->configSendEmail();
+
+        // Generates the email
+        $email = (new TemplatedEmail())
+                ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
+                ->to(new Address($email_to, $fullName_to ))
+                ->subject($context["object"]);
+
+        $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
+        $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
+
+        //// Generate email with the contents html :
+        $email= $email->html($this->renderView($context["template"],[
+                'email' => new WrappedTemplatedEmail($this->twig, $email),
+                'today' => $date_fr,
+                'fullNameTo' => $fullName_to,
+                'name_tribuT_futur_parent' => $context["tribuT_futur_parent"]["name"],
+                'name_tribuT_futur_child' => $context["tribuT_futur_child"]["name"],
+            ])
+        );
+
+        $customMailer->send($email);
+
+    }
+
+
 
 }
 

@@ -497,6 +497,16 @@ function openSwalAssertInvationExist() {
 	});
 }
 
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+ *
+ * @goal Send action demande for an Tribu T to be their child.
+ *
+ * @param {*} table_tribu_futur_parrain: Tribu to be parent
+ * @param {*} table_tribu_current : Trubu demand to be child
+ *
+ * @returns
+ */
 function ctaRequestTribuParrainer(table_tribu_futur_parrain, table_tribu_current) {
 	if (!document.querySelector(`.cta_request_${table_tribu_futur_parrain}_jheo_js`)) {
 		return false;

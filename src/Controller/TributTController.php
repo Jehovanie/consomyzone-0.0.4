@@ -3916,8 +3916,42 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         $table_tribuT,
         Tribu_T_Service $tribuTService,
         UserRepository $userRepository,
-        UserService $userService
+        UserService $userService,
+        MailService $mailService,
     ){
+        // //// test send email.
+        // $tribu_future_parent= "tribu_t_2_literature_de_ma_patri";
+        // $tribu_to_child= 'tribu_t_2_F';
+
+        // $trub_future_parent_apropos= $tribuTService->getAproposUpdate($tribu_future_parent);
+        
+        // $user_fondateur_tribu_parent= $userRepository->find(["id" => intval($trub_future_parent_apropos["fondateurId"])]);
+        // $email_user_fondateur_tribu_parent= $user_fondateur_tribu_parent->getEmail();
+        // $pseudo_user_fondateur_tribu_parent= $user_fondateur_tribu_parent->getPseudo();
+        
+        
+        // $tribu_to_child_apropos= $tribuTService->getAproposUpdate($tribu_to_child);
+
+        // $context_demand_parainer= [
+        //     "object" => "Demande d'adhére dans un Tribu T",
+        //     "template" => "emails/sous_tribuT_notif_demand.html.twig",
+        //     "tribuT_futur_parent" => [
+        //         "name" => $trub_future_parent_apropos["name"]
+        //     ],
+        //     "tribuT_futur_child" => [
+        //         "name" => $tribu_to_child_apropos["name"]
+        //     ]
+        // ];
+
+        // $mailService->sendEmailForActionSubTribuT(
+        //     $email_user_fondateur_tribu_parent,
+        //     $pseudo_user_fondateur_tribu_parent,
+        //     $context_demand_parainer
+        // );
+
+        // dd("lasa....");
+        // //// end of the test send email.
+
         $list_tribu_parrainer= [];
 
         // $all_tribu_t= $tribuTService->getListAllTribuT();
@@ -4035,7 +4069,8 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         Request $request,
         Tribu_T_Service $tribuTService,
         UserRepository $userRepository,
-        UserService $userService
+        UserService $userService,
+        MailService $mailService,
     ){
         if(!$this->getUser()){
             return $this->json(["message" => "unhautorized"],401 );
@@ -4062,6 +4097,35 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             "status" => $tribuTService->getStatusFillieul($table_tribu_futur_parrain, $table_tribu_current),
         ];
 
+        //// send email.
+        $trub_future_parent_apropos= $tribuTService->getAproposUpdate($table_tribu_futur_parrain);
+        
+        $user_fondateur_tribu_parent= $userRepository->find(["id" => intval($trub_future_parent_apropos["fondateurId"])]);
+        $email_user_fondateur_tribu_parent= $user_fondateur_tribu_parent->getEmail();
+        $pseudo_user_fondateur_tribu_parent= $user_fondateur_tribu_parent->getPseudo();
+        
+        
+        $table_tribu_current_apropos= $tribuTService->getAproposUpdate($table_tribu_current);
+
+        $context_demand_parainer= [
+            "object" => "Demande d'adhére dans un Tribu T",
+            "template" => "emails/sous_tribuT_notif_demand.html.twig",
+            "tribuT_futur_parent" => [
+                "name" => $trub_future_parent_apropos["name"]
+            ],
+            "tribuT_futur_child" => [
+                "name" => $table_tribu_current_apropos["name"]
+            ]
+        ];
+
+        $mailService->sendEmailForActionSubTribuT(
+            $email_user_fondateur_tribu_parent,
+            $pseudo_user_fondateur_tribu_parent,
+            $context_demand_parainer
+        );
+
+        //// end send email.
+
         return $this->json([
             "tribu_futur_parrain" => $tribu_futur_parrain,
             "table_tribu_current" => $table_tribu_current,
@@ -4074,7 +4138,8 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         Request $request,
         Tribu_T_Service $tribuTService,
         UserRepository $userRepository,
-        UserService $userService
+        UserService $userService,
+        MailService $mailService,
     ){
         if(!$this->getUser()){
             return $this->json(["message" => "unhautorized"],401 );
@@ -4100,6 +4165,37 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             "status" => $tribuTService->getStatusFillieul($table_tribu_futur_parrain, $table_tribu_current),
         ];
 
+
+        //// test send email.
+        $trub_future_parent_apropos= $tribuTService->getAproposUpdate($table_tribu_futur_parrain);
+        
+        $user_fondateur_tribu_parent= $userRepository->find(["id" => intval($trub_future_parent_apropos["fondateurId"])]);
+        $email_user_fondateur_tribu_parent= $user_fondateur_tribu_parent->getEmail();
+        $pseudo_user_fondateur_tribu_parent= $user_fondateur_tribu_parent->getPseudo();
+        
+        
+        $table_tribu_current_apropos= $tribuTService->getAproposUpdate($table_tribu_current);
+
+        $context_demand_parainer= [
+            "object" => "Demande annulée : adhésion en tant que sous-tribu.",
+            "template" => "emails/sous_tribuT_notif_cancel.html.twig",
+            "tribuT_futur_parent" => [
+                "name" => $trub_future_parent_apropos["name"]
+            ],
+            "tribuT_futur_child" => [
+                "name" => $table_tribu_current_apropos["name"]
+            ]
+        ];
+
+        $mailService->sendEmailForActionSubTribuT(
+            $email_user_fondateur_tribu_parent,
+            $pseudo_user_fondateur_tribu_parent,
+            $context_demand_parainer
+        );
+        //// end of send email.
+
+
+
         return $this->json([
             "tribu_futur_parrain" => $tribu_futur_parrain,
             "table_tribu_current" => $table_tribu_current
@@ -4111,7 +4207,8 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
         Request $request,
         Tribu_T_Service $tribuTService,
         UserRepository $userRepository,
-        UserService $userService
+        UserService $userService,
+        MailService $mailService,
     ){
         if(!$this->getUser()){
             return $this->json(["message" => "unhautorized"],401 );
@@ -4122,8 +4219,65 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
 
         if($action === "accept"){
             $result= $tribuTService->setAcceptInvitationSousTribu($table_futur_sous_tribu, $table_tribu_current);
+
+            //// test send email.
+            $trub_future_parent_apropos= $tribuTService->getAproposUpdate($table_tribu_current);
+            
+            $table_futur_sous_tribu_apropos= $tribuTService->getAproposUpdate($table_futur_sous_tribu);
+
+            $user_fondateur_sous_tribu= $userRepository->find(["id" => intval($table_futur_sous_tribu_apropos["fondateurId"])]);
+            $email_user_fondateur_sous_tribu= $user_fondateur_sous_tribu->getEmail();
+            $pseudo_user_fondateur_sous_tribu= $user_fondateur_sous_tribu->getPseudo();
+
+            $context_demand_parainer= [
+                "object" => "Demande acceptée: adhésion en tant que sous-tribu",
+                "template" => "emails/sous_tribuT_notif_accept.html.twig",
+                "tribuT_futur_parent" => [
+                    "name" => $trub_future_parent_apropos["name"]
+                ],
+                "tribuT_futur_child" => [
+                    "name" => $table_futur_sous_tribu_apropos["name"]
+                ]
+            ];
+
+            $mailService->sendEmailForActionSubTribuT(
+                $email_user_fondateur_sous_tribu,
+                $pseudo_user_fondateur_sous_tribu,
+                $context_demand_parainer
+            );
+
+            //// end of the test send email.
+
         }else if($action === "reject"){
             $result= $tribuTService->setRejectInvitationSousTribu($table_futur_sous_tribu, $table_tribu_current);
+
+            //// test send email.
+            $trub_future_parent_apropos= $tribuTService->getAproposUpdate($table_tribu_current);
+            
+            $table_futur_sous_tribu_apropos= $tribuTService->getAproposUpdate($table_futur_sous_tribu);
+
+            $user_fondateur_sous_tribu= $userRepository->find(["id" => intval($table_futur_sous_tribu_apropos["fondateurId"])]);
+            $email_user_fondateur_sous_tribu= $user_fondateur_sous_tribu->getEmail();
+            $pseudo_user_fondateur_sous_tribu= $user_fondateur_sous_tribu->getPseudo();
+
+            $context_demand_parainer= [
+                "object" => "Demande rejetée: adhésion en tant que sous-tribu",
+                "template" => "emails/sous_tribuT_notif_reject.html.twig",
+                "tribuT_futur_parent" => [
+                    "name" => $trub_future_parent_apropos["name"]
+                ],
+                "tribuT_futur_child" => [
+                    "name" => $table_futur_sous_tribu_apropos["name"]
+                ]
+            ];
+
+            $mailService->sendEmailForActionSubTribuT(
+                $email_user_fondateur_sous_tribu,
+                $pseudo_user_fondateur_sous_tribu,
+                $context_demand_parainer
+            );
+
+            //// end of the test send email.
         }
 
         $data_tribuT= $tribuTService->getAproposUpdate($table_futur_sous_tribu);
