@@ -61,20 +61,23 @@ DataTableObject.prototype = {
 		// 	// rowData contient les données de la ligne actuelle
 		// 	console.log(rowData);
 		// });
+		console.log("remove element: ");
+		console.log(element);
+		console.log("================================");
 
-		const domparse = new DOMParser();
-		dataTableInstance?.rows()?.every(function (rowIdx, tableLoop, rowLoop) {
-			var rowData = this.data(); // Données de la ligne actuelle
-			var card_list = rowData[0]; // Accès à la deuxième colonne (indice 1)
+		// const domparse = new DOMParser();
+		// dataTableInstance?.rows()?.every(function (rowIdx, tableLoop, rowLoop) {
+		// 	var rowData = this.data(); // Données de la ligne actuelle
+		// 	var card_list = rowData[0]; // Accès à la deuxième colonne (indice 1)
 
-			let text_html = domparse.parseFromString(card_list, "text/html"); //
-			var text = text_html.querySelector(`.${element.type}_${element.id}`);
+		// 	let text_html = domparse.parseFromString(card_list, "text/html"); //
+		// 	var text = text_html.querySelector(`.${element.type}_${element.id}`);
 
-			if (text !== null) {
-				console.log(card_list);
-				console.log(text);
-			}
-		});
+		// 	if (text !== null) {
+		// 		console.log(card_list);
+		// 		console.log(text);
+		// 	}
+		// });
 	},
 };
 
