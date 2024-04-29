@@ -9,15 +9,15 @@
                     <p>
                         {% if tribus.apropos.status is same as("owned") %}
                             <a href="{{path('app_my_tribu_t', { type: tribus.apropos.status, tribu: tribus.tribut})}}" 
-                               class="tribu_t owned tribu_T_owned" 
-                               data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.tribut}}"
+                               class="tribu_t owned tribu_T_owned {{tribus.tribut}}_nav_right_jheo_js" 
+                               data-tribu-rank="{{app.user.id}}" data-table-name="{{tribus.tribut}}" data-table-type="owned"
                             >
                                 Tribu T {{ tribus.apropos.name|capitalize }}
                             </a>
                         {% else %}
                             <a href="{{path('app_my_tribu_t', { type: tribus.apropos.status, tribu: tribus.tribut})}}" 
-                               class="tribu_t joined tribu_T_joined other" 
-                               data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.tribut}}"
+                               class="tribu_t joined tribu_T_joined other {{tribus.tribut}}_nav_right_jheo_js" 
+                               data-tribu-rank="{{app.user.id}}"  data-table-name="{{tribus.tribut}}" data-table-type="joined"
                             >
                                 Tribu T {{ tribus.apropos.name|capitalize }}
                             </a>

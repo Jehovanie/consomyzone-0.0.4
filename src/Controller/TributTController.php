@@ -4189,6 +4189,7 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
 
         if($action === "accept"){
             $result= $tribuTService->setAcceptInvitationSousTribu($table_futur_sous_tribu, $table_tribu_current);
+            
             $current_user= $this->getUser();
             $current_user_id= $current_user->getId();
 

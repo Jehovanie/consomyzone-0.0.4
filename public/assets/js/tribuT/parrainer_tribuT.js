@@ -445,6 +445,8 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 				<i class="fa-solid fa-check"></i>
 				Demande acceptée
 			</button>
+		`;
+		/*
 			<button type="button"
 				class="btn btn-danger btn-sm cta_cancel_${table_name}_jheo_js"
 				onclick="ctaCancelTribuParrainer('${table_name}', '${table_tribu_current}')"
@@ -452,7 +454,7 @@ function getBtnStateAction(tribu_futur_parrain, table_tribu_current, isHaveReque
 				<i class="fa-solid fa-ban"></i>
 				Annuler
 			</button>
-		`;
+		*/
 	} else if (status === -1) {
 		btn_action = `
 			<button type="button"
@@ -538,6 +540,7 @@ function ctaRequestTribuParrainer(table_tribu_futur_parrain, table_tribu_current
 		language: {
 			url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
 		},
+		order: [[3, "desc"]],
 	});
 
 	const url = `/tributT/request_tribu_parrainer`;
@@ -563,12 +566,18 @@ function ctaRequestTribuParrainer(table_tribu_futur_parrain, table_tribu_current
 			return response.json();
 		})
 		.then((response) => {
-			const { tribu_futur_parrain, table_tribu_current } = response;
+			swal({
+				text: "Demande envoyée",
+				icon: "success",
+				button: "OK",
+			}).then((r) => {
+				const { tribu_futur_parrain, table_tribu_current } = response;
 
-			const parent_cta_request = cta_request.parentElement;
+				const parent_cta_request = cta_request.parentElement;
 
-			let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
-			parent_cta_request.innerHTML = btn_action;
+				let btn_action = getBtnStateAction(tribu_futur_parrain, table_tribu_current);
+				parent_cta_request.innerHTML = btn_action;
+			});
 		})
 		.catch((error) => console.log(error));
 }
@@ -638,7 +647,7 @@ function ctaCancelTribuParrainer(table_tribu_futur_parrain, table_tribu_current)
 			const parent_cta_cancel = cta_cancel_.parentElement;
 			parent_cta_cancel.innerHTML = btn_action;
 
-			location.reload();
+			// location.reload();
 
 			instanceDataTableListTribuParrainer.destroy();
 
@@ -829,6 +838,25 @@ function ctaAcceptInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 			return response.json();
 		})
 		.then((response) => {
+			swal({
+				text: "Demande accepté",
+				icon: "success",
+				button: "OK",
+			}).then((r) => {
+				const info_table = document.querySelector(`.${table_tribu_current}_nav_right_jheo_js`);
+				if (!info_table) {
+					location.reload();
+				}
+				const type = info_table.getAttribute("data-table-type");
+
+				const url = new URL(window.location.href);
+				let params = "?type=" + type;
+				params = params + "&tribu=" + table_tribu_current;
+
+				window.location.replace(`${url.pathname}${params}`);
+			});
+
+			/*
 			const { futur_sous_tribu, table_tribu_current } = response;
 			const { table_name, status } = futur_sous_tribu;
 
@@ -837,15 +865,13 @@ function ctaAcceptInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 			let btn_action = getBtnStateActionInvitation({ table_name, status }, table_tribu_current);
 
 			parent_cta_invitation.innerHTML = btn_action;
-			location.reload();
+
+			// location.reload();
 
 			instanceDataTableListInvitationParrainer.destroy();
 
 			if (document.querySelector(`#${table_tribu_current}_${table_futur_sous_tribu}_jheo_js`)) {
 				document.querySelector(`#${table_tribu_current}_${table_futur_sous_tribu}_jheo_js`).remove();
-				console.log("niala...");
-			} else {
-				console.log("tsy hita...");
 			}
 
 			instanceDataTableListInvitationParrainer = $("#list_invitation_parrainer_jheo_js").DataTable({
@@ -853,6 +879,7 @@ function ctaAcceptInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 					url: "//cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
 				},
 			});
+			*/
 		})
 		.catch((error) => console.log(error));
 }
