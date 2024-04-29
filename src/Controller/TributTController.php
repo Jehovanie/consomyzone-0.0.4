@@ -2539,12 +2539,12 @@ $pdo=new PDOConnexionService();
 
             $bool = $this->createTribu_T($body, $stringTraitementService, $status);
             if ($bool) {
-                $message = "Tribu " . $data["tribuTName"] . " créée avec succes.";
+                $message_create_success = "Tribu " . $data["tribuTName"] . " créée avec succes.";
             } else {
-                $message = "Tribu " . $data["tribuTName"] . " existe déjà.";
+                $message_create_success = "Tribu " . $data["tribuTName"] . " existe déjà.";
             }
 
-
+            $suite_message_mail= "";
             if( $data["table_parent"] !== null){
                 $table_name_parent_tribuT= $data["table_parent"];
                 $tribuTNameFinal= 'tribu_t_' . $user->getId() . "_" . $tribuTNameFinal;
@@ -2555,10 +2555,13 @@ $pdo=new PDOConnexionService();
                 );
 
                 $tribu_T_Service->updateTableParentLivelParent($table_name_parent_tribuT, $tribuTNameFinal);
+            
+                $apropos_tribu_parent= $tribu_T_Service->getAproposUpdate($table_name_parent_tribuT);
+
+                $suite_message_mail= " sous-tribu de <b>\"" . $apropos_tribu_parent["name"] . "\"</b> ";
             }
 
-
-            return $this->redirectToRoute("app_my_tribu_t", ["message" => $message]);
+            return $this->redirectToRoute("app_my_tribu_t", ["message" => $message_create_success]);
         }
 
         $user = $this->getUser();
@@ -2596,8 +2599,8 @@ $pdo=new PDOConnexionService();
                 array_push($tribu_t_owned_hiearchy, $data_temp);
             }
         }
+        
         $tribu_t_owned_hiearchy= $tribu_T_Service->refactorHiearchicalTribuT($tribu_t_owned_hiearchy);
-
 
         $tribu_t_joined_hiearchy= [];
         if( $tribu_t_joined !== null ){
@@ -2611,6 +2614,7 @@ $pdo=new PDOConnexionService();
                 array_push($tribu_t_joined_hiearchy, $data_temp);
             }
         }
+        
         $tribu_t_joined_hiearchy= $tribu_T_Service->refactorHiearchicalTribuT($tribu_t_joined_hiearchy);
         
         /**
@@ -4185,7 +4189,35 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
 
         if($action === "accept"){
             $result= $tribuTService->setAcceptInvitationSousTribu($table_futur_sous_tribu, $table_tribu_current);
+            $current_user= $this->getUser();
+            $current_user_id= $current_user->getId();
 
+            ////update my tribu T
+            $isAlreadyOwnedOrJoined= $tribuTService->checkTribuTIfAlreadyOwnedOrJoined($table_futur_sous_tribu, $current_user_id);
+
+            if(!isset($isAlreadyOwnedOrJoined["tribu_t"]) ){
+                $apropos_table_futur_sous_tribu= $tribuTService->getAproposUpdate($table_futur_sous_tribu); /// name, description, avatar, fondateurId,
+                $extension_table_futur_sous_tribu= $tribuTService->getExtensionTribuT(
+                    $table_futur_sous_tribu, 
+                    intval($apropos_table_futur_sous_tribu["fondateurId"])
+                ); /// name, name_tribu_t_muable, description, extension, logo_path, date
+    
+                $tribu_t_owned_or_join= intval($apropos_table_futur_sous_tribu["fondateurId"]) === $current_user_id ? "tribu_t_owned" : "tribu_t_joined";
+    
+                $tribuTService->setTribuT(
+                    $table_futur_sous_tribu,
+                    $apropos_table_futur_sous_tribu["description"],
+                    $apropos_table_futur_sous_tribu["avatar"],
+                    $extension_table_futur_sous_tribu["extension"],
+                    $current_user_id,
+                    $tribu_t_owned_or_join,
+                    $apropos_table_futur_sous_tribu["name"]
+                );
+
+                //// save in the tribu
+                $tribuTService->addMemberAndAccept($table_futur_sous_tribu, $current_user_id);
+            }
+            
             //// test send email.
             $trub_future_parent_apropos= $tribuTService->getAproposUpdate($table_tribu_current);
             

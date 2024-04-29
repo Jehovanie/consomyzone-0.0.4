@@ -350,6 +350,21 @@ class Tribu_T_Service extends PDOConnexionService
         return $response;
     }
 
+    public function addMemberAndAccept($tableName, $user_id)
+    {
+
+        $query = "Insert into $tableName (id, user_id, roles, status ) values (UUID(), $user_id, 'Membre', 1)";
+        $statement = $this->getPDO()->exec($query);
+
+        $response = "";
+        if ($statement == 1) {
+            $response = "Acceptée";
+        } else {
+            $response = "Non acceptée";
+        }
+        return $response;
+    }
+
 
     public function addMemberTemp($tableName, $email)
     {
@@ -3175,6 +3190,17 @@ class Tribu_T_Service extends PDOConnexionService
             $this->createTableSousTribu($table_parent);
         }
 
+        $statement_check_parent = $this->getPDO()->prepare("SELECT name FROM $table_sub_tribu WHERE name= :table_fils");
+        
+        $statement_check_parent->bindParam(':table_fils', $table_fils);
+
+        $statement_check_parent->execute();
+        $check_parent = $statement_check_parent->fetch(PDO::FETCH_ASSOC);
+
+        if( $check_parent ){
+            return false;
+        }
+
         $request_sub_tribu = $this->getPDO()->prepare(
             "INSERT INTO $table_sub_tribu (name, status, datetime) 
             VALUES (:name, :status, :datetime)"
@@ -3504,6 +3530,7 @@ class Tribu_T_Service extends PDOConnexionService
 
             for( $i= 0; $i < count($all_sub_list_tribu_t); $i++){
                 $sub_list= $all_sub_list_tribu_t[$i];
+
                 if( $statu === "joined"){
                     $check_if_current_use_member= $this->testSiMembre($sub_list["name"], $userId);
                     if( $check_if_current_use_member === "accepted"){
@@ -3511,6 +3538,7 @@ class Tribu_T_Service extends PDOConnexionService
                         array_push($results['children'], $result_temp);
                     }
                 }else if( $statu === "owned") { //// parent owned, but child must check if i member.
+
                     $check_if_current_use_member= $this->testSiMembre($sub_list["name"], $userId);
                     if( $check_if_current_use_member === "accepted"){
                         $result_temp= $this->getHiearchiclalTribuT($sub_list['name'], $userId, $results);
@@ -3575,7 +3603,10 @@ class Tribu_T_Service extends PDOConnexionService
         return $result;
     }
 
-
+    /**
+     * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com
+     * 
+     */
     public function refactorHiearchicalTribuT($tribu_t_owned_hiearchy){
 
         $result = [];
@@ -3655,9 +3686,9 @@ class Tribu_T_Service extends PDOConnexionService
             $this->createTableSousTribu($table_tribu_futur_parrain);
         }
 
-        if(!$this->isColumnExist($table_sub_list_name_parrainer, "status")){
-            $this->addColumnStatusSubTribu($table_sub_list_name_parrainer);
-        }
+        // if(!$this->isColumnExist($table_sub_list_name_parrainer, "status")){
+        //     $this->addColumnStatusSubTribu($table_sub_list_name_parrainer);
+        // }
 
         $statement = $this->getPDO()->prepare("SELECT name FROM $table_sub_list_name_parrainer where name= '$table_tribu_current'");
         $statement->execute();
@@ -4127,5 +4158,66 @@ class Tribu_T_Service extends PDOConnexionService
         $response = $request_table_parent->fetch(PDO::FETCH_ASSOC);
 
         return $response ? $response["table_parent"] : null;
+    }
+
+
+    public function getExtensionTribuT($table_tribuT, $fondateurID){
+        $userId= intval($fondateurID);
+
+        $fetch = $this->getPDO()->prepare("SELECT tribu_t_owned FROM user WHERE id  = $userId");
+        $fetch->execute();
+        $result = $fetch->fetch(PDO::FETCH_ASSOC);
+
+        $list = $result["tribu_t_owned"];
+
+        $array1 = json_decode($list, true);
+
+        if( isset($array1["tribu_t"]["extension"])){
+            return $array1["tribu_t"];
+        }else{
+            foreach($array1["tribu_t"] as $tribu ){
+                if( $tribu["name"] === $table_tribuT ){
+                    return $tribu;
+                }
+            }
+        }
+    }
+
+    public function checkTribuTIfAlreadyOwnedOrJoined($table_tribuT, $userId){
+        $fetch = $this->getPDO()->prepare("SELECT tribu_t_owned, tribu_t_joined FROM user WHERE id  = $userId");
+        $fetch->execute();
+        $result = $fetch->fetch(PDO::FETCH_ASSOC);
+
+        $tribu_t_owned= $result["tribu_t_owned"];
+        $tribu_t_owned = json_decode($tribu_t_owned, true);
+
+        if(!isset($tribu_t_owned["tribu_t"]["extension"])){
+            foreach($tribu_t_owned["tribu_t"] as $tribu_t){
+                if( $tribu_t["name"] === $table_tribuT ){
+                    return ["tribu_t" => "owned"];
+                }
+            }
+        }else{
+            if( $tribu_t_owned["tribu_t"]["name"] === $table_tribuT ){
+                return ["tribu_t" => "owned"];
+            }
+        }
+
+        $tribu_t_joined= $result["tribu_t_joined"];
+        $tribu_t_joined = json_decode($tribu_t_joined, true);
+
+        if(!isset($tribu_t_joined["tribu_t"]["extension"])){
+            foreach($tribu_t_joined["tribu_t"] as $tribu_t){
+                if( $tribu_t["name"] === $table_tribuT ){
+                    return ["tribu_t" => "joined"];
+                }
+            }
+        }else{
+            if( $tribu_t_joined["tribu_t"]["name"] === $table_tribuT ){
+                return ["tribu_t" => "joined"];
+            }
+        }
+
+        return false;
     }
 }

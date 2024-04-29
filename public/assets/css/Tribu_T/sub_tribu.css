@@ -171,14 +171,13 @@
 	margin: auto;
 }
 
-
-.chargement_content_sous_tribu{
+.chargement_content_sous_tribu {
 	height: 25vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 
-.chargement_content_sous_tribu .word{
-    font-size: 15px;
+.chargement_content_sous_tribu .word {
+	font-size: 15px;
 }

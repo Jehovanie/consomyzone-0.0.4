@@ -3903,3 +3903,10 @@ li.list-dw > a[href$=".zip"]:after {
 	font-size: 1.2rem;
 	color: blue;
 }
+
+.collapse_list_child_tribu {
+	border-top: 2px solid black;
+	border-left: 2px solid black;
+	border-bottom: 2px solid black;
+	padding-left: 10px;
+}

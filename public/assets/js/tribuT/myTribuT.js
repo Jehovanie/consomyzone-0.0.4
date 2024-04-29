@@ -3066,8 +3066,13 @@ if (document.querySelector("#apropos-tribu-t")) {
 const searchParams = new URLSearchParams(window.location.search);
 if (searchParams.has("message")) {
 	showAlertMessageFlash(searchParams.get("message"));
+
 	const url = new URL(window.location.href);
-	window.location.replace(url.pathname);
+
+	let params = searchParams.get("type") ? "?type=" + searchParams.get("type") : "";
+	params = params != "" && searchParams.get("tribu") ? params + "&tribu=" + searchParams.get("tribu") : "";
+
+	window.location.replace(`${url.pathname}${params}`);
 }
 
 function listResto() {

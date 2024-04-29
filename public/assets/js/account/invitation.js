@@ -202,8 +202,9 @@ function acceptInvitation(e){
 	let nomTribu = e.parentElement.parentElement.previousElementSibling.querySelector(".profile-usertitle-job > p").textContent.split("invitation de rejoindre la tribu")[1]
     console.log("balise" + balise)
 	let data = {nomTribu:nomTribu}
-	console.log(nomTribu)
-    const url = `/user/invitations/confirm/${id}/${idReceiverNotif}/${balise}/${tbt}`
+
+    const url = `/user/invitations/confirm/${id}/${idReceiverNotif}/${balise}/${tbt}`;
+
     fetch(new Request(url, {
         method: "POST",
         headers: {
@@ -226,6 +227,7 @@ function acceptInvitation(e){
 			}
 		}
     })
+
 }
 
 function declineInvitation(e){
