@@ -26,7 +26,8 @@
                     <div class="d-flex justify-content-start align-items-center">
                         {% if tribus.children is defined and tribus.children is not empty and tribus.children|length > 0 %}
                             <span class="badge text-bg-warning float-right" data-bs-toggle="collapse" href="#{{tribus.tribut}}_joined_collapse_jheo_js" role="button" aria-expanded="false" aria-controls="{{tribus.tribut}}_joined_collapse_jheo_js">
-                                {{tribus.children|length}} tribu(s) fils
+                                {{tribus.children|length}} tribu fils
+                                <i class="fa-solid fa-chevron-up fa_chevron_up_jheo_js"></i>
                             </span>
                         {% endif %}
                         

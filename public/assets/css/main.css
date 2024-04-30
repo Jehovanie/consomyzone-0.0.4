@@ -3910,3 +3910,7 @@ li.list-dw > a[href$=".zip"]:after {
 	border-bottom: 2px solid black;
 	padding-left: 10px;
 }
+
+.rotate_90{
+	transform: rotate(180deg);
+}

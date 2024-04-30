@@ -2348,3 +2348,19 @@ function setViewTribu(a, b) {
 		document.querySelector(".content_list_resto_js_g").classList.remove("d-none");
 	}
 }
+
+if (document.querySelectorAll(".fa_chevron_up_jheo_js")) {
+	Array.from(document.querySelectorAll(".fa_chevron_up_jheo_js")).forEach((item_fa_chevron) => {
+		item_fa_chevron.parentElement.addEventListener("click", () => {
+			const aria_controls = item_fa_chevron.parentElement.getAttribute("aria-controls");
+			const collapse = document.querySelector(`#${aria_controls}`);
+			if (aria_controls) {
+				if (!item_fa_chevron.classList.contains("rotate_90")) {
+					item_fa_chevron.classList.add("rotate_90");
+				} else {
+					item_fa_chevron.classList.remove("rotate_90");
+				}
+			}
+		});
+	});
+}

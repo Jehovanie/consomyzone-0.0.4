@@ -1028,6 +1028,13 @@ function openCollapseForChildTribuT(element) {
 			if (!parent.classList.contains("show")) {
 				parent.classList.add("show");
 			}
+
+			if (parent.parentElement.querySelector(".fa_chevron_up_jheo_js")) {
+				const fa_chevron_up = parent.parentElement.querySelector(".fa_chevron_up_jheo_js");
+				if (!fa_chevron_up.classList.contains("rotate_90")) {
+					fa_chevron_up.classList.add("rotate_90");
+				}
+			}
 		}
 		parent = parent.parentElement;
 	}
