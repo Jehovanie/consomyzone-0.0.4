@@ -732,8 +732,11 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
 
 		let request_parainer_tribut = `
 			<li class="listNavBarTribu">
-				<a style="cursor:pointer;" id="action_tribuT_parrainer_jheo_js" class="dropdown-item">
+				<a style="cursor:pointer;" id="action_tribuT_parrainer_jheo_js" class="dropdown-item position-relative">
 					Rattachement Tribu T
+					<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge_invitation_sub_tribu_jheo_js d-none">
+						99+
+					</span>
 				</a>
 			</li>
 		`;
@@ -4960,6 +4963,22 @@ function sendEmailForManyPostulant(objetMail, mailContent, pieceJointe) {
 				icon: "error",
 				button: "OK",
 			});
+		}
+	});
+}
+
+///// block action
+if (document.querySelector(".submit_create_tribu_jheo_js")) {
+	document.getElementById("form_create_tribu_jheo_js").addEventListener("submit", function () {
+		if (
+			document.querySelector("#form_tribuTName").value !== "" &&
+			document.querySelector("#form_description").value !== ""
+		) {
+			document.querySelector(".submit_create_tribu_jheo_js").innerHTML = `
+			Action en cours...
+		`;
+
+			document.querySelector(".submit_create_tribu_jheo_js").setAttribute("disabled", true);
 		}
 	});
 }

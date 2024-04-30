@@ -3992,6 +3992,25 @@ class Tribu_T_Service extends PDOConnexionService
         return $status_invitation;
     }
 
+    public function getNumberInvitationSousTribuT($table_name){
+        $table_parent_list_sub= $table_name . "_list_sub";
+
+        if (!$this->isTableExist($table_parent_list_sub)) {
+            $this->createTableSousTribu($table_name);
+            return 0;
+        }
+
+        $request_nbr_invitation = $this->getPDO()->prepare("SELECT COUNT(*) as number_invitation FROM $table_parent_list_sub WHERE status= :status");
+
+        $status= 0;
+
+        $request_nbr_invitation->bindParam(':status', $status);
+        $request_nbr_invitation->execute();
+        $nbr_invitation = $request_nbr_invitation->fetch(PDO::FETCH_ASSOC);
+
+        return $nbr_invitation["number_invitation"];
+    }
+
     public function getHierarchicalTribu($table_name_parent){
         /// Goal: Get parent table 
         $list_table_parent= [];

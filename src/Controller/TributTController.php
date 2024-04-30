@@ -2668,6 +2668,20 @@ $pdo=new PDOConnexionService();
     }
 
 
+    #[Route("/user/tribu/check_nombre/{table_name}", name: "app_check_nombre_invitation")]
+    public function checkNombreInvitationTribuT(
+        $table_name,
+        Tribu_T_Service $tribu_T_Service,
+    ): Response {
+        $number_invitation_sous_tribuT= $tribu_T_Service->getNumberInvitationSousTribuT($table_name);
+
+        return $this->json([
+            "data" => [
+                "number_invitation"=> $number_invitation_sous_tribuT
+            ]
+        ]);
+    }
+
     #[Route("/user/create-one/publication", name: "user_create_publication")]
     public function createOnePublication(
         Request $request,
@@ -3962,9 +3976,12 @@ $listUserForAll = $tribuTService->getPostulant($table_name);
             }
         }
 
+        $number_invitation_sous_tribuT= $tribuTService->getNumberInvitationSousTribuT($table_tribuT);
+
         return $this->json([
             "list_tribu_parrainer" => $list_tribu_parrainer,
-            "all_private_table" => $all_private_table
+            "all_private_table" => $all_private_table,
+            "number_invitation"=> $number_invitation_sous_tribuT
         ]);
     }
 

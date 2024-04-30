@@ -36,12 +36,14 @@ function bindActionTribuTParrainer(tribuTName) {
 			fetch(url)
 				.then((response) => response.json())
 				.then((response) => {
-					const { list_tribu_parrainer } = response;
+					const { list_tribu_parrainer, number_invitation } = response;
 
 					const current_list_html_parrainer = generateListHtmlTribuTParrainer(
 						list_tribu_parrainer,
 						tribuTName
 					);
+
+					let badge_invitation = parseInt(number_invitation) <= 0 ? "d-none" : "";
 
 					const body = `
 						<div class="card">
@@ -58,10 +60,13 @@ function bindActionTribuTParrainer(tribuTName) {
 												</span>
 											</li>
 											<li class="nav-item nav_item_sub_tribu" onclick="activeOnglet('invitation_adherer', '${tribuTName}')">
-												<span class="nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
+												<span class="position-relative nav-link nav_link_sub_tribu nav_link_sub_tribu_jheo_js nav_invitation_adherer_jheo_js" aria-current="page">
 													<span> 
 														<i class="fa-solid fa-users-viewfinder fa-beat-fade"></i>
 														Validation de la demande
+													</span>
+													<span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger badge_onglet_invitation_sub_tribu_jheo_js ${badge_invitation}">
+														${parseInt(number_invitation)}
 													</span>
 												</span>
 											</li>

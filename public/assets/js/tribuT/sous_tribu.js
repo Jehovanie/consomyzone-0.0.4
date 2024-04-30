@@ -5,6 +5,23 @@ function resetInputTableParent() {
 }
 
 function bindActionSousTribuT(tribuTName) {
+	///notification action.
+	if (document.querySelector("#action_tribuT_parrainer_jheo_js")) {
+		fetch(`/user/tribu/check_nombre/${tribuTName}`)
+			.then((response) => response.json())
+			.then((response) => {
+				const { number_invitation } = response.data;
+
+				if (parseInt(number_invitation) > 0) {
+					if (document.querySelector(".badge_invitation_sub_tribu_jheo_js").classList.contains("d-none")) {
+						document.querySelector(".badge_invitation_sub_tribu_jheo_js").classList.remove("d-none");
+						document.querySelector(".badge_invitation_sub_tribu_jheo_js").innerText = number_invitation;
+					}
+				}
+			});
+	}
+
+	//// other action
 	if (document.querySelector("#fetch_sous_tribuT_jheo_js")) {
 		const callActionSousTribu = document.querySelector("#fetch_sous_tribuT_jheo_js");
 		const tribuTContainer = document.querySelector("#tribu_t_conteuneur");
