@@ -769,14 +769,14 @@ function getBtnStateActionInvitation(tribu_futur_sous_tribu, table_tribu_current
 	if (parseInt(status) === 0) {
 		btn_action = `
 			<button type="button"
-				class="btn btn-primary btn-sm text-white me-1 cta_invitation_${table_name}_jheo_js"
+				class="btn btn-primary btn-sm text-white me-1 cta_invitation_action_jheo_js cta_invitation_${table_name}_jheo_js"
 				onclick="ctaAcceptInvitationSousTribu('${table_name}', '${table_tribu_current}')"
 			>
 				<i class="fa-solid fa-check"></i>
 				Accepter la demande
 			</button>
 			<button type="button"
-				class="btn btn-danger btn-sm cta_reject_invitation_${table_name}_jheo_js"
+				class="btn btn-danger btn-sm cta_invitation_action_jheo_js cta_reject_invitation_${table_name}_jheo_js"
 				onclick="ctaRejectInvitationSousTribu('${table_name}', '${table_tribu_current}')"
 			>
 				<i class="fa-solid fa-ban"></i>
@@ -848,6 +848,12 @@ function ctaAcceptInvitationSousTribu(table_futur_sous_tribu, table_tribu_curren
 				icon: "success",
 				button: "OK",
 			}).then((r) => {
+				const cta_invitation_action = document.querySelectorAll(".cta_invitation_action_jheo_js");
+
+				cta_invitation_action.forEach((action) => {
+					action.setAttribute("disabled", true);
+				});
+
 				const info_table = document.querySelector(`.${table_tribu_current}_nav_right_jheo_js`);
 				if (!info_table) {
 					location.reload();
