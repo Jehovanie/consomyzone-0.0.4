@@ -362,6 +362,8 @@ class RubriqueCMZ extends MapCMZ {
 			start: true,
 			end: true,
 		};
+
+		this.lastNiveauZoomAction = 0;
 	}
 
 	getNumberMarkerDefault() {
@@ -422,6 +424,7 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		});
 
+		////fetch data foreach rubrique active by default.
 		this.fetchDataIterator();
 	}
 
@@ -519,24 +522,28 @@ class RubriqueCMZ extends MapCMZ {
 	addEventMapOnZoomend() {
 		// Listen for the zoomend event and remove markers when zooming
 		this.map.on("zoomend", () => {
-			var currentZoom = this.map.getZoom(); /// current zoom level
-			if (currentZoom >= this.zoom_max_for_count_per_dep) {
-				if (!this.map.hasLayer(this.markers)) {
-					this.map.addLayer(this.markers);
-				}
-				if (this.map.hasLayer(this.markerClusterForCounterPerDep)) {
-					this.map.removeLayer(this.markerClusterForCounterPerDep);
-				}
-			} else {
-				if (this.map.hasLayer(this.markers)) {
-					this.map.removeLayer(this.markers);
-				}
-
-				if (!this.map.hasLayer(this.markerClusterForCounterPerDep)) {
-					this.map.addLayer(this.markerClusterForCounterPerDep);
-				}
-			}
+			this.toggleCulsterCountPerDepAndCulsterMarker();
 		});
+	}
+
+	toggleCulsterCountPerDepAndCulsterMarker() {
+		var currentZoom = this.map.getZoom(); /// current zoom level
+		if (currentZoom >= this.zoom_max_for_count_per_dep) {
+			if (!this.map.hasLayer(this.markers)) {
+				this.map.addLayer(this.markers);
+			}
+			if (this.map.hasLayer(this.markerClusterForCounterPerDep)) {
+				this.map.removeLayer(this.markerClusterForCounterPerDep);
+			}
+		} else {
+			if (this.map.hasLayer(this.markers)) {
+				this.map.removeLayer(this.markers);
+			}
+
+			if (!this.map.hasLayer(this.markerClusterForCounterPerDep)) {
+				this.map.addLayer(this.markerClusterForCounterPerDep);
+			}
+		}
 	}
 
 	addEventOnMap() {
@@ -551,8 +558,15 @@ class RubriqueCMZ extends MapCMZ {
 			this.handleEventMoveStartForMemoryCenter(e);
 		});
 
-		this.map.on("moveend", (e) => {
-			// this.map.off("moveend");
+		this.addEventOnMapDragend();
+
+		this.addEventOnMapZoomend();
+	}
+
+	addEventOnMapDragend() {
+		this.map.on("dragend ", (e) => {
+			this.map.off("dragend");
+			console.log("dragend...");
 
 			this.handleEventMoveendForMemoryCenter(e);
 
@@ -561,7 +575,7 @@ class RubriqueCMZ extends MapCMZ {
 
 			const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
 
-			this.updateMarkersDisplay(new_size);
+			this.updateMarkersDisplayForDragend(new_size);
 
 			// if (this.stateActionMoveMap.end) {
 			// 	this.stateActionMoveMap = {
@@ -570,6 +584,24 @@ class RubriqueCMZ extends MapCMZ {
 			// 	};
 			// 	this.addPeripheriqueMarker();
 			// }
+		});
+	}
+
+	addEventOnMapZoomend() {
+		this.map.on("zoomend", (e) => {
+			this.map.off("zoomend");
+			console.log("zoomend...");
+
+			this.handleEventMoveendForMemoryCenter(e);
+
+			// this.toggleCulsterCountPerDepAndCulsterMarker();
+
+			const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+			const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+			const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
+
+			this.updateMarkersDisplayForZoomend(new_size);
 		});
 	}
 
@@ -755,7 +787,6 @@ class RubriqueCMZ extends MapCMZ {
 	/**
 	 * @author Jehovanie RAMANDRIJOEL
 	 * où: on Utilise cette fonction dans la rubrique resto,
-	 * localisation du fichier: dans MarkerClusterResto.js,
 	 * je veux: mise a jour les données sur la carte,
 	 * @param {} newSize  { minx, maxx, miny, maxy }
 	 *
@@ -1041,6 +1072,134 @@ class RubriqueCMZ extends MapCMZ {
 
 		////count marker in map
 		this.countMarkerInCart();
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL
+	 * où: this.addEventOnMap
+	 *     alternative for 'this.updateMarkersDisplay' but special for dragend event.
+	 * je veux: mise a jour les données sur la carte,
+	 * @param {} newSize  { minx, maxx, miny, maxy }
+	 *
+	 * - remove markers outside the box
+	 * - Add some markers ( via latitude, ratio, dataMax )
+	 * -
+	 */
+	updateMarkersDisplayForDragend(newSize) {
+		const { minx, maxx, miny, maxy } = newSize;
+
+		// ///REMOVE THE OUTSIDE THE BOX
+		this.removeMarkerOutSideTheBox(newSize);
+
+		const zoom = this.map._zoom;
+		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		const { dataMax, ratio } = current_object_dataMax;
+
+		let count_add = 0;
+
+		const rubrique_active = this.allRubriques.filter((item) => item.is_active === true);
+		const rubrique_active_length = rubrique_active.length;
+
+		const dataMax_with_on_rubrique_active = dataMax * rubrique_active_length;
+
+		const marker_display_copie = [...this.markers_display];
+
+		marker_display_copie.forEach((item_marker_display_copie) => {
+			if (
+				item_marker_display_copie.data.length < dataMax_with_on_rubrique_active &&
+				item_marker_display_copie.markers.length < dataMax_with_on_rubrique_active
+			) {
+				///// mila fenoina....
+				const item_marker_display_copie_lat = item_marker_display_copie.lat;
+
+				rubrique_active.forEach((item_rubrique_active) => {
+					const { api_name } = item_rubrique_active;
+
+					const item_marker_display_original = this.markers_display.find(
+						(item_marker_display) => item_marker_display.lat === item_marker_display_copie_lat
+					);
+
+					//// count marker already display related by the type.
+					const item_rubrique_count = item_marker_display_original.data.reduce((sum, item) => {
+						if (item.rubrique_type === api_name) {
+							return sum + 1;
+						}
+						return sum;
+					}, 0);
+
+					if (item_rubrique_count < dataMax) {
+						const object_rubrique_active = this.defaultData[api_name];
+						const data_rubrique_active = object_rubrique_active.data;
+
+						data_rubrique_active.forEach((item_data_rubrique_active) => {
+							if (
+								!item_marker_display_original.data.some(
+									(item) =>
+										parseInt(item.id) === parseInt(item_data_rubrique_active.id) &&
+										item.rubrique_type === api_name
+								)
+							) {
+								const lat_item = parseFloat(item_data_rubrique_active.lat).toFixed(ratio);
+
+								if (lat_item.toString() === item_marker_display_copie.lat.toString()) {
+									const isInDisplay =
+										item_data_rubrique_active.lat > parseFloat(miny) &&
+										item_data_rubrique_active.lat < parseFloat(maxy) &&
+										item_data_rubrique_active.long > parseFloat(minx) &&
+										item_data_rubrique_active.long < parseFloat(maxx);
+
+									if (isInDisplay) {
+										item_rubrique_active.setSingleMarker(item_data_rubrique_active);
+
+										this.markers_display = this.markers_display.map((item_marker_display_edit) => {
+											if (item_marker_display_edit.lat === item_marker_display_copie_lat) {
+												item_marker_display_edit["data"] = [
+													{ ...item_data_rubrique_active, rubrique_type: api_name },
+													...item_marker_display_edit["data"],
+												];
+											}
+											return item_marker_display_edit;
+										});
+
+										count_add++;
+									}
+								}
+							}
+						});
+					}
+				});
+			}
+		});
+
+		////count marker in map
+		this.countMarkerInCart();
+
+		this.addEventOnMapDragend();
+	}
+
+	updateMarkersDisplayForZoomend(newSize) {
+		const { minx, maxx, miny, maxy } = newSize;
+
+		if (this.lastNiveauZoomAction < this.map._zoom) {
+			// ///REMOVE THE OUTSIDE THE BOX
+			this.removeMarkerOutSideTheBox(newSize);
+
+			//// in
+		} else {
+			//// out
+		}
+
+		//// update this.lastNiveauZoomAction
+		this.lastNiveauZoomAction = this.map._zoom;
+
+		//// Update icon size while zoom in or zoom out
+		this.synchronizeAllIconSize();
+
+		////count marker in map
+		this.countMarkerInCart();
+
+		//// Reset the map event zoomend...
+		this.addEventOnMapZoomend();
 	}
 
 	synchronizeAllIconSize() {
