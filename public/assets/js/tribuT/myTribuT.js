@@ -844,30 +844,30 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
                       </div>
                 </nav>`;
     } else {
-      navMenuTribuT = `<nav class=" mx-auto">
-                    <ul id="navBarTribu" class="navBarTribu-t content_list_navBarTribuT_jheo_js">
-                        <li class="listNavBarTribu">
-                            <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
-                        </li>
-                        ${restExtension}
-                        ${golfExtension}
-                        <li class="listNavBarTribu partisantT">
-                            <a style="cursor:pointer;">Partisans</a>
-                        </li>
-                        
-                        <li class="listNavBarTribu">
-                            <a style="cursor:pointer;" id="see-gallery">Photos</a>
-                        </li>
-                        <li class="listNavBarTribu invitation">
-                            <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
-                        </li>
+      navMenuTribuT = `
+        <nav class="mx-auto">
+          <ul id="navBarTribu" class="navBarTribu-t d-flex flex-nowrap align-items-center content_list_navBarTribuT_jheo_js" style="gap:5px">
+              <li class="listNavBarTribu">
+                  <a class="active" id="ulActualites" style="cursor:pointer;" onclick="showActualites()">Actualités</a>
+              </li>
+              ${restExtension}
+              ${golfExtension}
+              <li class="listNavBarTribu partisantT">
+                  <a style="cursor:pointer;">Partisans</a>
+              </li>
+              
+              <li class="listNavBarTribu">
+                  <a style="cursor:pointer;" id="see-gallery">Photos</a>
+              </li>
+              <li class="listNavBarTribu invitation">
+                  <a style="cursor:pointer;" onclick="showInvitations()">Invitations</a>
+              </li>
 
-                        ${newsLetterTribuT}
-                        ${postulantListe}
-                        ${canUpdateTribuInfo}
-
-                    </ul>
-                </nav>`;
+              ${newsLetterTribuT}
+              ${postulantListe}
+              ${canUpdateTribuInfo}
+          </ul>
+        </nav>`;
     }
 
     document.querySelector("#content-pub-js").innerHTML = `
@@ -946,6 +946,22 @@ function showdDataContent(dataFirst, type, tribu_t_name, id_c_u, lastId = 0) {
     `;
 
     bindActionNewsLetterTribuT(tribu_t_name);
+
+
+    var slickConfig = {
+      slidesToShow: 5,
+      slidesToScroll: 1,
+      speed: 500,
+      infinite: true,
+      arrows: true,
+      autoplay: true,
+      autoplaySpeed: 1000,
+      prevArrow: `<i class="fa-solid fa-circle-chevron-left fs-3 cursor-pointer color_blue"></i>`,
+      nextArrow: `<i class="fa-solid fa-circle-chevron-right fs-3 cursor-pointer color_blue"></i>`,
+    };
+
+	  $("#navBarTribu").slick(slickConfig);
+
   }
 
   //
