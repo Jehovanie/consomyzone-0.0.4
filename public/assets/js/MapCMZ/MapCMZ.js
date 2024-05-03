@@ -289,6 +289,8 @@ class MapCMZ {
 			layers: [this.tiles],
 		});
 
+		this.lastNiveauZoomAction = map_zoom;
+
 		this.leafletAddControl("topright");
 
 		// this.handleEventOnMap();
@@ -421,7 +423,9 @@ class MapCMZ {
 			return false;
 		}
 
-		this.geos = await this.settingGeos();
+		if (!this.geos) {
+			this.geos = await this.settingGeos();
+		}
 
 		// this.geoJSONLayer = L.geoJson().addTo(this.map);
 		this.geoJSONLayer = L.geoJson(this.geos, {
