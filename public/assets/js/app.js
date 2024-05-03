@@ -2339,7 +2339,7 @@ function showToastMessage() {
 	Cookies2.set(`isCanUseCookie`, true, { expires: 30, secure: true });
 	// document.cookie = "isCanUseCookie=1";
 	closeAskClientToUseCookie();
-	getToastMessage();
+	getToastMessage([]);
 }
 
 function notCanUseCookie() {
