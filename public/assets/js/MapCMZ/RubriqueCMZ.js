@@ -2241,6 +2241,17 @@ class RubriqueCMZ extends MapCMZ {
 					badge_navbar_rubrique.classList.add("d-none");
 				}
 			}
+
+			const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+			const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+			const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
+
+			const zoom = this.map._zoom;
+			const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+			const { dataMax, ratio } = current_object_dataMax;
+
+			this.completeMarkerDisplay(new_size, dataMax, ratio);
 		});
 	}
 
@@ -2259,15 +2270,6 @@ class RubriqueCMZ extends MapCMZ {
 							return true;
 						}
 					}
-					const marker_to_remove = item_markers_display.markers.find((item_md_markers) => {
-						if (
-							item_md_data.id === parseInt(item_md_markers.options.id) &&
-							item_md_data.rubrique_type < item_md_markers.options.type
-						) {
-							return true;
-						}
-					});
-
 					return false;
 				});
 			}
@@ -2313,7 +2315,12 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		});
 
-		this.countMarkerInCart();
+		if (departement !== "tous") {
+			const dep = parseInt(departement);
+			this.map.setView(L.latLng(centers[dep].lat, centers[dep].lng), centers[dep].zoom, {
+				animation: true,
+			});
+		}
 	}
 
 	async fetchDepartement() {
