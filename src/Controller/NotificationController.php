@@ -79,7 +79,7 @@ class NotificationController extends AbstractController
         $data = json_decode($request->getContent(), true);
         extract($data); /// $privateID
 
-        $privateID= isset($$privateID) ? $privateID : [];
+        $privateID= isset($privateID) ? $privateID : [];
 
         $result = $notificationsService->getToastMessage($privateID);
 

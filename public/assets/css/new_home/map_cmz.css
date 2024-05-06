@@ -28,7 +28,7 @@
 	flex-wrap: wrap;
 	align-items: center;
 	justify-content: flex-start;
-	gap: 10px;
+	/* gap: 10px; */
 }
 
 .content_list_rubrique_active {

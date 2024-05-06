@@ -27,9 +27,12 @@ class RubriqueCMZ extends MapCMZ {
 				filter: {
 					is_filtered: false,
 					departement: "tous",
+					default: "tous",
 					notation: {
 						min: 0,
 						max: 5,
+						min_default: 0,
+						max_default: 5,
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -58,9 +61,12 @@ class RubriqueCMZ extends MapCMZ {
 				filter: {
 					is_filtered: false,
 					departement: "tous",
+					default: "tous",
 					notation: {
 						min: 0,
 						max: 5,
+						min_default: 0,
+						max_default: 5,
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -89,9 +95,12 @@ class RubriqueCMZ extends MapCMZ {
 				filter: {
 					is_filtered: false,
 					departement: "tous",
+					default: "tous",
 					notation: {
 						min: 0,
 						max: 5,
+						min_default: 0,
+						max_default: 5,
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -120,9 +129,12 @@ class RubriqueCMZ extends MapCMZ {
 				filter: {
 					is_filtered: false,
 					departement: "tous",
+					default: "tous",
 					notation: {
 						min: 0,
 						max: 5,
+						min_default: 0,
+						max_default: 5,
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -151,9 +163,12 @@ class RubriqueCMZ extends MapCMZ {
 				filter: {
 					is_filtered: false,
 					departement: "tous",
+					default: "tous",
 					notation: {
 						min: 0,
 						max: 5,
+						min_default: 0,
+						max_default: 5,
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -182,9 +197,12 @@ class RubriqueCMZ extends MapCMZ {
 				filter: {
 					is_filtered: false,
 					departement: "tous",
+					default: "tous",
 					notation: {
 						min: 0,
 						max: 5,
+						min_default: 0,
+						max_default: 5,
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -213,9 +231,12 @@ class RubriqueCMZ extends MapCMZ {
 				filter: {
 					is_filtered: false,
 					departement: "tous",
+					default: "tous",
 					notation: {
 						min: 0,
 						max: 5,
+						min_default: 0,
+						max_default: 5,
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -244,9 +265,12 @@ class RubriqueCMZ extends MapCMZ {
 				filter: {
 					is_filtered: false,
 					departement: "tous",
+					default: "tous",
 					notation: {
 						min: 0,
 						max: 5,
+						min_default: 0,
+						max_default: 5,
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -275,9 +299,12 @@ class RubriqueCMZ extends MapCMZ {
 				filter: {
 					is_filtered: false,
 					departement: "tous",
+					default: "tous",
 					notation: {
 						min: 0,
 						max: 5,
+						min_default: 0,
+						max_default: 5,
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -306,9 +333,12 @@ class RubriqueCMZ extends MapCMZ {
 				filter: {
 					is_filtered: false,
 					departement: "tous",
+					default: "tous",
 					notation: {
 						min: 0,
 						max: 5,
+						min_default: 0,
+						max_default: 5,
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -326,7 +356,14 @@ class RubriqueCMZ extends MapCMZ {
 			},
 		];
 
-		const rubrique_active_default = ["restaurant", "ferme", "station"];
+		const rubrique_active_default = [
+			"restaurant",
+			// "ferme",
+			// "station",
+			// "golf",
+			// "tabac",
+			// "marche"
+		];
 
 		this.allRubriques = this.allRubriques.map((item_allRubriques) => {
 			if (rubrique_active_default.includes(item_allRubriques.api_name)) {
@@ -667,89 +704,102 @@ class RubriqueCMZ extends MapCMZ {
 		data.forEach((item) => {
 			const key_lat = parseFloat(parseFloat(item.lat).toFixed(ratio));
 
-			const is_in_marker_display = this.markers_display.some((item_markes_display) => {
-				return item_markes_display.lat.toString() === key_lat.toString();
-			});
+			const moyenne_note = item.hasOwnProperty("moyenne_note")
+				? parseFloat(parseFloat(item.moyenne_note).toFixed(2))
+				: 0;
 
-			if (is_in_marker_display) {
-				let is_already_in_markers = this.markers_display.some((item_marker_display) => {
-					if (item_marker_display.lat.toString() === key_lat.toString()) {
-						return item_marker_display.data.some(
-							(item_marker_display_data) =>
-								item_marker_display_data.id === item.id &&
-								item_marker_display_data.rubrique_type === rubrique_type
-						);
-					}
-					return false;
+			const is_match_filter_notation =
+				moyenne_note >= rubrique_type_object.filter.notation.min &&
+				moyenne_note <= rubrique_type_object.filter.notation.max;
+
+			if (is_match_filter_notation) {
+				const is_in_marker_display = this.markers_display.some((item_markes_display) => {
+					return item_markes_display.lat.toString() === key_lat.toString();
 				});
 
-				if (!is_already_in_markers) {
-					count_temp++;
-
-					if (this.map._zoom <= 15) {
-						const marker_display_object = this.markers_display.find((item_markes_display) => {
-							return item_markes_display.lat.toString() === key_lat.toString();
-						});
-
-						if (
-							marker_display_object &&
-							marker_display_object.data.length >= dataMax * default_rubrique_active.length
-						) {
-							const marker_display_object_data = marker_display_object.data;
-
-							const index_radom = Math.floor(Math.random() * marker_display_object_data.length);
-							const item_radom = marker_display_object_data[index_radom];
-
-							const marker_to_remove = marker_display_object.markers.find((item_marker_display_objet) => {
-								return (
-									parseInt(item_marker_display_objet.options.id) === parseInt(item_radom.id) &&
-									item_marker_display_objet.options.type === item_radom.rubrique_type
-								);
-							});
-
-							if (marker_to_remove) {
-								this.markers.removeLayer(marker_to_remove);
-							}
-
-							this.markers_display = this.markers_display.map((item_markes_display) => {
-								if (item_markes_display.lat.toString() === key_lat.toString()) {
-									item_markes_display = {
-										...item_markes_display,
-										data: item_markes_display.data.filter((item_md_data) => {
-											if (
-												item_md_data.id === item_radom.id &&
-												item_md_data.rubrique_type === item_radom.rubrique_type
-											) {
-												return false;
-											}
-											return true;
-										}),
-										markers: item_markes_display.markers.filter((item_md_markers) => {
-											if (
-												parseInt(item_md_markers.options.id) === parseInt(item_radom.id) &&
-												item_md_markers.options.type === item_radom.rubrique_type
-											) {
-												return false;
-											}
-											return true;
-										}),
-									};
-								}
-								return item_markes_display;
-							});
+				if (is_in_marker_display) {
+					let is_already_in_markers = this.markers_display.some((item_marker_display) => {
+						if (item_marker_display.lat.toString() === key_lat.toString()) {
+							return item_marker_display.data.some(
+								(item_marker_display_data) =>
+									item_marker_display_data.id === item.id &&
+									item_marker_display_data.rubrique_type === rubrique_type
+							);
 						}
-					}
-
-					rubrique_type_object.setSingleMarker(item, {});
-
-					const item_lat_with_ratio = parseFloat(parseFloat(item.lat).toFixed(ratio)).toString();
-
-					this.markers_display = this.markers_display.map((md_item) => {
-						if (md_item.lat.toString() === item_lat_with_ratio) {
-							md_item["data"] = [{ ...item, rubrique_type: rubrique_type }, ...md_item["data"]];
-						}
-						return md_item;
+						return false;
 					});
+
+					if (!is_already_in_markers) {
+						count_temp++;
+
+						if (this.map._zoom <= 15) {
+							const marker_display_object = this.markers_display.find((item_markes_display) => {
+								return item_markes_display.lat.toString() === key_lat.toString();
+							});
+
+							if (
+								marker_display_object &&
+								marker_display_object.data.length >= dataMax * default_rubrique_active.length
+							) {
+								const marker_display_object_data = marker_display_object.data;
+
+								const index_radom = Math.floor(Math.random() * marker_display_object_data.length);
+								const item_radom = marker_display_object_data[index_radom];
+
+								const marker_to_remove = marker_display_object.markers.find(
+									(item_marker_display_objet) => {
+										return (
+											parseInt(item_marker_display_objet.options.id) ===
+												parseInt(item_radom.id) &&
+											item_marker_display_objet.options.type === item_radom.rubrique_type
+										);
+									}
+								);
+
+								if (marker_to_remove) {
+									this.markers.removeLayer(marker_to_remove);
+								}
+
+								this.markers_display = this.markers_display.map((item_markes_display) => {
+									if (item_markes_display.lat.toString() === key_lat.toString()) {
+										item_markes_display = {
+											...item_markes_display,
+											data: item_markes_display.data.filter((item_md_data) => {
+												if (
+													item_md_data.id === item_radom.id &&
+													item_md_data.rubrique_type === item_radom.rubrique_type
+												) {
+													return false;
+												}
+												return true;
+											}),
+											markers: item_markes_display.markers.filter((item_md_markers) => {
+												if (
+													parseInt(item_md_markers.options.id) === parseInt(item_radom.id) &&
+													item_md_markers.options.type === item_radom.rubrique_type
+												) {
+													return false;
+												}
+												return true;
+											}),
+										};
+									}
+									return item_markes_display;
+								});
+							}
+						}
+
+						rubrique_type_object.setSingleMarker(item, {});
+
+						const item_lat_with_ratio = parseFloat(parseFloat(item.lat).toFixed(ratio)).toString();
+
+						this.markers_display = this.markers_display.map((md_item) => {
+							if (md_item.lat.toString() === item_lat_with_ratio) {
+								md_item["data"] = [{ ...item, rubrique_type: rubrique_type }, ...md_item["data"]];
+							}
+							return md_item;
+						});
+					}
 				}
 			}
 		});
@@ -1091,6 +1141,7 @@ class RubriqueCMZ extends MapCMZ {
 		// ///REMOVE THE OUTSIDE THE BOX
 		this.removeMarkerOutSideTheBox(newSize);
 
+		///// mila fenoina....
 		const zoom = this.map._zoom;
 		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
 		const { dataMax, ratio } = current_object_dataMax;
@@ -1110,11 +1161,10 @@ class RubriqueCMZ extends MapCMZ {
 				item_marker_display_copie.data.length < dataMax_with_on_rubrique_active &&
 				item_marker_display_copie.markers.length < dataMax_with_on_rubrique_active
 			) {
-				///// mila fenoina....
 				const item_marker_display_copie_lat = item_marker_display_copie.lat;
 
 				rubrique_active.forEach((item_rubrique_active) => {
-					const { api_name } = item_rubrique_active;
+					const { api_name, filter } = item_rubrique_active;
 
 					const item_marker_display_original = this.markers_display.find(
 						(item_marker_display) => item_marker_display.lat === item_marker_display_copie_lat
@@ -1133,36 +1183,49 @@ class RubriqueCMZ extends MapCMZ {
 						const data_rubrique_active = object_rubrique_active.data;
 
 						data_rubrique_active.forEach((item_data_rubrique_active) => {
-							if (
-								!item_marker_display_original.data.some(
-									(item) =>
-										parseInt(item.id) === parseInt(item_data_rubrique_active.id) &&
-										item.rubrique_type === api_name
-								)
-							) {
-								const lat_item = parseFloat(item_data_rubrique_active.lat).toFixed(ratio);
+							const is_not_in_data = !item_marker_display_original.data.some(
+								(item) =>
+									parseInt(item.id) === parseInt(item_data_rubrique_active.id) &&
+									item.rubrique_type === api_name
+							);
 
-								if (lat_item.toString() === item_marker_display_copie.lat.toString()) {
-									const isInDisplay =
-										item_data_rubrique_active.lat > parseFloat(miny) &&
-										item_data_rubrique_active.lat < parseFloat(maxy) &&
-										item_data_rubrique_active.long > parseFloat(minx) &&
-										item_data_rubrique_active.long < parseFloat(maxx);
+							if (is_not_in_data) {
+								const moyenne_note = item_data_rubrique_active.hasOwnProperty("moyenne_note")
+									? parseFloat(parseFloat(item_data_rubrique_active.moyenne_note).toFixed(2))
+									: 0;
 
-									if (isInDisplay) {
-										item_rubrique_active.setSingleMarker(item_data_rubrique_active);
+								const is_match_filter_notation =
+									moyenne_note >= filter.notation.min && moyenne_note <= filter.notation.max;
 
-										this.markers_display = this.markers_display.map((item_marker_display_edit) => {
-											if (item_marker_display_edit.lat === item_marker_display_copie_lat) {
-												item_marker_display_edit["data"] = [
-													{ ...item_data_rubrique_active, rubrique_type: api_name },
-													...item_marker_display_edit["data"],
-												];
-											}
-											return item_marker_display_edit;
-										});
+								if (is_match_filter_notation) {
+									const lat_item = parseFloat(item_data_rubrique_active.lat).toFixed(ratio);
 
-										count_add++;
+									if (lat_item.toString() === item_marker_display_copie.lat.toString()) {
+										const isInDisplay =
+											item_data_rubrique_active.lat > parseFloat(miny) &&
+											item_data_rubrique_active.lat < parseFloat(maxy) &&
+											item_data_rubrique_active.long > parseFloat(minx) &&
+											item_data_rubrique_active.long < parseFloat(maxx);
+
+										if (isInDisplay) {
+											item_rubrique_active.setSingleMarker(item_data_rubrique_active);
+
+											this.markers_display = this.markers_display.map(
+												(item_marker_display_edit) => {
+													if (
+														item_marker_display_edit.lat === item_marker_display_copie_lat
+													) {
+														item_marker_display_edit["data"] = [
+															{ ...item_data_rubrique_active, rubrique_type: api_name },
+															...item_marker_display_edit["data"],
+														];
+													}
+													return item_marker_display_edit;
+												}
+											);
+
+											count_add++;
+										}
 									}
 								}
 							}
@@ -1199,7 +1262,7 @@ class RubriqueCMZ extends MapCMZ {
 				const item_marker_display_copie_lat = item_marker_display_copie.lat;
 
 				rubrique_active.forEach((item_rubrique_active) => {
-					const { api_name } = item_rubrique_active;
+					const { api_name, filter } = item_rubrique_active;
 
 					const item_marker_display_original = this.markers_display.find(
 						(item_marker_display) => item_marker_display.lat === item_marker_display_copie_lat
@@ -1218,34 +1281,47 @@ class RubriqueCMZ extends MapCMZ {
 						const data_rubrique_active = object_rubrique_active.data;
 
 						data_rubrique_active.forEach((item_data_rubrique_active) => {
-							if (
-								!item_marker_display_original.data.some(
-									(item) =>
-										parseInt(item.id) === parseInt(item_data_rubrique_active.id) &&
-										item.rubrique_type === api_name
-								)
-							) {
-								const lat_item = parseFloat(item_data_rubrique_active.lat).toFixed(ratio);
+							const is_not_in_data = !item_marker_display_original.data.some(
+								(item) =>
+									parseInt(item.id) === parseInt(item_data_rubrique_active.id) &&
+									item.rubrique_type === api_name
+							);
 
-								if (lat_item.toString() === item_marker_display_copie.lat.toString()) {
-									const isInDisplay =
-										item_data_rubrique_active.lat > parseFloat(miny) &&
-										item_data_rubrique_active.lat < parseFloat(maxy) &&
-										item_data_rubrique_active.long > parseFloat(minx) &&
-										item_data_rubrique_active.long < parseFloat(maxx);
+							if (is_not_in_data) {
+								const moyenne_note = item_data_rubrique_active.hasOwnProperty("moyenne_note")
+									? parseFloat(parseFloat(item_data_rubrique_active.moyenne_note).toFixed(2))
+									: 0;
 
-									if (isInDisplay) {
-										item_rubrique_active.setSingleMarker(item_data_rubrique_active);
+								const is_match_filter_notation =
+									moyenne_note >= filter.notation.min && moyenne_note <= filter.notation.max;
 
-										this.markers_display = this.markers_display.map((item_marker_display_edit) => {
-											if (item_marker_display_edit.lat === item_marker_display_copie_lat) {
-												item_marker_display_edit["data"] = [
-													{ ...item_data_rubrique_active, rubrique_type: api_name },
-													...item_marker_display_edit["data"],
-												];
-											}
-											return item_marker_display_edit;
-										});
+								if (is_match_filter_notation) {
+									const lat_item = parseFloat(item_data_rubrique_active.lat).toFixed(ratio);
+
+									if (lat_item.toString() === item_marker_display_copie.lat.toString()) {
+										const isInDisplay =
+											item_data_rubrique_active.lat > parseFloat(miny) &&
+											item_data_rubrique_active.lat < parseFloat(maxy) &&
+											item_data_rubrique_active.long > parseFloat(minx) &&
+											item_data_rubrique_active.long < parseFloat(maxx);
+
+										if (isInDisplay) {
+											item_rubrique_active.setSingleMarker(item_data_rubrique_active);
+
+											this.markers_display = this.markers_display.map(
+												(item_marker_display_edit) => {
+													if (
+														item_marker_display_edit.lat === item_marker_display_copie_lat
+													) {
+														item_marker_display_edit["data"] = [
+															{ ...item_data_rubrique_active, rubrique_type: api_name },
+															...item_marker_display_edit["data"],
+														];
+													}
+													return item_marker_display_edit;
+												}
+											);
+										}
 									}
 								}
 							}
@@ -1282,6 +1358,11 @@ class RubriqueCMZ extends MapCMZ {
 					let is_rubrique_type_active = rubrique_active.some((item) => item.api_name === key_rubrique_type);
 
 					if (is_rubrique_type_active) {
+						let rubrique_type_active_object = rubrique_active.find(
+							(item) => item.api_name === key_rubrique_type
+						);
+						const { filter: rubrique_filter } = rubrique_type_active_object;
+
 						const rubrique_type = this.defaultData[key_rubrique_type];
 
 						rubrique_type.data.forEach((item_rubrique) => {
@@ -1294,28 +1375,44 @@ class RubriqueCMZ extends MapCMZ {
 								item_rubrique.long < parseFloat(maxx);
 
 							if (isInDisplay) {
-								markers_display = markers_display.map((item_marker_display) => {
-									if (item_marker_display.lat.toString() === lat_item_rubrique.toString()) {
-										let count_data_per_rubrique = item_marker_display.data.reduce((sum, item) => {
-											if (item.rubrique_type === rubrique_type) {
-												sum = sum + 1;
+								const moyenne_note = item_rubrique.hasOwnProperty("moyenne_note")
+									? parseFloat(parseFloat(item_rubrique.moyenne_note).toFixed(2))
+									: 0;
+
+								const is_match_filter_notation =
+									moyenne_note >= rubrique_filter.notation.min &&
+									moyenne_note <= rubrique_filter.notation.max;
+
+								if (is_match_filter_notation) {
+									markers_display = markers_display.map((item_marker_display) => {
+										if (item_marker_display.lat.toString() === lat_item_rubrique.toString()) {
+											let count_data_per_rubrique = item_marker_display.data.reduce(
+												(sum, item) => {
+													if (item.rubrique_type === rubrique_type) {
+														sum = sum + 1;
+													}
+													return sum;
+												},
+												0
+											);
+
+											if (
+												item_marker_display.data.length < dataMax * rubrique_active.length &&
+												count_data_per_rubrique < dataMax
+											) {
+												item_marker_display.data.push({
+													...item_rubrique,
+													rubrique_type: key_rubrique_type,
+												});
 											}
-											return sum;
-										}, 0);
-
-										if (
-											item_marker_display.data.length < dataMax * rubrique_active.length &&
-											count_data_per_rubrique < dataMax
-										) {
-											item_marker_display.data.push({
-												...item_rubrique,
-												rubrique_type: key_rubrique_type,
-											});
 										}
-									}
 
-									return item_marker_display;
-								});
+										return item_marker_display;
+									});
+								} else {
+									console.log("is_match_filter_notation");
+									console.log(is_match_filter_notation);
+								}
 							}
 						});
 					}
@@ -1382,6 +1479,11 @@ class RubriqueCMZ extends MapCMZ {
 					let is_rubrique_type_active = rubrique_active.some((item) => item.api_name === key_rubrique_type);
 
 					if (is_rubrique_type_active) {
+						let rubrique_type_active_object = rubrique_active.find(
+							(item) => item.api_name === key_rubrique_type
+						);
+						const { filter: rubrique_filter } = rubrique_type_active_object;
+
 						const rubrique_type = this.defaultData[key_rubrique_type];
 
 						rubrique_type.data.forEach((item_rubrique) => {
@@ -1394,28 +1496,41 @@ class RubriqueCMZ extends MapCMZ {
 								item_rubrique.long < parseFloat(maxx);
 
 							if (isInDisplay) {
-								markers_display = markers_display.map((item_marker_display) => {
-									if (item_marker_display.lat.toString() === lat_item_rubrique.toString()) {
-										let count_data_per_rubrique = item_marker_display.data.reduce((sum, item) => {
-											if (item.rubrique_type === rubrique_type) {
-												sum = sum + 1;
+								const moyenne_note = item_rubrique.hasOwnProperty("moyenne_note")
+									? parseFloat(parseFloat(item_rubrique.moyenne_note).toFixed(2))
+									: 0;
+
+								const is_match_filter_notation =
+									moyenne_note >= rubrique_filter.notation.min &&
+									moyenne_note <= rubrique_filter.notation.max;
+
+								if (is_match_filter_notation) {
+									markers_display = markers_display.map((item_marker_display) => {
+										if (item_marker_display.lat.toString() === lat_item_rubrique.toString()) {
+											let count_data_per_rubrique = item_marker_display.data.reduce(
+												(sum, item) => {
+													if (item.rubrique_type === rubrique_type) {
+														sum = sum + 1;
+													}
+													return sum;
+												},
+												0
+											);
+
+											if (
+												item_marker_display.data.length < dataMax * rubrique_active.length &&
+												count_data_per_rubrique < dataMax
+											) {
+												item_marker_display.data.push({
+													...item_rubrique,
+													rubrique_type: key_rubrique_type,
+												});
 											}
-											return sum;
-										}, 0);
-
-										if (
-											item_marker_display.data.length < dataMax * rubrique_active.length &&
-											count_data_per_rubrique < dataMax
-										) {
-											item_marker_display.data.push({
-												...item_rubrique,
-												rubrique_type: key_rubrique_type,
-											});
 										}
-									}
 
-									return item_marker_display;
-								});
+										return item_marker_display;
+									});
+								}
 							}
 						});
 					}
@@ -2026,13 +2141,13 @@ class RubriqueCMZ extends MapCMZ {
 				});
 			}
 
-			this.handleActionFilter(rubrique_type);
+			this.bindActionFilter(rubrique_type);
 		} catch (error) {
 			console.log(error);
 		}
 	}
 
-	handleActionFilter(rubrique_type) {
+	bindActionFilter(rubrique_type) {
 		if (!document.querySelector(".filter_departement_jheo_js")) {
 			console.log("Selector not found: 'filter_departement_jheo_js'");
 			return false;
@@ -2049,6 +2164,7 @@ class RubriqueCMZ extends MapCMZ {
 
 		cta_to_filter.addEventListener("click", () => {
 			cta_to_filter.innerText = "Recherche en cours...";
+
 			cta_to_filter.classList.remove("btn-primary");
 			cta_to_filter.classList.add("btn-secondary");
 
@@ -2060,6 +2176,7 @@ class RubriqueCMZ extends MapCMZ {
 					rubrique = {
 						...rubrique,
 						filter: {
+							...rubrique.filter,
 							is_filtered: true,
 							departement: filter_dep_value,
 							notation: {
@@ -2079,8 +2196,20 @@ class RubriqueCMZ extends MapCMZ {
 					badge_navbar_rubrique.classList.remove("d-none");
 				}
 			}
+
+			console.log("filter_price");
+			console.log(filter_price);
+
+			console.log("filter_dep_value");
+			console.log(filter_dep_value);
+
+			this.handleActionFilter(rubrique_type, {
+				note: { min: parseFloat(filter_price[0]), max: parseFloat(filter_price[1]) },
+				departement: filter_dep_value,
+			});
 		});
 
+		//// reset all filter
 		const cta_to_cancel_filter = document.querySelector(".cta_to_cancel_filter_jheo_js");
 		cta_to_cancel_filter.addEventListener("click", () => {
 			this.allRubriques = this.allRubriques.map((rubrique) => {
@@ -2113,6 +2242,78 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			}
 		});
+	}
+
+	handleActionFilter(rubrique_type, object_filter) {
+		const { note, departement } = object_filter;
+
+		/// filter by note
+		this.markers_display = this.markers_display.map((item_markers_display) => {
+			if (item_markers_display.data.length > 0) {
+				item_markers_display.data = item_markers_display.data.filter((item_md_data) => {
+					if (
+						parseFloat(item_md_data.moyenne_note) >= note.min &&
+						parseFloat(item_md_data.moyenne_note) <= note.max
+					) {
+						if (departement === "tous" || parseInt(item_md_data.dep) === parseInt(departement)) {
+							return true;
+						}
+					}
+					const marker_to_remove = item_markers_display.markers.find((item_md_markers) => {
+						if (
+							item_md_data.id === parseInt(item_md_markers.options.id) &&
+							item_md_data.rubrique_type < item_md_markers.options.type
+						) {
+							return true;
+						}
+					});
+
+					return false;
+				});
+			}
+
+			return item_markers_display;
+		});
+
+		////remove markers not matching
+		this.markers_display.forEach((jtem_markers_display) => {
+			const { markers: markers_jtem_md, data: data_jtem_markers_display } = jtem_markers_display;
+
+			markers_jtem_md.forEach((item_marker) => {
+				const is_removed = data_jtem_markers_display.some((item_data) => {
+					return (
+						item_data.id === parseInt(item_marker.options.id) &&
+						item_data.rubrique_type === item_marker.options.type
+					);
+				});
+
+				if (!is_removed) {
+					this.markers.removeLayer(item_marker);
+				}
+			});
+		});
+
+		this.markers.eachLayer((item_marker) => {
+			const item_marker_id = parseInt(item_marker.options.id);
+			const item_marker_type = item_marker.options.type;
+
+			const object_rubrique = this.defaultData[item_marker_type];
+			const data = object_rubrique.data;
+
+			const item_data = data.find((item) => item.id === item_marker_id);
+			if (item_data) {
+				const moyenne_note = item_data.hasOwnProperty("moyenne_note")
+					? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
+					: 0;
+
+				const is_match_filter_notation = moyenne_note >= note.min && moyenne_note <= note.max;
+				if (!is_match_filter_notation) {
+					this.markers.removeLayer(item_marker);
+				}
+			}
+		});
+
+		this.countMarkerInCart();
 	}
 
 	async fetchDepartement() {
@@ -2255,7 +2456,7 @@ class RubriqueCMZ extends MapCMZ {
 	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
 	 *
 	 * @whereIUseIt [
-	 * 	 this.handleActionFilter()
+	 * 	 this.bindActionFilter()
 	 * ]
 	 */
 	resetSliderNotation() {

@@ -538,8 +538,8 @@ function injectListMarker(data, isInSearch = false) {
 	}
 
 	let message = isInSearch
-		? "Il semble que vos restaurants pastilles ne figurent pas parmi les résultats de recherche ou n'avez aucun restaurant pastille."
-		: "Vous n'avez pas de restaurant pastille ou vous n'avez pas encore de tribu T avec une extension restaurant.";
+		? "Il semble que vos restaurants pastillés ne figurent pas parmi les résultats de recherche ou n'avez aucun restaurant pastille."
+		: "Vous n'avez pas de restaurant pastillé ou vous n'avez pas encore de tribu T avec une extension restaurant.";
 	let dataHTML =
 		data.length > 0
 			? dataListMarker(data)

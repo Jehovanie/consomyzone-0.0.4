@@ -2135,6 +2135,11 @@ function expand(e) {
  * @return (resultat fetch) /// object { success: '', toastMessage : [ {id: ..., toast_message: ..., is_update: ...}, ...] }
  */
 function getToastMessage(dataToastMessage) {
+	const url_invalide = ["new_home", "connexion"];
+	if (url_invalide.some((item) => window.location.pathname.includes(item))) {
+		return false;
+	}
+
 	let url = "/notification/toast-message";
 	const request = new Request(url, {
 		method: "POST",
