@@ -588,6 +588,17 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	addEventOnMap() {
+		///move start
+		this.addEventOnMapMoveStart();
+
+		//// drag end
+		this.addEventOnMapDragend();
+
+		/// zoom end
+		this.addEventOnMapZoomend();
+	}
+
+	addEventOnMapMoveStart() {
 		this.map.on("movestart", (e) => {
 			this.map.off("movestart");
 
@@ -598,10 +609,6 @@ class RubriqueCMZ extends MapCMZ {
 
 			this.handleEventMoveStartForMemoryCenter(e);
 		});
-
-		this.addEventOnMapDragend();
-
-		this.addEventOnMapZoomend();
 	}
 
 	addEventOnMapDragend() {
@@ -712,7 +719,13 @@ class RubriqueCMZ extends MapCMZ {
 				moyenne_note >= rubrique_type_object.filter.notation.min &&
 				moyenne_note <= rubrique_type_object.filter.notation.max;
 
-			if (is_match_filter_notation) {
+			let is_match_filter_departement =
+				rubrique_type_object.filter.departement === "tous" ||
+				parseInt(rubrique_type_object.filter.departement) === parseInt(item.dep)
+					? true
+					: false;
+
+			if (is_match_filter_departement && is_match_filter_notation) {
 				const is_in_marker_display = this.markers_display.some((item_markes_display) => {
 					return item_markes_display.lat.toString() === key_lat.toString();
 				});
@@ -1197,7 +1210,13 @@ class RubriqueCMZ extends MapCMZ {
 								const is_match_filter_notation =
 									moyenne_note >= filter.notation.min && moyenne_note <= filter.notation.max;
 
-								if (is_match_filter_notation) {
+								const is_match_filter_departement =
+									filter.departement === "tous" &&
+									parseInt(filter.departement) === parseInt(item_data_rubrique_active.dep)
+										? true
+										: false;
+
+								if (is_match_filter_departement && is_match_filter_notation) {
 									const lat_item = parseFloat(item_data_rubrique_active.lat).toFixed(ratio);
 
 									if (lat_item.toString() === item_marker_display_copie.lat.toString()) {
@@ -1258,7 +1277,6 @@ class RubriqueCMZ extends MapCMZ {
 				item_marker_display_copie.markers.length < dataMax_with_on_rubrique_active
 			) {
 				///// mila fenoina....
-
 				const item_marker_display_copie_lat = item_marker_display_copie.lat;
 
 				rubrique_active.forEach((item_rubrique_active) => {
@@ -1295,7 +1313,13 @@ class RubriqueCMZ extends MapCMZ {
 								const is_match_filter_notation =
 									moyenne_note >= filter.notation.min && moyenne_note <= filter.notation.max;
 
-								if (is_match_filter_notation) {
+								const is_match_filter_departement =
+									filter.departement === "tous" ||
+									parseInt(filter.departement) === parseInt(item_data_rubrique_active.dep)
+										? true
+										: false;
+
+								if (is_match_filter_departement && is_match_filter_notation) {
 									const lat_item = parseFloat(item_data_rubrique_active.lat).toFixed(ratio);
 
 									if (lat_item.toString() === item_marker_display_copie.lat.toString()) {
@@ -1355,12 +1379,12 @@ class RubriqueCMZ extends MapCMZ {
 
 				for (const key_rubrique_type in this.defaultData) {
 					///check if this rubrique_type is active...
-					let is_rubrique_type_active = rubrique_active.some((item) => item.api_name === key_rubrique_type);
+					let rubrique_type_active_object = rubrique_active.find(
+						(item) => item.api_name === key_rubrique_type
+					);
 
-					if (is_rubrique_type_active) {
-						let rubrique_type_active_object = rubrique_active.find(
-							(item) => item.api_name === key_rubrique_type
-						);
+					if (rubrique_type_active_object != undefined) {
+						
 						const { filter: rubrique_filter } = rubrique_type_active_object;
 
 						const rubrique_type = this.defaultData[key_rubrique_type];
@@ -1383,7 +1407,13 @@ class RubriqueCMZ extends MapCMZ {
 									moyenne_note >= rubrique_filter.notation.min &&
 									moyenne_note <= rubrique_filter.notation.max;
 
-								if (is_match_filter_notation) {
+								const is_match_filter_departement =
+									rubrique_filter.departement === "tous" ||
+									parseInt(rubrique_filter.departement) === parseInt(item_rubrique.dep)
+										? true
+										: false;
+
+								if (is_match_filter_departement && is_match_filter_notation) {
 									markers_display = markers_display.map((item_marker_display) => {
 										if (item_marker_display.lat.toString() === lat_item_rubrique.toString()) {
 											let count_data_per_rubrique = item_marker_display.data.reduce(
@@ -1409,9 +1439,6 @@ class RubriqueCMZ extends MapCMZ {
 
 										return item_marker_display;
 									});
-								} else {
-									console.log("is_match_filter_notation");
-									console.log(is_match_filter_notation);
 								}
 							}
 						});
@@ -1504,7 +1531,13 @@ class RubriqueCMZ extends MapCMZ {
 									moyenne_note >= rubrique_filter.notation.min &&
 									moyenne_note <= rubrique_filter.notation.max;
 
-								if (is_match_filter_notation) {
+								const is_match_filter_departement =
+									rubrique_filter.departement === "tous" ||
+									parseInt(rubrique_filter.departement) === parseInt(item_rubrique.dep)
+										? true
+										: false;
+
+								if (is_match_filter_departement && is_match_filter_notation) {
 									markers_display = markers_display.map((item_marker_display) => {
 										if (item_marker_display.lat.toString() === lat_item_rubrique.toString()) {
 											let count_data_per_rubrique = item_marker_display.data.reduce(
@@ -2262,6 +2295,10 @@ class RubriqueCMZ extends MapCMZ {
 		this.markers_display = this.markers_display.map((item_markers_display) => {
 			if (item_markers_display.data.length > 0) {
 				item_markers_display.data = item_markers_display.data.filter((item_md_data) => {
+					if (item_md_data.rubrique_type !== rubrique_type) {
+						return true;
+					}
+
 					if (
 						parseFloat(item_md_data.moyenne_note) >= note.min &&
 						parseFloat(item_md_data.moyenne_note) <= note.max
@@ -2299,18 +2336,24 @@ class RubriqueCMZ extends MapCMZ {
 			const item_marker_id = parseInt(item_marker.options.id);
 			const item_marker_type = item_marker.options.type;
 
-			const object_rubrique = this.defaultData[item_marker_type];
-			const data = object_rubrique.data;
+			if (item_marker_type === rubrique_type) {
+				const object_rubrique = this.defaultData[item_marker_type];
+				const data = object_rubrique.data;
 
-			const item_data = data.find((item) => item.id === item_marker_id);
-			if (item_data) {
-				const moyenne_note = item_data.hasOwnProperty("moyenne_note")
-					? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
-					: 0;
+				const item_data = data.find((item) => item.id === item_marker_id);
+				if (item_data) {
+					const moyenne_note = item_data.hasOwnProperty("moyenne_note")
+						? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
+						: 0;
 
-				const is_match_filter_notation = moyenne_note >= note.min && moyenne_note <= note.max;
-				if (!is_match_filter_notation) {
-					this.markers.removeLayer(item_marker);
+					const is_match_filter_notation = moyenne_note >= note.min && moyenne_note <= note.max;
+
+					let is_match_filter_departement =
+						departement !== "tous" && parseInt(departement) !== parseInt(item_data.dep) ? true : false;
+
+					if (is_match_filter_departement || !is_match_filter_notation) {
+						this.markers.removeLayer(item_marker);
+					}
 				}
 			}
 		});
