@@ -37,8 +37,12 @@ let DataTableObject = function () {
 
 DataTableObject.prototype = {
 	activeDataTableOnList: (id_table_to_active_data_table) => {
+		if (dataTableInstance) {
+			dataTableInstance.clear().draw(); // Clear all data and update the view
+			dataTableInstance.destroy();
+		}
 		dataTableInstance = $(id_table_to_active_data_table).DataTable({
-			searching: true, // Ceci désactive la barre de recherche
+			searching: false, // Ceci désactive la barre de recherche
 			pageLength: 50,
 			language: {
 				url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",

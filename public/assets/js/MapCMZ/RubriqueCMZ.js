@@ -1149,8 +1149,6 @@ class RubriqueCMZ extends MapCMZ {
 	 * -
 	 */
 	updateMarkersDisplayForDragend(newSize) {
-		const { minx, maxx, miny, maxy } = newSize;
-
 		// ///REMOVE THE OUTSIDE THE BOX
 		this.removeMarkerOutSideTheBox(newSize);
 
@@ -1158,6 +1156,25 @@ class RubriqueCMZ extends MapCMZ {
 		const zoom = this.map._zoom;
 		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
 		const { dataMax, ratio } = current_object_dataMax;
+
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth()); ///lng
+		let markers_display = this.generateTableDataFiltered(y.min, y.max, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
+		markers_display = markers_display.map((item_markers_display) => {
+			const lat = item_markers_display.lat;
+			const origin_key_lat = this.markers_display.find((jtem) => jtem.lat === lat);
+			if (origin_key_lat !== undefined) {
+				return origin_key_lat;
+			}
+
+			return item_markers_display;
+		});
+
+		this.markers_display = [...markers_display];
+
+		this.completeMarkerDisplay(newSize, dataMax, ratio);
+
+		/*
 
 		let count_add = 0;
 
@@ -1211,7 +1228,7 @@ class RubriqueCMZ extends MapCMZ {
 									moyenne_note >= filter.notation.min && moyenne_note <= filter.notation.max;
 
 								const is_match_filter_departement =
-									filter.departement === "tous" &&
+									filter.departement === "tous" ||
 									parseInt(filter.departement) === parseInt(item_data_rubrique_active.dep)
 										? true
 										: false;
@@ -1254,6 +1271,8 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		});
 
+		*/
+
 		////count marker in map
 		this.countMarkerInCart();
 
@@ -1276,7 +1295,6 @@ class RubriqueCMZ extends MapCMZ {
 				item_marker_display_copie.data.length < dataMax_with_on_rubrique_active &&
 				item_marker_display_copie.markers.length < dataMax_with_on_rubrique_active
 			) {
-				///// mila fenoina....
 				const item_marker_display_copie_lat = item_marker_display_copie.lat;
 
 				rubrique_active.forEach((item_rubrique_active) => {
@@ -1365,13 +1383,13 @@ class RubriqueCMZ extends MapCMZ {
 
 		let isUpdate = this.markers_display.length > 0 && dataMax !== this.markers_display[0]["dataMax"];
 
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth()); ///lng
+
 		if (this.lastNiveauZoomAction < this.map._zoom) {
 			// ///REMOVE THE OUTSIDE THE BOX
 			this.removeMarkerOutSideTheBox(newSize);
 
 			if (isUpdate) {
-				const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth()); ///lng
-
 				let markers_display = this.generateTableDataFiltered(y.min, y.max, ratio); /// [ { lat: ( with ratio ), data: [] } ]
 
 				///check if this rubrique_type is active...
@@ -1487,14 +1505,26 @@ class RubriqueCMZ extends MapCMZ {
 
 				this.markers_display = markers_display;
 			} else {
+				let markers_display = this.generateTableDataFiltered(y.min, y.max, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
+				markers_display = markers_display.map((item_markers_display) => {
+					const lat = item_markers_display.lat;
+					const origin_key_lat = this.markers_display.find((jtem) => jtem.lat === lat);
+					if (origin_key_lat !== undefined) {
+						return origin_key_lat;
+					}
+
+					return item_markers_display;
+				});
+
+				this.markers_display = [...markers_display];
+
 				this.completeMarkerDisplay(newSize, dataMax, ratio);
 			}
 			//// in
 		} else {
 			//// out
 			if (isUpdate) {
-				const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth()); ///lng
-
 				let markers_display = this.generateTableDataFiltered(y.min, y.max, ratio); /// [ { lat: ( with ratio ), data: [] } ]
 
 				///check if this rubrique_type is active...
@@ -1646,6 +1676,20 @@ class RubriqueCMZ extends MapCMZ {
 
 				this.markers_display = markers_display;
 			} else {
+				let markers_display = this.generateTableDataFiltered(y.min, y.max, ratio); /// [ { lat: ( with ratio ), data: [] } ]
+
+				markers_display = markers_display.map((item_markers_display) => {
+					const lat = item_markers_display.lat;
+					const origin_key_lat = this.markers_display.find((jtem) => jtem.lat === lat);
+					if (origin_key_lat !== undefined) {
+						return origin_key_lat;
+					}
+
+					return item_markers_display;
+				});
+
+				this.markers_display = [...markers_display];
+
 				this.completeMarkerDisplay(newSize, dataMax, ratio);
 			}
 		}
@@ -2278,17 +2322,38 @@ class RubriqueCMZ extends MapCMZ {
 			const { dataMax, ratio } = current_object_dataMax;
 
 			this.completeMarkerDisplay(new_size, dataMax, ratio);
+
+			////update list datatables
+			this.bindListItemRubriqueActive();
 		});
 	}
 
-	handleActionFilter(rubrique_type, object_filter) {
+	async handleActionFilter(rubrique_type, object_filter) {
 		const { note, departement } = object_filter;
+
+		//// fetch new data and update the data global
+		const spec_data_by_filter = await this.fetchSpecifiDataByFilterOptions(rubrique_type);
+
+		this.defaultData[rubrique_type]["data"] = mergeArraysUnique(
+			this.defaultData[rubrique_type]["data"],
+			spec_data_by_filter["data"],
+			"id"
+		);
+
+		//// update data globally.
+
+		/////update btn ////
+		const cta_to_filter = document.querySelector(".cta_to_filter_jheo_js");
+		cta_to_filter.innerText = "Voir les resultats";
+
+		cta_to_filter.classList.remove("btn-secondary");
+		cta_to_filter.classList.add("btn-primary");
+		//// end of the update btn ////
 
 		/// filter by note
 		this.markers_display = this.markers_display.map((item_markers_display) => {
 			if (item_markers_display.data.length > 0) {
 				item_markers_display.data = item_markers_display.data.filter((item_md_data) => {
-					
 					if (item_md_data.rubrique_type !== rubrique_type) {
 						return true;
 					}
@@ -2352,15 +2417,65 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		});
 
+		/// for specifique departement
 		if (departement !== "tous") {
 			const dep = parseInt(departement);
 			this.map.setView(L.latLng(centers[dep].lat, centers[dep].lng), centers[dep].zoom, {
 				animation: true,
 			});
 		}
+		/// end of the specifique departement
 
-		//// upadate list on the nav_left
-		updateDataTableByFilter(object_filter);
+		////add new markers:
+		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+		const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
+
+		this.updateMarkersDisplayForDragend(new_size);
+		///end of the add of marker
+
+		this.countMarkerInCart();
+
+		// //// upadate list on the nav_left
+		// updateDataTableByFilter(object_filter);
+		// //// end of update list on the nav_left
+
+		////update list datatables
+		this.bindListItemRubriqueActive();
+	}
+
+	async fetchSpecifiDataByFilterOptions(rubrique_type) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+		if (rubrique_type_object === undefined) {
+			return false;
+		}
+
+		const { departement, notation } = rubrique_type_object.filter;
+
+		let param = `dep=${encodeURIComponent(departement)}`;
+		param = `${param}&note_min=${encodeURIComponent(notation.min)}`;
+		param = `${param}&note_max=${encodeURIComponent(notation.max)}`;
+		param = `${param}&data_max=${encodeURIComponent(100)}`;
+
+		let link = `/fetch_data/${rubrique_type}?${param}`;
+
+		const request = new Request(link, {
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+		});
+
+		try {
+			const reponse = await fetch(request);
+			const data_response = await reponse.json();
+
+			return data_response;
+		} catch (e) {
+			console.log("ERROR : Data not fecting...");
+			return [];
+		}
 	}
 
 	async fetchDepartement() {
@@ -2559,6 +2674,7 @@ class RubriqueCMZ extends MapCMZ {
 
 			return data_response;
 		} catch (e) {
+			console.log("ERROR : Data not fecting...");
 			return [];
 		}
 	}
@@ -2616,10 +2732,31 @@ class RubriqueCMZ extends MapCMZ {
 
 		let data_transform = [];
 		all_rubrique_active.forEach((rubrique) => {
-			let { api_name, name: name_rubrique } = rubrique;
+			const { api_name, name: name_rubrique, filter: rubrique_filter } = rubrique;
+			const { notation: rubrique_filter_note, departement: rubrique_filter_departement } = rubrique_filter;
 
-			let data_rubrique = this.defaultData[api_name];
-			let data_rubrique_data = data_rubrique["data"];
+			const data_rubrique = this.defaultData[api_name];
+			const data_rubrique_data_default = data_rubrique["data"];
+
+			let data_rubrique_data = data_rubrique_data_default.filter((item_data) => {
+				const moyenne_note = item_data.hasOwnProperty("moyenne_note")
+					? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
+					: 0;
+
+				const is_match_filter_notation =
+					moyenne_note >= rubrique_filter_note.min && moyenne_note <= rubrique_filter_note.max;
+
+				const is_match_filter_departement =
+					rubrique_filter_departement === "tous" ||
+					parseInt(rubrique_filter_departement) === parseInt(item_data.dep)
+						? true
+						: false;
+
+				if (is_match_filter_notation && is_match_filter_departement) {
+					return true;
+				}
+				return false;
+			});
 
 			data_rubrique_data = data_rubrique_data.map((item) => {
 				return { ...item, name_rubrique: name_rubrique, rubrique_type: api_name };

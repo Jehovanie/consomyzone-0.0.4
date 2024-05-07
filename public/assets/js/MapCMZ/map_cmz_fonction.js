@@ -342,3 +342,24 @@ function injectListMarker(data, isInSearch = false) {
 function getDetailFromListRightUpdate(id_rubrique, type_rubrique) {
 	displayFicheRubrique(id_rubrique, type_rubrique);
 }
+
+/**
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ *
+ * Goal: Merge two array to one without duplication.
+ *
+ * @param {*} firstTab
+ * @param {*} secondTab
+ * @param {*} key_unique
+ *
+ * @returns new array merge of the two
+ */
+function mergeArraysUnique(firstTab, secondTab, key_unique) {
+	const map = new Map();
+
+	// Add each item to the map; duplicates will be overwritten
+	firstTab.concat(secondTab).forEach((item) => map.set(item[key_unique], item));
+
+	// Return the values of the map as an array
+	return Array.from(map.values());
+}
