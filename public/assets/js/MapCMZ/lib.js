@@ -60,31 +60,13 @@ DataTableObject.prototype = {
 
 	removeOneElement: (element) => {
 		// console.log(dataTableInstance.rows().eq(0));
-
-		// dataTableInstance.rows().data().each((rowData) => {
-		// 	// rowData contient les données de la ligne actuelle
-		// 	console.log(rowData);
-		// });
 		console.log("remove element: ");
 		console.log(element);
 		console.log("================================");
-
-		// const domparse = new DOMParser();
-		// dataTableInstance?.rows()?.every(function (rowIdx, tableLoop, rowLoop) {
-		// 	var rowData = this.data(); // Données de la ligne actuelle
-		// 	var card_list = rowData[0]; // Accès à la deuxième colonne (indice 1)
-
-		// 	let text_html = domparse.parseFromString(card_list, "text/html"); //
-		// 	var text = text_html.querySelector(`.${element.type}_${element.id}`);
-
-		// 	if (text !== null) {
-		// 		console.log(card_list);
-		// 		console.log(text);
-		// 	}
-		// });
 	},
 
 	updateDataTableByFilter: (element) => {
+		console.log(element);
 		// Remove rows based on a condition directly
 		dataTableInstance
 			.rows(function (idx, data, node) {
@@ -126,8 +108,6 @@ function removeOneElement(element) {
 }
 
 function updateDataTableByFilter(object_filter) {
-	// note: { min: parseFloat(filter_price[0]), max: parseFloat(filter_price[1]) },
-	// departement: filter_dep_value,
 	dataTable.updateDataTableByFilter(object_filter);
 }
 

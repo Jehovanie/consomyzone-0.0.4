@@ -572,7 +572,7 @@ class FermeGeomRepository extends ServiceEntityRepository
        
         $lat= floatval($body["lat"]) ==0 ? $f->getLatitude() : floatval($body["lat"]);
         $lng= floatval($body["lng"]) ==0 ? $f->getLongitude() : floatval($body["lng"]);
-        dump($f,$lat,$lng);
+
         return $this->createQueryBuilder("f")
             ->update(FermeGeom::class, "f")
             ->set("f.nomFerme", ":nomFerme")
@@ -984,6 +984,65 @@ class FermeGeomRepository extends ServiceEntityRepository
 
 
             return $query->getResult();;
+    }
+
+    public function getDataByFilterOptions($filterOptions, $data_max= 200){
+        $idDep= strlen($filterOptions["dep"]) === 1  ? "0" . $filterOptions["dep"] : $filterOptions["dep"];
+        
+
+        $query= $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.nomFerme',
+                        'r.nomFerme as nameFilter',
+                        'r.nomFerme as nom',
+                        'r.adresseFerme',
+                        'r.adresseFerme as add',
+                        'r.departement',
+                        'r.departement as dep',
+                        'r.departementName',
+                        'r.departementName as depName',
+                        'r.email',
+                        'r.engagementProd',
+                        'r.fax',
+                        'r.genre',
+                        'r.horairesVenteAFerme',
+                        'r.horairesVenteMagasinProd',
+                        'r.horairesVenteAuMarche',
+                        'r.accesHandicape',
+                        'r.accesHandicapAuditif',
+                        'r.accesHandicapMental',
+                        'r.accesHandicapMotrice',
+                        'r.accesHandicapVisuel',
+                        'r.accesVoiture',
+                        'r.adherentAdeve',
+                        'r.agricultureBio',
+                        'r.animauxAutoriser',
+                        'r.atelier',
+                        'r.carteBancaire',
+                        'r.chequeVacance',
+                        'r.degustation',
+                        'r.marcherProduit',
+                        'r.motDuFermier',
+                        'r.produitFerme',
+                        'r.produitFerme as ferme',
+                        'r.codePostal',
+                        'r.nomProprietaire',
+                        'r.motDuFermier',
+                        'r.ville',
+                        'r.latitude',
+                        'r.latitude as lat',
+                        'r.longitude',
+                        'r.longitude as long',
+                    )
+                    ->where("r.departement =:dep")
+                    ->setParameter("dep", $idDep)
+                    ->setMaxResults($data_max)
+                    ->orderBy('RAND()')
+                    ->getQuery()
+        ;
+
+        return $query->getResult();;
     }
 
 

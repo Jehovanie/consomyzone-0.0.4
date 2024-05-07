@@ -990,6 +990,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                     ->select('r.id',
                         'r.adresse',
                         'r.departementCode',
+                        'r.departementCode as dep',
                         'r.departementName',
                         'r.automate2424',
                         'r.horaies',
@@ -1016,6 +1017,38 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                     ->setParameter("maxy", floatval($maxx))
                     ->orderBy('RAND()')
                     ->setMaxResults($limit)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function getDataByFilterOptions($filterOptions, $data_max= 200){
+        $idDep= strlen($filterOptions["dep"]) === 1  ? "0" . $filterOptions["dep"] : $filterOptions["dep"];
+
+        return $this->createQueryBuilder("r")
+                    ->select('r.id',
+                        'r.adresse',
+                        'r.departementCode',
+                        'r.departementCode as dep',
+                        'r.departementName',
+                        'r.automate2424',
+                        'r.horaies',
+                        'r.services',
+                        'r.note',
+                        'r.prixE85',
+                        'r.prixGplc',
+                        'r.prixSp95',
+                        'r.prixSp95E10',
+                        'r.prixSp98',
+                        'r.prixGasoil',
+                        'r.prixGasoil as station',
+                        'r.nom',
+                        'r.latitude as lat',
+                        'r.longitude as long'
+                    )
+                    ->where("r.departementCode =:departementCode")
+                    ->setParameter("departementCode", $idDep)
+                    ->orderBy('RAND()')
+                    ->setMaxResults($data_max)
                     ->getQuery()
                     ->getResult();
     }

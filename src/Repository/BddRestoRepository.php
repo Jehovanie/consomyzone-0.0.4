@@ -1511,30 +1511,76 @@ class BddRestoRepository extends ServiceEntityRepository
                     ->getQuery()
                     ->getResult();
     }
-    //    /**
-    //     * @return BddResto[] Returns an array of BddResto objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('b.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
 
-    //    public function findOneBySomeField($value): ?BddResto
-    //    {
-    //        return $this->createQueryBuilder('b')
-    //            ->andWhere('b.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+
+    public function getDataByFilterOptions($filterOptions, $data_max= 200){
+        $idDep= strlen($filterOptions["dep"]) === 1  ? "0" . $filterOptions["dep"] : $filterOptions["dep"];
+
+        $query = $this->createQueryBuilder("r");
+        $query = $query->select(
+                "r.id,
+                r.denominationF,
+                r.denominationF as nameFilter,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.restaurant as resto,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
+                r.fonctionalite1,
+                r.fourchettePrix1,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat"
+            )
+            ->distinct(
+                $query->expr()->concat(
+                    'r.id', "' '",
+                    'r.dep',"' '",
+                    'r.depName',"' '",
+                    'r.denominationF',"' '",
+                    'r.numvoie',"' '",
+                    'r.typevoie',"' '",
+                    'r.nomvoie',"' '",
+                    'r.compvoie',"' '",
+                    'r.villenorm',"' '",
+                    'r.poiX',"' '",
+                    'r.poiY'
+                )
+            )
+            ->where("r.dep =:dep")
+            ->setParameter("dep", $idDep)
+        ;
+
+
+        return $query->orderBy('RAND()')
+            ->setMaxResults($data_max)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function getAllOpenedRestosV2($limits = 0){
         return $this->createQueryBuilder("r")
             ->select("r.id,

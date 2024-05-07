@@ -109,6 +109,28 @@ class TabacContoller extends AbstractController
             ], 200);
         }
 
+        if($request->query->has("dep") && $request->query->has("note_min") ){
+            $dep = $request->query->get("dep");
+            $note_min = $request->query->get("note_min");
+            $note_max = $request->query->get("note_max");
+
+            $data_max = $request->query->get("data_max"); 
+            $data_max = $data_max ? intval($data_max) : 50;
+
+            $filter_options= [
+                "dep" => $dep,
+                "note" => [
+                    "min" => $note_min,
+                    "max" => $note_max
+                ],
+            ];
+
+            $datas = $tabacRepository->getDataByFilterOptions($filter_options, $data_max);
+            return $this->json([
+                "data" => $datas
+            ], 200);
+        }
+
         $tabac= $tabacRepository->getSomeDataShuffle(2000);
 
         return $this->json([

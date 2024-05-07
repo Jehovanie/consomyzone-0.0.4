@@ -275,6 +275,61 @@ class MarcheRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
+    public function getDataByFilterOptions($filterOptions, $data_max= 250){
+        $idDep= intval($filterOptions["dep"]);
+
+        $query = $this->createQueryBuilder("r");
+
+        $query = $query->select(
+                        "r.id,
+                        r.clenum,
+                        r.denominationF,
+                        r.denominationF as nameFilter,
+                        r.adresse,
+                        r.codpost,
+                        r.commune,
+                        r.codinsee,
+                        r.villenorm,
+                        r.specificite,
+                        r.jour_de_marche_1 as marche,
+                        r.jour_de_marche_1,
+                        r.jour_de_marche_2,
+                        r.jour_de_marche_3,
+                        r.jour_de_marche_4,
+                        r.jour_de_marche_5,
+                        r.jour_de_marche_6,
+                        r.jour_de_marche_7,
+                        r.poi_qualitegeorue,
+                        r.dcomiris,
+                        r.dep,
+                        r.date_data,
+                        r.date_inser,
+                        r.poiY as lat,
+                        r.poiX as long"
+                    )
+                    ->distinct(
+                        $query->expr()->concat(
+                            'r.id', "' '",
+                            'r.dep',"' '",
+                            'r.denominationF',"' '",
+                            'r.clenum',"' '",
+                            'r.adresse',"' '",
+                            'r.nomvoie',"' '",
+                            'r.compvoie',"' '",
+                            'r.villenorm',"' '",
+                            'r.poiX',"' '",
+                            'r.poiY'
+                        ))
+                    ->where("r.dep =:dep")
+                    ->setParameter("dep", $idDep)
+        ;
+
+        return $query->orderBy('RAND()')
+                    ->setMaxResults($data_max)
+                    ->getQuery()
+                    ->getResult();
+    }
+
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 

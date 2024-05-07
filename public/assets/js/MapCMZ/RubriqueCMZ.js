@@ -357,9 +357,9 @@ class RubriqueCMZ extends MapCMZ {
 		];
 
 		const rubrique_active_default = [
-			"restaurant",
+			// "restaurant",
 			// "ferme",
-			// "station",
+			"station",
 			// "golf",
 			// "tabac",
 			// "marche"
@@ -1174,6 +1174,8 @@ class RubriqueCMZ extends MapCMZ {
 
 		this.completeMarkerDisplay(newSize, dataMax, ratio);
 
+		console.log(this.markers_display);
+
 		/*
 
 		let count_add = 0;
@@ -1342,10 +1344,10 @@ class RubriqueCMZ extends MapCMZ {
 
 									if (lat_item.toString() === item_marker_display_copie.lat.toString()) {
 										const isInDisplay =
-											item_data_rubrique_active.lat > parseFloat(miny) &&
-											item_data_rubrique_active.lat < parseFloat(maxy) &&
-											item_data_rubrique_active.long > parseFloat(minx) &&
-											item_data_rubrique_active.long < parseFloat(maxx);
+											parseFloat(item_data_rubrique_active.lat) > parseFloat(miny) &&
+											parseFloat(item_data_rubrique_active.lat) < parseFloat(maxy) &&
+											parseFloat(item_data_rubrique_active.long) > parseFloat(minx) &&
+											parseFloat(item_data_rubrique_active.long) < parseFloat(maxx);
 
 										if (isInDisplay) {
 											item_rubrique_active.setSingleMarker(item_data_rubrique_active);
@@ -2358,11 +2360,36 @@ class RubriqueCMZ extends MapCMZ {
 						return true;
 					}
 
-					if (
-						parseFloat(item_md_data.moyenne_note) >= note.min &&
-						parseFloat(item_md_data.moyenne_note) <= note.max
-					) {
+					const moyenne_note = item_md_data.hasOwnProperty("moyenne_note")
+						? parseFloat(parseFloat(item_md_data.moyenne_note).toFixed(2))
+						: 0;
+
+					if (moyenne_note >= note.min && moyenne_note <= note.max) {
 						if (departement === "tous" || parseInt(item_md_data.dep) === parseInt(departement)) {
+							return true;
+						}
+					}
+					return false;
+				});
+			}
+
+			if (item_markers_display.markers.length > 0) {
+				item_markers_display.markers = item_markers_display.markers.filter((item_md_markers) => {
+					if (item_md_markers.options.type !== rubrique_type) {
+						return true;
+					}
+
+					const object_rubrique = this.defaultData[item_md_markers.options.type];
+					const data = object_rubrique.data;
+
+					const item_data = data.find((item) => item.id === parseInt(item_md_markers.options.id));
+
+					const moyenne_note = item_data.hasOwnProperty("moyenne_note")
+						? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
+						: 0;
+
+					if (moyenne_note >= note.min && moyenne_note <= note.max) {
+						if (departement === "tous" || parseInt(item_data.dep) === parseInt(departement)) {
 							return true;
 						}
 					}
@@ -2744,7 +2771,8 @@ class RubriqueCMZ extends MapCMZ {
 					: 0;
 
 				const is_match_filter_notation =
-					moyenne_note >= rubrique_filter_note.min && moyenne_note <= rubrique_filter_note.max;
+					moyenne_note >= parseFloat(rubrique_filter_note.min) &&
+					moyenne_note <= parseFloat(rubrique_filter_note.max);
 
 				const is_match_filter_departement =
 					rubrique_filter_departement === "tous" ||

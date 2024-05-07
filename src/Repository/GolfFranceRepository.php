@@ -197,6 +197,44 @@ class GolfFranceRepository extends ServiceEntityRepository
         return $data;
     }
 
+
+    public function getDataByFilterOptions($filterOptions, $data_max= 100){
+        $idDep= strlen($filterOptions["dep"]) === 1  ? "0" . $filterOptions["dep"] : $filterOptions["dep"];
+
+        $query= $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.web',
+                        'r.nom_golf as name',
+                        'r.nom_golf as nameFilter',
+                        'r.nom_golf as golf',
+                        'r.dep',
+                        'r.nom_dep',
+                        'r.adr1 as adress',
+                        'r.adr2',
+                        'r.adr3',
+                        'r.cp',
+                        'r.e_mail as email',
+                        'r.site_web',
+                        'r.nom_commune as commune',
+                        'r.latitude',
+                        'r.longitude',
+                        'r.latitude as lat',
+                        'r.longitude as long',
+                    )
+                    ->andWhere('r.dep = :k')
+                    ->setParameter('k',  $idDep)
+        ;
+
+        $data= $query->orderBy('RAND()')
+                     ->getQuery()
+                     ->setMaxResults($data_max)
+                     ->getResult();
+
+        return $data;
+    }
+
+
     public function getOneItemByID($id){
 
         $data=  $this->createQueryBuilder("r")

@@ -161,6 +161,57 @@ class RestaurantController extends AbstractController
             ], 200);
         }
 
+        if($request->query->has("dep") && $request->query->has("note_min") ){
+
+            $dep = $request->query->get("dep");
+            $note_min = $request->query->get("note_min");
+            $note_max = $request->query->get("note_max");
+
+            $data_max = $request->query->get("data_max"); 
+            $data_max = $data_max ? intval($data_max) : 50;
+
+            $filter_options= [
+                "dep" => $dep,
+                "note" => [
+                    "min" => $note_min,
+                    "max" => $note_max
+                ],
+            ];
+
+            $datas = $bddResto->getDataByFilterOptions($filter_options, $data_max);
+
+            if( $this->getUser() ){
+                //// all my tribu t.
+                $tribu_t_owned = $userRepository->getListTableTribuT_owned(); 
+                /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+
+                //// description tribu T with ID restaurant pastille
+                $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); 
+                /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+
+                //// list resto pastille dans le tribu G
+                $restoPastilleInTribuG= $tributGService->getEntityRestoPastilled($this->getUser()); 
+
+                /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+                $arrayIdResto= array_merge($arrayIdResto, $restoPastilleInTribuG);
+
+                //// update data result to add all resto pastille in the Tribu T
+                $datas = $bddResto->appendRestoPastille($datas, $arrayIdResto);
+            }
+
+            $ids=array_map('self::getIdAvisResto', $datas);
+            $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+
+            $data_resto= self::mergeDatasAndAvis($datas,$moyenneNote);
+
+            if( str_contains($pathname, "fetch_data")){
+                return $this->json([
+                    "data" => $data_resto,
+                    "pastille" => $arrayIdResto,
+                ], 200);
+            }
+        }
+
         //// data resto all departement
         $datas= $bddResto->getSomeDataShuffle(20);
 
