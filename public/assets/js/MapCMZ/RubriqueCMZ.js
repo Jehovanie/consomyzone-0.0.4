@@ -2708,10 +2708,33 @@ class RubriqueCMZ extends MapCMZ {
 
 	async addRubriqueMarker(rubrique_api_name) {
 		const response = await this.fetchDataRubrique(rubrique_api_name.toLowerCase());
-		this.defaultData[rubrique_api_name] = {
-			data: response.data,
-			...this.defaultData[rubrique_api_name],
-		};
+
+		console.log(this.defaultData);
+
+		if (!this.defaultData.hasOwnProperty(rubrique_api_name)) {
+			this.defaultData[rubrique_api_name] = {
+				data: [],
+				pastille: [],
+			};
+		}
+
+		console.log(this.defaultData);
+
+		this.defaultData[rubrique_api_name]["data"] = mergeArraysUnique(
+			this.defaultData[rubrique_api_name]["data"],
+			response["data"],
+			"id"
+		);
+
+		this.defaultData[rubrique_api_name]["pastille"] = mergeArraysUnique(
+			this.defaultData[rubrique_api_name]["pastille"],
+			response["pastille"],
+			"id"
+		);
+
+		console.log("this.defaultData");
+		console.log(this.defaultData);
+		console.log("---------------------");
 
 		this.updateMapAddRubrique(rubrique_api_name);
 	}
