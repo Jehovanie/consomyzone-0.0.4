@@ -79,6 +79,8 @@ class MapCMZ {
 
 		/// we use this for help in right section
 		this.isRightSideAlreadyOpen = false;
+
+		this.nbr_etablisement_per_dep = [];
 	}
 
 	initTales() {
@@ -340,6 +342,7 @@ class MapCMZ {
 			number_etablisement = await this.fetchMarkerPerDep();
 		}
 		const nbr_etablisement_per_dep = number_etablisement["nbr_etablisement_per_dep"];
+		this.nbr_etablisement_per_dep = nbr_etablisement_per_dep;
 
 		let geos = [];
 
@@ -423,7 +426,7 @@ class MapCMZ {
 			return false;
 		}
 
-		if (!this.geos) {
+		if (this.geos.length === 0) {
 			this.geos = await this.settingGeos();
 		}
 

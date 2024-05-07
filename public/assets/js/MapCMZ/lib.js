@@ -79,6 +79,32 @@ DataTableObject.prototype = {
 		// 	}
 		// });
 	},
+
+	updateDataTableByFilter: (element) => {
+		// Remove rows based on a condition directly
+		dataTableInstance
+			.rows(function (idx, data, node) {
+				var parser = new DOMParser();
+				var data_html = parser.parseFromString(data[0], "text/html");
+
+				const text = data_html.querySelector(".containt_name_note_address_jheo_js");
+				if (text) {
+					// Check if the element exists
+					const departement = text.getAttribute("data-departement");
+					const note = text.getAttribute("data-note");
+					const rubrique_id = text.getAttribute("data-rubrique-id");
+					const rubrique_type = text.getAttribute("data-rubrique-type");
+
+					if (departement && parseInt(element.departement) !== parseInt(departement)) {
+						return true;
+					}
+				}
+				return false;
+			})
+			.remove();
+
+		dataTableInstance.draw();
+	},
 };
 
 const dataTable = new DataTableObject();
@@ -93,6 +119,12 @@ function addDataTableOnList(data) {
 
 function removeOneElement(element) {
 	dataTable.removeOneElement(element);
+}
+
+function updateDataTableByFilter(object_filter) {
+	// note: { min: parseFloat(filter_price[0]), max: parseFloat(filter_price[1]) },
+	// departement: filter_dep_value,
+	dataTable.updateDataTableByFilter(object_filter);
 }
 
 ///// end of datatable

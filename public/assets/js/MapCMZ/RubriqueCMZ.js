@@ -837,7 +837,7 @@ class RubriqueCMZ extends MapCMZ {
 		let body_table_list_rubrique_active = [];
 		new_data_rubrique.forEach((item_data) => {
 			body_table_list_rubrique_active.push(`
-				<tr style="border: 1px solid transparent;">
+				<tr class="item_list_rubrique_nav_left_jheo_js" style="border: 1px solid transparent;">
 					<td>${this.createItemRubriqueActive(item_data)}</td>
 				</tr>
 			`);
@@ -1384,7 +1384,6 @@ class RubriqueCMZ extends MapCMZ {
 					);
 
 					if (rubrique_type_active_object != undefined) {
-						
 						const { filter: rubrique_filter } = rubrique_type_active_object;
 
 						const rubrique_type = this.defaultData[key_rubrique_type];
@@ -1882,7 +1881,7 @@ class RubriqueCMZ extends MapCMZ {
 
 					this.bindEventClickMarkerCountPerDep(markerCountPerDep);
 
-					this.markerClusterForCounterPerDep.addLayer(markerCountPerDep);
+					this.markerClusterForCounterPerDep?.addLayer(markerCountPerDep);
 				}
 			}
 		});
@@ -2230,12 +2229,6 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			}
 
-			console.log("filter_price");
-			console.log(filter_price);
-
-			console.log("filter_dep_value");
-			console.log(filter_dep_value);
-
 			this.handleActionFilter(rubrique_type, {
 				note: { min: parseFloat(filter_price[0]), max: parseFloat(filter_price[1]) },
 				departement: filter_dep_value,
@@ -2295,6 +2288,7 @@ class RubriqueCMZ extends MapCMZ {
 		this.markers_display = this.markers_display.map((item_markers_display) => {
 			if (item_markers_display.data.length > 0) {
 				item_markers_display.data = item_markers_display.data.filter((item_md_data) => {
+					
 					if (item_md_data.rubrique_type !== rubrique_type) {
 						return true;
 					}
@@ -2364,6 +2358,9 @@ class RubriqueCMZ extends MapCMZ {
 				animation: true,
 			});
 		}
+
+		//// upadate list on the nav_left
+		updateDataTableByFilter(object_filter);
 	}
 
 	async fetchDepartement() {
@@ -2644,7 +2641,7 @@ class RubriqueCMZ extends MapCMZ {
 		let body_table_list_rubrique_active = "";
 		data.forEach((item_data) => {
 			body_table_list_rubrique_active += `
-				<tr style="border: 1px solid transparent;">
+				<tr class="item_list_rubrique_nav_left_jheo_js" style="border: 1px solid transparent;">
 					<td>${this.createItemRubriqueActive(item_data)}</td>
 				</tr>
 			`;
@@ -2674,9 +2671,11 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	cardItemRubriqueNameNoteAddress(name, note, address, options = {}) {
-		const { id: id_rubrique, type: rubrique_type } = options;
+		const { id: id_rubrique, type: rubrique_type, dep } = options;
 		return `
-			<figure id="${rubrique_type}_${id_rubrique}">
+			<figure id="${rubrique_type}_${id_rubrique}" class="containt_name_note_address_jheo_js"
+				data-departement="${dep}" data-note="${note}" data-rubrique-id="${id_rubrique}" data-rubrique-type="${rubrique_type}"
+			>
 				<blockquote class="blockquote mb-0">
 					<p class="name_rubrique_nav_left" onclick="openDetailsRubriqueFromLeft('${id_rubrique}', '${rubrique_type}')">
 						${name.toUpperCase()}
@@ -2704,13 +2703,13 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveResto(item_data) {
-		const { id, denominationF, name_rubrique, numvoie, typevoie, nomvoie, codpost, villenorm } = item_data;
+		const { id, denominationF, name_rubrique, numvoie, typevoie, nomvoie, codpost, villenorm, dep } = item_data;
 		const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codpost} ${villenorm}`;
 		const nom = denominationF;
 		const note = 5;
 
 		const item_rubrique = `
-			<div class="card" style="max-width: 540px;">
+			<div class="card restaurant_${id}_jheo_js" style="max-width: 540px;">
 				<div class="card-body">
 					<div class="row g-0">
 						<div class="col-12">
@@ -2719,7 +2718,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "restaurant" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, dep, type: "restaurant" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -2733,13 +2732,13 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveFerme(item_data) {
-		const { id, name_rubrique, adresseFerme, nomFerme } = item_data;
+		const { id, name_rubrique, adresseFerme, nomFerme, dep } = item_data;
 		const adresse = `${adresseFerme}`;
 		const nom = nomFerme;
 		const note = 5;
 
 		const item_rubrique = `
-			<div class="card" style="max-width: 540px;">
+			<div class="card resto_${id}_jheo_js" style="max-width: 540px;">
 				<div class="card-body">
 					<div class="row g-0">
 						<div class="col-12">
@@ -2748,7 +2747,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "ferme" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, dep, type: "ferme" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -2762,7 +2761,7 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveStation(item_data) {
-		const { id, name_rubrique, adresse, nom } = item_data;
+		const { id, name_rubrique, adresse, nom, dep } = item_data;
 		const note = 5;
 
 		const item_rubrique = `
@@ -2775,7 +2774,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "station" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, dep, type: "station" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -2789,7 +2788,7 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveGolf(item_data) {
-		const { id, name: nom, name_rubrique, adress: adresse } = item_data;
+		const { id, name: nom, name_rubrique, adress: adresse, dep } = item_data;
 		const note = 5;
 
 		const item_rubrique = `
@@ -2802,7 +2801,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "golf" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, dep, type: "golf" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -2816,7 +2815,7 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveMarche(item_data) {
-		const { id, denominationF, name_rubrique, adresse } = item_data;
+		const { id, denominationF, name_rubrique, adresse, dep } = item_data;
 		const nom = denominationF;
 		const note = 5;
 
@@ -2830,7 +2829,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "marche" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, dep, type: "marche" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
