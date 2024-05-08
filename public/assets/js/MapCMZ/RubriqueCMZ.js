@@ -950,13 +950,18 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		});
 
+		////save all data
 		const new_data_rubrique = data.filter(
 			(item) => !this.defaultData[rubrique_type].data.some((jtem) => parseInt(jtem.id) === parseInt(item.id))
 		);
 
 		this.defaultData[rubrique_type]["data"] = [...new_data_rubrique, ...this.defaultData[rubrique_type]["data"]];
 
-		this.addDataToTableListLeft(new_data_rubrique, rubrique_type);
+		//// show data much only requirement.
+		const new_data_rubrique_show = new_data_rubrique.filter((ktem) =>
+			rubrique_type_object.checkIsMuchOnFilter(ktem)
+		);
+		this.addDataToTableListLeft(new_data_rubrique_show, rubrique_type);
 	}
 
 	addDataToTableListLeft(new_data_rubrique, rubrique_type) {
@@ -2160,10 +2165,7 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		}
 
-		this.handleActionFilter(rubrique_type, {
-			note: { min: parseFloat(filter_price[0]), max: parseFloat(filter_price[1]) },
-			departement: filter_dep_value,
-		});
+		this.handleActionFilter(rubrique_type);
 	}
 
 	/**
@@ -2243,13 +2245,9 @@ class RubriqueCMZ extends MapCMZ {
 		this.bindListItemRubriqueActive();
 	}
 
-	async handleActionFilter(rubrique_type, object_filter) {
-		const { note, departement } = object_filter;
-
+	async handleActionFilter(rubrique_type) {
 		//// -------------
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
-		const rubrique_state_filter = rubrique_type_object.filter;
-
 		/// -----------------------
 
 		//// fetch new data and update the data global
@@ -2279,14 +2277,8 @@ class RubriqueCMZ extends MapCMZ {
 						return true;
 					}
 
-					const moyenne_note = item_md_data.hasOwnProperty("moyenne_note")
-						? parseFloat(parseFloat(item_md_data.moyenne_note).toFixed(2))
-						: 0;
-
-					if (moyenne_note >= note.min && moyenne_note <= note.max) {
-						if (departement === "tous" || parseInt(item_md_data.dep) === parseInt(departement)) {
-							return true;
-						}
+					if (rubrique_type_object.checkIsMuchOnFilter(item_md_data)) {
+						return true;
 					}
 					return false;
 				});
@@ -2303,14 +2295,8 @@ class RubriqueCMZ extends MapCMZ {
 
 					const item_data = data.find((item) => item.id === parseInt(item_md_markers.options.id));
 
-					const moyenne_note = item_data.hasOwnProperty("moyenne_note")
-						? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
-						: 0;
-
-					if (moyenne_note >= note.min && moyenne_note <= note.max) {
-						if (departement === "tous" || parseInt(item_data.dep) === parseInt(departement)) {
-							return true;
-						}
+					if (rubrique_type_object.checkIsMuchOnFilter(item_data)) {
+						return true;
 					}
 					return false;
 				});
@@ -2356,8 +2342,8 @@ class RubriqueCMZ extends MapCMZ {
 		});
 
 		/// for specifique departement
-		if (departement !== "tous") {
-			const dep = parseInt(departement);
+		if (rubrique_type_object.filter.departement !== "tous") {
+			const dep = parseInt(rubrique_type_object.filter.departement);
 			this.map.setView(L.latLng(centers[dep].lat, centers[dep].lng), centers[dep].zoom, {
 				animation: true,
 			});
@@ -2781,6 +2767,7 @@ class RubriqueCMZ extends MapCMZ {
 
 	cardItemRubriqueNameNoteAddress(name, note, address, options = {}) {
 		const { id: id_rubrique, type: rubrique_type, dep } = options;
+		const start_note_moyenne_html = createStartNoteHtml(note);
 		return `
 			<figure id="${rubrique_type}_${id_rubrique}" class="containt_name_note_address_jheo_js"
 				data-departement="${dep}" data-note="${note}" data-rubrique-id="${id_rubrique}" data-rubrique-type="${rubrique_type}"
@@ -2791,11 +2778,7 @@ class RubriqueCMZ extends MapCMZ {
 					</p>
 				</blockquote>
 				<div class="stars">
-					<i class="fa-solid fa-star"></i>
-					<i class="fa-solid fa-star"></i>
-					<i class="fa-solid fa-star"></i>
-					<i class="fa-solid fa-star"></i>
-					<i class="fa-solid fa-star"></i>
+					${start_note_moyenne_html}
 				</div>
 				<figcaption class="blockquote-footer mt-0 mb-0">
 					Adresse: <br> <cite title="Source Title">${address.toLowerCase()}</cite>
@@ -2815,7 +2798,10 @@ class RubriqueCMZ extends MapCMZ {
 		const { id, denominationF, name_rubrique, numvoie, typevoie, nomvoie, codpost, villenorm, dep } = item_data;
 		const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codpost} ${villenorm}`;
 		const nom = denominationF;
-		const note = 5;
+
+		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
+			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
+			: 0;
 
 		const item_rubrique = `
 			<div class="card restaurant_${id}_jheo_js" style="max-width: 540px;">
@@ -2827,7 +2813,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, dep, type: "restaurant" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "restaurant" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -2844,7 +2830,10 @@ class RubriqueCMZ extends MapCMZ {
 		const { id, name_rubrique, adresseFerme, nomFerme, dep } = item_data;
 		const adresse = `${adresseFerme}`;
 		const nom = nomFerme;
-		const note = 5;
+
+		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
+			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
+			: 0;
 
 		const item_rubrique = `
 			<div class="card resto_${id}_jheo_js" style="max-width: 540px;">
@@ -2856,7 +2845,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, dep, type: "ferme" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "ferme" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -2871,7 +2860,10 @@ class RubriqueCMZ extends MapCMZ {
 
 	setListItemRubriqueActiveStation(item_data) {
 		const { id, name_rubrique, adresse, nom, dep } = item_data;
-		const note = 5;
+
+		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
+			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
+			: 0;
 
 		const item_rubrique = `
 			<div class="card" style="max-width: 540px;">
@@ -2883,7 +2875,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, dep, type: "station" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "station" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -2898,7 +2890,10 @@ class RubriqueCMZ extends MapCMZ {
 
 	setListItemRubriqueActiveGolf(item_data) {
 		const { id, name: nom, name_rubrique, adress: adresse, dep } = item_data;
-		const note = 5;
+
+		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
+			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
+			: 0;
 
 		const item_rubrique = `
 			<div class="card" style="max-width: 540px;">
@@ -2910,7 +2905,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, dep, type: "golf" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "golf" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -2926,7 +2921,9 @@ class RubriqueCMZ extends MapCMZ {
 	setListItemRubriqueActiveMarche(item_data) {
 		const { id, denominationF, name_rubrique, adresse, dep } = item_data;
 		const nom = denominationF;
-		const note = 5;
+		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
+			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
+			: 0;
 
 		const item_rubrique = `
 			<div class="card" style="max-width: 540px;">
@@ -2938,7 +2935,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, dep, type: "marche" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "marche" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}
@@ -2964,7 +2961,9 @@ class RubriqueCMZ extends MapCMZ {
 		} = item_data;
 		const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codpost} ${villenorm}`;
 		const nom = denominationF;
-		const note = 5;
+		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
+			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
+			: 0;
 
 		const item_rubrique = `
 			<div class="card" style="max-width: 540px;">
@@ -2976,7 +2975,7 @@ class RubriqueCMZ extends MapCMZ {
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
-							${this.cardItemRubriqueNameNoteAddress(nom, note, adresse, { id, type: "tabac" })}
+							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, type: "tabac" })}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage()}

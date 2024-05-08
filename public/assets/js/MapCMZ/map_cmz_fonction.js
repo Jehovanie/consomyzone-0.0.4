@@ -344,6 +344,35 @@ function getDetailFromListRightUpdate(id_rubrique, type_rubrique) {
 }
 
 /**
+ * Update note global star rating
+ * @param {*} note_moyenne
+ */
+function createStartNoteHtml(note_moyenne, options = {}) {
+	// console.log(document.querySelector(`.start_${idItem}_jheo_js`));
+	let startHTML = "";
+
+	let rate = note_moyenne - Math.trunc(note_moyenne);
+
+	let rateYellow = rate * 100;
+	let rateBlack = 100 - rateYellow;
+
+	for (let i = 0; i < 4; i++) {
+		if (i < Math.trunc(note_moyenne)) {
+			startHTML += `<i class="fa-solid fa-star" style="color: rgb(245, 209, 101);"></i>`;
+		} else {
+			if (rate != 0) {
+				startHTML += `<i class="fa-solid fa-star" style ="background: linear-gradient(90deg, #F5D165 ${rateYellow}%, #000 ${rateBlack}%); -webkit-background-clip: text; -webkit-text-fill-color: transparent;" }}"></i>`;
+				rate = 0;
+			} else {
+				startHTML += `<i class="fa-solid fa-star"></i>`;
+			}
+		}
+	}
+
+	return startHTML;
+}
+
+/**
  * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
  *
  * Goal: Merge two array to one without duplication.
