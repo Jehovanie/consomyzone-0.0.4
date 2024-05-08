@@ -356,14 +356,7 @@ class RubriqueCMZ extends MapCMZ {
 			},
 		];
 
-		const rubrique_active_default = [
-			// "restaurant",
-			// "ferme",
-			"station",
-			// "golf",
-			// "tabac",
-			// "marche"
-		];
+		const rubrique_active_default = ["restaurant", "ferme", "station", "golf", "tabac", "marche"];
 
 		this.allRubriques = this.allRubriques.map((item_allRubriques) => {
 			if (rubrique_active_default.includes(item_allRubriques.api_name)) {
@@ -2063,6 +2056,9 @@ class RubriqueCMZ extends MapCMZ {
 
 					btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js").remove();
 					btn_rubrique.querySelector(".tooltip_rubrique_filter_jheo_js").remove();
+
+					//// remove card list on the left.
+					removeListNavLeftRubriqueType(rubrique_api_name);
 				} else {
 					this.allRubriques = [
 						...this.allRubriques.map((item) => {
@@ -2666,6 +2662,17 @@ class RubriqueCMZ extends MapCMZ {
 
 			return item;
 		});
+
+		this.markers_display = this.markers_display.map((item) => {
+			item.markers = item.markers.filter((jtem) => {
+				const jtem_id = parseInt(jtem.options.id);
+				const jtem_type = jtem.options.type;
+
+				return item.data.some((ktem) => ktem.id === jtem_id && ktem.rubrique_type === jtem_type);
+			});
+
+			return item;
+		});
 	}
 
 	async fetchDataRubrique(rubrique_type, options = {}) {
@@ -2708,8 +2715,7 @@ class RubriqueCMZ extends MapCMZ {
 
 	async addRubriqueMarker(rubrique_api_name) {
 		const response = await this.fetchDataRubrique(rubrique_api_name.toLowerCase());
-
-		console.log(this.defaultData);
+		const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
 
 		if (!this.defaultData.hasOwnProperty(rubrique_api_name)) {
 			this.defaultData[rubrique_api_name] = {
@@ -2718,7 +2724,15 @@ class RubriqueCMZ extends MapCMZ {
 			};
 		}
 
-		console.log(this.defaultData);
+		if (
+			!this.defaultData[rubrique_api_name].hasOwnProperty("pastille") ||
+			this.defaultData[rubrique_api_name]["pastille"] === undefined
+		) {
+			this.defaultData[rubrique_api_name] = {
+				pastille: [],
+				...this.defaultData[rubrique_api_name],
+			};
+		}
 
 		this.defaultData[rubrique_api_name]["data"] = mergeArraysUnique(
 			this.defaultData[rubrique_api_name]["data"],
@@ -2728,15 +2742,14 @@ class RubriqueCMZ extends MapCMZ {
 
 		this.defaultData[rubrique_api_name]["pastille"] = mergeArraysUnique(
 			this.defaultData[rubrique_api_name]["pastille"],
-			response["pastille"],
+			data_pastille,
 			"id"
 		);
 
-		console.log("this.defaultData");
-		console.log(this.defaultData);
-		console.log("---------------------");
-
 		this.updateMapAddRubrique(rubrique_api_name);
+
+		//// add card list on the left.
+		this.addDataToTableListLeft(this.defaultData[rubrique_api_name]["data"], rubrique_api_name);
 	}
 
 	bindActionToShowNavLeft() {

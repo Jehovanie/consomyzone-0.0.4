@@ -355,6 +355,14 @@ function getDetailFromListRightUpdate(id_rubrique, type_rubrique) {
  * @returns new array merge of the two
  */
 function mergeArraysUnique(firstTab, secondTab, key_unique) {
+	if (firstTab.length === 0) {
+		return secondTab;
+	}
+	
+	if (secondTab.length === 0) {
+		return firstTab;
+	}
+
 	const map = new Map();
 
 	// Add each item to the map; duplicates will be overwritten

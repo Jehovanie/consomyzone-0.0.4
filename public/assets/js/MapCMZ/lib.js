@@ -42,7 +42,7 @@ DataTableObject.prototype = {
 			dataTableInstance.destroy();
 		}
 		dataTableInstance = $(id_table_to_active_data_table).DataTable({
-			searching: false, // Ceci désactive la barre de recherche
+			searching: true, // Ceci désactive la barre de recherche
 			pageLength: 50,
 			language: {
 				url: "https://cdn.datatables.net/plug-ins/1.13.4/i18n/fr-FR.json",
@@ -91,6 +91,31 @@ DataTableObject.prototype = {
 
 		dataTableInstance.draw();
 	},
+
+	removeListNavLeftRubriqueType: (rubriqueType) => {
+		dataTableInstance
+			.rows(function (idx, data, node) {
+				var parser = new DOMParser();
+				var data_html = parser.parseFromString(data[0], "text/html");
+
+				const text = data_html.querySelector(".containt_name_note_address_jheo_js");
+				if (text) {
+					// Check if the element exists
+					const departement = text.getAttribute("data-departement");
+					const note = text.getAttribute("data-note");
+					const rubrique_id = text.getAttribute("data-rubrique-id");
+					const rubrique_type = text.getAttribute("data-rubrique-type");
+
+					if (rubriqueType === rubrique_type) {
+						return true;
+					}
+				}
+				return false;
+			})
+			.remove();
+
+		dataTableInstance.draw();
+	},
 };
 
 const dataTable = new DataTableObject();
@@ -109,6 +134,10 @@ function removeOneElement(element) {
 
 function updateDataTableByFilter(object_filter) {
 	dataTable.updateDataTableByFilter(object_filter);
+}
+
+function removeListNavLeftRubriqueType(rubrique_type) {
+	dataTable.removeListNavLeftRubriqueType(rubrique_type);
 }
 
 ///// end of datatable
