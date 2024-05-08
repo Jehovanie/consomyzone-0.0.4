@@ -24,6 +24,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_resto.png",
 				},
 				is_active: false,
+				is_have_specific_filter: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -58,6 +59,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_ferme.png",
 				},
 				is_active: false,
+				is_have_specific_filter: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -92,6 +94,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_station.png",
 				},
 				is_active: false,
+				is_have_specific_filter: true,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -101,6 +104,22 @@ class RubriqueCMZ extends MapCMZ {
 						max: 5,
 						min_default: 0,
 						max_default: 5,
+					},
+					specifique: {
+						produit: {
+							e85: { is_filtered: true, prix: 0 },
+							gplc: { is_filtered: true, prix: 0 },
+							sp95: { is_filtered: true, prix: 0 },
+							sp95e10: { is_filtered: true, prix: 0 },
+							sp98: { is_filtered: true, prix: 0 },
+							gasoil: { is_filtered: true, prix: 0 },
+						},
+						price_produit: {
+							min: 4,
+							max: 18,
+							min_default: 0,
+							max_default: 20,
+						},
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -115,6 +134,12 @@ class RubriqueCMZ extends MapCMZ {
 				fetchDetails: (id_rubrique) => {
 					this.fetchDetailsStation(id_rubrique);
 				},
+				specifiqueFilter: () => {
+					this.specifiqueFilterStation();
+				},
+				getStateSpecificFilter: () => {
+					return this.getStateSpecificFilterStation();
+				},
 			},
 			{
 				name: "Golf",
@@ -126,6 +151,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_golf.png",
 				},
 				is_active: false,
+				is_have_specific_filter: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -160,6 +186,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_tabac.png",
 				},
 				is_active: false,
+				is_have_specific_filter: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -194,6 +221,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_marche.png",
 				},
 				is_active: false,
+				is_have_specific_filter: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -228,6 +256,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
+				is_have_specific_filter: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -262,6 +291,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
+				is_have_specific_filter: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -296,6 +326,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
+				is_have_specific_filter: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -330,6 +361,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/icon_marche.png",
 				},
 				is_active: false,
+				is_have_specific_filter: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -356,7 +388,14 @@ class RubriqueCMZ extends MapCMZ {
 			},
 		];
 
-		const rubrique_active_default = ["restaurant", "ferme", "station", "golf", "tabac", "marche"];
+		const rubrique_active_default = [
+			// "restaurant",
+			// "ferme",
+			"station",
+			// "golf",
+			// "tabac",
+			// "marche"
+		];
 
 		this.allRubriques = this.allRubriques.map((item_allRubriques) => {
 			if (rubrique_active_default.includes(item_allRubriques.api_name)) {
@@ -2191,6 +2230,12 @@ class RubriqueCMZ extends MapCMZ {
 			///inject filter for notation
 			this.htmlFilterForNotation(rubrique_type);
 
+			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+
+			if (rubrique_type_object.is_have_specific_filter) {
+				rubrique_type_object.specifiqueFilter();
+			}
+
 			//// close filter
 			if (this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
 				document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
@@ -2214,14 +2259,73 @@ class RubriqueCMZ extends MapCMZ {
 					});
 				});
 			}
-
-			this.bindActionFilter(rubrique_type);
 		} catch (error) {
 			console.log(error);
 		}
 	}
 
-	bindActionFilter(rubrique_type) {
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal this is the polymorphisme of the function [this.]specifiqueFilter()
+	 */
+	specifiqueFilterStation() {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "station");
+
+		const identifiant_slyder = "price_carburant_station";
+
+		const { produit, price_produit } = rubrique_type_object.filter.specifique;
+
+		injectFilterProduitStation(identifiant_slyder, produit);
+		this.activeSlidePriceCarburantStation(identifiant_slyder, price_produit);
+	}
+
+	activeSlidePriceCarburantStation(identifiant_slyder, price_produit) {
+		injectSliderCustomise(identifiant_slyder, price_produit);
+	}
+
+	getStateSpecificFilterStation() {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "station");
+		const {
+			filter: { specifique: rubrique_specifique_filter },
+		} = rubrique_type_object;
+
+		const state_specifique_filter = { ...rubrique_specifique_filter };
+
+		const identifiant_slyder = "price_carburant_station";
+
+		const slider_carburant = document.getElementById(`${identifiant_slyder}_jheo_js`);
+		const slider_price_carburant = slider_carburant.noUiSlider.get();
+
+		state_specifique_filter["price_produit"] = {
+			...state_specifique_filter["price_produit"],
+			min: parseFloat(slider_price_carburant[0]),
+			max: parseFloat(slider_price_carburant[1]),
+		};
+
+		for (var name_produit in rubrique_specifique_filter.produit) {
+			const checkbox_produit = document.getElementById(`${name_produit}_toggle_jheo_js`).checked;
+			state_specifique_filter["produit"][name_produit] = {
+				...state_specifique_filter["produit"][name_produit],
+				is_filtered: checkbox_produit,
+			};
+		}
+
+		return state_specifique_filter;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+	 *
+	 * @Goal : handle action filter form the user
+	 *
+	 * @whereIUseIt : map_cmz_instance.js (because this function directly injected on html element)
+	 *
+	 * @param {*} rubrique_type
+	 *
+	 * @returns
+	 */
+	handleClickCtaFilter(rubrique_type) {
 		if (!document.querySelector(".filter_departement_jheo_js")) {
 			console.log("Selector not found: 'filter_departement_jheo_js'");
 			return false;
@@ -2236,94 +2340,132 @@ class RubriqueCMZ extends MapCMZ {
 		const filter_departement = document.querySelector(".filter_departement_jheo_js");
 		const cta_to_filter = document.querySelector(".cta_to_filter_jheo_js");
 
-		cta_to_filter.addEventListener("click", () => {
-			cta_to_filter.innerText = "Recherche en cours...";
+		cta_to_filter.innerText = "Recherche en cours...";
 
-			cta_to_filter.classList.remove("btn-primary");
-			cta_to_filter.classList.add("btn-secondary");
+		cta_to_filter.classList.remove("btn-primary");
+		cta_to_filter.classList.add("btn-secondary");
 
-			const filter_price = skipSlider.noUiSlider.get();
-			const filter_dep_value = filter_departement.value;
+		const filter_price = skipSlider.noUiSlider.get();
+		const filter_dep_value = filter_departement.value;
+
+		this.allRubriques = this.allRubriques.map((rubrique) => {
+			if (rubrique.api_name === rubrique_type) {
+				rubrique = {
+					...rubrique,
+					filter: {
+						...rubrique.filter,
+						is_filtered: true,
+						departement: filter_dep_value,
+						notation: {
+							...rubrique.filter.notation,
+							min: parseFloat(filter_price[0]).toFixed(2),
+							max: parseFloat(filter_price[1]).toFixed(2),
+						},
+					},
+				};
+			}
+			return rubrique;
+		});
+
+		////------------- side for the specifique filter ------------------------------
+		let spec_filter = {};
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+		if (rubrique_type_object.is_have_specific_filter) {
+			spec_filter = rubrique_type_object.getStateSpecificFilter();
 
 			this.allRubriques = this.allRubriques.map((rubrique) => {
 				if (rubrique.api_name === rubrique_type) {
-					rubrique = {
-						...rubrique,
-						filter: {
-							...rubrique.filter,
-							is_filtered: true,
-							departement: filter_dep_value,
-							notation: {
-								...rubrique.filter.notation,
-								min: parseFloat(filter_price[0]).toFixed(2),
-								max: parseFloat(filter_price[1]).toFixed(2),
-							},
-						},
+					rubrique.filter.specifique = {
+						...rubrique.filter.specifique,
+						...spec_filter,
 					};
 				}
 				return rubrique;
 			});
+		}
 
-			if (document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`)) {
-				const badge_navbar_rubrique = document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`);
-				if (badge_navbar_rubrique.classList.contains("d-none")) {
-					badge_navbar_rubrique.classList.remove("d-none");
-				}
+		//// --------------------------x----------------------------------------------
+
+		if (document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`)) {
+			const badge_navbar_rubrique = document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`);
+			if (badge_navbar_rubrique.classList.contains("d-none")) {
+				badge_navbar_rubrique.classList.remove("d-none");
 			}
+		}
 
-			this.handleActionFilter(rubrique_type, {
-				note: { min: parseFloat(filter_price[0]), max: parseFloat(filter_price[1]) },
-				departement: filter_dep_value,
-			});
+		this.handleActionFilter(rubrique_type, {
+			note: { min: parseFloat(filter_price[0]), max: parseFloat(filter_price[1]) },
+			departement: filter_dep_value,
 		});
+	}
 
-		//// reset all filter
-		const cta_to_cancel_filter = document.querySelector(".cta_to_cancel_filter_jheo_js");
-		cta_to_cancel_filter.addEventListener("click", () => {
-			this.allRubriques = this.allRubriques.map((rubrique) => {
-				if (rubrique.api_name === rubrique_type) {
-					rubrique = {
-						...rubrique,
-						filter: {
-							is_filtered: false,
-							departement: "tous",
-							notation: {
-								...rubrique.filter.notation,
-								min: 0,
-								max: 5,
-							},
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+	 *
+	 * @Goal : reset the filter doing before for the user.
+	 *
+	 * @whereIUseIt : map_cmz_instance.js (because this function directly injected on html element)
+	 *
+	 * @param {*} rubrique_type
+	 *
+	 * @returns
+	 */
+	resetFilterOnRubrique(rubrique_type) {
+		if (!document.querySelector(".filter_departement_jheo_js")) {
+			console.log("Selector not found: 'filter_departement_jheo_js'");
+			return false;
+		}
+
+		if (!document.querySelector(".cta_to_filter_jheo_js")) {
+			console.log("Selector not found: 'cta_to_filter_jheo_js'");
+			return false;
+		}
+
+		const filter_departement = document.querySelector(".filter_departement_jheo_js");
+
+		this.allRubriques = this.allRubriques.map((rubrique) => {
+			if (rubrique.api_name === rubrique_type) {
+				rubrique = {
+					...rubrique,
+					filter: {
+						is_filtered: false,
+						departement: "tous",
+						notation: {
+							...rubrique.filter.notation,
+							min: 0,
+							max: 5,
 						},
-					};
-				}
-				return rubrique;
-			});
-
-			filter_departement.querySelector("option").setAttribute("selected", true);
-
-			///inject filter for notation
-			this.resetSliderNotation();
-
-			if (document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`)) {
-				const badge_navbar_rubrique = document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`);
-				if (!badge_navbar_rubrique.classList.contains("d-none")) {
-					badge_navbar_rubrique.classList.add("d-none");
-				}
+					},
+				};
 			}
-
-			const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
-			const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
-
-			const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
-
-			const zoom = this.map._zoom;
-			const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
-			const { dataMax, ratio } = current_object_dataMax;
-
-			this.completeMarkerDisplay(new_size, dataMax, ratio);
-
-			////update list datatables
-			this.bindListItemRubriqueActive();
+			return rubrique;
 		});
+
+		filter_departement.querySelector("option").setAttribute("selected", true);
+
+		///inject filter for notation
+		this.resetSliderNotation();
+
+		if (document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`)) {
+			const badge_navbar_rubrique = document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`);
+			if (!badge_navbar_rubrique.classList.contains("d-none")) {
+				badge_navbar_rubrique.classList.add("d-none");
+			}
+		}
+
+		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+		const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
+
+		const zoom = this.map._zoom;
+		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		const { dataMax, ratio } = current_object_dataMax;
+
+		this.completeMarkerDisplay(new_size, dataMax, ratio);
+
+		////update list datatables
+		this.bindListItemRubriqueActive();
 	}
 
 	async handleActionFilter(rubrique_type, object_filter) {
@@ -2551,8 +2693,16 @@ class RubriqueCMZ extends MapCMZ {
 
 				</div>
 				<nav class="navbar navbar-light bg-light d-flex justify-content-between align-items-center">
-					<a class="navbar-brand cancel_filter cta_to_cancel_filter_jheo_js" href="#">Annuler tout</a>
-					<button type="button" class="btn btn-primary cta_to_filter cta_to_filter_jheo_js">Voir les résultats</button>
+					<a class="navbar-brand cancel_filter cta_to_cancel_filter_jheo_js" href="#"
+					   onclick="resetFilterOnRubrique('${rubrique_type}')"
+					>
+						Annuler
+					</a>
+					<button type="button" class="btn btn-primary cta_to_filter cta_to_filter_jheo_js" 
+					   onclick="handleClickCtaFilter('${rubrique_type}')"
+					>
+					   Voir les résultats
+					</button>
 				</nav>
 			</div>
 		`;
@@ -2641,7 +2791,7 @@ class RubriqueCMZ extends MapCMZ {
 	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
 	 *
 	 * @whereIUseIt [
-	 * 	 this.bindActionFilter()
+	 * 	 this.resetFilterOnRubrique()
 	 * ]
 	 */
 	resetSliderNotation() {

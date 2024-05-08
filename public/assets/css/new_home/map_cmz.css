@@ -312,3 +312,11 @@
 .color_blue {
 	color: blue;
 }
+
+.content_filter_checkbox {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: start;
+	align-items: center;
+	column-gap: 25px;
+}

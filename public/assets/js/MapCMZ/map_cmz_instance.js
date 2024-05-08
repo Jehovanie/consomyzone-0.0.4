@@ -255,3 +255,11 @@ function showNoteGlobaleOnMarker(id, globalNote, type) {
 
 	MAP_CMZ.showNoteMoyenneRealTime(id, globalNote, type);
 }
+
+function handleClickCtaFilter(rubrique_type) {
+	MAP_CMZ.handleClickCtaFilter(rubrique_type);
+}
+
+function resetFilterOnRubrique(rubrique_type) {
+	MAP_CMZ.resetFilterOnRubrique(rubrique_type);
+}
