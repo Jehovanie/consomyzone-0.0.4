@@ -48,6 +48,18 @@ class RubriqueCMZ extends MapCMZ {
 				fetchDetails: (id_rubrique) => {
 					this.fetchDetailsResto(id_rubrique);
 				},
+				specifiqueFilter: () => {
+					this.specifiqueFilterResto();
+				},
+				getStateSpecificFilter: () => {
+					return this.getStateSpecificFilterResto();
+				},
+				resetSpecificFilter: () => {
+					this.resetSpecificFilterResto();
+				},
+				checkIsMuchOnFilter: (item_rubrique) => {
+					return this.checkIsMuchOnFilterResto(item_rubrique);
+				},
 			},
 			{
 				name: "Ferme",
@@ -82,6 +94,18 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				fetchDetails: (id_rubrique) => {
 					this.fetchDetailsFerme(id_rubrique);
+				},
+				specifiqueFilter: () => {
+					this.specifiqueFilterFerme();
+				},
+				getStateSpecificFilter: () => {
+					return this.getStateSpecificFilterFerme();
+				},
+				resetSpecificFilter: () => {
+					this.resetSpecificFilterFerme();
+				},
+				checkIsMuchOnFilter: (item_rubrique) => {
+					return this.checkIsMuchOnFilterFerme(item_rubrique);
 				},
 			},
 			{
@@ -143,6 +167,9 @@ class RubriqueCMZ extends MapCMZ {
 				resetSpecificFilter: () => {
 					this.resetSpecificFilterStation();
 				},
+				checkIsMuchOnFilter: (item_rubrique) => {
+					return this.checkIsMuchOnFilterStation(item_rubrique);
+				},
 			},
 			{
 				name: "Golf",
@@ -177,6 +204,18 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				fetchDetails: (id_rubrique) => {
 					this.fetchDetailsGolf(id_rubrique);
+				},
+				specifiqueFilter: () => {
+					this.specifiqueFilterGolf();
+				},
+				getStateSpecificFilter: () => {
+					return this.getStateSpecificFilterGolf();
+				},
+				resetSpecificFilter: () => {
+					this.resetSpecificFilterGolf();
+				},
+				checkIsMuchOnFilter: (item_rubrique) => {
+					return this.checkIsMuchOnFilterGolf(item_rubrique);
 				},
 			},
 			{
@@ -213,6 +252,18 @@ class RubriqueCMZ extends MapCMZ {
 				fetchDetails: (id_rubrique) => {
 					this.fetchDetailsTabac(id_rubrique);
 				},
+				specifiqueFilter: () => {
+					this.specifiqueFilterTabac();
+				},
+				getStateSpecificFilter: () => {
+					return this.getStateSpecificFilterTabac();
+				},
+				resetSpecificFilter: () => {
+					this.resetSpecificFilterTabac();
+				},
+				checkIsMuchOnFilter: (item_rubrique) => {
+					return this.checkIsMuchOnFilterTabac(item_rubrique);
+				},
 			},
 			{
 				name: "Marché",
@@ -247,6 +298,18 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				fetchDetails: (id_rubrique) => {
 					this.fetchDetailsMarche(id_rubrique);
+				},
+				specifiqueFilter: () => {
+					this.specifiqueFilterMarche();
+				},
+				getStateSpecificFilter: () => {
+					return this.getStateSpecificFilterMarche();
+				},
+				resetSpecificFilter: () => {
+					this.resetSpecificFilterMarche();
+				},
+				checkIsMuchOnFilter: (item_rubrique) => {
+					return this.checkIsMuchOnFilterMarche(item_rubrique);
 				},
 			},
 			{
@@ -283,6 +346,18 @@ class RubriqueCMZ extends MapCMZ {
 				fetchDetails: (id_rubrique) => {
 					this.fetchDetailsMarche(id_rubrique);
 				},
+				specifiqueFilter: () => {
+					this.specifiqueFilterFerme();
+				},
+				getStateSpecificFilter: () => {
+					return this.getStateSpecificFilterFerme();
+				},
+				resetSpecificFilter: () => {
+					this.resetSpecificFilterFerme();
+				},
+				checkIsMuchOnFilter: () => {
+					return this.checkIsMuchOnFilterFerme();
+				},
 			},
 			{
 				name: "Extra Pizza",
@@ -317,6 +392,18 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				fetchDetails: (id_rubrique) => {
 					this.fetchDetailsMarche(id_rubrique);
+				},
+				specifiqueFilter: () => {
+					this.specifiqueFilterFerme();
+				},
+				getStateSpecificFilter: () => {
+					return this.getStateSpecificFilterFerme();
+				},
+				resetSpecificFilter: () => {
+					this.resetSpecificFilterFerme();
+				},
+				checkIsMuchOnFilter: () => {
+					return this.checkIsMuchOnFilterFerme();
 				},
 			},
 			{
@@ -353,6 +440,18 @@ class RubriqueCMZ extends MapCMZ {
 				fetchDetails: (id_rubrique) => {
 					this.fetchDetailsMarche(id_rubrique);
 				},
+				specifiqueFilter: () => {
+					this.specifiqueFilterFerme();
+				},
+				getStateSpecificFilter: () => {
+					return this.getStateSpecificFilterFerme();
+				},
+				resetSpecificFilter: () => {
+					this.resetSpecificFilterFerme();
+				},
+				checkIsMuchOnFilter: () => {
+					return this.checkIsMuchOnFilterFerme();
+				},
 			},
 			{
 				name: "Gastro",
@@ -388,13 +487,25 @@ class RubriqueCMZ extends MapCMZ {
 				fetchDetails: (id_rubrique) => {
 					this.fetchDetailsMarche(id_rubrique);
 				},
+				specifiqueFilter: () => {
+					this.specifiqueFilterFerme();
+				},
+				getStateSpecificFilter: () => {
+					return this.getStateSpecificFilterFerme();
+				},
+				resetSpecificFilter: () => {
+					this.resetSpecificFilterFerme();
+				},
+				checkIsMuchOnFilter: () => {
+					return this.checkIsMuchOnFilterFerme();
+				},
 			},
 		];
 
 		const rubrique_active_default = [
-			// "restaurant",
+			"restaurant",
 			// "ferme",
-			"station",
+			// "station",
 			// "golf",
 			// "tabac",
 			// "marche"
@@ -2370,6 +2481,33 @@ class RubriqueCMZ extends MapCMZ {
 		}
 	}
 
+	checkIsMuchOnFilterCommon(rubrique_type, rubrique_item) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+		const { filter } = rubrique_type_object;
+
+		const moyenne_note = rubrique_item.hasOwnProperty("moyenne_note")
+			? parseFloat(parseFloat(rubrique_item.moyenne_note).toFixed(2))
+			: 0;
+
+		const is_match_filter_notation = moyenne_note >= filter.notation.min && moyenne_note <= filter.notation.max;
+
+		const is_match_filter_departement =
+			filter.departement === "tous" || parseInt(filter.departement) === parseInt(rubrique_item.dep)
+				? true
+				: false;
+
+		return is_match_filter_departement && is_match_filter_notation;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal this is the polymorphisme of the function [this.]checkIsMuchOnFilter()
+	 */
+	checkIsMuchOnFilterStation(item) {
+		return this.checkIsMuchOnFilterCommon("station", item);
+	}
+
 	/**
 	 * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
 	 *
@@ -2401,6 +2539,8 @@ class RubriqueCMZ extends MapCMZ {
 		cta_to_filter.classList.remove("btn-primary");
 		cta_to_filter.classList.add("btn-secondary");
 
+		////------------- side common filter ------------------------------
+
 		const filter_price = skipSlider.noUiSlider.get();
 		const filter_dep_value = filter_departement.value;
 
@@ -2422,6 +2562,7 @@ class RubriqueCMZ extends MapCMZ {
 			}
 			return rubrique;
 		});
+		//// --------------------------x----------------------------------------------
 
 		////------------- side for the specifique filter ------------------------------
 		let spec_filter = {};
@@ -2534,6 +2675,12 @@ class RubriqueCMZ extends MapCMZ {
 
 	async handleActionFilter(rubrique_type, object_filter) {
 		const { note, departement } = object_filter;
+
+		//// -------------
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+		const rubrique_state_filter = rubrique_type_object.filter;
+
+		/// -----------------------
 
 		//// fetch new data and update the data global
 		const spec_data_by_filter = await this.fetchSpecifiDataByFilterOptions(rubrique_type);
@@ -3489,6 +3636,23 @@ class RubriqueCMZ extends MapCMZ {
 		this.saveMarkerDisplay(item, marker);
 	}
 
+	specifiqueFilterResto() {
+		console.Log("specifiqueFilterResto... ");
+	}
+
+	getStateSpecificFilterResto() {
+		console.log("getStateSpecificFilterResto... ");
+		return {};
+	}
+
+	resetSpecificFilterResto() {
+		console.Log("resetSpecificFilterResto... ");
+	}
+
+	checkIsMuchOnFilterResto(item) {
+		return this.checkIsMuchOnFilterCommon("restaurant", item);
+	}
+
 	setMiniFicheFerme(nom, departement, adresse, options = {}) {
 		const mini_fiche = `
 			<button type="button" class="btn btn-primary btn-sm m-1" style="text-align: start;">
@@ -3514,6 +3678,23 @@ class RubriqueCMZ extends MapCMZ {
 		this.bindEventClickOnMarker(marker, item);
 
 		this.saveMarkerDisplay(item, marker);
+	}
+
+	specifiqueFilterFerme() {
+		console.log("specifiqueFilterFerme...");
+	}
+
+	getStateSpecificFilterFerme() {
+		console.log("getStateSpecificFilterFerme...");
+		return {};
+	}
+
+	resetSpecificFilterFerme() {
+		console.log("resetSpecificFilterFerme...");
+	}
+
+	checkIsMuchOnFilterFerme(item) {
+		return this.checkIsMuchOnFilterCommon("ferme", item);
 	}
 
 	setMiniFicheStation(nom, departement, adresse, options = {}) {
@@ -3605,6 +3786,23 @@ class RubriqueCMZ extends MapCMZ {
 		this.saveMarkerDisplay(item, marker);
 	}
 
+	specifiqueFilterTabac() {
+		console.log("specifiqueFilterTabac...");
+	}
+
+	getStateSpecificFilterTabac() {
+		console.log("getStateSpecificFilterTabac...");
+		return {};
+	}
+
+	resetSpecificFilterTabac() {
+		console.log("resetSpecificFilterTabac...");
+	}
+
+	checkIsMuchOnFilterTabac(item) {
+		return this.checkIsMuchOnFilterCommon("tabac", item);
+	}
+
 	setMiniFicheMarche(nom, departement, adresse, options = {}) {
 		const mini_fiche = `
 			<button type="button" class="btn btn-primary btn-sm m-1" style="text-align: start;">
@@ -3631,6 +3829,23 @@ class RubriqueCMZ extends MapCMZ {
 		this.bindEventClickOnMarker(marker, item);
 
 		this.saveMarkerDisplay(item, marker);
+	}
+
+	specifiqueFilterMarche() {
+		console.log("specifiqueFilterMarche...");
+	}
+
+	getStateSpecificFilterMarche() {
+		console.log("getStateSpecificFilterMarche...");
+		return {};
+	}
+
+	resetSpecificFilterMarche() {
+		console.log("resetSpecificFilterMarche...");
+	}
+
+	checkIsMuchOnFilterMarche(item) {
+		return this.checkIsMuchOnFilterCommon("marche", item);
 	}
 
 	setMiniFicheGolf(nom, departement, adresse, options = {}) {
@@ -3663,6 +3878,23 @@ class RubriqueCMZ extends MapCMZ {
 		this.bindEventClickOnMarker(marker, item);
 
 		this.saveMarkerDisplay(item, marker);
+	}
+
+	specifiqueFilterGolf() {
+		console.log("specifiqueFilterGolf...");
+	}
+
+	getStateSpecificFilterGolf() {
+		console.log("getStateSpecificFilterGolf...");
+		return {};
+	}
+
+	resetSpecificFilterGolf() {
+		console.log("resetSpecificFilterGolf...");
+	}
+
+	checkIsMuchOnFilterGolf(item) {
+		return this.checkIsMuchOnFilterCommon("golf", item);
 	}
 
 	newMarkerPOI(rubrique_type, singleData, poi_icon, options = {}) {
