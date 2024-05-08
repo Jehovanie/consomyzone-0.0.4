@@ -115,8 +115,8 @@ class RubriqueCMZ extends MapCMZ {
 							gasoil: { is_filtered: true, prix: 0 },
 						},
 						price_produit: {
-							min: 4,
-							max: 18,
+							min: 0,
+							max: 20,
 							min_default: 0,
 							max_default: 20,
 						},
@@ -139,6 +139,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				getStateSpecificFilter: () => {
 					return this.getStateSpecificFilterStation();
+				},
+				resetSpecificFilter: () => {
+					this.resetSpecificFilterStation();
 				},
 			},
 			{
@@ -2280,10 +2283,22 @@ class RubriqueCMZ extends MapCMZ {
 		this.activeSlidePriceCarburantStation(identifiant_slyder, price_produit);
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @whereIUseIt  [
+	 * 	 this.specifiqueFilterStation()
+	 * ]
+	 */
 	activeSlidePriceCarburantStation(identifiant_slyder, price_produit) {
 		injectSliderCustomise(identifiant_slyder, price_produit);
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal this is the polymorphisme of the function [this.]getStateSpecificFilter()
+	 */
 	getStateSpecificFilterStation() {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "station");
 		const {
@@ -2312,6 +2327,47 @@ class RubriqueCMZ extends MapCMZ {
 		}
 
 		return state_specifique_filter;
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal this is the polymorphisme of the function [this.]resetSpecificFilter()
+	 */
+	resetSpecificFilterStation() {
+		this.allRubriques = this.allRubriques.map((rubrique) => {
+			if (rubrique.api_name === "station") {
+				rubrique.filter.specifique = {
+					...rubrique.filter.specifique,
+					produit: {
+						e85: { is_filtered: true, prix: 0 },
+						gplc: { is_filtered: true, prix: 0 },
+						sp95: { is_filtered: true, prix: 0 },
+						sp95e10: { is_filtered: true, prix: 0 },
+						sp98: { is_filtered: true, prix: 0 },
+						gasoil: { is_filtered: true, prix: 0 },
+					},
+					price_produit: {
+						min: 0,
+						max: 20,
+						min_default: 0,
+						max_default: 20,
+					},
+				};
+			}
+			return rubrique;
+		});
+
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "station");
+		const { price_produit, produit } = rubrique_type_object.filter.specifique;
+
+		const { min_default, max_default } = price_produit;
+
+		resetSliderCustomise("price_carburant_station", { min: min_default, max: max_default });
+
+		for (var name_produit in produit) {
+			document.getElementById(`${name_produit}_toggle_jheo_js`).checked = true;
+		}
 	}
 
 	/**
@@ -2442,9 +2498,17 @@ class RubriqueCMZ extends MapCMZ {
 		});
 
 		filter_departement.querySelector("option").setAttribute("selected", true);
+		filter_departement.value = "tous";
 
 		///inject filter for notation
 		this.resetSliderNotation();
+
+		////------------- side for the specifique filter ------------------------------
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+		if (rubrique_type_object.is_have_specific_filter) {
+			rubrique_type_object.resetSpecificFilter();
+		}
+		//// --------------------------x----------------------------------------------
 
 		if (document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`)) {
 			const badge_navbar_rubrique = document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`);

@@ -205,3 +205,10 @@ function injectSliderCustomise(identifiant, start_min_max) {
 		slider_value_price_station[handle].innerHTML = values[handle];
 	});
 }
+
+function resetSliderCustomise(identifiant, { min, max }) {
+	const slider_for_customise = document.getElementById(`${identifiant}_jheo_js`);
+	const slider_value_customise = [min, max];
+
+	slider_for_customise.noUiSlider.set(slider_value_customise);
+}
