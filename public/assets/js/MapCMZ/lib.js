@@ -175,6 +175,37 @@ function resetSliderNotation() {
 	skipSlider.noUiSlider.set([0, 5]);
 }
 
+function injectSliderStation(identifiant, start_min_max) {
+	const slider_for_price_station = document.getElementById(`${identifiant}_jheo_js`);
+	const slider_value_price_station = [
+		document.getElementById(`${identifiant}_lower_jheo_js`),
+		document.getElementById(`${identifiant}_upper_jheo_js`),
+	];
+
+	noUiSlider.create(slider_for_price_station, {
+		start: [start_min_max.min, start_min_max.max],
+		connect: true,
+		behaviour: "drag",
+		step: 0.01,
+		range: {
+			min: start_min_max.min_default,
+			max: start_min_max.max_default,
+		},
+		format: {
+			from: function (value) {
+				return parseFloat(value).toFixed(2);
+			},
+			to: function (value) {
+				return parseFloat(value).toFixed(2);
+			},
+		},
+	});
+
+	slider_for_price_station.noUiSlider.on("update", function (values, handle) {
+		slider_value_price_station[handle].innerHTML = values[handle];
+	});
+}
+
 function injectSliderCustomise(identifiant, start_min_max) {
 	const slider_for_price_station = document.getElementById(`${identifiant}_jheo_js`);
 	const slider_value_price_station = [
@@ -186,17 +217,17 @@ function injectSliderCustomise(identifiant, start_min_max) {
 		start: [start_min_max.min, start_min_max.max],
 		connect: true,
 		behaviour: "drag",
-		step: 1,
+		step: 2,
 		range: {
 			min: start_min_max.min_default,
 			max: start_min_max.max_default,
 		},
 		format: {
 			from: function (value) {
-				return parseFloat(value).toFixed(1);
+				return parseInt(value);
 			},
 			to: function (value) {
-				return parseFloat(value).toFixed(1);
+				return parseInt(value);
 			},
 		},
 	});

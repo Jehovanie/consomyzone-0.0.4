@@ -19,9 +19,6 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 class BddRestoRepository extends ServiceEntityRepository
 {
 
-
-
-
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, BddResto::class);
@@ -1516,6 +1513,13 @@ class BddRestoRepository extends ServiceEntityRepository
     public function getDataByFilterOptions($filterOptions, $data_max= 200){
         $idDep= strlen($filterOptions["dep"]) === 1  ? "0" . $filterOptions["dep"] : $filterOptions["dep"];
 
+        $produit= $filterOptions["produit"];
+        $price_produit_min= $filterOptions["price_produit"]["min"];
+        $price_produit_min= $filterOptions["price_produit"]["min"];
+
+        $price_produit_max= $filterOptions["price_produit"]["max"];
+        $price_produit_max= $filterOptions["price_produit"]["max"];
+
         $query = $this->createQueryBuilder("r");
         $query = $query->select(
                 "r.id,
@@ -1542,6 +1546,7 @@ class BddRestoRepository extends ServiceEntityRepository
                 r.site1,
                 r.fonctionalite1,
                 r.fourchettePrix1,
+                r.fourchettePrix2,
                 r.horaires1,
                 r.prestation1,
                 r.regimeSpeciaux1,
@@ -1570,15 +1575,69 @@ class BddRestoRepository extends ServiceEntityRepository
                     'r.poiY'
                 )
             )
-            ->where("r.dep =:dep")
-            ->setParameter("dep", $idDep)
         ;
 
+        if( $idDep != 'tous' ){
+            $query = $query->where("r.dep =:idDep");
+        }
 
-        return $query->orderBy('RAND()')
+        $active= true;
+        $have_active= false;
+        foreach ($produit as $cle => $element) {
+            if($element){
+                if( $idDep !== "tous"){
+                    $query = $query->andWhere("(r.dep = :idDep) AND (r." . $cle . " = :active)");
+                }else{
+                    $query = $query->andWhere("r." . $cle . " = :active");
+                }
+
+                $have_active= true;
+            }
+        }
+
+        if($have_active){
+            $query= $query->setParameter("active", $active);
+        }
+
+        if( $idDep != 'tous' ){
+            $query = $query->setParameter("idDep", $idDep);
+        }
+
+        if( $price_produit_min !== $filterOptions["price_produit"]["min_default"] || $price_produit_max !== $filterOptions["price_produit"]["max_default"] ){
+            $query = $query->andWhere("r.fourchettePrix1 != ''");
+        }
+
+        $result= $query->orderBy('RAND()')
             ->setMaxResults($data_max)
             ->getQuery()
             ->getResult();
+
+        if( $price_produit_min === $filterOptions["price_produit"]["min_default"] && $price_produit_max === $filterOptions["price_produit"]["max_default"] ){
+            return $result;
+        }
+
+        $result_filter= [];
+
+        foreach($result as $item_result){
+            $is_much_price= false;
+            $fourchettePrix1= $item_result["fourchettePrix1"];
+
+            $pieces = explode("-", $fourchettePrix1);
+            $min= $pieces[0];
+
+            $pieces = explode(" ", $pieces[1]);
+            $max= $pieces[0];
+
+            if(intval($min) <= intval($price_produit_min)|| intval($price_produit_max) <= intval($max)){
+                $is_much_price= true;
+            }
+
+            if($is_much_price){
+                array_push($result_filter, $item_result);
+            }
+        }
+
+        return $result_filter;
     }
 
     public function getAllOpenedRestosV2($limits = 0){

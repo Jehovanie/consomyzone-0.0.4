@@ -356,7 +356,7 @@ function createStartNoteHtml(note_moyenne, options = {}) {
 	let rateYellow = rate * 100;
 	let rateBlack = 100 - rateYellow;
 
-	for (let i = 0; i < 4; i++) {
+	for (let i = 0; i < 5; i++) {
 		if (i < Math.trunc(note_moyenne)) {
 			startHTML += `<i class="fa-solid fa-star" style="color: rgb(245, 209, 101);"></i>`;
 		} else {

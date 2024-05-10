@@ -460,43 +460,29 @@ class StationController extends AbstractController
             } else {
                 $datas = $stationServiceFrGeomRepository->getLatitudeLongitudeStation(floatval($min), floatval($max), $type);
             }
-
-            if( str_contains($pathname, "fetch_data")){
-                return $this->json([
-                    "data" => $datas
-                ], 200);
-            }
             
             return $this->json($datas, 200);
         } else {
             if ($nom_dep != null && $id_dep != null) {
                 $datas = $stationServiceFrGeomRepository->getAllStationInDepartement($id_dep, $nom_dep);
-                if( str_contains($pathname, "fetch_data")){
-                    return $this->json([
-                        "data" => $datas
-                    ], 200);
-                }
+                
                 return $this->json($datas, 200);
             }
         }
 
         $datas = $stationServiceFrGeomRepository->getLatitudeLongitudeStation();
 
-        if( str_contains($pathname, "fetch_data")){
-            return $this->json([
-                "data" => $datas
-            ], 200);
-        }
+        
         return $this->json($datas, 200);
     }
 
-    #[Route("/fetch_data/station", name: "fetch_data_station" , methods: [ "GET"])]
+    #[Route("/fetch_data/station", name: "fetch_data_station" , methods: [ "GET", "POST" ])]
     public function fetchDataStationAction(
         Request $request,
         StationServiceFrGeomRepository $stationServiceFrGeomRepository, 
     ){
 
-        if($request->query->has("minx") && $request->query->has("miny") ){
+        if($request->getMethod() === "GET" && $request->query->has("minx") && $request->query->has("miny") ){
 
             $minx = $request->query->get("minx");
             $maxx = $request->query->get("maxx");
@@ -515,12 +501,31 @@ class StationController extends AbstractController
         }
 
 
-        if($request->query->has("dep") && $request->query->has("note_min") ){
-            $dep = $request->query->get("dep");
-            $note_min = $request->query->get("note_min");
-            $note_max = $request->query->get("note_max");
+        if($request->getMethod() === "POST"){
+            $data= json_decode($request->getContent(), true);
+            extract($data); 
+            /// $dep, $note_min, $note_max, $data_max, $price_produit, $produit
 
-            $data_max = $request->query->get("data_max"); 
+            $nouveauTableau = array();
+
+            $array_spec_column= [
+                "prixE85", "prixGplc", "prixSp95", "prixSp95E10", "prixSp98", "prixGasoil"
+            ];
+
+            foreach ($produit as $cle => $element) {
+
+                $origin_key= "";
+                foreach( $array_spec_column as $item_spec_column ) {
+                    if(str_contains(strtolower($item_spec_column), strtolower($cle))){
+                        $origin_key= $item_spec_column;
+                        break;
+                    }
+                }
+                if( $origin_key !== ""){
+                    $nouveauTableau[$origin_key] = $element["is_filtered"];
+                }
+            }
+
             $data_max = $data_max ? intval($data_max) : 50;
 
             $filter_options= [
@@ -529,6 +534,8 @@ class StationController extends AbstractController
                     "min" => $note_min,
                     "max" => $note_max
                 ],
+                "produit" => $nouveauTableau,
+                "price_produit" => $price_produit,
             ];
 
             $datas = $stationServiceFrGeomRepository->getDataByFilterOptions($filter_options, $data_max);

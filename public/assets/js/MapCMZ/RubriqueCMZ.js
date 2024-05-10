@@ -45,13 +45,13 @@ class RubriqueCMZ extends MapCMZ {
 							bar: { is_filtered: true, prix: 0 },
 							cafe: { is_filtered: true, prix: 0 },
 							salon_the: { is_filtered: true, prix: 0 },
-							cuisine_mode: { is_filtered: true, prix: 0 },
+							cuisine_monde: { is_filtered: true, prix: 0 },
 						},
 						price_produit: {
 							min: 0,
-							max: 20,
+							max: 200,
 							min_default: 0,
-							max_default: 20,
+							max_default: 200,
 						},
 					},
 				},
@@ -159,9 +159,9 @@ class RubriqueCMZ extends MapCMZ {
 						},
 						price_produit: {
 							min: 0,
-							max: 20,
+							max: 3,
 							min_default: 0,
-							max_default: 20,
+							max_default: 3,
 						},
 					},
 				},
@@ -1996,7 +1996,7 @@ class RubriqueCMZ extends MapCMZ {
 	 * ]
 	 */
 	activeSlidePriceCarburantStation(identifiant_slyder, price_produit) {
-		injectSliderCustomise(identifiant_slyder, price_produit);
+		injectSliderStation(identifiant_slyder, price_produit);
 	}
 
 	/**
@@ -2406,19 +2406,29 @@ class RubriqueCMZ extends MapCMZ {
 
 		const { departement, notation } = rubrique_type_object.filter;
 
-		let param = `dep=${encodeURIComponent(departement)}`;
-		param = `${param}&note_min=${encodeURIComponent(notation.min)}`;
-		param = `${param}&note_max=${encodeURIComponent(notation.max)}`;
-		param = `${param}&data_max=${encodeURIComponent(100)}`;
+		let link = `/fetch_data/${rubrique_type}`;
 
-		let link = `/fetch_data/${rubrique_type}?${param}`;
+		let param_search = {
+			dep: departement,
+			note_min: notation.min,
+			note_max: notation.max,
+			data_max: notation.max,
+		};
+
+		if (rubrique_type_object.is_have_specific_filter) {
+			param_search = {
+				...param_search,
+				...rubrique_type_object.filter.specifique,
+			};
+		}
 
 		const request = new Request(link, {
-			method: "GET",
+			method: "POST",
 			headers: {
 				Accept: "application/json",
 				"Content-Type": "application/json",
 			},
+			body: JSON.stringify(param_search),
 		});
 
 		try {

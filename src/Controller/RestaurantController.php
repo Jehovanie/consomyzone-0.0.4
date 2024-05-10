@@ -96,7 +96,7 @@ class RestaurantController extends AbstractController
         ]);
     }
 
-    #[Route("/fetch_data/restaurant", name: "fetch_data_restaurant" , methods: [ "GET"])]
+    #[Route("/fetch_data/restaurant", name: "fetch_data_restaurant" , methods: [ "GET", "POST"])]
     #[Route("/Coord/All/Restaurant", name: "app_coord_restaurant", methods: ["GET"])]
     public function getAllRestCoor(
         Request $request,
@@ -112,7 +112,7 @@ class RestaurantController extends AbstractController
         $pathname= parse_url($current_uri, PHP_URL_PATH);
 
         $arrayIdResto = [];
-        if($request->query->has("minx") && $request->query->has("miny") ){
+        if($request->getMethod() === "GET" && $request->query->has("minx") && $request->query->has("miny") ){
 
             $minx = $request->query->get("minx");
             $maxx = $request->query->get("maxx");
@@ -161,13 +161,33 @@ class RestaurantController extends AbstractController
             ], 200);
         }
 
-        if($request->query->has("dep") && $request->query->has("note_min") ){
+        if($request->getMethod() === "POST"){
+            $data= json_decode($request->getContent(), true);
+            extract($data); 
+            /// $dep, $note_min, $note_max, $data_max, $price_produit, $produit
 
-            $dep = $request->query->get("dep");
-            $note_min = $request->query->get("note_min");
-            $note_max = $request->query->get("note_max");
+            $nouveauTableau = array();
 
-            $data_max = $request->query->get("data_max"); 
+            $array_spec_column= [
+               "restaurant", "brasserie", "creperie", "fastFood", "pizzeria", "boulangerie", "bar", "cuisineMonde", "cafe", "salonThe"
+            ];
+
+            foreach ($produit as $cle => $element) {
+
+                $origin_key= "";
+                foreach( $array_spec_column as $item_spec_column ) {
+                    if(str_contains(strtolower($item_spec_column), str_replace("_", "", strtolower($cle)))){
+                        $origin_key= $item_spec_column;
+                        break;
+                    }
+                }
+
+                if( $origin_key !== ""){
+                    $nouveauTableau[$origin_key] = $element["is_filtered"];
+                }
+            }
+
+
             $data_max = $data_max ? intval($data_max) : 50;
 
             $filter_options= [
@@ -176,7 +196,11 @@ class RestaurantController extends AbstractController
                     "min" => $note_min,
                     "max" => $note_max
                 ],
+                "produit" => $nouveauTableau,
+                "price_produit" => $price_produit,
             ];
+
+            // dd($filter_options);
 
             $datas = $bddResto->getDataByFilterOptions($filter_options, $data_max);
 
