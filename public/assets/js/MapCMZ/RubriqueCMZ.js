@@ -24,7 +24,7 @@ class RubriqueCMZ extends MapCMZ {
 					not_selected: "assets/icon/NewIcons/mini_logo_resto.png",
 				},
 				is_active: false,
-				is_have_specific_filter: false,
+				is_have_specific_filter: true,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -34,6 +34,25 @@ class RubriqueCMZ extends MapCMZ {
 						max: 5,
 						min_default: 0,
 						max_default: 5,
+					},
+					specifique: {
+						produit: {
+							restaurant: { is_filtered: true, prix: 0 },
+							brasserie: { is_filtered: true, prix: 0 },
+							fast_food: { is_filtered: true, prix: 0 },
+							pizzeria: { is_filtered: true, prix: 0 },
+							boulangerie: { is_filtered: true, prix: 0 },
+							bar: { is_filtered: true, prix: 0 },
+							cafe: { is_filtered: true, prix: 0 },
+							salon_the: { is_filtered: true, prix: 0 },
+							cuisine_mode: { is_filtered: true, prix: 0 },
+						},
+						price_produit: {
+							min: 0,
+							max: 20,
+							min_default: 0,
+							max_default: 20,
+						},
 					},
 				},
 				setSingleMarker: (item, options = {}) => {
@@ -1983,6 +2002,17 @@ class RubriqueCMZ extends MapCMZ {
 	/**
 	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
 	 *
+	 * @whereIUseIt  [
+	 * 	 this.specifiqueFilterStation()
+	 * ]
+	 */
+	activeSlidePriceCarburantResto(identifiant_slyder, price_produit) {
+		injectSliderCustomise(identifiant_slyder, price_produit);
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
 	 * @goal this is the polymorphisme of the function [this.]getStateSpecificFilter()
 	 */
 	getStateSpecificFilterStation() {
@@ -3183,16 +3213,83 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	specifiqueFilterResto() {
-		console.Log("specifiqueFilterResto... ");
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
+
+		const identifiant_slyder = "fourchette_prix_resto";
+
+		const { produit, price_produit } = rubrique_type_object.filter.specifique;
+
+		injectFilterProduitResto(identifiant_slyder, produit);
+		this.activeSlidePriceCarburantResto(identifiant_slyder, price_produit);
 	}
 
 	getStateSpecificFilterResto() {
-		console.log("getStateSpecificFilterResto... ");
-		return {};
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
+		const {
+			filter: { specifique: rubrique_specifique_filter },
+		} = rubrique_type_object;
+
+		const state_specifique_filter = { ...rubrique_specifique_filter };
+
+		const identifiant_slyder = "fourchette_prix_resto";
+
+		const slider_fourchette_prix = document.getElementById(`${identifiant_slyder}_jheo_js`);
+		const slider_price_fourchette_prix = slider_fourchette_prix.noUiSlider.get();
+
+		state_specifique_filter["price_produit"] = {
+			...state_specifique_filter["price_produit"],
+			min: parseFloat(slider_price_fourchette_prix[0]),
+			max: parseFloat(slider_price_fourchette_prix[1]),
+		};
+
+		for (var name_produit in rubrique_specifique_filter.produit) {
+			const checkbox_produit = document.getElementById(`${name_produit}_toggle_jheo_js`).checked;
+			state_specifique_filter["produit"][name_produit] = {
+				...state_specifique_filter["produit"][name_produit],
+				is_filtered: checkbox_produit,
+			};
+		}
+
+		return state_specifique_filter;
 	}
 
 	resetSpecificFilterResto() {
-		console.Log("resetSpecificFilterResto... ");
+		this.allRubriques = this.allRubriques.map((rubrique) => {
+			if (rubrique.api_name === "restaurant") {
+				rubrique.filter.specifique = {
+					...rubrique.filter.specifique,
+					produit: {
+						restaurant: { is_filtered: true, prix: 0 },
+						brasserie: { is_filtered: true, prix: 0 },
+						fast_food: { is_filtered: true, prix: 0 },
+						pizzeria: { is_filtered: true, prix: 0 },
+						boulangerie: { is_filtered: true, prix: 0 },
+						bar: { is_filtered: true, prix: 0 },
+						cafe: { is_filtered: true, prix: 0 },
+						salon_the: { is_filtered: true, prix: 0 },
+						cuisine_mode: { is_filtered: true, prix: 0 },
+					},
+					price_produit: {
+						min: 0,
+						max: 20,
+						min_default: 0,
+						max_default: 20,
+					},
+				};
+			}
+			return rubrique;
+		});
+
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
+		const { price_produit, produit } = rubrique_type_object.filter.specifique;
+
+		const { min_default, max_default } = price_produit;
+
+		resetSliderCustomise("fourchette_prix_resto", { min: min_default, max: max_default });
+
+		for (var name_produit in produit) {
+			document.getElementById(`${name_produit}_toggle_jheo_js`).checked = true;
+		}
 	}
 
 	//// polymorphisme check the filter

@@ -463,3 +463,66 @@ function htmlSlidePriceCarburantStation(identifiant) {
 
 	return html_filter_by_note;
 }
+
+function injectFilterProduitResto(identifiant_slyder, produit) {
+	if (!document.querySelector(".content_body_filter_jheo_js")) {
+		console.log("Error: selector not found 'content_body_filter_jheo_js'");
+		return false;
+	}
+
+	let array_checkbox_type = [];
+	for (var name_produit in produit) {
+		var item = produit[name_produit];
+
+		array_checkbox_type.push(`
+			<div class="form-check">
+				<input class="form-check-input" type="checkbox" 
+					id="${name_produit}_toggle_jheo_js"
+				    ${item.is_filtered ? "checked" : ""}
+				>
+				<label class="form-check-label" for="${name_produit}_toggle_jheo_js">
+					${name_produit.split("_").join(" ")}
+				</label>
+			</div>
+		`);
+	}
+
+	const html_filter = `
+		<div class="content mt-2 mb-3 p-1">
+			<h2 class="text-black">Type</h2>
+			<div class="mt-1">
+				<div class="content_filter_checkbox">
+					${array_checkbox_type.join("")}
+				</div>
+			</div>
+		</div>
+	`;
+
+	const html_forchette_price = htmlSlidePriceCarburantResto(identifiant_slyder);
+
+	document.querySelector(".content_body_filter_jheo_js").insertAdjacentHTML(
+		"beforeend",
+		`
+			${html_filter}
+			${html_forchette_price}
+		`
+	);
+}
+
+function htmlSlidePriceCarburantResto(identifiant) {
+	const html_filter_by_note = `
+			<div class="content mt-2 mb-3 p-1">
+				<h2 class="text-black">Faurchette de prix:</h2>
+				<div class="slider-area mt-1">
+					<div class="slider-area-wrapper">
+						<span id="${identifiant}_lower_jheo_js"></span>
+						<div id="${identifiant}_jheo_js" class="slider"></div>
+						<span id="${identifiant}_upper_jheo_js"></span>
+					</div>
+				</div>
+			</div>
+			<hr>
+		`;
+
+	return html_filter_by_note;
+}
