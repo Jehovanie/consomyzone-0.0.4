@@ -522,9 +522,9 @@ class RubriqueCMZ extends MapCMZ {
 		];
 
 		const rubrique_active_default = [
-			"restaurant",
+			// "restaurant",
 			// "ferme",
-			// "station",
+			"station",
 			// "golf",
 			// "tabac",
 			// "marche"
@@ -1170,8 +1170,6 @@ class RubriqueCMZ extends MapCMZ {
 					);
 
 					if (rubrique_type_active_object != undefined) {
-						const { filter: rubrique_filter } = rubrique_type_active_object;
-
 						const rubrique_type = this.defaultData[key_rubrique_type];
 
 						rubrique_type.data.forEach((item_rubrique) => {
@@ -2227,6 +2225,7 @@ class RubriqueCMZ extends MapCMZ {
 				rubrique = {
 					...rubrique,
 					filter: {
+						...rubrique.filter,
 						is_filtered: false,
 						departement: "tous",
 						notation: {
@@ -3087,35 +3086,37 @@ class RubriqueCMZ extends MapCMZ {
 		const data_rubrique_add = this.defaultData[rubrique_type]["data"];
 
 		data_rubrique_add?.forEach((item) => {
-			//// current lat related to the ratio level
-			const lat_item = parseFloat(item.lat).toFixed(ratio);
+			if (rubrique_type_object.checkIsMuchOnFilter(item)) {
+				//// current lat related to the ratio level
+				const lat_item = parseFloat(item.lat).toFixed(ratio);
 
-			////
-			const data_filter_state = this.markers_display.find(
-				(jtem) => jtem.lat.toString() === parseFloat(lat_item).toString()
-			);
+				////
+				const data_filter_state = this.markers_display.find(
+					(jtem) => jtem.lat.toString() === parseFloat(lat_item).toString()
+				);
 
-			if (data_filter_state) {
-				//// count marker already display related by the type.
-				const item_rubrique_count = data_filter_state.data.reduce((sum, item) => {
-					if (item.rubrique_type === rubrique_type) {
-						return sum + 1;
-					}
-					return sum;
-				}, 0);
+				if (data_filter_state) {
+					//// count marker already display related by the type.
+					const item_rubrique_count = data_filter_state.data.reduce((sum, item) => {
+						if (item.rubrique_type === rubrique_type) {
+							return sum + 1;
+						}
+						return sum;
+					}, 0);
 
-				if (item_rubrique_count < dataMax) {
-					const lng_item = parseFloat(item.long).toFixed(ratio);
+					if (item_rubrique_count < dataMax) {
+						const lng_item = parseFloat(item.long).toFixed(ratio);
 
-					if (x.min <= lng_item && x.max >= lng_item) {
-						rubrique_type_object.setSingleMarker(item);
+						if (x.min <= lng_item && x.max >= lng_item) {
+							rubrique_type_object.setSingleMarker(item);
 
-						this.markers_display = this.markers_display.map((ktem) => {
-							if (ktem.lat.toString() === parseFloat(lat_item).toString()) {
-								ktem.data.push({ ...item, rubrique_type: rubrique_type });
-							}
-							return ktem;
-						});
+							this.markers_display = this.markers_display.map((ktem) => {
+								if (ktem.lat.toString() === parseFloat(lat_item).toString()) {
+									ktem.data.push({ ...item, rubrique_type: rubrique_type });
+								}
+								return ktem;
+							});
+						}
 					}
 				}
 			}
@@ -3277,13 +3278,12 @@ class RubriqueCMZ extends MapCMZ {
 						bar: { is_filtered: true, prix: 0 },
 						cafe: { is_filtered: true, prix: 0 },
 						salon_the: { is_filtered: true, prix: 0 },
-						cuisine_mode: { is_filtered: true, prix: 0 },
+						cuisine_monde: { is_filtered: true, prix: 0 },
 					},
 					price_produit: {
-						min: 0,
-						max: 20,
-						min_default: 0,
-						max_default: 20,
+						...rubrique.filter.specifique.price_produit,
+						min: rubrique.filter.specifique.price_produit.min_default,
+						max: rubrique.filter.specifique.price_produit.max_default,
 					},
 				};
 			}
@@ -3304,7 +3304,66 @@ class RubriqueCMZ extends MapCMZ {
 
 	//// polymorphisme check the filter
 	checkIsMuchOnFilterResto(item) {
-		return this.checkIsMuchOnFilterCommon("restaurant", item);
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
+		if (!rubrique_type_object.filter.is_filtered) {
+			return true;
+		}
+
+		let result = false;
+
+		result = this.checkIsMuchOnFilterCommon("restaurant", item);
+
+		const rubrique_typeo_object_filter = rubrique_type_object.filter.specifique.produit;
+
+		const object_filter_key_transform = {};
+
+		for (let name_produit in rubrique_typeo_object_filter) {
+			var name_produit_state = rubrique_typeo_object_filter[name_produit]["is_filtered"];
+			object_filter_key_transform[name_produit.split("_").join("")] = name_produit_state;
+		}
+
+		for (let key_item in item) {
+			if (
+				object_filter_key_transform.hasOwnProperty(key_item.toLowerCase()) &&
+				object_filter_key_transform[key_item.toLowerCase()] === true
+			) {
+				if (!!parseInt(item[key_item]) === !!object_filter_key_transform[key_item.toLowerCase()]) {
+					result = result && true;
+				} else {
+					result = false;
+				}
+			}
+		}
+
+		const rubrique_filter_price_produit = rubrique_type_object.filter.specifique.price_produit;
+
+		if (item.fourchettePrix1 !== "") {
+			const fourchette_price = item.fourchettePrix1.split("-");
+
+			const item_price_min = parseInt(fourchette_price[0]);
+			const item_price_max = parseInt(fourchette_price[1]);
+
+			if (
+				rubrique_filter_price_produit.min <= item_price_min ||
+				(rubrique_filter_price_produit.min <= item_price_min &&
+					item_price_max <= rubrique_filter_price_produit.max)
+			) {
+				result = result && true;
+			} else {
+				result = false;
+			}
+		} else {
+			if (
+				rubrique_filter_price_produit.min === rubrique_filter_price_produit.min_default &&
+				rubrique_filter_price_produit.max === rubrique_filter_price_produit.max_default
+			) {
+				result = result && true;
+			} else {
+				return false;
+			}
+		}
+
+		return result;
 	}
 
 	setMiniFicheFerme(nom, departement, adresse, options = {}) {
