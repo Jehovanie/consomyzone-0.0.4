@@ -2108,7 +2108,48 @@ class RubriqueCMZ extends MapCMZ {
 	 * @goal this is the polymorphisme of the function [this.]checkIsMuchOnFilter()
 	 */
 	checkIsMuchOnFilterStation(item) {
-		return this.checkIsMuchOnFilterCommon("station", item);
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "station");
+		if (!rubrique_type_object.filter.is_filtered) {
+			return true;
+		}
+
+		const rubrique_typeo_object_filter = rubrique_type_object.filter.specifique.produit;
+		const rubrique_filter_price_produit = rubrique_type_object.filter.specifique.price_produit;
+
+		let result = false;
+
+		result = this.checkIsMuchOnFilterCommon("station", item);
+
+		if (
+			rubrique_filter_price_produit.min === rubrique_filter_price_produit.min_default &&
+			rubrique_filter_price_produit.max === rubrique_filter_price_produit.max_default
+		) {
+			result = result && true;
+		} else {
+			const object_filter_key_transform = {};
+
+			for (let name_produit in rubrique_typeo_object_filter) {
+				var name_produit_state = rubrique_typeo_object_filter[name_produit]["is_filtered"];
+				object_filter_key_transform[`prix${name_produit.toLowerCase()}`] = name_produit_state;
+			}
+
+
+			for (let key_item in item) {
+				if (
+					object_filter_key_transform.hasOwnProperty(key_item.toLowerCase()) &&
+					object_filter_key_transform[key_item.toLowerCase()] === true
+				) {
+					const price = parseFloat(item[key_item]);
+					if (rubrique_filter_price_produit.min <= price && price <= rubrique_filter_price_produit.max) {
+						result = result && true;
+					} else {
+						result = false;
+					}
+				}
+			}
+		}
+
+		return result;
 	}
 
 	/**
