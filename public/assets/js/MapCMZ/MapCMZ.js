@@ -1185,7 +1185,7 @@ class MapCMZ {
 		L.control
 			.customButtonLeft({
 				content: htmlControlMap,
-				classes: "d-flex justify-content-center align-items-center ms-5 mb-4",
+				classes: "d-flex justify-content-center align-items-center mb-4",
 				datas: {
 					foo: "bar",
 				},
@@ -1246,7 +1246,7 @@ class MapCMZ {
                     </div>
                 </div>
             </div>
-
+			<hr class="mb-2">
             <div class="content_right_side_body content_right_side_body_jheo_js">
                 
             </div>
@@ -1496,4 +1496,5 @@ class MapCMZ {
 
 		return { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
 	}
+
 }

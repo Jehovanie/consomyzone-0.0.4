@@ -12,8 +12,12 @@ function openCollapseRubriqueFavory(favori_folder_id) {
 
 function addLoadingListFavory(parent_content) {
 	parent_content.innerHTML = `
-		<div class="spinner-border text-info loading_list_favory loading_list_favory_jheo_js" role="status">
-			<span class="visually-hidden">Loading...</span>
+		<div class="folder_chargement loading_list_favory_jheo_js" ">
+			<div class="containt">
+				<div class="word word-1">C</div>
+				<div class="word word-2">M</div>
+				<div class="word word-3">Z</div>
+			</div>
 		</div>
 	`;
 }
@@ -94,7 +98,8 @@ function createItemFavoryElement(object) {
 		<li class="favory_etablisment_${id_favory_etablisment}_jheo_js list-group-item d-flex justify-content-between align-items-center">
 			<div class="d-flex justify-content-start align-items-center">
 				<img class="icon_favory_rubrique" src="${icon_path}" alt="${object.name}">
-				<span class="ms-2 favory_etablisment" onclick="getDetailFromListRight('${object.nom_dep}', '${object.dep}', '${object.id}')">${object.name}</span>
+				<!-- <span class="ms-2 favory_etablisment" onclick="getDetailFromListRight('${object.nom_dep}', '${object.dep}', '${object.id}')">${object.name}</span> -->
+				<span class="ms-2 favory_etablisment" onclick="openDetailsRubriqueFromLeft('${object.id}', 'restaurant')">${object.name}</span>
             </div>
 			<span class="remove_etablisment_${id_favory_etablisment}_jheo_js text-danger float-end" style="cursor:pointer" onclick="removeFavoryEtablisment('${id_favory_etablisment}')">
 				<i class="fas fa-trash" aria-hidden="true"></i>

@@ -55,6 +55,13 @@ class RubriqueCMZ extends MapCMZ {
 						},
 					},
 				},
+				is_have_favory: true,
+				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
+					this.injecteListFavoryResto(injecteListFavory, favori_folder_id);
+				},
+				getOptionPastille: (item) => {
+					return this.getOptionPastilleResto(item);
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerResto(item, options);
 				},
@@ -101,6 +108,13 @@ class RubriqueCMZ extends MapCMZ {
 						min_default: 0,
 						max_default: 5,
 					},
+				},
+				is_have_favory: false,
+				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
+					console.log(injecteListFavory, favori_folder_id);
+				},
+				getOptionPastille: (item) => {
+					return this.getOptionPastilleFerme(item);
 				},
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerFerme(item, options);
@@ -165,6 +179,13 @@ class RubriqueCMZ extends MapCMZ {
 						},
 					},
 				},
+				is_have_favory: false,
+				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
+					console.log(injecteListFavory, favori_folder_id);
+				},
+				getOptionPastille: (item) => {
+					return this.getOptionPastilleStation(item);
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerStation(item, options);
 				},
@@ -211,6 +232,13 @@ class RubriqueCMZ extends MapCMZ {
 						min_default: 0,
 						max_default: 5,
 					},
+				},
+				is_have_favory: false,
+				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
+					console.log(injecteListFavory, favori_folder_id);
+				},
+				getOptionPastille: (item) => {
+					return this.getOptionPastilleGolf(item);
 				},
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarkerGolf(item, options);
@@ -259,6 +287,13 @@ class RubriqueCMZ extends MapCMZ {
 						max_default: 5,
 					},
 				},
+				is_have_favory: false,
+				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
+					console.log(injecteListFavory, favori_folder_id);
+				},
+				getOptionPastille: (item) => {
+					return this.getOptionPastilleTabac(item);
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerTabac(item, options);
 				},
@@ -306,6 +341,13 @@ class RubriqueCMZ extends MapCMZ {
 						max_default: 5,
 					},
 				},
+				is_have_favory: false,
+				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
+					console.log(injecteListFavory, favori_folder_id);
+				},
+				getOptionPastille: (item) => {
+					return this.getOptionPastilleMarche(item);
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.setSingleMarkerMarche(item, options);
 				},
@@ -331,6 +373,7 @@ class RubriqueCMZ extends MapCMZ {
 					return this.checkIsMuchOnFilterMarche(item_rubrique);
 				},
 			},
+			/*
 			{
 				name: "Boulangerie",
 				api_name: "boulangerie",
@@ -352,6 +395,9 @@ class RubriqueCMZ extends MapCMZ {
 						min_default: 0,
 						max_default: 5,
 					},
+				},
+				getOptionPastille: () => {
+					return this.getOptionPastilleResto();
 				},
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
@@ -400,6 +446,9 @@ class RubriqueCMZ extends MapCMZ {
 						max_default: 5,
 					},
 				},
+				getOptionPastille: () => {
+					return this.getOptionPastilleResto();
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
 				},
@@ -446,6 +495,9 @@ class RubriqueCMZ extends MapCMZ {
 						min_default: 0,
 						max_default: 5,
 					},
+				},
+				getOptionPastille: () => {
+					return this.getOptionPastilleResto();
 				},
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
@@ -494,6 +546,9 @@ class RubriqueCMZ extends MapCMZ {
 						max_default: 5,
 					},
 				},
+				getOptionPastille: () => {
+					return this.getOptionPastilleResto();
+				},
 				setSingleMarker: (item, options = {}) => {
 					this.settingSingleMarker(item, options);
 				},
@@ -519,12 +574,13 @@ class RubriqueCMZ extends MapCMZ {
 					return this.checkIsMuchOnFilterFerme();
 				},
 			},
+			*/
 		];
 
 		const rubrique_active_default = [
-			// "restaurant",
+			"restaurant",
 			// "ferme",
-			"station",
+			// "station",
 			// "golf",
 			// "tabac",
 			// "marche"
@@ -575,6 +631,14 @@ class RubriqueCMZ extends MapCMZ {
 		};
 
 		this.lastNiveauZoomAction = 0;
+
+		this.rubriqueOptionType = {
+			isPastille: false,
+			is_pastille_vert: false,
+			is_pastille_rouge: false,
+			is_pastille_orange: false,
+			is_pastille_blue: false,
+		};
 	}
 
 	getNumberMarkerDefault() {
@@ -834,7 +898,10 @@ class RubriqueCMZ extends MapCMZ {
 
 				const default_rubrique_active = this.allRubriques.filter((item) => item.is_active === true);
 				// const data_max_fetching = Math.ceil((this.allRubriques.length * 10) / default_rubrique_active.length);
-				const data_max_fetching = Math.ceil((5 * 10) / default_rubrique_active.length);
+				let data_max_fetching = Math.ceil((5 * 10) / default_rubrique_active.length);
+				if (data_rubrique.filter.is_filtered === true) {
+					data_max_fetching += 50;
+				}
 
 				const response = await this.fetchDataRubrique(api_name.toLowerCase(), { data_max: data_max_fetching });
 				if (response.data.length > 0) {
@@ -1946,8 +2013,9 @@ class RubriqueCMZ extends MapCMZ {
 			if (this.isRightSideAlreadyOpen && document.querySelector(".close_right_side_jheo_js")) {
 				document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
 					document.querySelector(".content_legende_jheo_js").innerHTML = `
-					${this.defaultHTMLRightSide()}
-				`;
+						${this.defaultHTMLRightSide()}
+					`;
+
 					this.closeRightSide();
 				});
 			}
@@ -1956,8 +2024,12 @@ class RubriqueCMZ extends MapCMZ {
 			if (this.isRightSideAlreadyOpen && document.querySelector(".cta_back_select_rubrique_jheo_js")) {
 				document.querySelector(".cta_back_select_rubrique_jheo_js").addEventListener("click", () => {
 					document.querySelector(".content_legende_jheo_js").innerHTML = `
-					${this.defaultHTMLRightSide()}
-				`;
+						${this.defaultHTMLRightSide()}
+					`;
+
+					const header_text = "Sélectionner ou désélectionner une ou plusieurs rubriques.";
+					document.querySelector(".title_right_side_jheo_js").innerText = header_text;
+
 					this.injectListRubriqueType();
 
 					document.querySelector(".close_right_side_jheo_js").addEventListener("click", () => {
@@ -2132,7 +2204,6 @@ class RubriqueCMZ extends MapCMZ {
 				var name_produit_state = rubrique_typeo_object_filter[name_produit]["is_filtered"];
 				object_filter_key_transform[`prix${name_produit.toLowerCase()}`] = name_produit_state;
 			}
-
 
 			for (let key_item in item) {
 				if (
@@ -3229,23 +3300,7 @@ class RubriqueCMZ extends MapCMZ {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		const data_resto_pastille = this.defaultData["restaurant"]["pastille"];
-
-		const count_pastille = data_resto_pastille.reduce((sum, item_resto_pastille) => {
-			if (parseInt(item_resto_pastille.id_resto) === parseInt(item.id)) {
-				sum = sum + 1;
-			}
-			return sum;
-		}, 0);
-
-		let poi_options =
-			count_pastille > 0
-				? {
-						isPastille: true,
-						is_pastille_vert: count_pastille === 1 ? true : false,
-						is_pastille_rouge: count_pastille === 2 ? true : false,
-				  }
-				: {};
+		let poi_options = rubrique_type_object.getOptionPastille(item);
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
@@ -3421,7 +3476,9 @@ class RubriqueCMZ extends MapCMZ {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "ferme");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon);
+		const poi_options = rubrique_type_object.getOptionPastille();
+
+		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
 		const mini_fiche = rubrique_type_object.setMiniFiche(item.nomFerme, item.departement, item.adresseFerme);
 
@@ -3483,7 +3540,9 @@ class RubriqueCMZ extends MapCMZ {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "station");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon);
+		const poi_options = rubrique_type_object.getOptionPastille(item);
+
+		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
 		const mini_fiche = rubrique_type_object.setMiniFiche(
 			item.nom,
@@ -3522,7 +3581,8 @@ class RubriqueCMZ extends MapCMZ {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "tabac");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		let poi_options = { isPastille: true, is_pastille_vert: true, is_pastille_rouge: false };
+		let poi_options = rubrique_type_object.getOptionPastille(item);
+
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
 		const miniFiche = rubrique_type_object.setMiniFiche(
@@ -3571,7 +3631,8 @@ class RubriqueCMZ extends MapCMZ {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "marche");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		let poi_options = { isPastille: true, is_pastille_vert: false, is_pastille_rouge: false };
+		let poi_options = rubrique_type_object.getOptionPastille(item);
+
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
 		const miniFiche = rubrique_type_object.setMiniFiche(item.denominationF, item.dep, item.adresse);
@@ -3616,7 +3677,8 @@ class RubriqueCMZ extends MapCMZ {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "golf");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		let poi_options = { isPastille: true, is_pastille_vert: true, is_pastille_rouge: false };
+		let poi_options = rubrique_type_object.getOptionPastille(item);
+
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
 		const miniFiche = rubrique_type_object.setMiniFiche(
@@ -3708,12 +3770,30 @@ class RubriqueCMZ extends MapCMZ {
 			style_m_poi_pas = `${style_m_poi_pas}height:${wh_m_poi_pas.toFixed(1)}px!important;`;
 			style_m_poi_pas = `${style_m_poi_pas}left:${left_pos_m_poi.toFixed(1)}%!important;`;
 
-			if (options.is_pastille_vert) {
-				point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="green" style="background-color:green;${style_m_poi_pas}"></div>`;
-			} else if (options.is_pastille_rouge) {
-				point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="red" style="background-color:red;${style_m_poi_pas}"></div>`;
+			let color_pastille = "";
+
+			if (options.is_pastille_vert !== undefined && options.is_pastille_vert === true) {
+				// point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="green" style="background-color:green;${style_m_poi_pas}"></div>`;
+				color_pastille = "green";
+			} else if (options.is_pastille_rouge !== undefined && options.is_pastille_rouge === true) {
+				// point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="red" style="background-color:red;${style_m_poi_pas}"></div>`;
+				color_pastille = "red";
+			} else if (options.is_pastille_orange !== undefined && options.is_pastille_orange === true) {
+				color_pastille = "orange";
+			} else if (options.is_pastille_blue !== undefined && options.is_pastille_blue === true) {
+				color_pastille = "blue";
 			}
+
+			point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="${color_pastille}" style="background-color:${color_pastille};${style_m_poi_pas}"></div>`;
 		}
+
+		// let poi_options = {
+		// 	isPastille: false,
+		// 	is_pastille_vert: false,
+		// 	is_pastille_rouge: false,
+		// 	is_pastille_orange: false,
+		// 	is_pastille_blue: false,
+		// };
 
 		return new L.DivIcon({
 			className: "content_single_marker_poi",
@@ -3743,23 +3823,7 @@ class RubriqueCMZ extends MapCMZ {
 			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 			const icon_selected = rubrique_type_object.poi_icon.selected;
 
-			const data_resto_pastille = this.defaultData[rubrique_type]["pastille"];
-
-			const count_pastille = data_resto_pastille.reduce((sum, item_resto_pastille) => {
-				if (parseInt(item_resto_pastille.id_resto) === parseInt(item.id)) {
-					sum = sum + 1;
-				}
-				return sum;
-			}, 0);
-
-			let poi_options =
-				count_pastille > 0
-					? {
-							isPastille: true,
-							is_pastille_vert: count_pastille === 1 ? true : false,
-							is_pastille_rouge: count_pastille === 2 ? true : false,
-					  }
-					: {};
+			let poi_options = rubrique_type_object.getOptionPastille(item);
 
 			const note = item.hasOwnProperty("moyenne_note") ? parseFloat(item.moyenne_note).toFixed(1) : "0.0";
 
@@ -3810,6 +3874,28 @@ class RubriqueCMZ extends MapCMZ {
 		}
 	}
 
+	getOptionPastilleResto(item) {
+		let option_resto = { ...this.rubriqueOptionType };
+
+		const data_resto_pastille = this.defaultData["restaurant"]["pastille"];
+
+		const count_pastille = data_resto_pastille.reduce((sum, item_resto_pastille) => {
+			if (parseInt(item_resto_pastille.id_resto) === parseInt(item.id)) {
+				sum = sum + 1;
+			}
+			return sum;
+		}, 0);
+
+		option_resto = {
+			...option_resto,
+			isPastille: count_pastille > 0 ? true : false,
+			is_pastille_vert: count_pastille === 1 ? true : false,
+			is_pastille_rouge: count_pastille === 2 ? true : false,
+		};
+
+		return option_resto;
+	}
+
 	async fetchDetailsResto(id_rubrique) {
 		try {
 			const link_details = `/details/restaurant/${id_rubrique}`;
@@ -3834,6 +3920,10 @@ class RubriqueCMZ extends MapCMZ {
 		} catch (error) {
 			console.log(error);
 		}
+	}
+
+	getOptionPastilleFerme(item) {
+		return { ...this.rubriqueOptionType };
 	}
 
 	async fetchDetailsFerme(id_rubrique) {
@@ -3862,6 +3952,10 @@ class RubriqueCMZ extends MapCMZ {
 		}
 	}
 
+	getOptionPastilleMarche(item) {
+		return { ...this.rubriqueOptionType };
+	}
+
 	async fetchDetailsMarche(id_rubrique) {
 		try {
 			const link_details = `/details/marche/${id_rubrique}`;
@@ -3886,6 +3980,10 @@ class RubriqueCMZ extends MapCMZ {
 		} catch (error) {
 			console.log(error);
 		}
+	}
+
+	getOptionPastilleStation(item) {
+		return { ...this.rubriqueOptionType };
 	}
 
 	async fetchDetailsStation(id_rubrique) {
@@ -3914,6 +4012,25 @@ class RubriqueCMZ extends MapCMZ {
 		}
 	}
 
+	getOptionPastilleGolf(item) {
+		let option_golf = { ...this.rubriqueOptionType };
+
+		if (item.hasOwnProperty("user_status")) {
+			if (!!item.user_status.a_faire === true) {
+				////orange
+				option_golf = { ...option_golf, isPastille: true, is_pastille_orange: true };
+			} else if (!!item.user_status.fait === true) {
+				//// bleu
+				option_golf = { ...option_golf, isPastille: true, is_pastille_blue: true };
+			} else if (!!item.user_status.refaire === true) {
+				//// vert
+				option_golf = { ...option_golf, isPastille: true, is_pastille_vert: true };
+			}
+		}
+
+		return option_golf;
+	}
+
 	async fetchDetailsGolf(id_rubrique) {
 		try {
 			const link_details = `/details/golf/${id_rubrique}`;
@@ -3938,6 +4055,10 @@ class RubriqueCMZ extends MapCMZ {
 		} catch (error) {
 			console.log(error);
 		}
+	}
+
+	getOptionPastilleTabac(item) {
+		return { ...this.rubriqueOptionType };
 	}
 
 	async fetchDetailsTabac(id_rubrique) {
@@ -4121,5 +4242,191 @@ class RubriqueCMZ extends MapCMZ {
 				marker.setIcon(this.setDivIconMarker(icon_selected, global_note, poi_options));
 			}
 		});
+	}
+
+	getNewUserStatus(status) {
+		let user_status = { a_faire: false, fait: false, mon_golf: false, refaire: false };
+		if (status === "fait") {
+			user_status = { ...user_status, fait: true };
+		} else if (status === "afaire") {
+			user_status = { ...user_status, a_faire: true };
+		} else if (status === "refaire") {
+			user_status = { ...user_status, refaire: true };
+		} else if (status === "mon_golf") {
+			user_status = { ...user_status, mon_golf: true };
+		}
+		return user_status;
+	}
+
+	updateStatusDataItem(user_status, id) {
+		if (this.defaultData["golf"]["data"].some(({ id: item_id }) => parseInt(item_id) === parseInt(id))) {
+			this.defaultData["golf"]["data"] = this.defaultData["golf"]["data"].map((item) => {
+				if (parseInt(item.id) === parseInt(id)) {
+					item.user_status = { ...item.user_status, ...user_status };
+				}
+				return item;
+			});
+		}
+	}
+
+	updateStateGolf(status, id) {
+		let user_status = this.getNewUserStatus(status); ///  { a_faire: ..., fait: ..., mon_golf: ..., refaire: ... };
+
+		if (this.defaultData["golf"]["data"].some(({ id: item_id }) => parseInt(item_id) === parseInt(id))) {
+			///update the global data state
+			this.updateStatusDataItem(user_status, id);
+
+			const golfModified = this.defaultData["golf"]["data"].find(
+				({ id: item_id }) => parseInt(item_id) === parseInt(id)
+			);
+
+			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "golf");
+			const icon_selected = rubrique_type_object.poi_icon.selected;
+
+			const note = golfModified.hasOwnProperty("moyenne_note")
+				? parseFloat(golfModified.moyenne_note).toFixed(1)
+				: "0.0";
+
+			let poi_options = rubrique_type_object.getOptionPastille(golfModified);
+
+			this.markers.eachLayer((item_marker) => {
+				if (item_marker.options.type === "golf" && parseInt(item_marker.options.id) === golfModified.id) {
+					item_marker.setIcon(this.setDivIconMarker(icon_selected, note, poi_options));
+				}
+			});
+		}
+	}
+
+	/**
+	 * @author Elie
+	 * @constructor Affichage de liste de dossier et sous dossier contenant mes favories géographiques
+	 */
+	injectMyFavoris() {
+		if (!document.querySelector(".content_right_side_body_jheo_js")) {
+			console.log("Selector not found : '.content_right_side_body_body'");
+			return false;
+		}
+
+		document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+			<div class="content_list_favory">
+				<div class="list_favory">
+					<ul class="list-group list-group-flush favory_list_jheo_js">
+						<div class="card_mini_chargement card_mini_chargement_jheo_js">
+							<div class="containt">
+								<div class="word word-1">C</div>
+								<div class="word word-2">M</div>
+								<div class="word word-3">Z</div>
+							</div>
+						</div>
+					</ul>
+				</div>
+			</div>
+		`;
+
+		// const content_list_element = document.querySelector(`.favory_list_jheo_js`);
+		this.injectListRubriqueTypeForFavory();
+	}
+
+	injectListRubriqueTypeForFavory() {
+		if (!document.querySelector(".favory_list_jheo_js")) {
+			console.log("Selector not found : '.favory_list_jheo_js'");
+			return false;
+		}
+
+		let list_rubrique = this.allRubriques.map((item) => {
+			const icon_image = IS_DEV_MODE ? `/${item.icon}` : `/public/${item.icon}`;
+
+			return `
+				<li class="list-group-item">
+					<span class="d-flex justify-content-start align-items-center">
+						<img class="image_icon_rubrique" src="${icon_image}" alt="${item.name}_rubrique" />
+						<span class="${item.is_have_favory ? "hover_underline" : "hover_underline_gray"}" 
+							onclick="openFavoryRubrique('${item.api_name}')">
+							Voir les favoris ${item.name}
+						</span>
+					</span
+				</li>
+			`;
+		});
+
+		document.querySelector(".favory_list_jheo_js").innerHTML = list_rubrique.join("");
+	}
+
+	openFavoryRubrique(rubrique_type) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+
+		if (!rubrique_type_object.is_have_favory) {
+			alertSwalFunctionNoteImplement();
+			return false;
+		}
+
+		if (!document.querySelector(".favory_list_jheo_js")) {
+			console.log("Selector not found : '.favory_list_jheo_js'");
+			return false;
+		}
+
+		document.querySelector(".title_right_side_jheo_js").innerText = `
+			Liste de mes favoris ${rubrique_type_object.name}:
+		`;
+
+		const parent_content = document.querySelector(".favory_list_jheo_js");
+
+		parent_content.innerHTML = `
+			<div class="card_mini_chargement card_mini_chargement_jheo_js">
+				<div class="containt">
+					<div class="word word-1">C</div>
+					<div class="word word-2">M</div>
+					<div class="word word-3">Z</div>
+				</div>
+			</div>
+		`;
+
+		rubrique_type_object.injecteListFavory(parent_content);
+	}
+
+	injecteListFavoryResto(parent_content, favori_folder_id = 0) {
+		let link = "/rubrique/all_favori";
+		link = favori_folder_id != 0 ? `${link}?favoriFolder=${favori_folder_id}` : link;
+
+		const request = new Request(link, {
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+		});
+
+		fetch(request)
+			.then((response) => response.json())
+			.then((response) => {
+				if (response.code == 401) {
+					parent_content.innerHTML = `
+						<div class="alert alert-danger" role="alert">
+							Vous n'êtes pas connecté, <a href="/connexion" >veuillez connectez ici </a>.
+						</div>
+					`;
+				} else {
+					const listElement = response.data;
+
+					let listElement_html = "";
+
+					if (listElement.length === 0) {
+						listElement_html = `
+							<div class="alert alert-danger custom_alert_danger custom_alert_danger_jheo_js" role="alert">
+								Vous n'avez pas un favori ou un dossier ici.
+							</div
+						`;
+					} else {
+						listElement.forEach((element) => {
+							let element_html = createItemFavory({ ...element }, element.isfolder);
+							listElement_html += element_html;
+						});
+					}
+
+					removeLoadingListFavory(parent_content);
+					parent_content.innerHTML = listElement_html;
+				}
+			})
+			.catch((error) => console.log(error));
 	}
 }

@@ -108,7 +108,7 @@ class GolfFranceController extends AbstractController
         ]);
     }
 
-    #[Route("/fetch_data/golf", name: "fetch_data_golf" , methods: [ "GET"])]
+    #[Route("/fetch_data/golf", name: "fetch_data_golf" , methods: [ "GET", "POST"])]
     #[Route('/api/golf', name: 'api_golf_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
         Request $request,
@@ -150,12 +150,10 @@ class GolfFranceController extends AbstractController
             return $this->json([ "success" => true, "data" => $golfs ], 200);
         }
 
-        if($request->query->has("dep") && $request->query->has("note_min") ){
-            $dep = $request->query->get("dep");
-            $note_min = $request->query->get("note_min");
-            $note_max = $request->query->get("note_max");
+        if($request->getMethod() === "POST"){
+            $data= json_decode($request->getContent(), true);
+            extract($data);  /// $dep, $note_min, $note_max, $data_max
 
-            $data_max = $request->query->get("data_max"); 
             $data_max = $data_max ? intval($data_max) : 50;
 
             $filter_options= [
@@ -167,8 +165,13 @@ class GolfFranceController extends AbstractController
             ];
 
             $datas = $golfFranceRepository->getDataByFilterOptions($filter_options, $data_max);
+
+            $ids=array_map('App\Service\SortResultService::getIdFromData', $datas);
+            $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
+            $golfs= $golfFranceService->mergeDatasAndAvis($datas, $moyenneNote);
+
             return $this->json([
-                "data" => $datas
+                "data" => $golfs
             ], 200);
         }
 

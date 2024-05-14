@@ -110,7 +110,7 @@
 	position: absolute;
 	top: 12%;
 	z-index: 1000;
-	left: 2.8%;
+	left: 0.8%;
 	height: 78% !important;
 	width: 30%;
 	overflow: hidden;
@@ -319,4 +319,52 @@
 	justify-content: start;
 	align-items: center;
 	column-gap: 25px;
+}
+
+.padding_header {
+	padding-left: 1.5rem;
+}
+
+.card_mini_chargement {
+	width: 40px;
+	margin: auto;
+}
+
+.card_mini_chargement .containt {
+	height: 13%;
+}
+
+.card_mini_chargement .containt .word {
+	font-size: 13px;
+}
+.hover_underline {
+	user-select: none;
+	cursor: pointer;
+}
+.hover_underline:hover {
+	text-decoration: underline blue;
+	color: blue;
+}
+
+.hover_underline_gray {
+	color: gray;
+	user-select: none;
+	cursor: pointer;
+}
+
+.hover_underline_gray:hover {
+	text-decoration: underline gray;
+}
+
+.folder_chargement {
+	width: 15px;
+	margin: auto;
+}
+.folder_chargement .containt {
+	height: 1%;
+}
+.folder_chargement .containt .word {
+	font-size: 13px;
+	color: white;
+	padding: 1px;
 }

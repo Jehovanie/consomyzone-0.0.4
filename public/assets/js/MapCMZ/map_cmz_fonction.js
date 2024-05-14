@@ -526,3 +526,11 @@ function htmlSlidePriceCarburantResto(identifiant) {
 
 	return html_filter_by_note;
 }
+
+function alertSwalFunctionNoteImplement() {
+	new swal(
+		"Cher partisan.",
+		"Cette fonctinnalité est en cours de développement, merci de votre compréhension.",
+		"info"
+	);
+}

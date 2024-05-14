@@ -263,3 +263,61 @@ function handleClickCtaFilter(rubrique_type) {
 function resetFilterOnRubrique(rubrique_type) {
 	MAP_CMZ.resetFilterOnRubrique(rubrique_type);
 }
+
+function executeActionForPastGolf(event, goldID) {
+	let selectElement = event.target;
+
+	if (selectElement != null && selectElement instanceof HTMLElement) {
+		let actionstr = selectElement.options[selectElement.selectedIndex].value;
+		action = parseInt(actionstr);
+
+		if (/[0-9]/.test(actionstr)) {
+			if (action >= 0 && action <= 3) {
+				switch (action) {
+					case 1: {
+						setGolfTodo(goldID, selectElement);
+						MAP_CMZ.updateStateGolf("afaire", goldID);
+						break;
+					}
+					case 2: {
+						setGolfFinished(goldID, selectElement);
+						MAP_CMZ.updateStateGolf("fait", goldID);
+						break;
+					}
+					case 3: {
+						setGolfRemake(goldID, event);
+						MAP_CMZ.updateStateGolf("refaire", goldID);
+						break;
+					}
+					// case 4: {
+
+					//     setMonGolf(goldID, selectElement)
+					//     OBJECT_MARKERS_GOLF.updateStateGolf("mon_golf", goldID)
+					//     break;
+					// }
+
+					default: {
+						setGolfNone(goldID, selectElement);
+						MAP_CMZ.updateStateGolf("aucun", goldID);
+					}
+				}
+			} else {
+				new swal("Bonjour!", "Bienvenu sur consomyzone.", "info");
+			}
+		} else {
+			new swal("Bonjour!", "Bienvenu sur consomyzone.", "info");
+		}
+	} else {
+		new swal("Bonjour", "Oups!! ", "info");
+	}
+}
+
+function cancelGolfFinished(event, goldID) {
+	let selectElement = event.target;
+	fecthGolfAction(goldID, "cancel", selectElement);
+	MAP_CMZ.updateStateGolf("aucun", goldID); /// update marker
+}
+
+function openFavoryRubrique(rubrique_type) {
+	MAP_CMZ.openFavoryRubrique(rubrique_type); /// update marker
+}

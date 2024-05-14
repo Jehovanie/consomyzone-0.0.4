@@ -1,3 +1,6 @@
+
+/*
+
 function getDetailFromListLeft(depart_name, depart_code, id) { 
     if (OBJECT_MARKERS_GOLF.checkIsExist(id)) {
         OBJECT_MARKERS_GOLF.clickOnMarker(id);
@@ -5,6 +8,8 @@ function getDetailFromListLeft(depart_name, depart_code, id) {
 		OBJECT_MARKERS_GOLF.fetchOneData(id_resto);
 	}
 }
+
+*/
 
 function setGolfTodo(goldID, selectElement) {
     fecthGolfAction(goldID, "todo", selectElement);
@@ -23,16 +28,21 @@ function setGolfNone(goldID, selectElement) {
     fecthGolfAction(goldID, "none", selectElement);
 }
 
+/*
+
 function cancelGolfFinished(event, goldID) {
     let selectElement = event.target;
     fecthGolfAction(goldID, "cancel", selectElement);
 	OBJECT_MARKERS_GOLF.updateStateGolf("aucun", goldID); /// update marker
 }
+*/
+
 function setGolfRemake(goldID, event) {
     let selectElement = event.target;
     fecthGolfAction(goldID, "remake", selectElement);
 }
 
+/*
 function executeActionForPastGolf(event, goldID) {
     let selectElement = event.target;
 
@@ -80,6 +90,7 @@ function executeActionForPastGolf(event, goldID) {
 		new swal("Bonjour", "Oups!! ", "info");
 	}
 }
+*/
 
 function executeActionForPastMonGolf(goldID, golfName, golfAdress) {
     setMonGolf(goldID, golfName, golfAdress);
