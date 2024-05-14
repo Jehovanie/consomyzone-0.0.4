@@ -595,14 +595,7 @@ class RubriqueCMZ extends MapCMZ {
 			*/
 		];
 
-		const rubrique_active_default = [
-			"restaurant",
-			// "ferme",
-			// "station",
-			// "golf",
-			// "tabac",
-			// "marche"
-		];
+		const rubrique_active_default = ["restaurant", "ferme", "station", "golf", "tabac", "marche"];
 
 		this.allRubriques = this.allRubriques.map((item_allRubriques) => {
 			if (rubrique_active_default.includes(item_allRubriques.api_name)) {
@@ -1801,7 +1794,7 @@ class RubriqueCMZ extends MapCMZ {
 			let badge_filter = "";
 			if (item.filter.is_filtered === true) {
 				badge_filter = `
-					<span class="badge_position_filter cursor_pointer translate-middle badge rounded-pill bg-danger" 
+					<span class="badge_position_filter badge_filter_${item.api_name}_jheo_js cursor_pointer translate-middle badge rounded-pill bg-danger" 
 						onclick="openRubriqueFilter('${item.api_name}')"
 					>
 						Filtre
@@ -1834,10 +1827,31 @@ class RubriqueCMZ extends MapCMZ {
 			`;
 		});
 
+		const is_have_rubrique_filter = this.allRubriques.some((item) => item.filter.is_filtered === true);
+
+		let btn_action = "";
+		if (is_have_rubrique_filter) {
+			btn_action = `
+				<button type="button" class="btn btn-danger btn-sm" onclick="resetFilterForAllRubrique()">Annuler tout les filtres</button>
+			`;
+		} else {
+			btn_action = `
+				<button type="button" class="btn btn-danger btn-sm" disabled>Annuler tout les filtres</button>
+			`;
+		}
+
+		btn_action = `
+			${btn_action}
+			<button type="button" class="btn btn-secondary btn-sm" onclick="closeRightSide()">Ferme</button>
+		`;
+
 		document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
             <div class="rubrique_list right_side_body_jheo_js">
                 ${btn_rubrique.join("")}
             </div>
+			<div class="btn_cancel_filter_for_all">
+				${btn_action}
+			</div>
         `;
 
 		this.bindSelectRubrique();
@@ -2388,6 +2402,76 @@ class RubriqueCMZ extends MapCMZ {
 				badge_navbar_rubrique.classList.add("d-none");
 			}
 		}
+
+		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
+		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
+
+		const new_size = { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
+
+		const zoom = this.map._zoom;
+		const current_object_dataMax = this.objectRatioAndDataMax.find((item) => zoom >= parseInt(item.zoomMin));
+		const { dataMax, ratio } = current_object_dataMax;
+
+		this.completeMarkerDisplay(new_size, dataMax, ratio);
+
+		////update list datatables
+		this.bindListItemRubriqueActive();
+	}
+
+	resetFilterForAllRubrique() {
+		this.allRubriques = this.allRubriques.map((rubrique) => {
+			rubrique = {
+				...rubrique,
+				filter: {
+					...rubrique.filter,
+					is_filtered: false,
+					departement: "tous",
+					notation: {
+						...rubrique.filter.notation,
+						min: rubrique.filter.notation.min_default,
+						max: rubrique.filter.notation.max_default,
+					},
+				},
+			};
+
+			if (rubrique.is_have_specific_filter) {
+				const new_produit = rubrique.filter.specifique.produit;
+				for (let key_produit in new_produit) {
+					new_produit[key_produit]["is_filtered"] = true;
+					new_produit[key_produit]["prix"] = 0;
+				}
+
+				rubrique.filter.specifique = {
+					...rubrique.filter.specifique,
+					price_produit: {
+						...rubrique.filter.specifique.price_produit,
+						min: rubrique.filter.specifique.price_produit.min_default,
+						max: rubrique.filter.specifique.price_produit.max_default,
+					},
+					produit: {
+						...rubrique.filter.specifique.produit,
+						...new_produit,
+					},
+				};
+			}
+
+			return rubrique;
+		});
+
+		this.allRubriques.forEach((item_rubrique) => {
+			const rubrique_type = item_rubrique.api_name;
+
+			if (document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`)) {
+				const badge_navbar_rubrique = document.querySelector(`.badge_navbar_${rubrique_type}_jheo_js`);
+				if (!badge_navbar_rubrique.classList.contains("d-none")) {
+					badge_navbar_rubrique.classList.add("d-none");
+				}
+			}
+
+			if (document.querySelector(`.badge_filter_${rubrique_type}_jheo_js`)) {
+				document.querySelector(`.badge_filter_${rubrique_type}_jheo_js`).remove();
+			}
+		});
 
 		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
 		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
@@ -3644,6 +3728,7 @@ class RubriqueCMZ extends MapCMZ {
 
 	resetSpecificFilterFerme() {
 		console.log("resetSpecificFilterFerme...");
+		return {};
 	}
 
 	checkIsMuchOnFilterFerme(item) {
@@ -3967,6 +4052,7 @@ class RubriqueCMZ extends MapCMZ {
 
 	resetSpecificFilterMarche() {
 		console.log("resetSpecificFilterMarche...");
+		return {};
 	}
 
 	checkIsMuchOnFilterMarche(item) {

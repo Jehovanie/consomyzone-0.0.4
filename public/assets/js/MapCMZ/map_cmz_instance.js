@@ -321,3 +321,13 @@ function cancelGolfFinished(event, goldID) {
 function openFavoryRubrique(rubrique_type) {
 	MAP_CMZ.openFavoryRubrique(rubrique_type); /// update marker
 }
+
+function resetFilterForAllRubrique() {
+	MAP_CMZ.resetFilterForAllRubrique();
+}
+
+
+function closeRightSide() {
+	MAP_CMZ.closeRightSide();
+}
+

@@ -534,3 +534,4 @@ function alertSwalFunctionNoteImplement() {
 		"info"
 	);
 }
+

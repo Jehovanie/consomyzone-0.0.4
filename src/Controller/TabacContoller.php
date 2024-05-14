@@ -81,7 +81,7 @@ class TabacContoller extends AbstractController
     }
 
 
-    #[Route("/fetch_data/tabac", name: "fetch_data_tabac" , methods: [ "GET"])]
+    #[Route("/fetch_data/tabac", name: "fetch_data_tabac" , methods: [ "GET" , "POST" ])]
     #[Route('/api/tabac', name: 'api_tabac_france', methods: ["GET", "POST"])]
     public function allGolfFrance(
         Request $request,
@@ -109,12 +109,11 @@ class TabacContoller extends AbstractController
             ], 200);
         }
 
-        if($request->query->has("dep") && $request->query->has("note_min") ){
-            $dep = $request->query->get("dep");
-            $note_min = $request->query->get("note_min");
-            $note_max = $request->query->get("note_max");
-
-            $data_max = $request->query->get("data_max"); 
+         if($request->getMethod() === "POST"){
+            $data= json_decode($request->getContent(), true);
+            extract($data); 
+            /// $dep, $note_min, $note_max, $data_max,
+            
             $data_max = $data_max ? intval($data_max) : 50;
 
             $filter_options= [

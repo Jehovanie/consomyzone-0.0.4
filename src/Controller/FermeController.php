@@ -355,7 +355,7 @@ class FermeController extends AbstractController
     /**
      * @Route("/getLatitudeLongitudeFerme" , name="getLatitudeLongitudeFerme" , methods={"GET"})
      */
-    #[Route("/fetch_data/ferme", name: "fetch_data_ferme" , methods: [ "GET"])]
+    #[Route("/fetch_data/ferme", name: "fetch_data_ferme" , methods: [ "GET", "POST"])]
     #[Route("/getLatitudeLongitudeFerme", name: "getLatitudeLongitudeFerme" , methods: [ "GET"])]
     public function getLatitudeLongitudeFerme(
         Request $request,
@@ -386,12 +386,10 @@ class FermeController extends AbstractController
             return $this->json($datas);
         }
 
-        if($request->query->has("dep") && $request->query->has("note_min") ){
-            $dep = $request->query->get("dep");
-            $note_min = $request->query->get("note_min");
-            $note_max = $request->query->get("note_max");
-
-            $data_max = $request->query->get("data_max"); 
+        if($request->getMethod() === "POST"){
+            $data= json_decode($request->getContent(), true);
+            extract($data);  /// $dep, $note_min, $note_max, $data_max, 
+            
             $data_max = $data_max ? intval($data_max) : 50;
 
             $filter_options= [

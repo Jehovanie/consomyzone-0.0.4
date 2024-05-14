@@ -184,7 +184,7 @@ class MarcheController extends AbstractController
     }
 
 
-    #[Route("/fetch_data/marche", name: "fetch_data_marche" , methods: [ "GET"])]
+    #[Route("/fetch_data/marche", name: "fetch_data_marche" , methods: [ "GET", "POST" ])]
     #[Route("/api/marche", name: "app_api_marche", methods: ["GET"])]
     public function apiGetMarche(
         MarcheRepository $marcheRepository,
@@ -208,12 +208,11 @@ class MarcheController extends AbstractController
             ], 200);
         }
 
-        if($request->query->has("dep") && $request->query->has("note_min") ){
-            $dep = $request->query->get("dep");
-            $note_min = $request->query->get("note_min");
-            $note_max = $request->query->get("note_max");
+        if($request->getMethod() === "POST"){
+            $data= json_decode($request->getContent(), true);
+            extract($data); 
+            /// $dep, $note_min, $note_max, $data_max,
 
-            $data_max = $request->query->get("data_max"); 
             $data_max = $data_max ? intval($data_max) : 50;
 
             $filter_options= [
