@@ -55,6 +55,9 @@ class RubriqueCMZ extends MapCMZ {
 						},
 					},
 				},
+				getLegendIcon: () => {
+					return this.getLegendIconResto();
+				},
 				is_have_favory: true,
 				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
 					this.injecteListFavoryResto(injecteListFavory, favori_folder_id);
@@ -108,6 +111,9 @@ class RubriqueCMZ extends MapCMZ {
 						min_default: 0,
 						max_default: 5,
 					},
+				},
+				getLegendIcon: () => {
+					return this.getLegendIconFerme();
 				},
 				is_have_favory: false,
 				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
@@ -179,6 +185,9 @@ class RubriqueCMZ extends MapCMZ {
 						},
 					},
 				},
+				getLegendIcon: () => {
+					return this.getLegendIconStation();
+				},
 				is_have_favory: false,
 				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
 					console.log(injecteListFavory, favori_folder_id);
@@ -232,6 +241,9 @@ class RubriqueCMZ extends MapCMZ {
 						min_default: 0,
 						max_default: 5,
 					},
+				},
+				getLegendIcon: () => {
+					return this.getLegendIconGolf();
 				},
 				is_have_favory: false,
 				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
@@ -287,6 +299,9 @@ class RubriqueCMZ extends MapCMZ {
 						max_default: 5,
 					},
 				},
+				getLegendIcon: () => {
+					return this.getLegendIconTabac();
+				},
 				is_have_favory: false,
 				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
 					console.log(injecteListFavory, favori_folder_id);
@@ -340,6 +355,9 @@ class RubriqueCMZ extends MapCMZ {
 						min_default: 0,
 						max_default: 5,
 					},
+				},
+				getLegendIcon: () => {
+					return this.getLegendIconMarche();
 				},
 				is_have_favory: false,
 				injecteListFavory: (injecteListFavory, favori_folder_id = 0) => {
@@ -3319,6 +3337,74 @@ class RubriqueCMZ extends MapCMZ {
 		this.saveMarkerDisplay(item, marker);
 	}
 
+	getLegendIconResto() {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
+
+		const object_icon = [
+			{ icon: rubrique_type_object.poi_icon.not_selected, name: "Restaurant non séléctionnée", description: "" },
+			{ icon: rubrique_type_object.poi_icon.selected, name: "Restaurant séléctionnée", description: "" },
+			{
+				icon: rubrique_type_object.poi_icon.selected,
+				name: "Restaurant pastillée vert",
+				description: "Avoir un tribu qui pastille",
+				color: "green",
+			},
+			{
+				icon: rubrique_type_object.poi_icon.selected,
+				name: "Restaurant pastillée rouge",
+				description: "Avoir au minimun deux tribus qui pastille",
+				color: "red",
+			},
+		];
+
+		let resulthtml = "";
+
+		object_icon.forEach((item_object_icon) => {
+			const path_icon = IS_DEV_MODE ? `/${item_object_icon.icon}` : `/public/${item_object_icon.icon}`;
+
+			let style_image = `width:12pxpx;height:15px;`;
+
+			let point_pastille = "";
+			if (item_object_icon.color != undefined) {
+				let style_m_poi_pas = `width:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}height:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}left:21%!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}top:6%!important;`;
+
+				let color_pastille = item_object_icon.color;
+
+				point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="${color_pastille}" style="background-color:${color_pastille};${style_m_poi_pas}"></div>`;
+			}
+
+			let description = "";
+			if (item_object_icon.description !== "") {
+				description = `
+					<span style="font-size: 0.9rem;font-style: italic;">
+						${item_object_icon.description}
+					</span>
+				`;
+			}
+
+			resulthtml += `
+				<li class="list-group-item">
+					<div class="content_single_marker_poi">
+						<div class="single_marker_poi">
+							${point_pastille}
+							<img class="single_marker_image" style="${style_image}" src="${path_icon}"/>
+							<div class="single_marker_note">0.0</div>
+						</div>
+					</div>
+					<div>
+						${item_object_icon.name}. <br>
+						${description}
+					</div>
+				</li>
+			`;
+		});
+
+		return resulthtml;
+	}
+
 	specifiqueFilterResto() {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
 
@@ -3472,6 +3558,62 @@ class RubriqueCMZ extends MapCMZ {
 		return mini_fiche;
 	}
 
+	getLegendIconFerme() {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "ferme");
+
+		const object_icon = [
+			{ icon: rubrique_type_object.poi_icon.not_selected, name: "Ferme non séléctionnée", description: "" },
+			{ icon: rubrique_type_object.poi_icon.selected, name: "Ferme séléctionnée", description: "" },
+		];
+
+		let resulthtml = "";
+
+		object_icon.forEach((item_object_icon) => {
+			const path_icon = IS_DEV_MODE ? `/${item_object_icon.icon}` : `/public/${item_object_icon.icon}`;
+
+			let style_image = `width:12pxpx;height:15px;`;
+
+			let point_pastille = "";
+			if (item_object_icon.color != undefined) {
+				let style_m_poi_pas = `width:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}height:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}left:21%!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}top:6%!important;`;
+
+				let color_pastille = item_object_icon.color;
+
+				point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="${color_pastille}" style="background-color:${color_pastille};${style_m_poi_pas}"></div>`;
+			}
+
+			let description = "";
+			if (item_object_icon.description !== "") {
+				description = `
+					<span style="font-size: 0.9rem;font-style: italic;">
+						${item_object_icon.description}
+					</span>
+				`;
+			}
+
+			resulthtml += `
+				<li class="list-group-item">
+					<div class="content_single_marker_poi">
+						<div class="single_marker_poi">
+							${point_pastille}
+							<img class="single_marker_image" style="${style_image}" src="${path_icon}"/>
+							<div class="single_marker_note">0.0</div>
+						</div>
+					</div>
+					<div>
+						${item_object_icon.name}. <br>
+						${description}
+					</div>
+				</li>
+			`;
+		});
+
+		return resulthtml;
+	}
+
 	setSingleMarkerFerme(item, options = {}) {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "ferme");
 		const icon = rubrique_type_object.poi_icon.not_selected;
@@ -3536,6 +3678,62 @@ class RubriqueCMZ extends MapCMZ {
 		return mini_fiche;
 	}
 
+	getLegendIconStation() {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "station");
+
+		const object_icon = [
+			{ icon: rubrique_type_object.poi_icon.not_selected, name: "Station non séléctionnée", description: "" },
+			{ icon: rubrique_type_object.poi_icon.selected, name: "Station séléctionnée", description: "" },
+		];
+
+		let resulthtml = "";
+
+		object_icon.forEach((item_object_icon) => {
+			const path_icon = IS_DEV_MODE ? `/${item_object_icon.icon}` : `/public/${item_object_icon.icon}`;
+
+			let style_image = `width:12pxpx;height:15px;`;
+
+			let point_pastille = "";
+			if (item_object_icon.color != undefined) {
+				let style_m_poi_pas = `width:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}height:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}left:21%!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}top:6%!important;`;
+
+				let color_pastille = item_object_icon.color;
+
+				point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="${color_pastille}" style="background-color:${color_pastille};${style_m_poi_pas}"></div>`;
+			}
+
+			let description = "";
+			if (item_object_icon.description !== "") {
+				description = `
+					<span style="font-size: 0.9rem;font-style: italic;">
+						${item_object_icon.description}
+					</span>
+				`;
+			}
+
+			resulthtml += `
+				<li class="list-group-item">
+					<div class="content_single_marker_poi">
+						<div class="single_marker_poi">
+							${point_pastille}
+							<img class="single_marker_image" style="${style_image}" src="${path_icon}"/>
+							<div class="single_marker_note">0.0</div>
+						</div>
+					</div>
+					<div>
+						${item_object_icon.name}. <br>
+						${description}
+					</div>
+				</li>
+			`;
+		});
+
+		return resulthtml;
+	}
+
 	setSingleMarkerStation(item, options = {}) {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "station");
 		const icon = rubrique_type_object.poi_icon.not_selected;
@@ -3575,6 +3773,62 @@ class RubriqueCMZ extends MapCMZ {
 		`;
 
 		return mini_fiche;
+	}
+
+	getLegendIconTabac() {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "tabac");
+
+		const object_icon = [
+			{ icon: rubrique_type_object.poi_icon.not_selected, name: "Tabac non séléctionnée", description: "" },
+			{ icon: rubrique_type_object.poi_icon.selected, name: "Tabac séléctionnée", description: "" },
+		];
+
+		let resulthtml = "";
+
+		object_icon.forEach((item_object_icon) => {
+			const path_icon = IS_DEV_MODE ? `/${item_object_icon.icon}` : `/public/${item_object_icon.icon}`;
+
+			let style_image = `width:12pxpx;height:15px;`;
+
+			let point_pastille = "";
+			if (item_object_icon.color != undefined) {
+				let style_m_poi_pas = `width:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}height:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}left:21%!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}top:6%!important;`;
+
+				let color_pastille = item_object_icon.color;
+
+				point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="${color_pastille}" style="background-color:${color_pastille};${style_m_poi_pas}"></div>`;
+			}
+
+			let description = "";
+			if (item_object_icon.description !== "") {
+				description = `
+					<span style="font-size: 0.9rem;font-style: italic;">
+						${item_object_icon.description}
+					</span>
+				`;
+			}
+
+			resulthtml += `
+				<li class="list-group-item">
+					<div class="content_single_marker_poi">
+						<div class="single_marker_poi">
+							${point_pastille}
+							<img class="single_marker_image" style="${style_image}" src="${path_icon}"/>
+							<div class="single_marker_note">0.0</div>
+						</div>
+					</div>
+					<div>
+						${item_object_icon.name}. <br>
+						${description}
+					</div>
+				</li>
+			`;
+		});
+
+		return resulthtml;
 	}
 
 	setSingleMarkerTabac(item, options = {}) {
@@ -3627,6 +3881,62 @@ class RubriqueCMZ extends MapCMZ {
 		return mini_fiche;
 	}
 
+	getLegendIconMarche() {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "marche");
+
+		const object_icon = [
+			{ icon: rubrique_type_object.poi_icon.not_selected, name: "Marché non séléctionnée", description: "" },
+			{ icon: rubrique_type_object.poi_icon.selected, name: "Marché séléctionnée", description: "" },
+		];
+
+		let resulthtml = "";
+
+		object_icon.forEach((item_object_icon) => {
+			const path_icon = IS_DEV_MODE ? `/${item_object_icon.icon}` : `/public/${item_object_icon.icon}`;
+
+			let style_image = `width:12pxpx;height:15px;`;
+
+			let point_pastille = "";
+			if (item_object_icon.color != undefined) {
+				let style_m_poi_pas = `width:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}height:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}left:21%!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}top:6%!important;`;
+
+				let color_pastille = item_object_icon.color;
+
+				point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="${color_pastille}" style="background-color:${color_pastille};${style_m_poi_pas}"></div>`;
+			}
+
+			let description = "";
+			if (item_object_icon.description !== "") {
+				description = `
+					<span style="font-size: 0.9rem;font-style: italic;">
+						${item_object_icon.description}
+					</span>
+				`;
+			}
+
+			resulthtml += `
+				<li class="list-group-item">
+					<div class="content_single_marker_poi">
+						<div class="single_marker_poi">
+							${point_pastille}
+							<img class="single_marker_image" style="${style_image}" src="${path_icon}"/>
+							<div class="single_marker_note">0.0</div>
+						</div>
+					</div>
+					<div>
+						${item_object_icon.name}. <br>
+						${description}
+					</div>
+				</li>
+			`;
+		});
+
+		return resulthtml;
+	}
+
 	setSingleMarkerMarche(item, options = {}) {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "marche");
 		const icon = rubrique_type_object.poi_icon.not_selected;
@@ -3671,6 +3981,65 @@ class RubriqueCMZ extends MapCMZ {
 		`;
 
 		return mini_fiche;
+	}
+
+	getLegendIconGolf() {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "golf");
+
+		const object_icon = [
+			{ icon: rubrique_type_object.poi_icon.not_selected, name: "Golf non séléctionnée", description: "" },
+			{ icon: rubrique_type_object.poi_icon.selected, name: "Golf séléctionnée", description: "" },
+			{ icon: rubrique_type_object.poi_icon.selected, name: "Golf a faire", description: "", color: "orange" },
+			{ icon: rubrique_type_object.poi_icon.selected, name: "Golf fait", description: "", color: "blue" },
+			{ icon: rubrique_type_object.poi_icon.selected, name: "Golf a refaire", description: "", color: "green" },
+		];
+
+		let resulthtml = "";
+
+		object_icon.forEach((item_object_icon) => {
+			const path_icon = IS_DEV_MODE ? `/${item_object_icon.icon}` : `/public/${item_object_icon.icon}`;
+
+			let style_image = `width:12pxpx;height:15px;`;
+
+			let point_pastille = "";
+			if (item_object_icon.color != undefined) {
+				let style_m_poi_pas = `width:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}height:11px!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}left:21%!important;`;
+				style_m_poi_pas = `${style_m_poi_pas}top:6%!important;`;
+
+				let color_pastille = item_object_icon.color;
+
+				point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="${color_pastille}" style="background-color:${color_pastille};${style_m_poi_pas}"></div>`;
+			}
+
+			let description = "";
+			if (item_object_icon.description !== "") {
+				description = `
+					<span style="font-size: 0.9rem;font-style: italic;">
+						${item_object_icon.description}
+					</span>
+				`;
+			}
+
+			resulthtml += `
+				<li class="list-group-item">
+					<div class="content_single_marker_poi">
+						<div class="single_marker_poi">
+							${point_pastille}
+							<img class="single_marker_image" style="${style_image}" src="${path_icon}"/>
+							<div class="single_marker_note">0.0</div>
+						</div>
+					</div>
+					<div>
+						${item_object_icon.name}. <br>
+						${description}
+					</div>
+				</li>
+			`;
+		});
+
+		return resulthtml;
 	}
 
 	settingSingleMarkerGolf(item, options = {}) {
@@ -4428,5 +4797,38 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			})
 			.catch((error) => console.log(error));
+	}
+
+	injectLegendeIconeOnMap() {
+		if (!document.querySelector(".content_right_side_body_jheo_js")) {
+			console.log("Selector not found : '.content_right_side_body_body'");
+			return false;
+		}
+
+		let list_rubrique = this.allRubriques.map((item) => {
+			const icon_image = IS_DEV_MODE ? `/${item.icon}` : `/public/${item.icon}`;
+
+			return `
+				<li class="list-group-item">
+					<span class="d-flex justify-content-start align-items-center">
+						<img class="image_icon_rubrique" src="${icon_image}" alt="${item.name}_rubrique" />
+						${item.name}
+					</span
+				</li>
+			`;
+		});
+
+		let all_legend_icon = "";
+		this.allRubriques.forEach((item_rubrique) => {
+			all_legend_icon += item_rubrique.getLegendIcon();
+		});
+
+		document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+			<div class="right_side_body right_side_body_jheo_js">
+				<ul class="list-group list-group-flush content_list_legende_icon">
+					${all_legend_icon}
+				</ul>
+			</div>
+		`;
 	}
 }

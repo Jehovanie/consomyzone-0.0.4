@@ -717,6 +717,9 @@ class MapCMZ {
 				if (rightSideContentType === "info_golf_jheo_js") {
 					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
 					injectStatusGolf();
+				} else if (rightSideContentType === "info_rubrique_icon_jheo_js") {
+					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
+					this.injectLegendeIconeOnMap();
 				} else if (rightSideContentType === "resto_pastille_jheo_js") {
 					document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurants pastilles.";
 					this.injectListRestoPastille();
@@ -1142,7 +1145,8 @@ class MapCMZ {
 				"Liste des restaurants pastilles."
 			)}
 			${this.createBtnControl(
-				"info_golf_jheo_js",
+				// "info_golf_jheo_js",
+				"info_rubrique_icon_jheo_js",
 				"fa-solid fa-circle-question",
 				"btn btn-info mb-2",
 				"Légende des icônes sur la carte."
@@ -1496,5 +1500,4 @@ class MapCMZ {
 
 		return { minx: x.min, miny: y.min, maxx: x.max, maxy: y.max };
 	}
-
 }
