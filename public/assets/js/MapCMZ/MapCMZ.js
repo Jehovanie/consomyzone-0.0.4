@@ -1086,7 +1086,7 @@ class MapCMZ {
 			`;
 		}
 
-		let htmlControlMap = `
+		let htmlControlBottomLeft = `
             ${this.createBtnControl(
 				"tiles_type_jheo_js",
 				"fa-solid fa-layer-group",
@@ -1094,36 +1094,21 @@ class MapCMZ {
 				"Sélectionner un type de carte.",
 				"bootomright"
 			)}
-            ${this.createBtnControl(
-				"couche_tabac_jheo_js",
-				"fa-brands fa-connectdevelop",
-				"btn btn-primary me-2",
-				"Listes des contours géographiques.",
-				"bootomright"
-			)}
-			${this.createBtnControl(
-				"reset_zoom_jheo_js",
-				"fa-solid fa-arrows-rotate",
-				"btn btn-dark me-2",
-				"Réstaure le niveau de zoom en position initiale.",
-				"bootomright"
-			)}
-            ${this.createBtnControl(
-				"cart_after_jheo_js",
-				"fa-solid fa-forward fa-fade cart_after_jheo_js",
-				"btn btn-outline-danger me-2",
-				"Voir la carte en position avant.",
-				"bootomright"
-			)}
-			${this.createBtnControl(
-				"cart_before_jheo_js",
-				"fa-solid fa-backward fa-fade cart_before_jheo_js",
-				"btn btn-outline-danger",
-				"Voir la carte en position précedente.",
-				"bootomright"
-			)}
-			
-        `;
+		`;
+		// ${this.createBtnControl(
+		// 	"cart_after_jheo_js",
+		// 	"fa-solid fa-forward fa-fade cart_after_jheo_js",
+		// 	"btn btn-outline-danger me-2",
+		// 	"Voir la carte en position avant.",
+		// 	"bootomright"
+		// )}
+		// ${this.createBtnControl(
+		// 	"cart_before_jheo_js",
+		// 	"fa-solid fa-backward fa-fade cart_before_jheo_js",
+		// 	"btn btn-outline-danger",
+		// 	"Voir la carte en position précedente.",
+		// 	"bootomright"
+		// )}
 
 		let htmlControlRubrique = `
 			${this.createBtnControl(
@@ -1163,6 +1148,20 @@ class MapCMZ {
 				"btn btn-dark me-2 mb-2",
 				"Réstaure le niveau de zoom en position initiale."
 			)}
+			${this.createBtnControl(
+				"cart_after_jheo_js",
+				"fa-solid fa-forward fa-fade cart_after_jheo_js",
+				"btn btn-outline-danger me-2",
+				"Voir la carte en position avant.",
+				// "bootomright"
+			)}
+			${this.createBtnControl(
+				"cart_before_jheo_js",
+				"fa-solid fa-backward fa-fade cart_before_jheo_js",
+				"btn btn-outline-danger",
+				"Voir la carte en position précedente.",
+				// "bootomright"
+			)}
 		`;
 
 		L.control
@@ -1188,7 +1187,7 @@ class MapCMZ {
 
 		L.control
 			.customButtonLeft({
-				content: htmlControlMap,
+				content: htmlControlBottomLeft,
 				classes: "d-flex justify-content-center align-items-center mb-4",
 				datas: {
 					foo: "bar",

@@ -2950,7 +2950,7 @@ class RubriqueCMZ extends MapCMZ {
 					${start_note_moyenne_html}
 				</div>
 				<figcaption class="blockquote-footer mt-0 mb-0">
-					Adresse: <br> <cite title="Source Title">${address.toLowerCase()}</cite>
+					Adresse: <br> <cite title="Source Title" style="user-select: none">${address.toLowerCase()}</cite>
 				</figcaption>
 			</figure>
 		`;
