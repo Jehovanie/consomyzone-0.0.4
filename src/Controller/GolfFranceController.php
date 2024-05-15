@@ -165,13 +165,17 @@ class GolfFranceController extends AbstractController
             ];
 
             $datas = $golfFranceRepository->getDataByFilterOptions($filter_options, $data_max);
+            $count = $golfFranceRepository->getDataByFilterOptionsCount($filter_options);
 
             $ids=array_map('App\Service\SortResultService::getIdFromData', $datas);
             $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
+            
             $golfs= $golfFranceService->mergeDatasAndAvis($datas, $moyenneNote);
 
             return $this->json([
-                "data" => $golfs
+                "data" => $golfs,
+                "pastille" => [],
+                "count" => $count
             ], 200);
         }
 

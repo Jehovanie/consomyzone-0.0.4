@@ -1092,6 +1092,77 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
         return $result;
     }
 
+    public function getDataByFilterOptionsCount($filterOptions){
+        $idDep= strlen($filterOptions["dep"]) === 1  ? "0" . $filterOptions["dep"] : $filterOptions["dep"];
+        
+        $produit= $filterOptions["produit"];
+        $price_produit_min= $filterOptions["price_produit"]["min"];
+        $price_produit_max= $filterOptions["price_produit"]["max"];
+
+
+
+        $query= $this->createQueryBuilder("r")
+                    ->select('r.id',
+                        'r.adresse',
+                        'r.departementCode',
+                        'r.departementCode as dep',
+                        'r.departementName',
+                        'r.automate2424',
+                        'r.horaies',
+                        'r.services',
+                        'r.note',
+                        'r.prixE85',
+                        'r.prixGplc',
+                        'r.prixSp95',
+                        'r.prixSp95E10',
+                        'r.prixSp98',
+                        'r.prixGasoil',
+                        'r.prixGasoil as station',
+                        'r.nom',
+                        'r.latitude as lat',
+                        'r.longitude as long'
+                    );
+
+        if( $idDep !== "tous"){
+            if( $idDep === "20"){
+                $query= $query->where("(r.departementCode = :a OR r.departementCode = :b )")
+                        ->setParameter('a',  "2A" )
+                        ->setParameter('b',  "2B");
+            }else{
+                $query= $query->where("(r.departementCode = :idDep)")
+                        ->setParameter("idDep", $idDep);
+            }
+        }
+
+        foreach ($produit as $cle => $element) {
+            if($element){
+                if( $idDep !== "tous"){
+                    if( $idDep === "20"){
+                            $query= $query->where("(r.departementCode = :a OR r.departementCode = :b ) AND (r." . $cle . " BETWEEN :price_produit_min AND :price_produit_min)")
+                                    ->setParameter('a',  "2A" )
+                                    ->setParameter('b',  "2B");
+                        }else{
+                            $query= $query->where("(r.departementCode = :idDep) AND (r." . $cle . " BETWEEN :price_produit_min AND :price_produit_max)")
+                                    ->setParameter("idDep", $idDep);
+                        }
+                
+                }else{
+                    $query = $query->where("r." . $cle . " BETWEEN :price_produit_min AND :price_produit_max");
+                }
+            }
+        }
+
+        $query = $query->setParameter('price_produit_min', $price_produit_min )
+                   ->setParameter('price_produit_max', $price_produit_max );
+        
+
+        $result=  $query->orderBy('RAND()')
+                    ->getQuery()
+                    ->getResult();
+                    
+        return count($result);
+    }
+
 
     public function getOneItemByID($id){
         return $this->createQueryBuilder("r")

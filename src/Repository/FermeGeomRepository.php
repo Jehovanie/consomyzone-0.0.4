@@ -1035,14 +1035,39 @@ class FermeGeomRepository extends ServiceEntityRepository
                         'r.longitude',
                         'r.longitude as long',
                     )
-                    ->where("r.departement =:dep")
-                    ->setParameter("dep", $idDep)
-                    ->setMaxResults($data_max)
+        ;
+
+        if( $idDep !== "tous"){
+            $query= $query->where('r.departement = :k')
+                ->setParameter('k',  $idDep);
+        }
+            $query= $query->setMaxResults($data_max)
                     ->orderBy('RAND()')
                     ->getQuery()
         ;
 
         return $query->getResult();;
+    }
+
+    public function getDataByFilterOptionsCount($filterOptions){
+        $idDep= strlen($filterOptions["dep"]) === 1  ? "0" . $filterOptions["dep"] : $filterOptions["dep"];
+        
+
+        $query= $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.departement as dep',
+                    )
+        ;
+
+        if( $idDep !== "tous"){
+            $query= $query->where('r.departement = :k')
+                ->setParameter('k',  $idDep);
+        }
+
+        $result= $query->getQuery()->getResult();
+        
+        return count($result);
     }
 
 

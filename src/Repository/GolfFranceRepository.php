@@ -222,9 +222,12 @@ class GolfFranceRepository extends ServiceEntityRepository
                         'r.latitude as lat',
                         'r.longitude as long',
                     )
-                    ->andWhere('r.dep = :k')
-                    ->setParameter('k',  $idDep)
         ;
+
+        if( $filterOptions["dep"] !== "tous"){
+            $query= $query->where('r.dep = :k')
+                    ->setParameter('k',  $idDep);
+        }
 
         $data= $query->orderBy('RAND()')
                      ->getQuery()
@@ -233,6 +236,29 @@ class GolfFranceRepository extends ServiceEntityRepository
 
         return $data;
     }
+
+    public function getDataByFilterOptionsCount($filterOptions){
+        $idDep= strlen($filterOptions["dep"]) === 1  ? "0" . $filterOptions["dep"] : $filterOptions["dep"];
+
+        $query= $this->createQueryBuilder("r")
+                    ->select(
+                        'r.id',
+                        'r.dep',
+                        'r.nom_dep',
+                    )
+        ;
+
+        if( $filterOptions["dep"] !== "tous"){
+            $query= $query->where('r.dep = :k')
+                    ->setParameter('k',  $idDep);
+        }
+
+        $data= $query->getQuery()
+                     ->getResult();
+
+        return count($data);
+    }
+
 
 
     public function getOneItemByID($id){

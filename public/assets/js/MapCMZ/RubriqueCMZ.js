@@ -595,7 +595,14 @@ class RubriqueCMZ extends MapCMZ {
 			*/
 		];
 
-		const rubrique_active_default = ["restaurant", "ferme", "station", "golf", "tabac", "marche"];
+		const rubrique_active_default = [
+			"restaurant",
+			// "ferme",
+			// "station",
+			// "golf",
+			// "tabac",
+			// "marche"
+		];
 
 		this.allRubriques = this.allRubriques.map((item_allRubriques) => {
 			if (rubrique_active_default.includes(item_allRubriques.api_name)) {
@@ -1858,7 +1865,7 @@ class RubriqueCMZ extends MapCMZ {
 			if (item.is_active === true) {
 				open_filter = `
 					<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1 fa_solide_open_rubrique_jheo_js" onclick="openRubriqueFilter('${item.api_name}')"></i>
-					<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
+					<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js" onclick="openRubriqueFilter('${item.api_name}')">
 						Cliquez ici pour voir les filtres
 					</div>
 				`;
@@ -1914,7 +1921,10 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	showAlertInformation() {
-		const tab_info = [1, 2];
+		const tab_info = [
+			"Vous pouvez sélectionner une ou plusieurs rubriques à activer.",
+			"Vous pouvez également double-cliquer sur une rubrique pour l'activer seule.",
+		];
 
 		const tab_info_index = tab_info[Symbol.iterator]();
 
@@ -1924,11 +1934,11 @@ class RubriqueCMZ extends MapCMZ {
 			const alert_info = `
 				<div class="alert alert-info alert_info_rubrique alert_info_rubrique_show alert_info_jheo_js" role="alert">
 					<i class="fa-solid fa-x fa_solide_info_rubrique" onclick="removeInfoRubrique(this)"></i>
-					A simple info alert—check it out!
+					${tab_info_value}
 				</div>
 			`;
 
-			document.querySelector(".content_alert_info_jheo_js").insertAdjacentHTML("beforeend", alert_info);
+			document.querySelector(".content_alert_info_jheo_js")?.insertAdjacentHTML("beforeend", alert_info);
 
 			tab_info_value = tab_info_index.next().value;
 
@@ -2006,7 +2016,7 @@ class RubriqueCMZ extends MapCMZ {
 							"beforeend",
 							`
 								<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1 fa_solide_open_rubrique_jheo_js" onclick="openRubriqueFilter('${rubrique_api_name}')"></i>
-								<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
+								<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js"  onclick="openRubriqueFilter('${rubrique_api_name}')">
 									Cliquez ici pour voir les filtres
 								</div>
 							`
@@ -2015,7 +2025,7 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			});
 
-			btn_rubrique.addEventListener("dblclick", () => {
+			btn_rubrique.querySelector(".rubrique_icon_text_jheo_js").addEventListener("dblclick", () => {
 				all_button_rubrique.forEach((item) => {
 					if (item.classList.contains("btn-primary")) {
 						item.classList.remove("btn-primary");
@@ -2043,6 +2053,8 @@ class RubriqueCMZ extends MapCMZ {
 
 							item.querySelector(".fa_solide_open_rubrique_jheo_js").remove();
 							item.querySelector(".tooltip_rubrique_filter_jheo_js").remove();
+
+							removeListNavLeftRubriqueType(rubrique_api_name);
 						}
 					}
 				});
@@ -2079,7 +2091,7 @@ class RubriqueCMZ extends MapCMZ {
 						"beforeend",
 						`
 							<i class="fa-solid fa-ellipsis fa-rotate-90 ms-1 fa_solide_open_rubrique_jheo_js" onclick="openRubriqueFilter('${rubrique_api_name}')"></i>
-							<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js">
+							<div class="d-none tooltip_rubrique_filter tooltip_rubrique_filter_jheo_js" onclick="openRubriqueFilter('${rubrique_api_name}')">
 								Cliquez ici pour voir les filtres
 							</div>
 						`
@@ -2358,6 +2370,10 @@ class RubriqueCMZ extends MapCMZ {
 			return false;
 		}
 
+		if (document.querySelector(".content_nbr_result_filter_jheo_js")) {
+			document.querySelector(".content_nbr_result_filter_jheo_js").remove();
+		}
+
 		const skipSlider = document.getElementById("skipstep");
 		const filter_departement = document.querySelector(".filter_departement_jheo_js");
 		const cta_to_filter = document.querySelector(".cta_to_filter_jheo_js");
@@ -2441,6 +2457,10 @@ class RubriqueCMZ extends MapCMZ {
 		if (!document.querySelector(".cta_to_filter_jheo_js")) {
 			console.log("Selector not found: 'cta_to_filter_jheo_js'");
 			return false;
+		}
+
+		if (document.querySelector(".content_nbr_result_filter_jheo_js")) {
+			document.querySelector(".content_nbr_result_filter_jheo_js").remove();
 		}
 
 		const filter_departement = document.querySelector(".filter_departement_jheo_js");
@@ -2586,8 +2606,19 @@ class RubriqueCMZ extends MapCMZ {
 		//// update data globally.
 
 		/////update btn ////
+		const nbr_result = spec_data_by_filter.hasOwnProperty("count") ? spec_data_by_filter["count"] : 987;
+
+		document.querySelector(".content_body_filter_jheo_js").insertAdjacentHTML(
+			"beforeend",
+			`
+			<div class="alert alert-primary mt-4 text-center content_nbr_result_filter_jheo_js" role="alert">
+				${nbr_result} resultat(s)
+			</div>
+			`
+		);
+
 		const cta_to_filter = document.querySelector(".cta_to_filter_jheo_js");
-		cta_to_filter.innerText = "Voir les resultats";
+		cta_to_filter.innerText = `Rechercher à nouveau`;
 
 		cta_to_filter.classList.remove("btn-secondary");
 		cta_to_filter.classList.add("btn-primary");
@@ -2702,11 +2733,14 @@ class RubriqueCMZ extends MapCMZ {
 
 		let link = `/fetch_data/${rubrique_type}`;
 
+		const default_rubrique_active = this.allRubriques.filter((item) => item.is_active === true);
+		const data_max_fetching = Math.ceil((this.allRubriques.length * 50) / default_rubrique_active.length);
+
 		let param_search = {
 			dep: departement,
 			note_min: notation.min,
 			note_max: notation.max,
-			data_max: notation.max,
+			data_max: data_max_fetching,
 		};
 
 		if (rubrique_type_object.is_have_specific_filter) {

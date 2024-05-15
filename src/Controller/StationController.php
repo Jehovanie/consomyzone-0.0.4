@@ -539,8 +539,13 @@ class StationController extends AbstractController
             ];
 
             $datas = $stationServiceFrGeomRepository->getDataByFilterOptions($filter_options, $data_max);
+            
+            $count = $stationServiceFrGeomRepository->getDataByFilterOptionsCount($filter_options);
+            
             return $this->json([
-                "data" => $datas
+                "data" => $datas,
+                "pastille" => [],
+                "count" => $count
             ], 200);
         }
 

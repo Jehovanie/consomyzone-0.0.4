@@ -203,6 +203,7 @@ class RestaurantController extends AbstractController
             // dd($filter_options);
 
             $datas = $bddResto->getDataByFilterOptions($filter_options, $data_max);
+            $count = $bddResto->getDataByFilterOptionsCount($filter_options);
 
             if( $this->getUser() ){
                 //// all my tribu t.
@@ -232,6 +233,7 @@ class RestaurantController extends AbstractController
                 return $this->json([
                     "data" => $data_resto,
                     "pastille" => $arrayIdResto,
+                    "count" => $count
                 ], 200);
             }
         }

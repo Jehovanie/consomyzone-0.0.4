@@ -246,15 +246,39 @@ class TabacRepository extends ServiceEntityRepository
                     'r.poi_y',
                     'r.poi_x as long',
                     'r.poi_y as lat',
-                )
-                ->where('r.dep = :k')
-                ->setParameter('k',  $idDep)
-                ->orderBy('RAND()')
+                );
+
+        if( $idDep !== "tous"){
+            $data= $data->where('r.dep = :k')
+                ->setParameter('k',  $idDep);
+        }
+
+        $data= $data->orderBy('RAND()')
                 ->getQuery()
                 ->setMaxResults($data_max)
                 ->getResult();
        
         return $data;
+    }
+
+    public function getDataByFilterOptionsCount($filterOptions){
+        $idDep= strlen($filterOptions["dep"]) === 1  ? "0" . $filterOptions["dep"] : $filterOptions["dep"];
+
+        $data=  $this->createQueryBuilder("r")
+                ->select(
+                    'r.id',
+                    'r.dep',
+                );
+
+        if( $idDep !== "tous"){
+            $data= $data->where('r.dep = :k')
+                ->setParameter('k',  $idDep);
+        }
+
+        $data= $data->getQuery()
+                ->getResult();
+       
+        return count($data);
     }
 
     public function getOneItemByID($id){

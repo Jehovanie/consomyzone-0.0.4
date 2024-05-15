@@ -224,8 +224,12 @@ class MarcheController extends AbstractController
             ];
 
             $datas = $marcheRepository->getDataByFilterOptions($filter_options, $data_max);
+
+            $count = $marcheRepository->getDataByFilterOptionsCount($filter_options);
             return $this->json([
-                "data" => $datas
+                "data" => $datas,
+                "pastille" => [],
+                "count" => $count
             ], 200);
         }
 

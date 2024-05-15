@@ -401,8 +401,12 @@ class FermeController extends AbstractController
             ];
 
             $datas = $fermeGeomRepository->getDataByFilterOptions($filter_options, $data_max);
+            $count = $fermeGeomRepository->getDataByFilterOptionsCount($filter_options);
+
             return $this->json([
-                "data" => $datas
+                "data" => $datas,
+                "pastille" => [],
+                "count" => $count
             ], 200);
         }
 

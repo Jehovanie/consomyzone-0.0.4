@@ -320,14 +320,64 @@ class MarcheRepository extends ServiceEntityRepository
                             'r.poiX',"' '",
                             'r.poiY'
                         ))
-                    ->where("r.dep =:dep")
-                    ->setParameter("dep", $idDep)
         ;
+
+        if( $filterOptions["dep"] !== "tous"){
+            $query = $query->where('r.dep = :k')
+                    ->setParameter('k',  $idDep);
+        }
 
         return $query->orderBy('RAND()')
                     ->setMaxResults($data_max)
                     ->getQuery()
                     ->getResult();
+    }
+
+    public function getDataByFilterOptionsCount($filterOptions){
+        $idDep= intval($filterOptions["dep"]);
+
+        $query = $this->createQueryBuilder("r");
+
+        $query = $query->select(
+                        "r.id,
+                        r.clenum,
+                        r.denominationF,
+                        r.adresse,
+                        r.codpost,
+                        r.commune,
+                        r.codinsee,
+                        r.villenorm,
+                        r.dcomiris,
+                        r.dep,
+                        r.date_data,
+                        r.date_inser,
+                        r.poiY as lat,
+                        r.poiX as long"
+                    )
+                    ->distinct(
+                        $query->expr()->concat(
+                            'r.id', "' '",
+                            'r.dep',"' '",
+                            'r.denominationF',"' '",
+                            'r.clenum',"' '",
+                            'r.adresse',"' '",
+                            'r.nomvoie',"' '",
+                            'r.compvoie',"' '",
+                            'r.villenorm',"' '",
+                            'r.poiX',"' '",
+                            'r.poiY'
+                        ))
+        ;
+
+        if( $filterOptions["dep"] !== "tous"){
+           $query = $query->where('r.dep = :k')
+                ->setParameter('k',  $idDep);
+        }
+
+        $result= $query->getQuery()
+                    ->getResult();
+
+        return count($result);
     }
 
     /**

@@ -109,7 +109,7 @@ class TabacContoller extends AbstractController
             ], 200);
         }
 
-         if($request->getMethod() === "POST"){
+        if($request->getMethod() === "POST"){
             $data= json_decode($request->getContent(), true);
             extract($data); 
             /// $dep, $note_min, $note_max, $data_max,
@@ -125,8 +125,12 @@ class TabacContoller extends AbstractController
             ];
 
             $datas = $tabacRepository->getDataByFilterOptions($filter_options, $data_max);
+            $count = $tabacRepository->getDataByFilterOptionsCount($filter_options);
+
             return $this->json([
-                "data" => $datas
+                "data" => $datas,
+                "pastille" => [],
+                "count" => $count
             ], 200);
         }
 

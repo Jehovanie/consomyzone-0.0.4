@@ -1640,6 +1640,134 @@ class BddRestoRepository extends ServiceEntityRepository
         return $result_filter;
     }
 
+    public function getDataByFilterOptionsCount($filterOptions){
+        $idDep= strlen($filterOptions["dep"]) === 1  ? "0" . $filterOptions["dep"] : $filterOptions["dep"];
+
+        $produit= $filterOptions["produit"];
+        $price_produit_min= $filterOptions["price_produit"]["min"];
+        $price_produit_min= $filterOptions["price_produit"]["min"];
+
+        $price_produit_max= $filterOptions["price_produit"]["max"];
+        $price_produit_max= $filterOptions["price_produit"]["max"];
+
+        $query = $this->createQueryBuilder("r");
+        $query = $query->select(
+                "r.id,
+                r.denominationF,
+                r.denominationF as nameFilter,
+                r.numvoie,
+                r.typevoie,
+                r.nomvoie,
+                r.compvoie,
+                r.codpost,
+                r.villenorm,
+                r.commune,
+                r.restaurant,
+                r.restaurant as resto,
+                r.brasserie,
+                r.creperie,
+                r.fastFood,
+                r.pizzeria,
+                r.boulangerie,
+                r.bar,
+                r.cuisineMonde,
+                r.cafe,
+                r.salonThe,
+                r.site1,
+                r.fonctionalite1,
+                r.fourchettePrix1,
+                r.fourchettePrix2,
+                r.horaires1,
+                r.prestation1,
+                r.regimeSpeciaux1,
+                r.repas1,
+                r.typeCuisine1,
+                r.dep,
+                r.depName,
+                r.tel,
+                r.poiX,
+                r.poiY,
+                r.poiX as long,
+                r.poiY as lat"
+            )
+            ->distinct(
+                $query->expr()->concat(
+                    'r.id', "' '",
+                    'r.dep',"' '",
+                    'r.depName',"' '",
+                    'r.denominationF',"' '",
+                    'r.numvoie',"' '",
+                    'r.typevoie',"' '",
+                    'r.nomvoie',"' '",
+                    'r.compvoie',"' '",
+                    'r.villenorm',"' '",
+                    'r.poiX',"' '",
+                    'r.poiY'
+                )
+            )
+        ;
+
+        if( $idDep != 'tous' ){
+            $query = $query->where("r.dep =:idDep");
+        }
+
+        $active= true;
+        $have_active= false;
+        foreach ($produit as $cle => $element) {
+            if($element){
+                if( $idDep !== "tous"){
+                    $query = $query->andWhere("(r.dep = :idDep) AND (r." . $cle . " = :active)");
+                }else{
+                    $query = $query->andWhere("r." . $cle . " = :active");
+                }
+
+                $have_active= true;
+            }
+        }
+
+        if($have_active){
+            $query= $query->setParameter("active", $active);
+        }
+
+        if( $idDep != 'tous' ){
+            $query = $query->setParameter("idDep", $idDep);
+        }
+
+        if( $price_produit_min !== $filterOptions["price_produit"]["min_default"] || $price_produit_max !== $filterOptions["price_produit"]["max_default"] ){
+            $query = $query->andWhere("r.fourchettePrix1 != ''");
+        }
+
+        $result= $query->getQuery()
+            ->getResult();
+
+        if( $price_produit_min === $filterOptions["price_produit"]["min_default"] && $price_produit_max === $filterOptions["price_produit"]["max_default"] ){
+            return count($result);
+        }
+
+        $result_filter= [];
+
+        foreach($result as $item_result){
+            $is_much_price= false;
+            $fourchettePrix1= $item_result["fourchettePrix1"];
+
+            $pieces = explode("-", $fourchettePrix1);
+            $min= $pieces[0];
+
+            $pieces = explode(" ", $pieces[1]);
+            $max= $pieces[0];
+
+            if(intval($min) <= intval($price_produit_min)|| intval($price_produit_max) <= intval($max)){
+                $is_much_price= true;
+            }
+
+            if($is_much_price){
+                array_push($result_filter, $item_result);
+            }
+        }
+
+        return count($result_filter);
+    }
+
     public function getAllOpenedRestosV2($limits = 0){
         return $this->createQueryBuilder("r")
             ->select("r.id,
