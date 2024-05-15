@@ -326,8 +326,213 @@ function resetFilterForAllRubrique() {
 	MAP_CMZ.resetFilterForAllRubrique();
 }
 
-
 function closeRightSide() {
 	MAP_CMZ.closeRightSide();
 }
 
+//// function  DOCKABLE Fiche rubrique Natenaina ///////
+function dockFicheRubrique(nombre = 10) {
+	// let markerInfo = MAP_CMZ.marker_last_selected.options;
+	let markerInfo = MAP_CMZ.marker_last_selected.marker.options;
+
+	let idRubrique = markerInfo.id;
+	let typeRubrique = markerInfo.type ? markerInfo.type : "none";
+
+	// let closeDetailElement = document.querySelector(".close_details_jheo_js");
+	// closeDetailElement.click();
+
+	let divParent = document.createElement("div");
+	let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim();
+	if (nombre > 1) {
+		let containerIcones = document.querySelector(".container-icones");
+
+		if (containerIcones) {
+			let listeIcones = document.querySelectorAll(".liste-icones-dock");
+			let listeIconesLength = listeIcones.length;
+			createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, listeIconesLength, containerIcones);
+		} else {
+			let newDivContainer = document.createElement("div");
+			newDivContainer.setAttribute("class", "leaflet-control container-icones d-none");
+
+			let btnId = "";
+			if (typeRubrique != "none") {
+				btnId = "dockableBtn_" + typeRubrique + "_" + idRubrique;
+				if (document.querySelector("#" + btnId) === null) {
+					newDivContainer.innerHTML += `
+						<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+							<i class="fa-solid fa-file"></i>
+						</button>
+				`;
+				}
+			} else {
+				btnId = "dockableBtn_" + idRubrique;
+				if (document.querySelector("#" + btnId) === null) {
+					newDivContainer.innerHTML += `
+						<button style="font-size: 1.1rem;" class="liste-icones-dock  ms-1" id=${btnId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+							<i class="fa-solid fa-file"></i>
+						</button>
+					`;
+				}
+			}
+
+			document.querySelector(".leaflet-top.leaflet-right").appendChild(newDivContainer);
+
+			createDockableIcon(divParent, idRubrique, typeRubrique);
+		}
+	} else {
+		createDockableIcon(divParent, idRubrique, typeRubrique);
+
+		document.querySelector("#openFlottant").appendChild(divParent);
+	}
+
+	MAP_CMZ.bindTooltipsDockOnHover();
+
+	closeDetailsContainer();
+}
+
+function createDockableIconForMore(divParent, idRubrique, typeRubrique, nombre, nombreIcone, containerIcones) {
+	divParent.setAttribute("onclick", "afficherListeIcones()");
+	divParent.setAttribute("style", "margin-left:30px;");
+	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer";
+
+	let rubName = document.querySelector(".rubriqueNameDetail").dataset.name.trim();
+	let iconeId = "";
+	let canAdd = false;
+
+	if (typeRubrique != "none") {
+		iconeId = "dockableBtn_" + typeRubrique + "_" + idRubrique;
+		if (document.querySelector("#" + iconeId) === null) {
+			containerIcones.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock ms-1" id=${iconeId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+								<i class="fa-solid fa-file"></i>
+							</button>`;
+			canAdd = true;
+		}
+	} else {
+		iconeId = "dockableBtn_" + idRubrique;
+		if (document.querySelector("#" + iconeId) === null) {
+			containerIcones.innerHTML += `<button style="font-size: 1.1rem;" class="liste-icones-dock ms-1" id=${iconeId} onclick="reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')" title="${rubName}">
+								<i class="fa-solid fa-file"></i>
+							</button>`;
+			canAdd = true;
+		}
+	}
+
+	if (nombreIcone >= nombre) {
+		nombreIcone = nombre;
+		document.querySelectorAll(".liste-icones-dock")[0].remove();
+	} else {
+		if (canAdd) nombreIcone = nombreIcone + 1;
+	}
+
+	divParent.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Afficher tous</div>
+								<button style="font-size: 1.1rem;">
+									+${nombreIcone}
+								</button>`;
+
+	let dockableIconeElement = document.querySelector(".dockableDetail");
+
+	if (dockableIconeElement) dockableIconeElement.remove();
+
+	document.querySelector("#openFlottant").appendChild(divParent);
+}
+
+function createDockableIcon(divParent, idRubrique, typeRubrique) {
+	divParent.setAttribute("onclick", `reAfficherFiche(this, ${idRubrique}, '${typeRubrique}')`);
+	divParent.setAttribute("style", "margin-left:30px;");
+	divParent.classList = "content_message_tooltip content_message_tooltip_jheo_js dockableDetail cursor-pointer";
+
+	if (typeRubrique != "none") {
+		divParent.id = "dockableIcone_" + typeRubrique + "_" + idRubrique;
+	} else {
+		divParent.id = "dockableIcone_" + idRubrique;
+	}
+
+	divParent.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Cliquer ici pour réafficher la fiche</div>
+							<button style="font-size: 1.1rem;">
+								<i class="fa-solid fa-file"></i>
+							</button>`;
+
+	let dockableIconeElement = document.querySelector(".dockableDetail");
+
+	if (dockableIconeElement) dockableIconeElement.remove();
+
+	document.querySelector("#openFlottant").appendChild(divParent);
+}
+
+function reAfficherFiche(element, idRubrique, typeRubrique) {
+	let iconeId = "";
+	if (typeRubrique != "none") {
+		iconeId = "dockableBtn_" + typeRubrique + "_" + idRubrique;
+		if (document.querySelector("#" + iconeId)) document.querySelector("#" + iconeId).remove();
+	} else {
+		iconeId = "dockableBtn_" + idRubrique;
+		if (document.querySelector("#" + iconeId)) document.querySelector("#" + iconeId).remove();
+	}
+
+	element.remove();
+
+	removeOrEditSpecificElement();
+
+	if (typeRubrique != "none") {
+		if (MAP_CMZ.checkIsExist(idRubrique, typeRubrique)) {
+			MAP_CMZ.clickOnMarker(idRubrique, typeRubrique);
+		}
+	} else {
+		if (MAP_CMZ.checkIsExist(idRubrique)) {
+			MAP_CMZ.clickOnMarker(idRubrique);
+		}
+	}
+}
+
+function removeOrEditSpecificElement() {
+	if (document.querySelector(".container-icones")) {
+		if (document.querySelector(".container-icones").children.length == 0)
+			document.querySelector(".container-icones").remove();
+	}
+
+	let dockDetail = document.querySelector(".dockableDetail");
+
+	if (dockDetail) {
+		let iconesNumber = document.querySelector(".dockableDetail > button").textContent.replace(/\D/g, "");
+		iconesNumber != "" ? parseInt(iconesNumber) : 0;
+		if (iconesNumber > 0) {
+			iconesNumber = document.querySelectorAll('[id^="dockableBtn_"]').length;
+			if (iconesNumber >= 1) {
+				if (iconesNumber > 1) {
+					document.querySelector(".dockableDetail > button").textContent = "+" + iconesNumber;
+				} else {
+					let iconeToGet = document.querySelector('[id^="dockableBtn_"]');
+					let iconeToGetId = iconeToGet.id;
+					iconeToGetOnClick = iconeToGet.getAttribute("onclick");
+					dockDetail.setAttribute("onclick", iconeToGetOnClick);
+					dockDetail.id = iconeToGetId.replace("dockableBtn", "dockableIcone");
+					dockDetail.innerHTML = `<div class="message_tooltip message_tooltip_jheo_js d-none">Cliquer ici pour réafficher la fiche</div>
+											<button style="font-size: 1.1rem;">
+												<i class="fa-solid fa-file"></i>
+											</button>`;
+				}
+				if (!document.querySelector(".container-icones").classList.contains("d-none")) {
+					document.querySelector(".container-icones").classList.add("d-none");
+				}
+			} else {
+				dockDetail.remove();
+			}
+		}
+	}
+}
+
+function afficherListeIcones() {
+	let containerIcones = document.querySelector(".container-icones");
+	if (containerIcones.classList.contains("d-none")) {
+		containerIcones.classList.remove("d-none");
+	} else {
+		containerIcones.classList.add("d-none");
+	}
+}
+
+//// END DOCKABLE ///////
+
+
+function changeTiles(id_tiles) {
+	MAP_CMZ.changeTiles(id_tiles);
+}

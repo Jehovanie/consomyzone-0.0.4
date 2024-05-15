@@ -296,29 +296,28 @@ function injectListMarker(data, isInSearch = false) {
 	let message = isInSearch
 		? "Il semble que vos restaurants pastilles ne figurent pas parmi les résultats de recherche ou n'avez aucun restaurant pastille."
 		: "Vous n'avez pas de restaurant pastille ou vous n'avez pas encore de tribu T avec une extension restaurant.";
+
 	let dataHTML =
 		data.length > 0
 			? dataListMarker(data)
 			: document.querySelector(".cta_to_actualite_jheo_js")
-			? `
-        <tr>
-            <td colspan="3">
-                <div class="alert alert-info text-center" role="alert">
-                    ${message}
-                </div>
-            </td>
-        </tr>
-    `
-			: `
-        <tr>
-            <td colspan="3">
-                <div class="alert alert-danger text-center" role="alert">
-                   <a class="text-primary" href="/connexion" style="text-decoration:underline">Veuillez-vous connecter</a> pour voir la liste des restaurants pastillés dans vos tribus T.
+			? `<tr>
+					<td colspan="3">
+						<div class="alert alert-info text-center" role="alert">
+							${message}
+						</div>
+					</td>
+				</tr>
+			`
+			: `<tr>
+					<td colspan="3">
+						<div class="alert alert-danger text-center" role="alert">
+							<a class="text-primary" href="/connexion" style="text-decoration:underline">Veuillez-vous connecter</a> pour voir la liste des restaurants pastillés dans vos tribus T.
 
-                </div>
-            </td>
-        </tr>
-    `;
+						</div>
+					</td>
+				</tr>
+			`;
 
 	document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
         <div class="right_side_body right_side_body_jheo_js">
@@ -337,6 +336,74 @@ function injectListMarker(data, isInSearch = false) {
             </table>
         </div>
     `;
+}
+
+function injectBodyListMarkerRestoPastille() {
+	if (!document.querySelector(".content_right_side_body_jheo_js")) {
+		console.log("Selector not found : '.content_right_side_body_body'");
+		return false;
+	}
+
+	document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
+        <div class="right_side_body right_side_body_jheo_js">
+			<div class="card_mini_chargement card_mini_chargement_jheo_js">
+				<div class="containt">
+					<div class="word word-1">C</div>
+					<div class="word word-2">M</div>
+					<div class="word word-3">Z</div>
+				</div>
+			</div>
+        </div>
+    `;
+}
+
+function injectDataListMarkerRestoPastille(data, isInSearch = false) {
+	if (!document.querySelector(".right_side_body_jheo_js")) {
+		console.log("Selector not found : '.right_side_body_jheo_js'");
+		return false;
+	}
+
+	let message = isInSearch
+		? "Il semble que vos restaurants pastilles ne figurent pas parmi les résultats de recherche ou n'avez aucun restaurant pastille."
+		: "Vous n'avez pas de restaurant pastille ou vous n'avez pas encore de tribu T avec une extension restaurant.";
+
+	let dataHTML =
+		data.length > 0
+			? dataListMarker(data)
+			: document.querySelector(".cta_to_actualite_jheo_js")
+			? `<tr>
+				<td colspan="3">
+					<div class="alert alert-info text-center" role="alert">
+						${message}
+					</div>
+				</td>
+			</tr>
+		`
+			: `<tr>
+				<td colspan="3">
+					<div class="alert alert-danger text-center" role="alert">
+						<a class="text-primary" href="/connexion" style="text-decoration:underline">Veuillez-vous connecter</a> pour voir la liste des restaurants pastillés dans vos tribus T.
+					</div>
+				</td>
+			</tr>
+		`;
+
+	document.querySelector(".right_side_body_jheo_js").innerHTML = `
+		<table class="table table_info_marker">
+			<thead>
+				<tr>
+					<th scope="col">Tribu <label class="ms-2">Restaurant</label></th>
+				</tr>
+			</thead>
+			<tbody class="content_list_resto_pastille content_list_resto_pastille_jheo_js">
+				${dataHTML}
+			</tbody>
+		</table>
+	`;
+
+	if (document.querySelector(".card_mini_chargement_jheo_js")) {
+		document.querySelector(".card_mini_chargement_jheo_js").remove();
+	}
 }
 
 function getDetailFromListRightUpdate(id_rubrique, type_rubrique) {
@@ -527,7 +594,7 @@ function htmlSlidePriceCarburantResto(identifiant) {
 	return html_filter_by_note;
 }
 
-function alertSwalFunctionNoteImplement() {
+function alertSwalfunctionNoteImplement() {
 	new swal(
 		"Cher partisan.",
 		"Cette fonctinnalité est en cours de développement, merci de votre compréhension.",
@@ -535,3 +602,6 @@ function alertSwalFunctionNoteImplement() {
 	);
 }
 
+function removeInfoRubrique(element) {
+	element.parentElement.remove();
+}

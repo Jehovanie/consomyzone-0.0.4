@@ -257,6 +257,46 @@ class RestaurantController extends AbstractController
             "allIdRestoPastille" => $arrayIdResto,
         ], 200);
     }
+
+
+    #[Route("/fetch_data/resto_pastille", name: "fetch_data_resto_pastille" , methods: [ "GET"])]
+    public function getAllRestoPastille(
+        UserRepository $userRepository,
+        Tribu_T_Service $tribu_T_Service,
+        TributGService $tributGService,
+        BddRestoRepository $bddResto,
+    ){  
+        if( !$this->getUser()){
+            return $this->json([
+                "pastilles" => []
+            ], 401);
+        }
+
+        $restoPastille= [];
+
+        //// all my tribu t.
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned(); 
+        /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+
+        //// description tribu T with ID restaurant pastille
+        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); 
+        /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+
+        //// list resto pastille dans le tribu G
+        $restoPastilleInTribuG= $tributGService->getEntityRestoPastilled($this->getUser()); 
+        /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+
+        $arrayIdResto= array_merge($arrayIdResto, $restoPastilleInTribuG);
+
+        //// update data result to add all resto pastille in the Tribu T
+        $restoPastille = $bddResto->appendRestoPastille([], $arrayIdResto);
+
+        return $this->json([
+            "pastilles" => $arrayIdResto,
+            "resto" => $restoPastille,
+        ], 200 );
+    }
+
     /**
      * @author Nantenaina <email>
      * où= dans la fonction getAllRestCoor

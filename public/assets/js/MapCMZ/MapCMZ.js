@@ -506,6 +506,20 @@ class MapCMZ {
 		});
 	}
 
+	bindTooltipsDockOnHover() {
+		let dockableIcone = document.querySelectorAll(`.dockableDetail`);
+
+		dockableIcone.forEach((item_control) => {
+			item_control.addEventListener("mouseover", () => {
+				item_control.querySelector(".message_tooltip_jheo_js").classList.remove("d-none");
+			});
+
+			item_control.addEventListener("mouseout", () => {
+				item_control.querySelector(".message_tooltip_jheo_js").classList.add("d-none");
+			});
+		});
+	}
+
 	resetZoom() {
 		const memoryCenter = this.getDataMemoryCenterInSession();
 
@@ -585,7 +599,7 @@ class MapCMZ {
 			let classSelected = item.id === this.id_listTales_selected ? "card_type_layer_selected" : "";
 
 			tilesSelectHTML += `
-				<div class="card mb-3 card_type_layer ${classSelected} ID_${item.id}_jheo_js">
+				<div class="card mb-3 card_type_layer ${classSelected} ID_${item.id}" onclick="changeTiles('${item.id}')">
 					<div class="row">
 						<div class="col-md-4">
 							<img src="${image}" class="card-img" alt="${item.name.toLocaleLowerCase()}" style="height:70px">
@@ -601,12 +615,12 @@ class MapCMZ {
 
 		document.querySelector(".content_bottom_side_body_jheo_js").innerHTML = tilesSelectHTML;
 
-		this.bindEventChangeTiles();
+		// this.bindEventChangeTiles();
 	}
 
 	bindEventChangeTiles() {
 		this.listTales.forEach((item) => {
-			const singleTile = document.querySelector(`.ID_${item.id}_jheo_js`);
+			const singleTile = document.querySelector(`.ID_${item.id}`);
 			if (!singleTile) {
 				singleTile.addEventListener("click", () => {
 					this.changeTiles(item.id);
@@ -630,7 +644,27 @@ class MapCMZ {
 	}
 
 	changeTiles(tilesID) {
+		const singleTile = document.querySelector(`.ID_${tilesID}`);
+
+		if (!singleTile.classList.contains("card_type_layer_selected")) {
+			singleTile.classList.add("card_type_layer_selected");
+		}
+
+		this.id_listTales_selected = tilesID;
+
+		this.listTales.forEach(({ id }) => {
+			if (id !== this.id_listTales_selected) {
+				const tempTile = document.querySelector(`.ID_${id}`);
+				if (tempTile.classList.contains("card_type_layer_selected")) {
+					tempTile.classList.remove("card_type_layer_selected");
+				}
+			}
+		});
+
 		const newTiles = this.listTales.find((item) => item.id === tilesID);
+
+		console.log(newTiles);
+
 		this.tiles.setUrl(newTiles.link, false);
 
 		this.listTales = this.listTales.map((item) => {
@@ -1152,14 +1186,14 @@ class MapCMZ {
 				"cart_after_jheo_js",
 				"fa-solid fa-forward fa-fade cart_after_jheo_js",
 				"btn btn-outline-danger me-2",
-				"Voir la carte en position avant.",
+				"Voir la carte en position avant."
 				// "bootomright"
 			)}
 			${this.createBtnControl(
 				"cart_before_jheo_js",
 				"fa-solid fa-backward fa-fade cart_before_jheo_js",
 				"btn btn-outline-danger",
-				"Voir la carte en position précedente.",
+				"Voir la carte en position précedente."
 				// "bootomright"
 			)}
 		`;

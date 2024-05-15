@@ -797,6 +797,57 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehoavaneirama@gmail.com>
+	 *
+	 * Check if the item related with this ID is in the marker or in the data
+	 *
+	 * @param {*} idToCheck
+	 *
+	 * @returns true if exists, false if not
+	 */
+	checkIsExist(idToCheck, rubrique_type = "restaurant") {
+		const data = this.defaultData[rubrique_type]["data"];
+
+		let isOnData = data.some(({ id }) => parseInt(id) === parseInt(idToCheck));
+
+		let isAlreadyExist = false;
+		if (isOnData) {
+			this.markers.eachLayer((marker) => {
+				if (parseInt(marker.options.id) === parseInt(idToCheck)) {
+					isAlreadyExist = true;
+				}
+			});
+
+			if (!isAlreadyExist) {
+				const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+
+				const item = data.find(({ id }) => parseInt(id) === parseInt(idToCheck));
+				const options = rubrique_type_object.getOptionPastille(item);
+
+				rubrique_type_object.setSingleMarker(item, options);
+			}
+		}
+
+		return isOnData;
+	}
+
+	/**
+	 *
+	 * @author Jehovanie RAMANDRIJOEL <jehovanierama@gmail.com>
+	 *
+	 * @param {*} idToCheck
+	 *
+	 * @returns
+	 */
+	clickOnMarker(id, rubrique_type = "restaurant") {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(id) && marker.options.type === rubrique_type) {
+				marker.fireEvent("click");
+			}
+		});
+	}
+
+	/**
 	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
 	 * This remove the special markersCulsterGroup when state zoom is get in.
 	 */
@@ -1787,6 +1838,7 @@ class RubriqueCMZ extends MapCMZ {
 			return false;
 		}
 
+		//// data transformation  --------------------------------
 		let btn_rubrique = this.allRubriques.map((item) => {
 			const icon_image = IS_DEV_MODE ? `/${item.icon}` : `/public/${item.icon}`;
 			const class_active = item.is_active ? "btn-primary" : "btn-light";
@@ -1826,6 +1878,7 @@ class RubriqueCMZ extends MapCMZ {
 				</button>
 			`;
 		});
+		//// end of data transformation --------------------------------
 
 		const is_have_rubrique_filter = this.allRubriques.some((item) => item.filter.is_filtered === true);
 
@@ -1849,12 +1902,40 @@ class RubriqueCMZ extends MapCMZ {
             <div class="rubrique_list right_side_body_jheo_js">
                 ${btn_rubrique.join("")}
             </div>
+			<div class="content_alert_info content_alert_info_jheo_js"></div>
 			<div class="btn_cancel_filter_for_all">
 				${btn_action}
 			</div>
         `;
 
+		this.showAlertInformation();
+
 		this.bindSelectRubrique();
+	}
+
+	showAlertInformation() {
+		const tab_info = [1, 2];
+
+		const tab_info_index = tab_info[Symbol.iterator]();
+
+		let tab_info_value = tab_info_index.next().value;
+
+		const info_interval = setInterval(() => {
+			const alert_info = `
+				<div class="alert alert-info alert_info_rubrique alert_info_rubrique_show alert_info_jheo_js" role="alert">
+					<i class="fa-solid fa-x fa_solide_info_rubrique" onclick="removeInfoRubrique(this)"></i>
+					A simple info alert—check it out!
+				</div>
+			`;
+
+			document.querySelector(".content_alert_info_jheo_js").insertAdjacentHTML("beforeend", alert_info);
+
+			tab_info_value = tab_info_index.next().value;
+
+			if (tab_info_value === undefined) {
+				clearInterval(info_interval);
+			}
+		}, 1500);
 	}
 
 	bindSelectRubrique() {
@@ -4567,7 +4648,9 @@ class RubriqueCMZ extends MapCMZ {
 		}
 	}
 
-	injectListRestoPastille() {
+	async injectListRestoPastille() {
+		injectBodyListMarkerRestoPastille();
+
 		const restoPastilleTab = [];
 
 		const data_resto = this.defaultData["restaurant"];
@@ -4586,8 +4669,45 @@ class RubriqueCMZ extends MapCMZ {
 				});
 			}
 		});
+
+		fetch("/fetch_data/resto_pastille")
+			.then((response) => {
+				if (response.code === 401) {
+					parent_content.innerHTML = `
+							<div class="alert alert-danger" role="alert">
+								Vous n'êtes pas connecté, <a href="/connexion" >veuillez connectez ici </a>.
+							</div>
+						`;
+
+					throw new Error("Unauthorized...");
+				} else {
+					return response.json();
+				}
+			})
+			.then((response) => {
+				const { pastilles, resto } = response;
+				const restoPastilleTab = [];
+
+				pastilles.forEach((item) => {
+					const restoPastille = resto.find((jtem) => parseInt(item.id_resto) === parseInt(jtem.id));
+					if (restoPastille) {
+						restoPastilleTab.push({
+							id: restoPastille.id,
+							name: restoPastille.denominationF,
+							depName: restoPastille.depName,
+							dep: restoPastille.dep,
+							logo_path: item.logo_path,
+							name_tribu_t_muable: item.name_tribu_t_muable,
+							tableName: item.tableName,
+						});
+					}
+				});
+
+				injectDataListMarkerRestoPastille(restoPastilleTab);
+			});
+
 		// this.default_data
-		injectListMarker(restoPastilleTab);
+		// injectListMarker(restoPastilleTab);
 	}
 
 	/**
