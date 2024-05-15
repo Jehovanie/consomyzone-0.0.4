@@ -1,3 +1,26 @@
+/*
+import { addRubriqueActivNavbar, addDataTableOnList, removeRubriqueActivNavbar } from "./";
+{ removeListNavLeftRubriqueType, injectFilterProduitStation, injectSliderStation }
+{ injectSliderCustomise, resetSliderCustomise, injectSlider, resetSliderNotation, activeDataTableOnList }
+{ createStartNoteHtml, injectFilterProduitResto, openDetailsContainer }
+{ injectBodyListMarkerRestoPastill, alertSwalFunctionNoteImplement }
+{ removeLoadingListFavory, }
+
+import { addRubriqueActivNavbar, removeRubriqueActivNavbar,
+	injectFilterProduitStation, createStartNoteHtml, injectFilterProduitResto,
+	openDetailsContainer, injectBodyListMarkerRestoPastille, alertSwalFunctionNoteImplement
+} "./map_cmz_fonction.js"
+
+import {  } "./map_cmz_instance.js"
+
+import { addDataTableOnList, removeListNavLeftRubriqueType,
+	 injectSliderStation, injectSliderCustomise, resetSliderCustomise, injectSlider,
+	 resetSliderNotation, activeDataTableOnList,
+ } "./lib.js"
+
+import { removeLoadingListFavory, } from "./favori_rubrique.js"
+
+*/
 class RubriqueCMZ extends MapCMZ {
 	constructor() {
 		super();
