@@ -1,3 +1,6 @@
+/*
+	rien importer
+ */
 function openCollapseRubriqueFavory(favori_folder_id) {
 	if (!document.querySelector(`.sub_${favori_folder_id}`)) {
 		console.log(`Selector not found: .sub${favori_folder_id}`);

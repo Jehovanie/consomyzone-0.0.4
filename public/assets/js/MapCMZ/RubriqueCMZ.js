@@ -1,17 +1,11 @@
 /*
-import { addRubriqueActivNavbar, addDataTableOnList, removeRubriqueActivNavbar } from "./";
-{ removeListNavLeftRubriqueType, injectFilterProduitStation, injectSliderStation }
-{ injectSliderCustomise, resetSliderCustomise, injectSlider, resetSliderNotation, activeDataTableOnList }
-{ createStartNoteHtml, injectFilterProduitResto, openDetailsContainer }
-{ injectBodyListMarkerRestoPastill, alertSwalFunctionNoteImplement }
-{ removeLoadingListFavory, }
 
-import { addRubriqueActivNavbar, removeRubriqueActivNavbar,
+import MapCMZ from './MapCMZ'
+
+import { addRubriqueActivNavbar, removeRubriqueActivNavbar, calculeProgression,
 	injectFilterProduitStation, createStartNoteHtml, injectFilterProduitResto,
 	openDetailsContainer, injectBodyListMarkerRestoPastille, alertSwalFunctionNoteImplement
 } "./map_cmz_fonction.js"
-
-import {  } "./map_cmz_instance.js"
 
 import { addDataTableOnList, removeListNavLeftRubriqueType,
 	 injectSliderStation, injectSliderCustomise, resetSliderCustomise, injectSlider,
@@ -60,15 +54,15 @@ class RubriqueCMZ extends MapCMZ {
 					},
 					specifique: {
 						produit: {
-							restaurant: { is_filtered: true, prix: 0 },
-							brasserie: { is_filtered: true, prix: 0 },
-							fast_food: { is_filtered: true, prix: 0 },
-							pizzeria: { is_filtered: true, prix: 0 },
-							boulangerie: { is_filtered: true, prix: 0 },
-							bar: { is_filtered: true, prix: 0 },
-							cafe: { is_filtered: true, prix: 0 },
-							salon_the: { is_filtered: true, prix: 0 },
-							cuisine_monde: { is_filtered: true, prix: 0 },
+							restaurant: { is_filtered: false, prix: 0 },
+							brasserie: { is_filtered: false, prix: 0 },
+							fast_food: { is_filtered: false, prix: 0 },
+							pizzeria: { is_filtered: false, prix: 0 },
+							boulangerie: { is_filtered: false, prix: 0 },
+							bar: { is_filtered: false, prix: 0 },
+							cafe: { is_filtered: false, prix: 0 },
+							salon_the: { is_filtered: false, prix: 0 },
+							cuisine_monde: { is_filtered: false, prix: 0 },
 						},
 						price_produit: {
 							min: 0,
@@ -1450,7 +1444,6 @@ class RubriqueCMZ extends MapCMZ {
 						let rubrique_type_active_object = rubrique_active.find(
 							(item) => item.api_name === key_rubrique_type
 						);
-						const { filter: rubrique_filter } = rubrique_type_active_object;
 
 						const rubrique_type = this.defaultData[key_rubrique_type];
 
@@ -3674,15 +3667,15 @@ class RubriqueCMZ extends MapCMZ {
 				rubrique.filter.specifique = {
 					...rubrique.filter.specifique,
 					produit: {
-						restaurant: { is_filtered: true, prix: 0 },
-						brasserie: { is_filtered: true, prix: 0 },
-						fast_food: { is_filtered: true, prix: 0 },
-						pizzeria: { is_filtered: true, prix: 0 },
-						boulangerie: { is_filtered: true, prix: 0 },
-						bar: { is_filtered: true, prix: 0 },
-						cafe: { is_filtered: true, prix: 0 },
-						salon_the: { is_filtered: true, prix: 0 },
-						cuisine_monde: { is_filtered: true, prix: 0 },
+						restaurant: { is_filtered: false, prix: 0 },
+						brasserie: { is_filtered: false, prix: 0 },
+						fast_food: { is_filtered: false, prix: 0 },
+						pizzeria: { is_filtered: false, prix: 0 },
+						boulangerie: { is_filtered: false, prix: 0 },
+						bar: { is_filtered: false, prix: 0 },
+						cafe: { is_filtered: false, prix: 0 },
+						salon_the: { is_filtered: false, prix: 0 },
+						cuisine_monde: { is_filtered: false, prix: 0 },
 					},
 					price_produit: {
 						...rubrique.filter.specifique.price_produit,
@@ -3702,7 +3695,7 @@ class RubriqueCMZ extends MapCMZ {
 		resetSliderCustomise("fourchette_prix_resto", { min: min_default, max: max_default });
 
 		for (var name_produit in produit) {
-			document.getElementById(`${name_produit}_toggle_jheo_js`).checked = true;
+			document.getElementById(`${name_produit}_toggle_jheo_js`).checked = produit[name_produit]["is_filtered"];
 		}
 	}
 
@@ -3748,9 +3741,8 @@ class RubriqueCMZ extends MapCMZ {
 			const item_price_max = parseInt(fourchette_price[1]);
 
 			if (
-				rubrique_filter_price_produit.min <= item_price_min ||
-				(rubrique_filter_price_produit.min <= item_price_min &&
-					item_price_max <= rubrique_filter_price_produit.max)
+				rubrique_filter_price_produit.min <= item_price_min &&
+				item_price_max <= rubrique_filter_price_produit.max
 			) {
 				result = result && true;
 			} else {

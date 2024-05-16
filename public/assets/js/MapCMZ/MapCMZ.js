@@ -1,3 +1,10 @@
+/*
+ import { setDataInSessionStorage, getDataInSessionStorage, iconsChange } from './../app.js';
+ import { generateSelectContoursGeographie, showChargementRightSide } './map_cmz_instance.js';
+ import { hideChargementRightSide } from './map_cmz_fonction.js';
+
+*/
+
 class MapCMZ {
 	constructor() {
 		///default data;
@@ -748,30 +755,12 @@ class MapCMZ {
 					return false;
 				}
 
-				if (rightSideContentType === "info_golf_jheo_js") {
-					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-					injectStatusGolf();
-				} else if (rightSideContentType === "info_rubrique_icon_jheo_js") {
+				if (rightSideContentType === "info_rubrique_icon_jheo_js") {
 					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
 					this.injectLegendeIconeOnMap();
 				} else if (rightSideContentType === "resto_pastille_jheo_js") {
 					document.querySelector(".title_right_side_jheo_js").innerText = "Liste des restaurants pastilles.";
 					this.injectListRestoPastille();
-				} else if (rightSideContentType === "info_resto_jheo_js") {
-					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-					injectStatusResto();
-				} else if (rightSideContentType === "info_ferme_jheo_js") {
-					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-					injectStatusFerme();
-				} else if (rightSideContentType === "info_station_jheo_js") {
-					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-					injectStatusStation();
-				} else if (rightSideContentType === "info_tabac_jheo_js") {
-					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-					injectStatusTabac();
-				} else if (rightSideContentType === "info_tous_jheo_js") {
-					document.querySelector(".title_right_side_jheo_js").innerText = "Légende des icônes sur la carte.";
-					injectStatusTous();
 				} else if (rightSideContentType === "couche_tabac_jheo_js") {
 					document.querySelector(".title_right_side_jheo_js").innerText =
 						"Listes des contours géographiques.";

@@ -1,3 +1,10 @@
+
+/*
+	import { addNewElement, removeNewElement,  } from "./lib.js"
+	import { updateGeoJsonAdd, removeSpecGeoJson, displayFicheRubrique } from "./map_cmz_instance.js"
+*/
+
+
 function showChargementRightSide() {
 	const chargement_Tabac = document.querySelector(".chargement_right_side_jheo_js");
 	const right_Side_Tabac = document.querySelector(".right_side_body_jheo_js");

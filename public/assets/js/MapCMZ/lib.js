@@ -1,3 +1,7 @@
+/*
+ pas de function importer.
+ */
+
 var slickConfig = {
 	slidesToShow: 0,
 	slidesToScroll: 1,

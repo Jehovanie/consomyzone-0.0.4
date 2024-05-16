@@ -1628,7 +1628,7 @@ class BddRestoRepository extends ServiceEntityRepository
             $pieces = explode(" ", $pieces[1]);
             $max= $pieces[0];
 
-            if(intval($min) <= intval($price_produit_min)|| intval($price_produit_max) <= intval($max)){
+            if(intval($price_produit_min) <= intval($min) && intval($max) <= intval($price_produit_max)){
                 $is_much_price= true;
             }
 
@@ -1756,7 +1756,7 @@ class BddRestoRepository extends ServiceEntityRepository
             $pieces = explode(" ", $pieces[1]);
             $max= $pieces[0];
 
-            if(intval($min) <= intval($price_produit_min)|| intval($price_produit_max) <= intval($max)){
+            if(intval($price_produit_min) <= intval($min) && intval($max) <= intval($price_produit_max)){
                 $is_much_price= true;
             }
 

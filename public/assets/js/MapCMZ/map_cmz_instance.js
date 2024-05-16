@@ -1,3 +1,15 @@
+/*
+	import RubriqueCMZ from './RubriqueCMZ.js'
+	
+	import { setGolfTodo, setGolfFinished, setGolfRemake, setGolfNone  } from "./../golf/details.js"
+	import { updateBtnStatus, fecthGolfAction } from './../function.js
+	import { closeDetailsContainer } from "./map_cmz_fonction.js"
+
+	import { } from "./lib.js"
+*/
+
+
+
 const MAP_CMZ = new RubriqueCMZ();
 
 MAP_CMZ.initMap();
