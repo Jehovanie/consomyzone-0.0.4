@@ -1136,7 +1136,7 @@ class MapCMZ {
 		let htmlControlRubrique = `
 			${this.createBtnControl(
 				"rubrique_type_jheo_js",
-				"fa-solid fa-group-arrows-rotate",
+				"fa-solid fa-filter",
 				"btn btn-success mb-2",
 				"Sélectionner ou désélectionner une rubrique."
 			)}
@@ -1392,6 +1392,15 @@ class MapCMZ {
 		});
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 * 
+	 * @goal Create map leaflet; add json
+	 * 
+	 * @param {*} lat 
+	 * @param {*} long 
+	 * @param {*} zoom 
+	 */
 	async initMap(lat = null, long = null, zoom = null) {
 		const content_map = document.querySelector(".cart_map_js");
 

@@ -1,4 +1,3 @@
-
 /*
 	import { addNewElement, removeNewElement,  } from "./lib.js"
 	import { updateGeoJsonAdd, removeSpecGeoJson, displayFicheRubrique } from "./map_cmz_instance.js"

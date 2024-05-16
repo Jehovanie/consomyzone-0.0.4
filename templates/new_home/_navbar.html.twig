@@ -9,14 +9,19 @@
                     <a class="navbar-brand" href="{{path("app_home")}}"><img src="{{asset('assets/image/logo.png')}}" alt="logo"></a>
                 </div>
                 <div class="recherche-navbar col-9">
-                    <form action="/search" method="get" class="bar-de-recherche form_content_search_navbar_js">
-                        <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?">
+                    <form action="/new_home" method="get" class="bar-de-recherche form_content_search_navbar_js">
+                        <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?" >
                         <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Où ?">
-                        <button type="submit" class="hidden"></button>
+                        {# <button type="submit" class="hidden"></button> #}
+                        <button type="submit" class="btn btn-outline-primary">
+                           <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
                     </form>
-                    <button type="button" class="btn btn-outline-primary cta_show_list_nav_left_jheo_js">
+
+                    <button type="button" class="btn btn-outline-primary ms-2 cta_show_list_nav_left_jheo_js">
                         <i class="fa-solid fa-spinner fa-spin"></i>
                     </button>
+                    <div class="tooltip_show_rubrique_list tooltip_show_rubrique_list_jheo_js d-none">Cliquez ici pour voir ou fermer la liste déroulante.</div>
                 </div>
             </div>
 		</div>

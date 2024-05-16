@@ -715,18 +715,43 @@ class RubriqueCMZ extends MapCMZ {
 		});
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal create MarkerClusterGroup form POI and for count marker per dep
+	 * and fetch default data for the rubrique default active
+	 * finaly add event on map like movestart, dragend, zoomend
+	 *
+	 */
 	onInitMarkerCluster() {
 		////create new marker Cluster for POI etablisment
 		this.createMarkersCluster();
 		////create new marker Cluster special for count per dep.
 		this.createMarkersClusterForCountPerDep();
 
+		///fetch data for all rubrique active
 		this.addRubriqueActiveByDefault();
 
+		///bind events on map ( movestart, dragend, zommend)
 		this.addEventOnMap();
 	}
 
 	addRubriqueActiveByDefault() {
+		//// get last last rubrique active in history.
+		const rubrique_active_history = getDataInSessionStorage("rubrique_active_history");
+
+		if (rubrique_active_history) {
+			const history = JSON.parse(rubrique_active_history);
+
+			this.allRubriques = this.allRubriques.map((item) => {
+				item.is_active = history[item.api_name]["is_active"];
+
+				return item;
+			});
+		} else {
+			this.updateRubriqueActiveHistory();
+		}
+
 		///add rubrique active on the nav bar (in map_cmz_fonction.js)
 		this.allRubriques.forEach((item) => {
 			if (item.is_active) {
@@ -736,6 +761,20 @@ class RubriqueCMZ extends MapCMZ {
 
 		////fetch data foreach rubrique active by default.
 		this.fetchDataIterator();
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal Save the history of the rubrique active. (i use it for searching also)
+	 */
+	updateRubriqueActiveHistory() {
+		const new_rubrique_active_history = {};
+		this.allRubriques.forEach((item) => {
+			new_rubrique_active_history[item.api_name] = { is_active: item.is_active };
+		});
+
+		setDataInSessionStorage("rubrique_active_history", JSON.stringify(new_rubrique_active_history));
 	}
 
 	fetchDataIterator() {
@@ -1827,7 +1866,8 @@ class RubriqueCMZ extends MapCMZ {
 		} else {
 			this.map.addLayer(this.markers);
 		}
-		this.addEventMapOnZoomend();
+
+		// this.addEventMapOnZoomend();
 	}
 
 	async initData() {
@@ -2039,6 +2079,9 @@ class RubriqueCMZ extends MapCMZ {
 						);
 					}
 				}
+
+				//// update history rubrique active
+				this.updateRubriqueActiveHistory();
 			});
 
 			btn_rubrique.querySelector(".rubrique_icon_text_jheo_js").addEventListener("dblclick", () => {
@@ -2099,6 +2142,9 @@ class RubriqueCMZ extends MapCMZ {
 				addRubriqueActivNavbar(
 					this.allRubriques.find((item) => item.api_name === rubrique_api_name.toLowerCase())
 				);
+
+				//// update history rubrique active
+				this.updateRubriqueActiveHistory();
 
 				this.addRubriqueMarker(rubrique_api_name);
 
