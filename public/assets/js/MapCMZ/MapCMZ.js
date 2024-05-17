@@ -520,9 +520,11 @@ class MapCMZ {
 				fillOpacity: 0,
 			},
 			onEachFeature: (feature, layer) => {
-				
 				if (feature.properties.hasOwnProperty("details")) {
-					if (feature.properties.details.hasOwnProperty("restaurant")) {
+					if (
+						feature.properties.details != null &&
+						feature.properties.details?.hasOwnProperty("restaurant")
+					) {
 						feature.properties.details["resto"] = feature.properties.details.restaurant;
 					}
 				}

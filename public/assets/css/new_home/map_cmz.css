@@ -1,12 +1,19 @@
 .recherche-navbar {
 	position: relative;
+    padding-left: 0px;
+}
+
+@media screen and (min-width: 1440px) and (max-width: 1550px) {
+    .content-logo-shearch {
+        width: 35vw !important;
+    }
 }
 
 .tooltip_show_rubrique_list {
-	display: block;
+    display: block;
     position: absolute;
     top: 57px;
-    left: -38px;
+    left: 15px;
     width: 359px;
     background-color: lightgreen;
     color: black;
@@ -60,11 +67,11 @@
 }
 
 .content_list_rubrique_active {
-	width: 55%;
-	max-width: 55%;
-	overflow-y: hidden;
-	overflow-x: auto;
-	scrollbar-width: none;
+    width: 50%;
+    max-width: 50%;
+    overflow-y: hidden;
+    overflow-x: auto;
+    scrollbar-width: none;
 }
 
 .single_marker_image {

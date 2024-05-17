@@ -204,7 +204,7 @@ class RestaurantController extends AbstractController
 
             $datas = $bddResto->getDataByFilterOptions($filter_options, $data_max);
             $count = $bddResto->getDataByFilterOptionsCount($filter_options);
-
+            
             if( $this->getUser() ){
                 //// all my tribu t.
                 $tribu_t_owned = $userRepository->getListTableTribuT_owned(); 

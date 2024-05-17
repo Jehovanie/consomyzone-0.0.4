@@ -3,7 +3,6 @@
 	import { updateGeoJsonAdd, removeSpecGeoJson, displayFicheRubrique } from "./map_cmz_instance.js"
 */
 
-
 function showChargementRightSide() {
 	const chargement_Tabac = document.querySelector(".chargement_right_side_jheo_js");
 	const right_Side_Tabac = document.querySelector(".right_side_body_jheo_js");
@@ -109,7 +108,10 @@ function addRubriqueActivNavbar(object_rubrique) {
 	const { name, icon, api_name } = object_rubrique;
 	const key_name = name.trim().split(" ").join("_");
 	const rubrique = `
-		<button id="ID_nav_${key_name}_jheo_js" type="button" class="position-relative btn btn-light btn-sm me-1 rounded-pill d-flex justify-content-center align-items-center">
+		<button id="ID_nav_${key_name}_jheo_js" type="button" 
+			class="position-relative btn btn-light btn-sm me-1 rounded-pill d-flex justify-content-center align-items-center"
+			onclick="openRubriqueFilter('${api_name}')"
+		>
 			<span class="badge_position_filter_navbar d-none badge_navbar_${api_name}_jheo_js cursor_pointer translate-middle badge rounded-pill bg-danger"
 				onclick="openRubriqueFilter('${api_name}')"
 			>
@@ -410,6 +412,30 @@ function injectDataListMarkerRestoPastille(data, isInSearch = false) {
 	if (document.querySelector(".card_mini_chargement_jheo_js")) {
 		document.querySelector(".card_mini_chargement_jheo_js").remove();
 	}
+}
+
+function injectListMarkerRestoPastilleAlertNonActive() {
+	if (!document.querySelector(".right_side_body_jheo_js")) {
+		console.log("Selector not found : '.right_side_body_jheo_js'");
+		return false;
+	}
+
+	document.querySelector(".right_side_body_jheo_js").innerHTML = `
+		${alertRubriqueNonActive("Restaurant")}
+	`;
+}
+
+function alertRubriqueNonActive(rubrique_name) {
+	const message = `
+		Il semble que cette rubrique '${rubrique_name}' n'est pas activée.
+	`;
+	const alert_message = `
+		<div class="alert alert-info text-center" role="alert">
+			${message}
+		</div>
+	`;
+
+	return alert_message;
 }
 
 function getDetailFromListRightUpdate(id_rubrique, type_rubrique) {

@@ -1619,21 +1619,23 @@ class BddRestoRepository extends ServiceEntityRepository
         $result_filter= [];
 
         foreach($result as $item_result){
-            $is_much_price= false;
-            $fourchettePrix1= $item_result["fourchettePrix1"];
+            if( $item_result["fourchettePrix1"] !== "" && str_contains($item_result["fourchettePrix1"], '-')){
+                $is_much_price= false;
+                $fourchettePrix1= $item_result["fourchettePrix1"];
 
-            $pieces = explode("-", $fourchettePrix1);
-            $min= $pieces[0];
+                $pieces = explode("-", $fourchettePrix1);
+                $min= $pieces[0];
 
-            $pieces = explode(" ", $pieces[1]);
-            $max= $pieces[0];
+                $pieces = explode(" ", $pieces[1]);
+                $max= $pieces[0];
 
-            if(intval($price_produit_min) <= intval($min) && intval($max) <= intval($price_produit_max)){
-                $is_much_price= true;
-            }
+                if(intval($price_produit_min) <= intval($min) && intval($max) <= intval($price_produit_max)){
+                    $is_much_price= true;
+                }
 
-            if($is_much_price){
-                array_push($result_filter, $item_result);
+                if($is_much_price){
+                    array_push($result_filter, $item_result);
+                }
             }
         }
 
@@ -1747,21 +1749,23 @@ class BddRestoRepository extends ServiceEntityRepository
         $result_filter= [];
 
         foreach($result as $item_result){
-            $is_much_price= false;
-            $fourchettePrix1= $item_result["fourchettePrix1"];
+            if( $item_result["fourchettePrix1"] !== "" && str_contains($item_result["fourchettePrix1"], '-')){
+                $is_much_price= false;
+                $fourchettePrix1= $item_result["fourchettePrix1"];
 
-            $pieces = explode("-", $fourchettePrix1);
-            $min= $pieces[0];
+                $pieces = explode("-", $fourchettePrix1);
+                $min= $pieces[0];
 
-            $pieces = explode(" ", $pieces[1]);
-            $max= $pieces[0];
+                $pieces = explode(" ", $pieces[1]);
+                $max= $pieces[0];
 
-            if(intval($price_produit_min) <= intval($min) && intval($max) <= intval($price_produit_max)){
-                $is_much_price= true;
-            }
+                if(intval($price_produit_min) <= intval($min) && intval($max) <= intval($price_produit_max)){
+                    $is_much_price= true;
+                }
 
-            if($is_much_price){
-                array_push($result_filter, $item_result);
+                if($is_much_price){
+                    array_push($result_filter, $item_result);
+                }
             }
         }
 

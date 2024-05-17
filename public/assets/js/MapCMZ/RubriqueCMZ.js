@@ -4,7 +4,8 @@ import MapCMZ from './MapCMZ'
 
 import { addRubriqueActivNavbar, removeRubriqueActivNavbar, calculeProgression,
 	injectFilterProduitStation, createStartNoteHtml, injectFilterProduitResto,
-	openDetailsContainer, injectBodyListMarkerRestoPastille, alertSwalFunctionNoteImplement
+	openDetailsContainer, injectBodyListMarkerRestoPastille,
+	injectListMarkerRestoPastilleAlertNonActive
 } "./map_cmz_fonction.js"
 
 import { addDataTableOnList, removeListNavLeftRubriqueType,
@@ -4865,60 +4866,47 @@ class RubriqueCMZ extends MapCMZ {
 	async injectListRestoPastille() {
 		injectBodyListMarkerRestoPastille();
 
-		const restoPastilleTab = [];
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
 
-		const data_resto = this.defaultData["restaurant"];
+		if (!rubrique_type_object.is_active) {
+			injectListMarkerRestoPastilleAlertNonActive();
+		} else {
+			fetch("/fetch_data/resto_pastille")
+				.then((response) => {
+					if (response.code === 401) {
+						parent_content.innerHTML = `
+								<div class="alert alert-danger" role="alert">
+									Vous n'êtes pas connecté, <a href="/connexion" >veuillez connectez ici </a>.
+								</div>
+							`;
 
-		data_resto["pastille"].forEach((item) => {
-			const restoPastille = data_resto["data"].find((jtem) => parseInt(item.id_resto) === parseInt(jtem.id));
-			if (restoPastille) {
-				restoPastilleTab.push({
-					id: restoPastille.id,
-					name: restoPastille.denominationF,
-					depName: restoPastille.depName,
-					dep: restoPastille.dep,
-					logo_path: item.logo_path,
-					name_tribu_t_muable: item.name_tribu_t_muable,
-					tableName: item.tableName,
-				});
-			}
-		});
-
-		fetch("/fetch_data/resto_pastille")
-			.then((response) => {
-				if (response.code === 401) {
-					parent_content.innerHTML = `
-							<div class="alert alert-danger" role="alert">
-								Vous n'êtes pas connecté, <a href="/connexion" >veuillez connectez ici </a>.
-							</div>
-						`;
-
-					throw new Error("Unauthorized...");
-				} else {
-					return response.json();
-				}
-			})
-			.then((response) => {
-				const { pastilles, resto } = response;
-				const restoPastilleTab = [];
-
-				pastilles.forEach((item) => {
-					const restoPastille = resto.find((jtem) => parseInt(item.id_resto) === parseInt(jtem.id));
-					if (restoPastille) {
-						restoPastilleTab.push({
-							id: restoPastille.id,
-							name: restoPastille.denominationF,
-							depName: restoPastille.depName,
-							dep: restoPastille.dep,
-							logo_path: item.logo_path,
-							name_tribu_t_muable: item.name_tribu_t_muable,
-							tableName: item.tableName,
-						});
+						throw new Error("Unauthorized...");
+					} else {
+						return response.json();
 					}
-				});
+				})
+				.then((response) => {
+					const { pastilles, resto } = response;
+					const restoPastilleTab = [];
 
-				injectDataListMarkerRestoPastille(restoPastilleTab);
-			});
+					pastilles.forEach((item) => {
+						const restoPastille = resto.find((jtem) => parseInt(item.id_resto) === parseInt(jtem.id));
+						if (restoPastille) {
+							restoPastilleTab.push({
+								id: restoPastille.id,
+								name: restoPastille.denominationF,
+								depName: restoPastille.depName,
+								dep: restoPastille.dep,
+								logo_path: item.logo_path,
+								name_tribu_t_muable: item.name_tribu_t_muable,
+								tableName: item.tableName,
+							});
+						}
+					});
+
+					injectDataListMarkerRestoPastille(restoPastilleTab);
+				});
+		}
 
 		// this.default_data
 		// injectListMarker(restoPastilleTab);
@@ -5145,7 +5133,7 @@ class RubriqueCMZ extends MapCMZ {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 
 		if (!rubrique_type_object.is_have_favory) {
-			alertSwalFunctionNoteImplement();
+			this.alertSwalFunctionNoteImplement();
 			return false;
 		}
 
@@ -5171,6 +5159,14 @@ class RubriqueCMZ extends MapCMZ {
 		`;
 
 		rubrique_type_object.injecteListFavory(parent_content);
+	}
+
+	alertSwalFunctionNoteImplement() {
+		new swal(
+			"Cher partisan.",
+			"Cette fonctinnalité est en cours de développement, merci de votre compréhension.",
+			"info"
+		);
 	}
 
 	injecteListFavoryResto(parent_content, favori_folder_id = 0) {
