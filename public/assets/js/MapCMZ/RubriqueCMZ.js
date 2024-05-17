@@ -747,6 +747,37 @@ class RubriqueCMZ extends MapCMZ {
 		// this.addEventOnMap();
 	}
 
+	getNumberPerDepDataSearch() {
+		// const data = this.default_data.results[0];
+		let results = [];
+		for (let i = 0; i < 95; i++) {
+			let data_object = {};
+			this.allRubriques.forEach((item_rubrique) => {
+				const data = this.defaultData.hasOwnProperty(item_rubrique.api_name)
+					? this.defaultData[item_rubrique.api_name]["data"]
+					: [];
+
+				const count = data.reduce((c, item) => {
+					if (parseInt(item.dep) === i + 1) {
+						c = c + 1;
+					}
+					return c;
+				}, 0);
+
+				data_object[item_rubrique.api_name] = count;
+			});
+
+			results.push({
+				departement: i + 1 < 10 ? `0${i + 1}` : `${i + 1}`,
+				account_per_dep: Array.from(Object.keys(data_object)).reduce((s, i) => (s += data_object[i]), 0),
+				details: {
+					...data_object,
+				},
+			});
+		}
+		return results;
+	}
+
 	async addRubriqueActiveByDefault() {
 		//// get last last rubrique active in history.
 		const rubrique_active_history = getDataInSessionStorage("rubrique_active_history");
@@ -2710,7 +2741,7 @@ class RubriqueCMZ extends MapCMZ {
 						c = c + 1;
 					}
 					return c;
-				}, 0 ),
+				}, 0),
 			};
 		}
 
@@ -3141,6 +3172,7 @@ class RubriqueCMZ extends MapCMZ {
 
 	async addRubriqueMarker(rubrique_api_name) {
 		const response = await this.fetchDataRubrique(rubrique_api_name.toLowerCase());
+
 		const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
 
 		if (!this.defaultData.hasOwnProperty(rubrique_api_name)) {

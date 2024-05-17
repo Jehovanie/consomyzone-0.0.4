@@ -403,14 +403,13 @@ class MapCMZ {
 	async settingGeos() {
 		let number_etablisement = null;
 
-		const current_url = new URL(window.location.href);
-		if (current_url.href.includes("search")) {
-			const data = this.data.results[0];
+		if (this.is_search_mode) {
+			let data_length = 0;
 
 			number_etablisement = {
 				type: "search",
 				departement: "0",
-				total: data.length,
+				total: data_length,
 				nbr_etablisement_per_dep: this.getNumberPerDepDataSearch(),
 			};
 		} else {
@@ -521,6 +520,13 @@ class MapCMZ {
 				fillOpacity: 0,
 			},
 			onEachFeature: (feature, layer) => {
+				
+				if (feature.properties.hasOwnProperty("details")) {
+					if (feature.properties.details.hasOwnProperty("restaurant")) {
+						feature.properties.details["resto"] = feature.properties.details.restaurant;
+					}
+				}
+
 				const details_html =
 					feature.properties.hasOwnProperty("details") && feature.properties.details != null
 						? `
@@ -1486,13 +1492,13 @@ class MapCMZ {
 		///init map
 		await this.createMap();
 
-		////init geojson
-		await this.addGeoJsonToMap();
-
 		// create MarkerClusterGroup form POI and
 		// for count marker per dep, fetch data,
 		// add event on map
 		await this.onInitMarkerCluster();
+
+		////init geojson
+		await this.addGeoJsonToMap();
 
 		///add marker with text count etablisement per dep, inside the map.
 		await this.addCulsterNumberAtablismentPerDep();
