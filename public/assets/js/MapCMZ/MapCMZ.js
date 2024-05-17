@@ -529,6 +529,22 @@ class MapCMZ {
 					}
 				}
 
+				let information_user_conected = document.querySelector(".information_user_conected_jheo_js");
+
+				information_user_conected = true;
+
+				const add_new_feature = information_user_conected
+					? ` <hr class="mt-2 mb-1">
+						Nouveau POI
+						<span class="badge bg-light text-dark ms-1"
+						 	data-bs-toggle="modal" data-bs-target="#list_rubrique_for_new_poi"
+							onclick="injectListRubriqueTypeForNewPOI()"
+						>
+							<i class="fa-solid fa-circle-plus fa-fade"></i>
+						</span>
+					`
+					: "";
+
 				const details_html =
 					feature.properties.hasOwnProperty("details") && feature.properties.details != null
 						? `
@@ -546,6 +562,7 @@ class MapCMZ {
 						Département <span class="badge bg-info text-dark">${feature.properties.code} ${feature.properties.nom}</span></br>
 						Résultat trouvé <span class="badge bg-warning text-dark">${feature.properties.account_per_dep}</span> </br>
 						${details_html} 
+						${add_new_feature}
 					</button>
 				`;
 				layer.bindPopup(popupContent);

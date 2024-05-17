@@ -637,3 +637,14 @@ function alertSwalfunctionNoteImplement() {
 function removeInfoRubrique(element) {
 	element.parentElement.remove();
 }
+
+function trierTableau(tableau, key) {
+	// Séparer les éléments avec is_can_add_new_poi=true et is_can_add_new_poi=false
+	let trueElements = tableau.filter((element) => element[key] === true);
+	let falseElements = tableau.filter((element) => element[key] === false);
+
+	// Concaténer les deux listes (en mettant d'abord trueElements)
+	let sortedArray = trueElements.concat(falseElements);
+
+	return sortedArray;
+}

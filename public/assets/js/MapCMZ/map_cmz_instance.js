@@ -559,3 +559,11 @@ function afficherListeIcones() {
 function changeTiles(id_tiles) {
 	MAP_CMZ.changeTiles(id_tiles);
 }
+
+function injectListRubriqueTypeForNewPOI() {
+	MAP_CMZ.injectListRubriqueTypeForNewPOI();
+}
+
+function openModalAddNewPOI(rubrique_type) {
+	MAP_CMZ.openModalAddNewPOI(rubrique_type);
+}

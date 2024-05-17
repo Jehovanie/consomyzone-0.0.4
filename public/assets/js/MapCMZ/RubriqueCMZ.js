@@ -5,7 +5,7 @@ import MapCMZ from './MapCMZ'
 import { addRubriqueActivNavbar, removeRubriqueActivNavbar, calculeProgression,
 	injectFilterProduitStation, createStartNoteHtml, injectFilterProduitResto,
 	openDetailsContainer, injectBodyListMarkerRestoPastille,
-	injectListMarkerRestoPastilleAlertNonActive
+	injectListMarkerRestoPastilleAlertNonActive, trierTableau
 } "./map_cmz_fonction.js"
 
 import { addDataTableOnList, removeListNavLeftRubriqueType,
@@ -54,6 +54,7 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				is_active: false,
 				is_have_specific_filter: true,
+				is_can_add_new_poi: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -130,6 +131,7 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				is_active: false,
 				is_have_specific_filter: false,
+				is_can_add_new_poi: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -187,6 +189,7 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				is_active: false,
 				is_have_specific_filter: true,
+				is_can_add_new_poi: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -260,6 +263,7 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				is_active: false,
 				is_have_specific_filter: false,
+				is_can_add_new_poi: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -317,6 +321,7 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				is_active: false,
 				is_have_specific_filter: false,
+				is_can_add_new_poi: false,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -374,6 +379,7 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				is_active: false,
 				is_have_specific_filter: false,
+				is_can_add_new_poi: true,
 				filter: {
 					is_filtered: false,
 					departement: "tous",
@@ -3172,7 +3178,12 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	async addRubriqueMarker(rubrique_api_name) {
-		const response = await this.fetchDataRubrique(rubrique_api_name.toLowerCase());
+		let response = null;
+		if (!this.is_search_mode) {
+			response = await this.fetchDataRubrique(rubrique_api_name.toLowerCase());
+		} else {
+			response = await this.fetchDataRubriqueOnSearch(rubrique_api_name, this.search_options);
+		}
 
 		const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
 
@@ -5161,12 +5172,55 @@ class RubriqueCMZ extends MapCMZ {
 		rubrique_type_object.injecteListFavory(parent_content);
 	}
 
-	alertSwalFunctionNoteImplement() {
-		new swal(
-			"Cher partisan.",
-			"Cette fonctinnalité est en cours de développement, merci de votre compréhension.",
-			"info"
-		);
+	injectListRubriqueTypeForNewPOI() {
+		if (!document.querySelector(".list_rubrique_for_new_poi_jheo_js")) {
+			console.log("Selector not found : '.list_rubrique_for_new_poi_jheo_js'");
+			return false;
+		}
+		let list_rubrique = "";
+
+		const all_rubrique = trierTableau(this.allRubriques, "is_can_add_new_poi");
+
+		all_rubrique.forEach((item) => {
+			const icon_image = IS_DEV_MODE ? `/${item.icon}` : `/public/${item.icon}`;
+
+			list_rubrique += `
+				<li class="list-group-item">
+					<span class="d-flex justify-content-start align-items-center">
+						<img class="image_icon_rubrique" src="${icon_image}" alt="${item.name}_rubrique" />
+						<span class="${item.is_can_add_new_poi ? "hover_underline" : "hover_underline_gray"}" 
+							onclick="openModalAddNewPOI('${item.api_name}')">
+							Voir les favoris ${item.name}
+						</span>
+					</span>
+				</li>
+			`;
+		});
+
+		document.querySelector(".list_rubrique_for_new_poi_jheo_js").innerHTML = list_rubrique;
+	}
+
+	openModalAddNewPOI(rubrique_type) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+
+		if (!rubrique_type_object.is_can_add_new_poi) {
+			let message = `
+				Pour cette rubrique '${rubrique_type_object.name}', cette fonctionnalité n'est pas encore développée. Merci de votre compréhension.
+			`;
+
+			this.alertSwalFunctionNoteImplement(message);
+			return false;
+		}
+
+		alert("open modal for add poi marche...");
+	}
+
+	alertSwalFunctionNoteImplement(message = null) {
+		if (message === null) {
+			message = "Cette fonctinnalité est en cours de développement, merci de votre compréhension.";
+		}
+
+		new swal("Cher partisan.", message, "info");
 	}
 
 	injecteListFavoryResto(parent_content, favori_folder_id = 0) {
