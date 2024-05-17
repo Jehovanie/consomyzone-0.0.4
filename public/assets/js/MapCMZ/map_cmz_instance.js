@@ -8,13 +8,25 @@
 	import { } from "./lib.js"
 */
 
+let MAP_CMZ = null;
 
+const url_object_on_map_instance = new URL(window.location.href);
+if (url_object_on_map_instance.searchParams.has("cles0") && url_object_on_map_instance.searchParams.has("cles1")) {
+	const option = {
+		cles0: url_object_on_map_instance.searchParams.get("cles0"),
+		cles1: url_object_on_map_instance.searchParams.get("cles1"),
+	};
 
-const MAP_CMZ = new RubriqueCMZ();
+	MAP_CMZ = new RubriqueCMZ(option);
+} else {
+	MAP_CMZ = new RubriqueCMZ();
+}
+
+// const MAP_CMZ = new RubriqueCMZ();
 
 MAP_CMZ.initMap();
-MAP_CMZ.onInitMarkerCluster();
-MAP_CMZ.addCulsterNumberAtablismentPerDep();
+// MAP_CMZ.onInitMarkerCluster();
+// MAP_CMZ.addCulsterNumberAtablismentPerDep();
 
 function updateGeoJsonAdd(couche, index) {
 	MAP_CMZ.updateGeoJson(couche, index);
@@ -543,7 +555,6 @@ function afficherListeIcones() {
 }
 
 //// END DOCKABLE ///////
-
 
 function changeTiles(id_tiles) {
 	MAP_CMZ.changeTiles(id_tiles);

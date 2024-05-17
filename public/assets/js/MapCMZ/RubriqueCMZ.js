@@ -16,8 +16,19 @@ import { removeLoadingListFavory, } from "./favori_rubrique.js"
 
 */
 class RubriqueCMZ extends MapCMZ {
-	constructor() {
+	constructor(options = {}) {
 		super();
+
+		this.is_search_mode = false;
+
+		if (options && options.hasOwnProperty("cles0") && options.hasOwnProperty("cles1")) {
+			this.is_search_mode = true;
+			this.search_options = {
+				cles0: options.cles0,
+				cles1: options.cles1,
+			};
+		}
+
 		this.api_data = "/dataHome";
 
 		this.markers = null;
@@ -723,20 +734,20 @@ class RubriqueCMZ extends MapCMZ {
 	 * finaly add event on map like movestart, dragend, zoomend
 	 *
 	 */
-	onInitMarkerCluster() {
+	async onInitMarkerCluster() {
 		////create new marker Cluster for POI etablisment
 		this.createMarkersCluster();
 		////create new marker Cluster special for count per dep.
 		this.createMarkersClusterForCountPerDep();
 
 		///fetch data for all rubrique active
-		this.addRubriqueActiveByDefault();
+		await this.addRubriqueActiveByDefault();
 
-		///bind events on map ( movestart, dragend, zommend)
-		this.addEventOnMap();
+		// ///bind events on map ( movestart, dragend, zommend)
+		// this.addEventOnMap();
 	}
 
-	addRubriqueActiveByDefault() {
+	async addRubriqueActiveByDefault() {
 		//// get last last rubrique active in history.
 		const rubrique_active_history = getDataInSessionStorage("rubrique_active_history");
 
@@ -759,8 +770,8 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		});
 
-		////fetch data foreach rubrique active by default.
-		this.fetchDataIterator();
+		////fetch (call api) data foreach rubrique active by default.
+		await this.fetchDataIterator();
 	}
 
 	/**
@@ -777,11 +788,11 @@ class RubriqueCMZ extends MapCMZ {
 		setDataInSessionStorage("rubrique_active_history", JSON.stringify(new_rubrique_active_history));
 	}
 
-	fetchDataIterator() {
+	async fetchDataIterator() {
 		const default_rubrique_active = this.allRubriques.filter((item) => item.is_active === true);
 		const rubrique_iterator = default_rubrique_active[Symbol.iterator]();
 
-		this.fetchOriginDataItem(rubrique_iterator);
+		await this.fetchOriginDataItem(rubrique_iterator);
 	}
 
 	async fetchOriginDataItem(rubrique_iterator) {
@@ -791,7 +802,16 @@ class RubriqueCMZ extends MapCMZ {
 			const api_name = data_rubrique.api_name;
 			const isFirstResquest = data_rubrique.isFirstResquest;
 
-			const response = await this.fetchDataRubrique(api_name.toLowerCase(), { isFirstResquest, data_max: 50 });
+			let response = null;
+			if (!this.is_search_mode) {
+				response = await this.fetchDataRubrique(api_name.toLowerCase(), {
+					isFirstResquest,
+					data_max: 50,
+				});
+			} else {
+				response = await this.fetchDataRubriqueOnSearch(api_name.toLowerCase(), this.search_options);
+			}
+
 			const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
 
 			this.defaultData[api_name] = {
@@ -821,7 +841,7 @@ class RubriqueCMZ extends MapCMZ {
 
 			this.updateMapAddRubrique(api_name);
 
-			this.fetchOriginDataItem(rubrique_iterator);
+			await this.fetchOriginDataItem(rubrique_iterator);
 		} else {
 			this.bindActionToShowNavLeft();
 			this.countMarkerInCart();
@@ -978,7 +998,9 @@ class RubriqueCMZ extends MapCMZ {
 
 			this.updateMarkersDisplayForDragend(new_size);
 
-			this.addPeripheriqueMarker();
+			if (this.is_search_mode === false) {
+				this.addPeripheriqueMarker();
+			}
 		});
 	}
 
@@ -1002,7 +1024,9 @@ class RubriqueCMZ extends MapCMZ {
 
 			this.updateMarkersDisplayForZoomend(new_size);
 
-			this.addPeripheriqueMarker();
+			if (this.is_search_mode === false) {
+				this.addPeripheriqueMarker();
+			}
 		});
 	}
 
@@ -3014,6 +3038,14 @@ class RubriqueCMZ extends MapCMZ {
 		});
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal Fetch data from the api backend with the current bound map( min, max [ lat, long ])
+	 *
+	 * @param {*} rubrique_type type of the rubrique to fetch form data.
+	 * @param {*} options options specific like ( data_max [ number limit the data ])
+	 */
 	async fetchDataRubrique(rubrique_type, options = {}) {
 		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
 		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());
@@ -3033,6 +3065,36 @@ class RubriqueCMZ extends MapCMZ {
 
 		let link = `/fetch_data/${rubrique_type}?${param}`;
 
+		const request = new Request(link, {
+			method: "GET",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+		});
+
+		try {
+			const reponse = await fetch(request);
+			const data_response = await reponse.json();
+
+			return data_response;
+		} catch (e) {
+			console.log("ERROR : Data not fecting...");
+			return [];
+		}
+	}
+
+	async fetchDataRubriqueOnSearch(rubrique_type, options = {}) {
+		let param = "";
+		if (options && options.cles0) {
+			param = `${param}&cles0=${options.cles0}`;
+		}
+
+		if (options && options.cles1) {
+			param = `${param}&cles1=${options.cles1}`;
+		}
+
+		let link = `/fetch_data/search/${rubrique_type}?${param}`;
 		const request = new Request(link, {
 			method: "GET",
 			headers: {
@@ -5014,7 +5076,7 @@ class RubriqueCMZ extends MapCMZ {
 							onclick="openFavoryRubrique('${item.api_name}')">
 							Voir les favoris ${item.name}
 						</span>
-					</span
+					</span>
 				</li>
 			`;
 		});

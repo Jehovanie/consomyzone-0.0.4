@@ -785,6 +785,483 @@ class HomeController extends AbstractController
         ]);
     }
 
+    #[Route("/fetch_data/search/{type}" , name:"app_fetch_data_search" , methods: "GET")]
+    public function fetchDataSearch(
+        $type = null,
+        Request $request,
+        StationServiceFrGeomRepository $stationServiceFrGeomRepository,
+        FermeGeomRepository $fermeGeomRepository,
+        BddRestoRepository $bddRestoRepository,
+        SortResultService $sortResultService,
+        StringTraitementService $stringTraitementService,
+        UserRepository $userRepository,
+        TributGService $tributGService,
+        Tribu_T_Service $tribu_T_Service,
+        GolfFranceRepository $golfFranceRepository,
+        AvisGolfRepository $avisGolfRepository,
+        GolfFranceService $golfFranceService,
+        TabacRepository $tabacRepository,
+        MarcheRepository $marcheRepository,
+        RestaurantController $restaurantController,
+        AvisRestaurantRepository $avisRestaurantRepository,
+    ){
+        $origin_cles1= $request->query->get("cles1"); //// use for searching geojson API OpenStreetMap
+
+        $cles0 = $request->query->get("cles0") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles0"))) : "";
+        $cles1 = $request->query->get("cles1") ? $stringTraitementService->normalizedString($stringTraitementService->removeWhiteSpace($request->query->get("cles1"))) : "";
+        $page = $request->query->get("page") ? intval($request->query->get("page")) : 1 ;
+
+        $condition = ($cles0 === "station" || $cles0 === "ferme" || $cles0 === "restaurant" || $cles0 === "resto" || $cles0 === "tabac" || $cles0 === "golf" || $cles0 === "marche" || $cles0 === "tous"  );
+        $type= $condition ? $cles0: $type;
+        $cles0= $condition ? "": $cles0;
+
+        $size = 20;
+
+        $otherResult = false;
+        switch (strtolower($type)){
+            case "ferme":
+                $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                if(!count($ferme[0])>0){
+                    $ferme = $fermeGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                    $ferme0 = $sortResultService->getDataByCommune($ferme, $cles1, "ferme", $cles0);
+                        
+                    if(count($ferme0["data"])>0){
+                        $ferme[0] = $ferme0["data"];
+                        $ferme[1] = $ferme0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
+                }
+                
+                $results = $ferme;
+                break;
+
+            case "restaurant":
+                $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                if(!count($resto[0])>0){
+
+                    $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+
+                    $resto0 = $sortResultService->getDataByCommune($resto, $cles1, "restaurant", $cles0);
+                        
+                    if(count($resto0["data"])>0){
+                        $resto[0] = $resto0["data"];
+                        $resto[1] = $resto0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
+                
+                }
+                
+                if(count($resto) > 0){
+                    $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$resto[0]);
+                    $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+                    $resto[0] = $restaurantController->mergeDatasAndAvis($resto[0],$moyenneNote);
+                }
+
+                $results = $resto;
+
+                break;
+
+            case "marche":
+                $cles1= intval($cles1) === 0 ? $cles1 : intval($cles1);
+
+                $marche = $marcheRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                if(!count($marche[0])>0){
+
+                    $marche = $marcheRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+
+                    $marche0 = $sortResultService->getDataByCommune($marche, $cles1, "marche", $cles0);
+                        
+                    if(count($marche0["data"])>0){
+                        $marche[0] = $marche0["data"];
+                        $marche[1] = $marche0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
+                
+                }
+                $results = $marche;
+                break;
+
+            case "golf":
+                $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
+                if(!count($golf[0])>0){
+                    $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size, $userId);
+                    $golf0 = $sortResultService->getDataByCommune($golf, $cles1, "golf", $cles0);
+                        
+                    if(count($golf0["data"])>0){
+                        $golf[0] = $golf0["data"];
+                        $golf[1] = $golf0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
+                }
+
+                $ids_golf= array_map('App\Service\SortResultService::getIdFromData', $golf[0]);
+                $moyenne_golfs= $avisGolfRepository->getAllNoteById($ids_golf);
+                $golf[0] = $golfFranceService->mergeDatasAndAvis($golf[0], $moyenne_golfs);
+
+                $results = $golf;
+
+                break;
+
+            case "tabac":
+                $tabac = $tabacRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                if(!count($tabac[0])>0){
+                    $tabac = $tabacRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                    $tabac0 = $sortResultService->getDataByCommune($tabac, $cles1, "tabac", $cles0);
+                        
+                    if(count($tabac0["data"])>0){
+                        $tabac[0] = $tabac0["data"];
+                        $tabac[1] = $tabac0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
+                }
+                $results = $tabac;
+                break;
+
+            case "station":
+                $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                if(!count($station[0])>0){
+                    $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                    $station0 = $sortResultService->getDataByCommune($station, $cles1, "station", $cles0);
+                    if(count($station0["data"])>0){
+                        $station[0] = $station0["data"];
+                        $station[1] = $station0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
+                }
+                $results = $station;
+                break;
+
+            case "station service":
+                $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                if(!count($station[0])>0){
+                    $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                    $station0 = $sortResultService->getDataByCommune($station, $cles1, "station", $cles0);
+                    if(count($station0["data"])>0){
+                        $station[0] = $station0["data"];
+                        $station[1] = $station0["nombre"];
+                    }else{
+                        $otherResult = true;
+                    }
+                }
+                $results = $station;
+                break;
+
+            default:
+                //dd($cles0);
+                $otherResto = false;
+                $otherFerme = false;
+                $otherStation = false;
+                $otherGolf = false;
+                $otherTabac = false;
+
+                if($cles0 == "RESTO" || $cles0 == "RESTOS" || $cles0 == "RESTAURANT" || $cles0 == "RESTAURANTS"){
+                    $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($resto[0])>0){
+                        $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+
+                        $resto0 = $sortResultService->getDataByCommune($resto, $cles1, "restaurant");
+                        
+                        if(count($resto0["data"])>0){
+                            $resto[0] = $resto0["data"];
+                            $resto[1] = $resto0["nombre"];
+                        }else{
+                            $otherResto = true;
+                        }
+                    }
+
+                    if($otherResto){
+                        $otherResult = true;
+                    }
+
+                    if(count($resto) > 0){
+                        $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$resto[0]);
+                        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+                        $resto[0] = $restaurantController->mergeDatasAndAvis($resto[0],$moyenneNote);
+                    }
+
+                    $results[0] = array_merge($resto[0]);
+                    $results[1] = $resto[1];
+                }elseif($cles0 == "GOLF" || $cles0 == "GOLFS"){
+                    $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
+                    if(!count($golf[0])>0){
+                        $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size, $userId);
+                        $golf0 = $sortResultService->getDataByCommune($golf, $cles1, "golf");
+                        
+                        if(count($golf0["data"])>0){
+                            $golf[0] = $golf0["data"];
+                            $golf[1] = $golf0["nombre"];
+                        }else{
+                            $otherGolf = true;
+                        }
+                    }
+
+                    $ids_golf= array_map('App\Service\SortResultService::getIdFromData', $golf[0]);
+                    $moyenne_golfs= $avisGolfRepository->getAllNoteById($ids_golf);
+                    $golf[0] = $golfFranceService->mergeDatasAndAvis($golf[0], $moyenne_golfs);
+
+                    if($otherGolf){
+                        $otherResult = true;
+                    }
+
+                    $results[0] = array_merge($golf[0]);
+                    $results[1] = $golf[1];
+                }elseif($cles0 == "TABAC" || $cles0 == "TABACS"){
+                    $tabac = $tabacRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($tabac[0])>0){
+                        $tabac = $tabacRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $tabac0 = $sortResultService->getDataByCommune($tabac, $cles1, "tabac");
+                        
+                        if(count($tabac0["data"])>0){
+                            $tabac[0] = $tabac0["data"];
+                            $tabac[1] = $tabac0["nombre"];
+                        }else{
+                            $otherTabac = true;
+                        }
+                    }
+
+                    if($otherTabac){
+                        $otherResult = true;
+                    }
+
+                    $results[0] = array_merge($tabac[0]);
+                    $results[1] = $tabac[1];
+                }elseif($cles0 == "FERME" || $cles0 == "FERMES"){
+                    $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($ferme[0])>0){
+                        $ferme = $fermeGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $ferme0 = $sortResultService->getDataByCommune($ferme, $cles1, "ferme");
+                        
+                        if(count($ferme0["data"])>0){
+                            $ferme[0] = $ferme0["data"];
+                            $ferme[1] = $ferme0["nombre"];
+                        }else{
+                            $otherFerme = true;
+                        }
+                        
+                    }
+
+                    if($otherFerme){
+                        $otherResult = true;
+                    }
+
+                    $results[0] = array_merge($ferme[0]);
+                    $results[1] = $ferme[1];
+                }elseif($cles0 == "STATION" || $cles0 == "STATIONS" || $cles0 == "STATION SERVICE" || $cles0 == "STATIONS SERVICES") {
+                    $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($station[0])>0){
+                        $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        
+                        $station0 = $sortResultService->getDataByCommune($station, $cles1, "station");
+                        
+                        if(count($station0["data"])>0){
+                            $station[0] = $station0["data"];
+                            $station[1] = $station0["nombre"];
+                        }else{
+                            $otherStation = true;
+                        }
+                    }
+                    if($otherStation){
+                        $otherResult = true;
+                    }
+                    $results[0] = array_merge($station[0]);
+                    $results[1] = $station[1];
+                }elseif($cles0 == "MARCHE" || $cles0 == "MARCHES"){
+                    $cles1= intval($cles1);
+                    $marche = $marcheRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    $otherMarche= false;
+
+                    if(!count($marche[0])>0){
+                        $marche = $marcheRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $marche0 = $sortResultService->getDataByCommune($marche, $cles1, "marche", $cles0);
+                        if(count($marche0["data"])>0){
+                            $marche[0] = $marche0["data"];
+                            $marche[1] = $marche0["nombre"];
+                        }else{
+                            $otherMarche = true;
+                        }
+                    }
+
+                    if($otherMarche){
+                        $otherResult = true;
+                    }
+
+                    $results[0] = array_merge($marche[0]);
+                    $results[1] = $marche[1];
+                }else{
+
+                    $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($ferme[0])>0){
+                        $ferme = $fermeGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $ferme0 = $sortResultService->getDataByCommune($ferme, $cles1, "ferme", $cles0);
+                        
+                        if(count($ferme0["data"])>0){
+                            $ferme[0] = $ferme0["data"];
+                            $ferme[1] = $ferme0["nombre"];
+                        }else{
+                            $otherFerme = true;
+                        }
+                    }
+    
+                    $resto = $bddRestoRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    
+                    if(!count($resto[0])>0){
+
+                        $resto = $bddRestoRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+
+                        $resto0 = $sortResultService->getDataByCommune($resto, $cles1, "restaurant", $cles0);
+                        
+                        if(count($resto0["data"])>0){
+                            $resto[0] = $resto0["data"];
+                            $resto[1] = $resto0["nombre"];
+                        }else{
+                            $otherResto = true;
+                        }
+
+                    }
+
+                    if(count($resto) > 0){
+                        $ids=array_map('App\Controller\RestaurantController::getIdAvisResto',$resto[0]);
+                        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+                        $resto[0] = $restaurantController->mergeDatasAndAvis($resto[0],$moyenneNote);
+                    }
+
+                    $golf = $golfFranceRepository->getBySpecificClef($cles0, $cles1, $page, $size, $userId);
+                    if(!count($golf[0])>0){
+                        $golf = $golfFranceRepository->getBySpecificClefOther($cles0, $cles1, $page, $size, $userId);
+                        $golf0 = $sortResultService->getDataByCommune($golf, $cles1, "golf", $cles0);
+                        
+                        if(count($golf0["data"])>0){
+                            $golf[0] = $golf0["data"];
+                            $golf[1] = $golf0["nombre"];
+                        }else{
+                            $otherGolf = true;
+                        }
+                    }
+
+                    if( count($golf[0])>0 ){
+                        $ids_golf= array_map('App\Service\SortResultService::getIdFromData', $golf[0]);
+                        $moyenne_golfs= $avisGolfRepository->getAllNoteById($ids_golf);
+                        $golf[0] = $golfFranceService->mergeDatasAndAvis($golf[0], $moyenne_golfs);
+                    }
+
+
+                    $tabac = $tabacRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+                    if(!count($tabac[0])>0){
+                        $tabac = $tabacRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $tabac0 = $sortResultService->getDataByCommune($tabac, $cles1, "tabac", $cles0);
+                        if(count($tabac0["data"])>0){
+                            $tabac[0] = $tabac0["data"];
+                            $tabac[1] = $tabac0["nombre"];
+                        }else{
+                            $otherTabac = true;
+                        }
+                    }
+    
+                    $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
+
+                    if(!count($station[0])>0){
+                        $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $station0 = $sortResultService->getDataByCommune($station, $cles1, "station", $cles0);
+                        
+                        if(count($station0["data"])>0){
+                            $station[0] = $station0["data"];
+                            $station[1] = $station0["nombre"];
+                        }else{
+                            $otherStation = true;
+                        }
+                    }
+
+                    $temp_cles1=intval($cles1) === 0 ? $cles1 : intval($cles1);
+                    $marche = $marcheRepository->getBySpecificClef($cles0, $temp_cles1, $page, $size);
+                    $otherMarche= false;
+                    if(!count($marche[0])>0){
+                        $marche = $marcheRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
+                        $marche0 = $sortResultService->getDataByCommune($marche, $cles1, "marche", $cles0);
+                        if(count($marche0["data"])>0){
+                            $marche[0] = $marche0["data"];
+                            $marche[1] = $marche0["nombre"];
+                        }else{
+                            $otherMarche = true;
+                        }
+                    }
+
+                    $results[0] = [];
+
+                    $results[1] = 0;
+
+                    if(!$otherFerme || !$otherResto || !$otherStation || !$otherGolf || !$otherTabac || !$otherMarche){
+                        if(!$otherFerme){
+                            $results[0] = array_merge($ferme[0]);
+                            $results[1] = $ferme[1];
+                        }
+
+                        if(!$otherStation){
+                            $results[0] = array_merge($station[0], $results[0]);
+                            $results[1] += $station[1];
+                        }
+
+                        if(!$otherResto){
+                            $results[0] = array_merge($resto[0], $results[0]);
+                            $results[1] += $resto[1];
+                        }
+
+
+                        if(!$otherGolf){
+                            $results[0] = array_merge($golf[0], $results[0]);
+                            $results[1] += $golf[1];
+                        }
+
+                        if(!$otherTabac){
+                            $results[0] = array_merge($tabac[0], $results[0]);
+                            $results[1] += $tabac[1];
+                        }
+
+                        if(!$otherMarche){
+                            $results[0] = array_merge($marche[0], $results[0]);
+                            $results[1] += $marche[1];
+                        }
+
+                    }else{
+                        $results[0] = array_merge($resto[0] , $station[0], $ferme[0], $golf[0], $tabac[0], $marche[0]);
+                        $results[1] = $station[1] + $ferme[1] + $resto[1] + $golf[1] + $tabac[1] + $marche[1];
+                        $otherResult = true;
+                    }
+                }
+
+                $results[2] = "tous";
+
+                break;
+        }
+
+        ///// les resto pastille si l'utilisateur connecter
+        $arrayIdResto = [];
+        //// all my tribu t.
+        $tribu_t_owned = $userRepository->getListTableTribuT_owned(); /// [ [table_name => ..., name_tribu_t_muable => ..., logo_path => ...], ...]
+
+        //// description tribu T with ID restaurant pastille
+        $arrayIdResto = $tribu_T_Service->getEntityRestoPastilled($tribu_t_owned); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+
+        //// list resto pastille dans le tribu G
+        $restoPastilleInTribuG= $tributGService->getEntityRestoPastilled($this->getUser()); /// [ [ id_resto => ..., tableName => ..., name_tribu_t_muable => ..., logo_path => ...], ... ]
+        
+        $arrayIdResto= array_merge( $arrayIdResto, $restoPastilleInTribuG );
+
+        return $this->json([
+            "data" => $results[0],
+            "pastille" => $arrayIdResto,
+            "type" => $type,
+            "cles0" => $cles0,
+            "cles1" => $cles1,
+            "origin_cles1" => $origin_cles1
+        ], 200);
+    }
+
     #[Route("/api/get_one/{type}/{id}", name: "api_get_one_item", methods: "GET")]
     public function getOneItem(
         $type, $id,

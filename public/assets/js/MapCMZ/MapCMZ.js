@@ -38,20 +38,23 @@ class MapCMZ {
 
 		this.tales = null;
 
-		////default values but these distroy when we get the user position
 		this.id_dep = null;
 
+		////default values but these distroy when we get the user position
 		this.latitude = 46.61171462536897;
 		this.longitude = 1.8896484375000002;
+		this.zoom = 7;
+
 		/// the copy of the default value of lat and long
 		/// we use these for the function to reset the view to Paris overview.
 		this.defautLatitude = this.latitude;
 		this.defaultLongitude = this.longitude;
-		this.defaultZoom = 7;
 
+		this.defaultZoom = 7;
 		this.maxZoom = 19;
 
 		this.objectGeoJson = [];
+
 		// REFERENCES : https://gist.github.com/frankrowe/9007567
 		this.contourOption = [
 			{
@@ -98,14 +101,6 @@ class MapCMZ {
 		});
 
 		this.id_listTales_selected = this.listTales[0].id;
-	}
-
-	setLatLongForSpecDep(id_dep = null) {
-		if (id_dep) {
-			this.latitude = centers[this.id_dep].lat;
-			this.longitude = centers[this.id_dep].lng;
-			this.defaultZoom = centers[this.id_dep].zoom;
-		}
 	}
 
 	updateMemoryCenterInSession(lat, lng, zoom) {
@@ -259,50 +254,123 @@ class MapCMZ {
 		// this.bindEventMouseOverOnMap();
 	}
 
-	async createMap(lat = null, long = null, zoom = null) {
-		if (lat != null && long != null && zoom != null) {
-			this.latitude = lat;
-			this.longitude = long;
-			this.defaultZoom = zoom;
-
-			this.updateMemoryCenterInSession(lat, long, zoom);
-		}
-		/// if there is departementSpecified
-		this.setLatLongForSpecDep(this.id_dep);
-
+	/**
+	 * @author Jehovanie RAMANDIRJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal initialize the process around the map ( tiles, zooom, leaflet control)
+	 *
+	 */
+	async createMap() {
 		this.initTales();
 
 		const memoryCenter = this.getDataMemoryCenterInSession("memoryCenter");
 
-		// si on est dans une departement specifique, ou on est dans le recherch, et memory Center est vide...
+		this.zoom = memoryCenter ? memoryCenter.zoom : this.defaultZoom;
 
-		let map_zoom = 0;
-		if (this.id_dep) {
-			map_zoom = this.defaultZoom;
-		} else if (lat && long && zoom) {
-			map_zoom = zoom;
-		} else if (memoryCenter) {
-			map_zoom = memoryCenter.zoom;
-		} else {
-			map_zoom = this.defaultZoom;
+		if (this.is_search_mode) {
+			/// get relative position from search key word
+			await this.getRelatedLatitudeAndLongitude();
 		}
 
 		this.map = L.map("map", {
 			zoomControl: false,
 			center:
-				this.id_dep || (lat != null && long != null && zoom != null) || !memoryCenter
-					? L.latLng(this.latitude, this.longitude)
-					: L.latLng(memoryCenter.coord.lat, memoryCenter.coord.lng),
+				memoryCenter && !this.is_search_mode
+					? L.latLng(memoryCenter.coord.lat, memoryCenter.coord.lng)
+					: L.latLng(this.latitude, this.longitude),
 
-			zoom: map_zoom,
+			zoom: this.zoom,
 			layers: [this.tiles],
 		});
 
-		this.lastNiveauZoomAction = map_zoom;
+		this.lastNiveauZoomAction = this.zoom;
 
 		this.leafletAddControl("topright");
+	}
 
-		// this.handleEventOnMap();
+	async getRelatedLatitudeAndLongitude() {
+		if (!this.is_search_mode) {
+			return false;
+		}
+
+		try {
+			let data_origin_cle1 = this.search_options.cles1.trim();
+			if (
+				(data_origin_cle1.length < 3 && parseInt(data_origin_cle1) > 0 && parseInt(data_origin_cle1) < 95) ||
+				data_origin_cle1.toLowerCase() === "nord"
+			) {
+				const depCode = data_origin_cle1.toLowerCase() === "nord" ? 59 : parseInt(data_origin_cle1);
+
+				this.latitude = centers[depCode].lat;
+				this.longitude = centers[depCode].lng;
+				this.zoom = centers[depCode]["zoom"];
+			} else {
+				const dataLink = [
+					{
+						regex: /(([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ'.]*\s)\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)*,)*\d*(\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+\s([\d]{5})\s[a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']+/gm,
+						clesType: "completAdresss",
+						zoom: 17,
+						link: `https://nominatim.openstreetmap.org/?addressdetails=1&q=${data_origin_cle1}&format=json&limit=1`,
+					},
+					{
+						regex: /[\d]{5}/g,
+						clesType: "codepostal",
+						zoom: 13,
+						link: `https://nominatim.openstreetmap.org/search?format=json&postalcode=${data_origin_cle1}&country=France&limit=1`,
+					},
+					{
+						regex: /([a-zA-Z-éÉèÈàÀùÙâÂêÊîÎôÔûÛïÏëËüÜçÇæœ']*)+/g,
+						clesType: "city",
+						zoom: 13,
+						link: `https://nominatim.openstreetmap.org/search?format=json&city=${data_origin_cle1}&country=France&limit=1`,
+					},
+				];
+
+				let useLink = dataLink.find((item) => item.regex.test(data_origin_cle1));
+				const apiOpenStreetMap = useLink ? useLink.link : dataLink[0]["link"];
+
+				let responsePos = await fetch(apiOpenStreetMap);
+				let response_adress = await responsePos.json();
+
+				if (response_adress.length === 0) {
+					responsePos = await fetch(dataLink[0]["link"]);
+					response_adress = await responsePos.json();
+
+					if (response_adress.length === 0) {
+						let cleWord = data_origin_cle1.replaceAll("-", " ").replaceAll("_", " ").split(" ").reverse();
+
+						var matches = data_origin_cle1.match(/\d{5}/);
+
+						if (matches !== null) {
+							const link = `https://nominatim.openstreetmap.org/search?format=json&postalcode=${matches[0]}&country=France&limit=1`;
+
+							responsePos = await fetch(link);
+							response_adress = await responsePos.json();
+						} else {
+							for (let i = 0; i < cleWord.length; i++) {
+								const cle = cleWord[i];
+								const link = `https://nominatim.openstreetmap.org/search?format=json&city=${cle}&country=France&limit=1`;
+
+								responsePos = await fetch(link);
+								response_adress = await responsePos.json();
+
+								if (response_adress.length !== 0) {
+									break;
+								}
+							}
+						}
+					}
+				}
+
+				const address = response_adress[0];
+
+				this.latitude = address.lat;
+				this.longitude = address.lon;
+				this.zoom = useLink ? useLink.zoom : dataLink[0]["zoom"];
+			}
+		} catch (e) {
+			console.log(e);
+		}
 	}
 
 	updateCenter(lat, long, zoom) {
@@ -327,7 +395,7 @@ class MapCMZ {
 	 * @returns list object { departement: , nbr_etablisement_per_dep: [ { departement: ...,  account_per_dep: ... }, ... ], type: ... }
 	 */
 	async fetchMarkerPerDep() {
-		const response = await fetch(`/number_etablisement/tous/${this.id_dep ? this.id_dep : "0"}`);
+		const response = await fetch(`/number_etablisement/tous/0`);
 		const responseJson = await response.json();
 		return responseJson;
 	}
@@ -427,6 +495,12 @@ class MapCMZ {
 		return geos;
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal get and add geosJson on Map (details per departement)
+	 *
+	 */
 	async addGeoJsonToMap() {
 		if (!this.map) {
 			console.log("Map not initialized");
@@ -1095,20 +1169,12 @@ class MapCMZ {
 		});
 	}
 
-	///bind and add control on the right side of the map
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal bind and add control on the right and the left side of the map
+	 */
 	bindOtherControles() {
-		let favory_rubrique = "";
-		if (this.mapForType === "resto" || this.mapForType === "tous") {
-			favory_rubrique = `
-				${this.createBtnControl(
-					"favoris_elie_js",
-					"fa-regular fa-bookmark",
-					"btn btn-dark p-3 pt-1 pb-1",
-					"Mes favoris géographiques."
-				)}
-			`;
-		}
-
 		let htmlControlBottomLeft = `
             ${this.createBtnControl(
 				"tiles_type_jheo_js",
@@ -1118,6 +1184,7 @@ class MapCMZ {
 				"bootomright"
 			)}
 		`;
+
 		// ${this.createBtnControl(
 		// 	"cart_after_jheo_js",
 		// 	"fa-solid fa-forward fa-fade cart_after_jheo_js",
@@ -1394,14 +1461,14 @@ class MapCMZ {
 
 	/**
 	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
-	 * 
+	 *
 	 * @goal Create map leaflet; add json
-	 * 
-	 * @param {*} lat 
-	 * @param {*} long 
-	 * @param {*} zoom 
+	 *
+	 * @param {*} lat
+	 * @param {*} long
+	 * @param {*} zoom
 	 */
-	async initMap(lat = null, long = null, zoom = null) {
+	async initMap() {
 		const content_map = document.querySelector(".cart_map_js");
 
 		if (document.querySelector("#toggle_chargement")) {
@@ -1417,10 +1484,21 @@ class MapCMZ {
 		}
 
 		///init map
-		await this.createMap(lat, long, zoom);
+		await this.createMap();
 
 		////init geojson
 		await this.addGeoJsonToMap();
+
+		// create MarkerClusterGroup form POI and
+		// for count marker per dep, fetch data,
+		// add event on map
+		await this.onInitMarkerCluster();
+
+		///add marker with text count etablisement per dep, inside the map.
+		await this.addCulsterNumberAtablismentPerDep();
+
+		///bind events on map ( movestart, dragend, zommend)
+		this.addEventOnMap();
 
 		///inject event to save memoir zoom
 		this.settingMemoryCenter();
@@ -1431,9 +1509,8 @@ class MapCMZ {
 		//// prepare right container
 		this.createRightSideControl();
 
+		//// prepare bottom container
 		this.createBottomSideControl();
-
-		this.addEventOnMap();
 	}
 
 	addEventOnMap() {
