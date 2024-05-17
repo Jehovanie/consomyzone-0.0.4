@@ -2367,6 +2367,16 @@ class RubriqueCMZ extends MapCMZ {
 		}
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal Action common filter ( note, departement )
+	 *
+	 * @param {*} rubrique_type
+	 * @param {*} rubrique_item
+	 *
+	 * @returns
+	 */
 	checkIsMuchOnFilterCommon(rubrique_type, rubrique_item) {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 		const { filter } = rubrique_type_object;
@@ -2681,18 +2691,33 @@ class RubriqueCMZ extends MapCMZ {
 		/// -----------------------
 
 		//// fetch new data and update the data global
-		const spec_data_by_filter = await this.fetchSpecifiDataByFilterOptions(rubrique_type);
+		let spec_data_by_filter = null;
+		if (this.is_search_mode === false) {
+			spec_data_by_filter = await this.fetchSpecifiDataByFilterOptions(rubrique_type);
 
-		this.defaultData[rubrique_type]["data"] = mergeArraysUnique(
-			this.defaultData[rubrique_type]["data"],
-			spec_data_by_filter["data"],
-			"id"
-		);
+			this.defaultData[rubrique_type]["data"] = mergeArraysUnique(
+				this.defaultData[rubrique_type]["data"],
+				spec_data_by_filter["data"],
+				"id"
+			);
+		} else {
+			spec_data_by_filter = {
+				data: this.defaultData[rubrique_type]["data"].filter((i) =>
+					rubrique_type_object.checkIsMuchOnFilter(i)
+				),
+				count: this.defaultData[rubrique_type]["data"].reduce((c, i) => {
+					if (rubrique_type_object.checkIsMuchOnFilter(i)) {
+						c = c + 1;
+					}
+					return c;
+				}, 0 ),
+			};
+		}
 
 		//// update data globally.
 
 		/////update btn ////
-		const nbr_result = spec_data_by_filter.hasOwnProperty("count") ? spec_data_by_filter["count"] : 987;
+		const nbr_result = spec_data_by_filter.hasOwnProperty("count") ? spec_data_by_filter["count"] : 0;
 
 		document.querySelector(".content_body_filter_jheo_js").insertAdjacentHTML(
 			"beforeend",
