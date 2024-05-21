@@ -30,8 +30,6 @@ class RubriqueCMZ extends MapCMZ {
 			};
 		}
 
-		this.api_data = "/dataHome";
-
 		this.markers = null;
 		this.markerClusterForCounterPerDep = null;
 
@@ -46,6 +44,35 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Restaurant",
 				api_name: "restaurant",
+				dico_name: [
+					"restaurant",
+					"resto",
+					"Café",
+					"Bistro",
+					"Brasserie",
+					"Tavern",
+					"Bar",
+					"Pub",
+					"Diner",
+					"Boulangerie",
+					"Buvette",
+					"Cantine",
+					"Crêperie",
+					"Trattoria",
+					"Gastropub",
+					"Pâtisserie",
+					"Taverne",
+					"Resto",
+					"Table d'hôte",
+					"Buffet",
+					"Fast-food",
+					"Food-truck",
+					"Guinguette",
+					"Rotisserie",
+					"Kiosque",
+					"Traiteur",
+					"pizzeria",
+				],
 				icon: "assets/icon/NewIcons/mini_logo_resto_selected.png",
 				isFirstResquest: true,
 				poi_icon: {
@@ -126,6 +153,7 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Ferme",
 				api_name: "ferme",
+				dico_name: ["ferme"],
 				icon: "assets/icon/NewIcons/mini_logo_ferme_selected.png",
 				isFirstResquest: true,
 				poi_icon: {
@@ -187,6 +215,7 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Station",
 				api_name: "station",
+				dico_name: ["station service", "station"],
 				icon: "assets/icon/NewIcons/mini_logo_station.png",
 				isFirstResquest: true,
 				poi_icon: {
@@ -264,6 +293,42 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Golf",
 				api_name: "golf",
+				dico_name: [
+					"golf",
+					"Terrain de golf",
+					"Club de golf",
+					"Parcours de golf",
+					"Green",
+					"Fairway",
+					"Rough",
+					"Bunker",
+					"Putting green",
+					"Driving range",
+					"Pitch and putt",
+					"Compact",
+					"Links",
+					"Mini-golf",
+					"Mini golf",
+					"Golf indoor",
+					"Simulateur de golf",
+					"Practice",
+					"Pro shop",
+					"Caddy",
+					"Cart de golf",
+					"Tournoi de golf",
+					"Ryder Cup",
+					"Open de golf",
+					"Swing",
+					"Approche",
+					"Putt",
+					"Handicap",
+					"Balles de golf",
+					"Clubs de golf",
+					"Tee de départ",
+					"Foursome",
+					"Handicap de golf",
+					"Cadet de golf",
+				],
 				icon: "assets/icon/NewIcons/mini_logo_golf_selected.png",
 				isFirstResquest: true,
 				poi_icon: {
@@ -325,6 +390,7 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Tabac",
 				api_name: "tabac",
+				dico_name: ["tabac"],
 				icon: "assets/icon/NewIcons/mini_logo_tabac_selected.png",
 				isFirstResquest: true,
 				poi_icon: {
@@ -386,6 +452,7 @@ class RubriqueCMZ extends MapCMZ {
 			{
 				name: "Marché",
 				api_name: "marche",
+				dico_name: ["marché", "marche"],
 				icon: "assets/icon/NewIcons/mini_logo_marche_selected.png",
 				isFirstResquest: true,
 				poi_icon: {
@@ -648,14 +715,10 @@ class RubriqueCMZ extends MapCMZ {
 			*/
 		];
 
-		const rubrique_active_default = [
-			"restaurant",
-			// "ferme",
-			// "station",
-			// "golf",
-			// "tabac",
-			// "marche"
-		];
+		////this variable is for setting default rubrique active,
+		/// but this action is overridden when 'rubrique_active_history' value exist in
+		/// the session storage.
+		const rubrique_active_default = ["restaurant", "ferme", "station", "golf", "tabac", "marche"];
 
 		this.allRubriques = this.allRubriques.map((item_allRubriques) => {
 			if (rubrique_active_default.includes(item_allRubriques.api_name)) {
@@ -813,11 +876,20 @@ class RubriqueCMZ extends MapCMZ {
 			this.allRubriques = this.allRubriques.map((item) => {
 				item.is_active = history[item.api_name]["is_active"];
 
+				if (this.is_search_mode) {
+					let tab = item.dico_name.map((i) => i.toLowerCase());
+					if (tab.includes(this.search_options["cles0"].toLowerCase())) {
+						item.is_active = true;
+					} else {
+						item.is_acitve = false;
+					}
+				}
+
 				return item;
 			});
-		} else {
-			this.updateRubriqueActiveHistory();
 		}
+
+		this.updateRubriqueActiveHistory();
 
 		///add rubrique active on the nav bar (in map_cmz_fonction.js)
 		this.allRubriques.forEach((item) => {
@@ -1948,22 +2020,6 @@ class RubriqueCMZ extends MapCMZ {
 		}
 
 		// this.addEventMapOnZoomend();
-	}
-
-	async initData() {
-		let param = "";
-
-		if (!!this.map) {
-			const new_size = this.getBoundsWestEastNorthSouth();
-			const { minx, miny, maxx, maxy } = new_size;
-
-			param = `?minx=${encodeURIComponent(minx)}&miny=${encodeURIComponent(miny)}
-					&maxx=${encodeURIComponent(maxx)}&maxy=${encodeURIComponent(maxy)}&isFirstResquest=true`;
-		}
-
-		//// api get all data from server and return objects
-		const response = await fetch(`${this.api_data}${param}`);
-		//// api get all data from server;
 	}
 
 	/**

@@ -1644,6 +1644,12 @@ class MapCMZ {
 		return max < min ? { max: min, min: max } : { max: max, min: min };
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal Get bound coordinates of the map
+	 *
+	 */
 	getBoundsWestEastNorthSouth() {
 		const x = this.getMax(this.map.getBounds().getWest(), this.map.getBounds().getEast());
 		const y = this.getMax(this.map.getBounds().getNorth(), this.map.getBounds().getSouth());

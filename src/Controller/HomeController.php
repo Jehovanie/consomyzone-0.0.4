@@ -817,6 +817,8 @@ class HomeController extends AbstractController
 
         $size = 20;
 
+        $userId= $this->getUser() ? $this->getUser()->getId() : null;
+
         $otherResult = false;
         switch (strtolower($type)){
             case "ferme":

@@ -18,7 +18,36 @@
 						</a>
 					</figcaption>
 				</div>
+				<div class="content_all_action mt-2 mb-2">
+					<div class="d-flex justify-content-center align-items-stretch flex-gap-2">
+					
+						<button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary " 
+							data-bs-toggle="tooltip" data-bs-placement="top" 
+							title="Veuillez vous connecter, pour envoyer votre avis." onclick="openSwalNonActif()">
+							Donner votre avis
+						</button>
 
+						{% if app.user %}
+							{% if ( details.status is not defined ) or ( details.status is defined and details.status is same as(1) ) %}
+								<button type="button" class="btn btn-primary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement" onclick="editPOIMarche({{details.id}})">
+									<i class="fa-solid fa-pen-to-square fa-fade cursor-pointer"></i>
+								</button>
+							{% else %}
+								<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement" onclick="openSwalWaitValidation()">
+									<i class="bi bi-pencil-square"></i>
+								</button>
+							{% endif %}
+						{% else %}
+							<button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="tooltip" data-bs-placement="top" title="Modifier votre établissement" onclick="openSwalActif()">
+								<i class="bi bi-pencil-square"></i>
+							</button>
+						{% endif %}
+
+						<button type="button" class="btn btn-secondary btn-sm ms-2" onclick="openSwalNonActif()">
+							<i class="fa-regular fa-star"></i>
+						</button>
+					</div>
+				</div>
 				{# <div class="content_all_action mt-2 mb-2">
 					<div  class="d-flex justify-content-center align-items-stretch flex-gap-2">
 						<span>
