@@ -108,7 +108,7 @@ function addRubriqueActivNavbar(object_rubrique) {
 	const { name, icon, api_name } = object_rubrique;
 	const key_name = name.trim().split(" ").join("_");
 	const rubrique = `
-		<button id="ID_nav_${key_name}_jheo_js" type="button" 
+		<button id="ID_nav_${api_name}_jheo_js" type="button" 
 			class="position-relative btn btn-light btn-sm me-1 rounded-pill d-flex justify-content-center align-items-center"
 			onclick="openRubriqueFilter('${api_name}')"
 		>
@@ -117,7 +117,7 @@ function addRubriqueActivNavbar(object_rubrique) {
 			>
 				Filtre
 			</span>
-			<img class="image_icon_rubrique" style="border:none!important" src="${icon}" alt="nav_${key_name}_rubrique" />
+			<img class="image_icon_rubrique" style="border:none!important" src="${icon}" alt="nav_${api_name}_rubrique" />
 			${name}
 		</button>
 	`;
@@ -141,7 +141,7 @@ function addRubriqueActivNavbar(object_rubrique) {
  */
 function removeRubriqueActivNavbar(name) {
 	if (document.querySelector(".content_list_rubrique_active_jheo_js")) {
-		const key_name = name.trim().split(" ").join("_");
+		const key_name = name;
 		const index_deleted = $(`#ID_nav_${key_name}_jheo_js`).index();
 
 		/// in lib.js

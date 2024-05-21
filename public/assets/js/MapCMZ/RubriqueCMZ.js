@@ -2038,7 +2038,7 @@ class RubriqueCMZ extends MapCMZ {
 
 		btn_action = `
 			${btn_action}
-			<button type="button" class="btn btn-secondary btn-sm" onclick="closeRightSide()">Ferme</button>
+			<button type="button" class="btn btn-secondary btn-sm" onclick="closeRightSide()">Fermer</button>
 		`;
 
 		document.querySelector(".content_right_side_body_jheo_js").innerHTML = `
@@ -2105,47 +2105,17 @@ class RubriqueCMZ extends MapCMZ {
 				btn_rubrique.classList.toggle("btn-light");
 				btn_rubrique.classList.toggle("btn-primary");
 
-				const rubrique_type = btn_rubrique.getAttribute("data-type");
-				const rubrique_clicked = this.allRubriques.find((item) => item.name === rubrique_type);
-
 				const rubrique_api_name = btn_rubrique.getAttribute("data-api_name");
 
+				const rubrique_clicked = this.allRubriques.find((item) => item.api_name === rubrique_api_name);
+
 				if (rubrique_clicked.is_active === true) {
-					this.allRubriques = [
-						...this.allRubriques.map((item) => {
-							if (item.name === rubrique_type) {
-								item.is_active = false;
-							}
-							return item;
-						}),
-					];
-
-					///remove rubrique active on the nav bar (in map_cmz_fonction.js)
-					removeRubriqueActivNavbar(rubrique_type);
-
-					this.removeRubriqueMarker(rubrique_api_name);
+					this.disableRubrique(rubrique_api_name);
 
 					btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js").remove();
 					btn_rubrique.querySelector(".tooltip_rubrique_filter_jheo_js").remove();
-
-					//// remove card list on the left.
-					removeListNavLeftRubriqueType(rubrique_api_name);
 				} else {
-					this.allRubriques = [
-						...this.allRubriques.map((item) => {
-							if (item.name === rubrique_type) {
-								item.is_active = true;
-							}
-							return item;
-						}),
-					];
-
-					///add rubrique active on the nav bar (in map_cmz_fonction.js)
-					addRubriqueActivNavbar(
-						this.allRubriques.find((item) => item.api_name === rubrique_api_name.toLowerCase())
-					);
-
-					this.addRubriqueMarker(rubrique_api_name);
+					this.activeRubrique(rubrique_api_name);
 
 					if (!btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js")) {
 						btn_rubrique.insertAdjacentHTML(
@@ -2241,6 +2211,55 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			});
 		});
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal to active one rubrique ( add on nav bar and fetch data related )
+	 *
+	 * @param {*} rubrique_api_name
+	 */
+	activeRubrique(rubrique_api_name) {
+		this.allRubriques = [
+			...this.allRubriques.map((item) => {
+				if (item.api_name === rubrique_api_name) {
+					item.is_active = true;
+				}
+				return item;
+			}),
+		];
+
+		///add rubrique active on the nav bar (in map_cmz_fonction.js)
+		addRubriqueActivNavbar(this.allRubriques.find((item) => item.api_name === rubrique_api_name.toLowerCase()));
+
+		this.addRubriqueMarker(rubrique_api_name);
+	}
+
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 *
+	 * @goal to remove one rubrique (remove all action related on it)
+	 *
+	 * @param {*} rubrique_api_name
+	 */
+	disableRubrique(rubrique_api_name) {
+		this.allRubriques = [
+			...this.allRubriques.map((item) => {
+				if (item.api_name === rubrique_api_name) {
+					item.is_active = false;
+				}
+				return item;
+			}),
+		];
+
+		///remove rubrique active on the nav bar (in map_cmz_fonction.js)
+		removeRubriqueActivNavbar(rubrique_api_name);
+
+		this.removeRubriqueMarker(rubrique_api_name);
+
+		//// remove card list on the left.
+		removeListNavLeftRubriqueType(rubrique_api_name);
 	}
 
 	/**
