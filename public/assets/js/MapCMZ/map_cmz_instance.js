@@ -567,3 +567,7 @@ function injectListRubriqueTypeForNewPOI() {
 function openModalAddNewPOI(rubrique_type) {
 	MAP_CMZ.openModalAddNewPOI(rubrique_type);
 }
+
+function addPendingDataMarche(data) {
+	MAP_CMZ.addPendingDataMarche(data);
+}

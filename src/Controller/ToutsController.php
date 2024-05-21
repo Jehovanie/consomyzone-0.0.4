@@ -5,49 +5,39 @@
 namespace App\Controller;
 
 
-
-use App\Service\Status;
-
-use App\Entity\Consumer;
-use App\Entity\Supplier;
-
-use App\Service\MessageService;
-use App\Service\TributGService;
-
-use App\Service\Tribu_T_Service;
-
-use App\Repository\UserRepository;
-
-use App\Service\GolfFranceService;
-
-use App\Entity\AdressIpAndPosition;
-
-use App\Repository\TabacRepository;
-
-use App\Repository\MarcheRepository;
-
-use App\Repository\CodeapeRepository;
-
-use App\Repository\AvisGolfRepository;
-
-use App\Repository\BddRestoRepository;
-
-use App\Repository\FermeGeomRepository;
-
-use App\Controller\RestaurantController;
-
-use App\Repository\GolfFranceRepository;
-
-use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\DepartementRepository;
-use App\Repository\AvisRestaurantRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use App\Repository\AdressIpAndPositionRepository;
-use App\Repository\StationServiceFrGeomRepository;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Entity\Consumer;
+use App\Entity\Supplier;
+use App\Entity\AdressIpAndPosition;
+
+use App\Service\Status;
+use App\Service\MessageService;
+use App\Service\TributGService;
+use App\Service\Tribu_T_Service;
+use App\Service\GolfFranceService;
+
+use App\Repository\UserRepository;
+use App\Repository\TabacRepository;
+use App\Repository\MarcheRepository;
+use App\Repository\CodeapeRepository;
+use App\Repository\AvisGolfRepository;
+use App\Repository\BddRestoRepository;
+use App\Repository\FermeGeomRepository;
+use App\Repository\GolfFranceRepository;
+use App\Repository\DepartementRepository;
+use App\Repository\AvisRestaurantRepository;
+use App\Repository\AdressIpAndPositionRepository;
+use App\Repository\StationServiceFrGeomRepository;
+
+
+use App\Controller\RestaurantController;
 
 
 

@@ -91,6 +91,8 @@ class MapCMZ {
 		this.isRightSideAlreadyOpen = false;
 
 		this.nbr_etablisement_per_dep = [];
+
+		this.lastLatLngOnClick = { depCode: null, depName: null, lat: 0.0, lng: 0.0 };
 	}
 
 	initTales() {
@@ -566,8 +568,23 @@ class MapCMZ {
 					</button>
 				`;
 				layer.bindPopup(popupContent);
+				layer.on({
+					click: (e) => {
+						const properties = e.target.feature.properties;
+						this.saveLatLongOnClick(properties.code, properties.nom, e.latlng.lng, e.latlng.lat);
+					},
+				});
 			},
 		}).addTo(this.map);
+	}
+
+	saveLatLongOnClick(depCode, depName, latitude, longitude) {
+		this.lastLatLngOnClick = {
+			depCode,
+			depName,
+			lat: latitude,
+			lng: longitude,
+		};
 	}
 
 	/**

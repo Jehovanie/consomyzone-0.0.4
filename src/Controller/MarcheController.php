@@ -2,18 +2,27 @@
 
 namespace App\Controller;
 
-use App\Service\Status;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Service\MessageService;
-use App\Service\TributGService;
-use App\Repository\UserRepository;
-
-use App\Repository\MarcheRepository;
-use App\Service\PDOConnexionService;
-use App\Repository\DepartementRepository;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Service\MessageService;
+use App\Service\MailService;
+use App\Service\TributGService;
+use App\Service\PDOConnexionService;
+use App\Service\Status;
+
+use App\Entity\MarcheUserModification;
+
+use App\Repository\UserRepository;
+use App\Repository\MarcheBackupRepository;
+use App\Repository\MarcheUserModificationRepository;
+use App\Repository\MarcheRepository;
+use App\Repository\DepartementRepository;
+
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class MarcheController extends AbstractController
@@ -269,5 +278,141 @@ class MarcheController extends AbstractController
         return $this->json([
             "data" => $datas
         ], 200);
+    }
+
+    #[Route("/marche/add_new_element", name: "app_add_new_element", methods: ["POST"])]
+    public function apiAddNewMarche(
+        Request $request,
+        MarcheUserModificationRepository $marcheUserModifyRepository,
+        EntityManagerInterface $entityManagerInterface,
+        MailService $mailService,
+        UserRepository $userRepository
+    ) {
+        $data = json_decode($request->getContent(), true);
+
+        $current_user = $this->getUser();
+
+        $new_marche_add = new MarcheUserModification();
+
+        $datetime = new \DateTime();
+        $datetime = $datetime->format('Y-m-d H:i:s');
+
+        $new_marche_add->setDenominationF($data["denomination_f"])
+            ->setClenum("")
+            ->setAdresse($data["address"])
+            ->setCodpost($data["code_postal"])
+            ->setVillenorm("")
+            ->setSpecificite($data["specificite"])
+            ->setJourDeMarche1($data["jour_de_marche_1"])
+            ->setPoiX($data["latitude"])
+            ->setPoiY($data["longitude"])
+            ->setCommune($data["commune"])
+            ->setCodinsee("")
+            ->setPoiQualitegeorue("")
+            ->setDcomiris("")
+            ->setDep($data["departement"])
+            ->setDateData("")
+            ->setDateInser($datetime)
+            ->setUserId($current_user)
+            ->setAction("Ajouter")
+            ->setStatus(0)
+            ->setIsDeleted(0)
+            ->setTraiter(0)
+            ->setDateValidation(new \DateTime("now"))
+        ;
+
+        if (array_key_exists("jour_de_marche_2", $data)) {
+            $new_marche_add->setJourDeMarche2($data["jour_de_marche_2"]);
+        }
+
+        if (array_key_exists("jour_de_marche_3", $data)) {
+            $new_marche_add->setJourDeMarche3($data["jour_de_marche_3"]);
+        }
+
+        if (array_key_exists("jour_de_marche_4", $data)) {
+            $new_marche_add->setJourDeMarche4($data["jour_de_marche_4"]);
+        }
+
+        if (array_key_exists("jour_de_marche_5", $data)) {
+            $new_marche_add->setJourDeMarche5($data["jour_de_marche_5"]);
+        }
+
+        if (array_key_exists("jour_de_marche_6", $data)) {
+            $new_marche_add->setJourDeMarche6($data["jour_de_marche_6"]);
+        }
+
+        if (array_key_exists("jour_de_marche_7", $data)) {
+            $new_marche_add->setJourDeMarche7($data["jour_de_marche_7"]);
+        }
+
+        $entityManagerInterface->persist($new_marche_add);
+        $entityManagerInterface->flush();
+
+
+        ////SEND NOTIFICATION FOR ALL
+
+        /// for user created
+        $context = [
+            "object_mail" => "Un nouveau Marché ajouté",
+            "template_path" => "emails/marche_notification_user_creator.html.twig",
+            "etablisment" => [
+                "name" => $new_marche_add->getDenominationF(),
+                "adress" => $new_marche_add->getAdresse()
+            ],
+            "user_modify" => [
+                "fullname" => $current_user->getPseudo(),
+                "email" => $current_user->getEmail()
+            ],
+            "user_super_admin" => [
+                "fullname" => "",
+                "email" => ""
+            ],
+            "user_validator" => [
+                "fullname" => "",
+                "email" => ""
+            ]
+        ];
+
+        $mailService->sendEmailResponseModifPOIUpdate(
+            $current_user->getEmail(),
+            "ConsoMyZone",
+            [
+                ["email" => $current_user->getEmail(), "fullName" => $current_user->getPseudo()]
+            ],
+            $context
+        );
+
+        /// for super admin + validators
+        $all_user_receiver = [];
+
+        $user_super_admin = $userRepository->getUserSuperAdmin();
+        array_push(
+            $all_user_receiver,
+            ["email" => $user_super_admin->getEmail(), "fullName" => $user_super_admin->getPseudo()]
+        );
+
+        $validators = $userRepository->getAllValidator();
+        foreach ($validators as $validator) {
+            if ($validator->getId() != $current_user->getId() && $validator->getId() != $user_super_admin->getId() &&  $validator->getType() != "Type") {
+                $temp = [
+                    "email" => $validator->getEmail(),
+                    "fullName" => $validator->getPseudo()
+                ];
+                array_push($all_user_receiver, $temp);
+            }
+        }
+
+        $context["template_path"] = "emails/marche_notification_to_validated.html.twig";
+        $mailService->sendEmailResponseModifPOIUpdate(
+            $current_user->getEmail(),
+            "ConsoMyZone",
+            $all_user_receiver,
+            $context
+        );
+
+        return $this->json([
+            'data' => $marcheUserModifyRepository->getOneItemByID($new_marche_add->getId()),
+            'id' => $new_marche_add->getId()
+        ]);
     }
 }

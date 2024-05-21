@@ -119,6 +119,9 @@ class RubriqueCMZ extends MapCMZ {
 				checkIsMuchOnFilter: (item_rubrique) => {
 					return this.checkIsMuchOnFilterResto(item_rubrique);
 				},
+				addNewPOI: () => {
+					this.addNewPOIResto();
+				},
 			},
 			{
 				name: "Ferme",
@@ -176,6 +179,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				checkIsMuchOnFilter: (item_rubrique) => {
 					return this.checkIsMuchOnFilterFerme(item_rubrique);
+				},
+				addNewPOI: () => {
+					this.addNewPOIFerme();
 				},
 			},
 			{
@@ -251,6 +257,9 @@ class RubriqueCMZ extends MapCMZ {
 				checkIsMuchOnFilter: (item_rubrique) => {
 					return this.checkIsMuchOnFilterStation(item_rubrique);
 				},
+				addNewPOI: () => {
+					this.addNewPOIStation();
+				},
 			},
 			{
 				name: "Golf",
@@ -308,6 +317,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				checkIsMuchOnFilter: (item_rubrique) => {
 					return this.checkIsMuchOnFilterGolf(item_rubrique);
+				},
+				addNewPOI: () => {
+					this.addNewPOIGolf();
 				},
 			},
 			{
@@ -367,6 +379,9 @@ class RubriqueCMZ extends MapCMZ {
 				checkIsMuchOnFilter: (item_rubrique) => {
 					return this.checkIsMuchOnFilterTabac(item_rubrique);
 				},
+				addNewPOI: () => {
+					this.addNewPOITabac();
+				},
 			},
 			{
 				name: "Marché",
@@ -424,6 +439,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				checkIsMuchOnFilter: (item_rubrique) => {
 					return this.checkIsMuchOnFilterMarche(item_rubrique);
+				},
+				addNewPOI: () => {
+					this.addNewPOIMarche();
 				},
 			},
 			/*
@@ -5189,8 +5207,8 @@ class RubriqueCMZ extends MapCMZ {
 					<span class="d-flex justify-content-start align-items-center">
 						<img class="image_icon_rubrique" src="${icon_image}" alt="${item.name}_rubrique" />
 						<span class="${item.is_can_add_new_poi ? "hover_underline" : "hover_underline_gray"}" 
-							onclick="openModalAddNewPOI('${item.api_name}')">
-							Voir les favoris ${item.name}
+							onclick="openModalAddNewPOI('${item.api_name}')" data-bs-dismiss="modal">
+							Une nouvelle POI ${item.name}
 						</span>
 					</span>
 				</li>
@@ -5212,7 +5230,57 @@ class RubriqueCMZ extends MapCMZ {
 			return false;
 		}
 
-		alert("open modal for add poi marche...");
+		/// abstraction for function add New poi rubrique ---------
+		rubrique_type_object.addNewPOI();
+	}
+
+	addNewPOIMarche() {
+		/// open modal -------------------------
+		if (!document.querySelector(".cta_open_modal_new_poi_jheo_js")) {
+			console.log("ERROR: Selector not found: 'cta_open_modal_new_poi_jheo_js'");
+			return false;
+		}
+
+		document.querySelector(".cta_open_modal_new_poi_jheo_js").click();
+
+		//// -----------------------------------
+
+		if (!document.querySelector(".form_new_poi_marche_jheo_js")) {
+			console.log("Selector not found: form_new_poi_marche_jheo_js");
+			return false;
+		}
+
+		const form = document.querySelector(".form_new_poi_marche_jheo_js");
+
+		const all_input_jour_de_marche = form.querySelectorAll(".content_input_jdm_jheo_js");
+		if (all_input_jour_de_marche.length > 0) {
+			Array.from(all_input_jour_de_marche).forEach((input) => input.remove());
+		}
+
+		const all_input = Array.from(form.querySelectorAll("input"));
+
+		all_input.forEach((input) => (input.value = null));
+
+		const lastLatLngOnClick = this.lastLatLngOnClick; /// { lat: 0.0, lng: 0.0 };
+
+		document.querySelector("#new_marche_latitude").value = lastLatLngOnClick.lat;
+		document.querySelector("#new_marche_longitude").value = lastLatLngOnClick.lng;
+		document.querySelector("#new_marche_departement").value = lastLatLngOnClick.depCode;
+
+		document.querySelector("#new_marche_latitude").setAttribute("readonly", true);
+		document.querySelector("#new_marche_longitude").setAttribute("readonly", true);
+		document.querySelector("#new_marche_departement").setAttribute("readonly", true);
+
+		const errors = document.querySelectorAll(".invalid-feedback_jheo_js");
+		Array.from(errors).forEach((error) => {
+			if (error.classList.contains("d-block")) {
+				error.classList.remove("d-block");
+			}
+		});
+	}
+
+	addPendingDataMarche(data) {
+		console.log(data);
 	}
 
 	alertSwalFunctionNoteImplement(message = null) {
