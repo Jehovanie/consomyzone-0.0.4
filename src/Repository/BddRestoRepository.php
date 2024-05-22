@@ -2,11 +2,14 @@
 
 namespace App\Repository;
 
-use App\Entity\BddResto;
-use App\Service\DepartementService;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Service\DicoRestoForSearchService;
+
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+
+use App\Entity\BddResto;
+
+use App\Service\DepartementService;
+use App\Service\DicoRestoForSearchService;
 
 /**
  * @extends ServiceEntityRepository<BddResto>

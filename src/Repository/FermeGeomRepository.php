@@ -2,10 +2,13 @@
 
 namespace App\Repository;
 
-use App\Entity\FermeGeom;
-use App\Service\DepartementService;
 use Doctrine\Persistence\ManagerRegistry;
+
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+
+use App\Entity\FermeGeom;
+
+use App\Service\DepartementService;
 
 /**
  * @extends ServiceEntityRepository<FermeGeom>
@@ -1138,30 +1141,4 @@ class FermeGeomRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
-
-
-    //    /**
-    //     * @return FermeGeom[] Returns an array of FermeGeom objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('f.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
-
-    //    public function findOneBySomeField($value): ?FermeGeom
-    //    {
-    //        return $this->createQueryBuilder('f')
-    //            ->andWhere('f.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
 }

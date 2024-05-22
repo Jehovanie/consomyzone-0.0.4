@@ -9,7 +9,6 @@ let AUDIO_FOR_MESSAGE = null;
 let Cookies2 = Cookies.noConflict();
 // cloneResultDepResto()
 
-
 if (!current_url.includes("/new_home") && document.querySelector(".form_content_search_navbar_js")) {
 	const search_form = document.querySelector(".form_content_search_navbar_js");
 	if (getDataInLocalStorage("type")) {
@@ -1156,6 +1155,15 @@ function openSwalActif() {
 			window.open("/connexion", "_blank");
 		}
 	});
+}
+
+/**
+ * Function opening a sweet alert on click button actif without event
+ * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+ * @constructor
+ */
+function openSwalWaitValidation() {
+	swal("Désole, cette POI marché est en attend de validation");
 }
 
 /**

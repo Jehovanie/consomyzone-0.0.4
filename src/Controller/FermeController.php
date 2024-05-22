@@ -4,34 +4,27 @@
 
 namespace App\Controller;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Serializer\SerializerInterface;
 
-
-use App\Service\Status;
-use App\Entity\Avisferme;
-use App\Service\MessageService;
-use App\Service\TributGService;
-use App\Repository\UserRepository;
-
-use App\Repository\CodeapeRepository;
-
-use App\Repository\AvisfermeRepository;
-
-use App\Repository\FermeGeomRepository;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Doctrine\ORM\EntityManagerInterface;
 
+use App\Entity\Avisferme;
+
+use App\Service\Status;
+use App\Service\MessageService;
+use App\Service\TributGService;
+
+use App\Repository\UserRepository;
+use App\Repository\CodeapeRepository;
+use App\Repository\AvisfermeRepository;
+use App\Repository\FermeGeomRepository;
 use App\Repository\DepartementRepository;
-
-use Symfony\Component\HttpFoundation\Request;
-
-use Symfony\Component\HttpFoundation\Response;
-
-use Symfony\Component\Routing\Annotation\Route;
-
-use Symfony\Component\HttpFoundation\JsonResponse;
-
-use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 class FermeController extends AbstractController
 
@@ -352,9 +345,7 @@ class FermeController extends AbstractController
 
 
 
-    /**
-     * @Route("/getLatitudeLongitudeFerme" , name="getLatitudeLongitudeFerme" , methods={"GET"})
-     */
+
     #[Route("/fetch_data/ferme", name: "fetch_data_ferme" , methods: [ "GET", "POST"])]
     #[Route("/getLatitudeLongitudeFerme", name: "getLatitudeLongitudeFerme" , methods: [ "GET"])]
     public function getLatitudeLongitudeFerme(

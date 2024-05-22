@@ -93,6 +93,8 @@ class MapCMZ {
 		this.nbr_etablisement_per_dep = [];
 
 		this.lastLatLngOnClick = { depCode: null, depName: null, lat: 0.0, lng: 0.0 };
+
+		this.initialPosition = []; //// [ { id_rubbrique: ..., position: ... }]
 	}
 
 	initTales() {
@@ -1557,6 +1559,36 @@ class MapCMZ {
 
 	addEventOnMap() {
 		console.log("This class must implement on class fils...");
+	}
+
+	saveOriginPosition(rubrique_type, rubrique_id, initalPos) {
+		this.initialPosition = [
+			...this.initialPosition,
+			{ rubrique_type: rubrique_type, rubrique_id: rubrique_id, position: initalPos },
+		];
+
+		console.log(this.initialPosition);
+	}
+
+	getOriginLastPosition(rubrique_type, rubrique_id) {
+		let origin_position = this.initialPosition.find(
+			(item) => parseInt(item.rubrique_id) === parseInt(rubrique_id) && item.rubrique_type === rubrique_type
+		);
+
+		return origin_position.position;
+	}
+
+	cancelEditMarkerMarche(rubrique_type, rubrique_id) {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(rubrique_id) && marker.options.type == rubrique_type) {
+				let initialPos = this.getOriginLastPosition(rubrique_type, rubrique_id);
+				marker.setLatLng(initialPos, {
+					draggable: false,
+				});
+
+				marker.dragging.disable();
+			}
+		});
 	}
 
 	updateGeoJson(couche, indexInJson) {

@@ -6,20 +6,24 @@ namespace App\Service;
 
 
 
+use Exception;
+
+
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mailer\Mailer;
+use Symfony\Component\Mailer\Transport;
+use Symfony\Component\HttpFoundation\Response;
+
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Bridge\Twig\Mime\WrappedTemplatedEmail;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 use Twig\Environment;
 
 use App\Entity\ProdData;
 
 use App\Service\AgendaService;
-use Exception;
-use Symfony\Component\Mime\Address;
-
-use Symfony\Component\Mailer\Mailer;
-use Symfony\Component\Mailer\Transport;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Bridge\Twig\Mime\WrappedTemplatedEmail;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Response;
 
 class MailService extends AbstractController {
 
@@ -779,7 +783,7 @@ return 250;
     }
 
 
-        /**
+    /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
      *  Otherwrite the 'sendEmailResponseModifPOI'

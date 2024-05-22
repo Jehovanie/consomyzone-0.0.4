@@ -2,10 +2,13 @@
 
 namespace App\Repository;
 
-use App\Service\DepartementService;
-use App\Entity\StationServiceFrGeom;
 use Doctrine\Persistence\ManagerRegistry;
+
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+
+use App\Entity\StationServiceFrGeom;
+
+use App\Service\DepartementService;
 
 /**
  * @extends ServiceEntityRepository<StationServiceFrGeom>

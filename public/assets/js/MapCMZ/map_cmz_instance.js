@@ -571,3 +571,16 @@ function openModalAddNewPOI(rubrique_type) {
 function addPendingDataMarche(data) {
 	MAP_CMZ.addPendingDataMarche(data);
 }
+
+function makeMarkerDraggablePOI(rubrique_type, rubrique_id) {
+	MAP_CMZ.makeMarkerDraggablePOI(rubrique_type, rubrique_id);
+}
+
+function cancelEditMarkerMarche(rubrique_type, rubrique_id) {
+	MAP_CMZ.cancelEditMarkerMarche(rubrique_type, rubrique_id);
+}
+
+
+function addPendingDataMarche(data){
+	
+}

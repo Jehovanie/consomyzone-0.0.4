@@ -2,28 +2,33 @@
 
 namespace App\Controller;
 
-use App\Service\Status;
-use App\Service\UserService;
-use App\Entity\AvisGolf;
-use App\Entity\GolfFinished;
-use App\Service\MessageService;
-use App\Service\TributGService;
-use App\Repository\UserRepository;
-use App\Service\GolfFranceService;
-use App\Service\NotificationService;
-use App\Repository\AvisGolfRepository;
-use App\Repository\GolfFranceRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\DepartementRepository;
-use App\Repository\GolfFinishedRepository;
-use App\Service\Tribu_T_Service;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Entity\AvisGolf;
+use App\Entity\GolfFinished;
+
+use App\Service\Status;
+use App\Service\UserService;
+use App\Service\MessageService;
+use App\Service\TributGService;
+use App\Service\GolfFranceService;
+use App\Service\NotificationService;
+use App\Service\Tribu_T_Service;
+
+use App\Repository\UserRepository;
+use App\Repository\AvisGolfRepository;
+use App\Repository\GolfFranceRepository;
+use App\Repository\DepartementRepository;
+use App\Repository\GolfFinishedRepository;
 
 class GolfFranceController extends AbstractController
 {

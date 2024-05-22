@@ -2,17 +2,21 @@
 
 namespace App\Controller;
 
-use App\Service\Status;
-use App\Service\MessageService;
-use App\Service\TributGService;
-use App\Repository\UserRepository;
-use App\Repository\TabacRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\DepartementRepository;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Service\Status;
+use App\Service\MessageService;
+use App\Service\TributGService;
+
+use App\Repository\UserRepository;
+use App\Repository\TabacRepository;
+use App\Repository\DepartementRepository;
 
 class TabacContoller extends AbstractController
 {
@@ -94,7 +98,7 @@ class TabacContoller extends AbstractController
         $tabac= [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
 
-        if($request->query->has("minx") && $request->query->has("miny") ){
+        if($request->getMethod() === "GET" && $request->query->has("minx") && $request->query->has("miny") ){
 
             $minx = $request->query->get("minx");
             $maxx = $request->query->get("maxx");

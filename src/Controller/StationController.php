@@ -4,44 +4,33 @@
 
 namespace App\Controller;
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-use App\Service\Status;
+use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Avisstation;
-use App\Service\MessageService;
+use App\Entity\StationServiceFrGeom;
 
+use App\Service\Status;
+use App\Service\MessageService;
 use App\Service\TributGService;
 
 use App\Repository\UserRepository;
-
-use App\Entity\StationServiceFrGeom;
+use App\Repository\StationServiceFrGeomRepository;
 use App\Repository\CodeapeRepository;
-use Doctrine\ORM\EntityManagerInterface;
-
 use App\Repository\AvisstationRepository;
-
 use App\Repository\DepartementRepository;
 
-use Symfony\Component\HttpFoundation\Request;
-
-use Symfony\Component\HttpFoundation\Response;
-
-use Symfony\Component\Routing\Annotation\Route;
-
-use App\Repository\StationServiceFrGeomRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-
-
-
 class StationController extends AbstractController
-
 {
 
     /**
      * @Route("/station", name="app_station", methods={"GET", "POST"})
      */
-
     public function station(
         CodeapeRepository $codeApeRep,
         Status $status,
@@ -84,7 +73,6 @@ class StationController extends AbstractController
     /**
      * @Route("/station-mobile", name="app_station_mobile", methods={"GET", "POST"})
      */
-
     public function stationMobile(
         CodeapeRepository $codeApeRep,
         Status $status,
@@ -121,7 +109,7 @@ class StationController extends AbstractController
     /**
      * @Route("/fetch_departement_mobile", name="app_getDepartement", methods={"GET"})
      */
-     public function getDepartement(DepartementRepository $departementRepository): Response
+    public function getDepartement(DepartementRepository $departementRepository): Response
     {
          return $this->render('shard/station/fetchLeftSide.html.twig', [
              "departements" => $departementRepository->getDep(),
@@ -431,9 +419,6 @@ class StationController extends AbstractController
             "codeApes" => $codeApeRep->getCode()
         ]);
     }
-
-
-
 
 
     /**

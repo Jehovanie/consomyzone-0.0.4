@@ -510,6 +510,9 @@ class RubriqueCMZ extends MapCMZ {
 				addNewPOI: () => {
 					this.addNewPOIMarche();
 				},
+				makeMarkerDraggablePOI: (rubrique_id) => {
+					this.makeMarkerDraggablePOIMarche(rubrique_id);
+				},
 			},
 			/*
 			{
@@ -881,7 +884,7 @@ class RubriqueCMZ extends MapCMZ {
 					if (tab.includes(this.search_options["cles0"].toLowerCase())) {
 						item.is_active = true;
 					} else {
-						item.is_acitve = false;
+						item.is_active = false;
 					}
 				}
 
@@ -4428,6 +4431,13 @@ class RubriqueCMZ extends MapCMZ {
 
 		let poi_options = rubrique_type_object.getOptionPastille(item);
 
+		if (options && options.hasOwnProperty("isPedding")) {
+			poi_options = {
+				...poi_options,
+				...options,
+			};
+		}
+
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
 		const miniFiche = rubrique_type_object.setMiniFiche(item.denominationF, item.dep, item.adresse);
@@ -4570,11 +4580,18 @@ class RubriqueCMZ extends MapCMZ {
 
 	newMarkerPOI(rubrique_type, singleData, poi_icon, options = {}) {
 		const note = singleData.hasOwnProperty("moyenne_note") ? parseFloat(singleData.moyenne_note).toFixed(1) : "0.0";
+
+		let isPedding = false;
+		if (options && options.hasOwnProperty("isPedding")) {
+			isPedding = options.isPedding;
+		}
+
 		return new L.Marker(L.latLng(parseFloat(singleData.lat), parseFloat(singleData.long)), {
 			icon: this.setDivIconMarker(poi_icon, note, options),
 			id: singleData.id,
 			type: rubrique_type,
 			draggable: false,
+			isPedding: isPedding,
 		});
 	}
 
@@ -4813,7 +4830,16 @@ class RubriqueCMZ extends MapCMZ {
 
 	async fetchDetailsMarche(id_rubrique) {
 		try {
-			const link_details = `/details/marche/${id_rubrique}`;
+			const entity_marche = this.defaultData["marche"]["data"].find(
+				(item) => parseInt(item.id) === parseInt(id_rubrique)
+			);
+
+			let params = "";
+			if (entity_marche.hasOwnProperty("status")) {
+				params = "?userCreate=true";
+			}
+
+			const link_details = `/details/marche/${id_rubrique}${params}`;
 			const response = await fetch(link_details);
 
 			if (!response.ok) {
@@ -5354,8 +5380,33 @@ class RubriqueCMZ extends MapCMZ {
 		});
 	}
 
-	addPendingDataMarche(data) {
-		console.log(data);
+	addPendingDataMarche(item) {
+		const rubrique_type = "marche";
+
+		let already_exist = false;
+		this.markers.eachLayer((marker) => {
+			if (marker.options.type === rubrique_type) {
+				if (parseInt(marker.options.id) === parseInt(item.id) && marker.options.isPedding == true) {
+					already_exist = true;
+				}
+			}
+		});
+
+		if (!already_exist) {
+			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+
+			rubrique_type_object.setSingleMarker(item, { isPedding: true });
+
+			this.defaultData[rubrique_type]["data"] = [...this.defaultData[rubrique_type]["data"], item];
+
+			this.markers.eachLayer((marker) => {
+				if (marker.options.type === rubrique_type) {
+					if (parseInt(marker.options.id) === parseInt(item.id) && marker.options.isPedding == true) {
+						marker.fireEvent("click");
+					}
+				}
+			});
+		}
 	}
 
 	alertSwalFunctionNoteImplement(message = null) {
@@ -5443,5 +5494,51 @@ class RubriqueCMZ extends MapCMZ {
 				</ul>
 			</div>
 		`;
+	}
+
+	makeMarkerDraggablePOI(rubrique_type, rubrique_id) {
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
+		rubrique_type_object.makeMarkerDraggablePOI(rubrique_id);
+	}
+
+	makeMarkerDraggablePOIMarche(rubrique_id) {
+		this.markers.eachLayer((marker) => {
+			if (parseInt(marker.options.id) === parseInt(rubrique_id) && marker.options.type === "marche") {
+				let initialPos = marker.getLatLng();
+				this.saveOriginPosition("marche", rubrique_id, initialPos);
+
+				marker.dragging.enable();
+
+				marker.on("dragend", (e) => {
+					let position = marker.getLatLng();
+					let lat = position.lat;
+					let lng = position.lng;
+
+					$("#modal_edit_poi_marche").modal("show");
+
+					fetchInformationMarcheToEdit(rubrique_id);
+
+					document.querySelector("#edit_marche_departement").setAttribute("readOnly", "true");
+
+					document.querySelector("#edit_marche_latitude").value = lng;
+					document.querySelector("#edit_marche_latitude").setAttribute("readOnly", "true");
+
+					document.querySelector("#edit_marche_longitude").value = lat;
+					document.querySelector("#edit_marche_longitude").setAttribute("readOnly", "true");
+
+					const btn_cancel = document.querySelector(".cancel_edit_poi_marche_jheo_js");
+					btn_cancel.setAttribute("onclick", `cancelEditPoiMarche("${rubrique_id}")`);
+
+					//btn_close_modal_edit_poi_marche_jheo_js
+					const btn_close_modal_edit_poi = document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js");
+					btn_close_modal_edit_poi.setAttribute("onclick", `cancelEditPoiMarche("${rubrique_id}")`);
+
+					const btn_sendSubmit = document.querySelector(".submit_edit_poi_marche_jheo_js");
+					btn_sendSubmit.setAttribute("onclick", `handleSubmitEditPOIMarche("${rubrique_id}")`);
+
+					marker.dragging.disable();
+				});
+			}
+		});
 	}
 }

@@ -106,7 +106,6 @@ function updateGeoJson(couche, index, e) {
  */
 function addRubriqueActivNavbar(object_rubrique) {
 	const { name, icon, api_name } = object_rubrique;
-	const key_name = name.trim().split(" ").join("_");
 	const rubrique = `
 		<button id="ID_nav_${api_name}_jheo_js" type="button" 
 			class="position-relative btn btn-light btn-sm me-1 rounded-pill d-flex justify-content-center align-items-center"
@@ -811,6 +810,323 @@ function handleSubmitNewPOIMarche() {
 						document.querySelector(".cancel_new_poi_marche_jheo_js").removeAttribute("disabled");
 
 						btn_submit.setAttribute("onclick", "handleSubmitNewPOIMarche()");
+						btn_submit.innerText = "Envoyer";
+						btn_submit.removeAttribute("disabled");
+					});
+			});
+	}
+}
+
+function editPOIMarche(rubrique_id) {
+	swal(
+		`Vous allez entrer en mode interactif pour pouvoir modifier les informations sur ce marché ou le supprimer.
+		`,
+		{
+			buttons: {
+				cancel: "Annuler",
+				ok: {
+					text: "Poursuivre",
+					value: "ok",
+					className: "swal-button swal-button--info",
+				},
+				supprimer: { text: "Supprimer", value: "delete", className: "swal-button swal-button--danger" },
+			},
+		}
+	).then((value) => {
+		if (value === "ok") {
+			swal("Vous pouvez maintenant déplacer le marquer.😊").then(() => {
+				///function in function_instance
+				makeMarkerDraggablePOI("marche", rubrique_id);
+			});
+		} else if (value === "delete") {
+			swal("Voulez-vous vraiment supprimer ce marché?", {
+				buttons: {
+					cancel: "NON",
+					ok: {
+						text: "OUI",
+						value: "ok",
+					},
+				},
+			}).then((second_value) => {
+				if (second_value === "ok") {
+					deleteEtablismentMarcker(id, "marche");
+				} else {
+					swal("Merci, suppression annulée.");
+				}
+			});
+		} else {
+			swal("Merci et revenez la prochaine fois!");
+		}
+	});
+}
+
+function deleteEtablismentMarcker(idEtablisment, type) {
+	if (document.querySelector(".close_details_jheo_js")) {
+		document.querySelector(".close_details_jheo_js").click();
+	}
+
+	switch (type) {
+		case "marche":
+			deleteEtablismentMarche(idEtablisment);
+			break;
+		default:
+			break;
+	}
+}
+
+function deleteEtablismentMarche(idEtablisment) {
+	const url = `/api/marche/delete_marche`;
+	const request = new Request(url, {
+		method: "POST",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+		body: JSON.stringify({
+			idMarcher: idEtablisment,
+		}),
+	});
+
+	fetch(request)
+		.then((response) => {
+			if (response.status === 401) {
+				location.reload();
+			}
+			return response.json();
+		})
+		.then((response) => {
+			const { id: idMarche, data } = response;
+			new swal(
+				"Succès !",
+				"Votre demande a bien été envoyée. Nous vous notifierons si elle a été prise en compte ou non",
+				"success"
+			).then((response) => {
+				CURRENT_MAP_INSTANCE.removeSingleMarker(idMarche, "marche");
+			});
+		});
+}
+
+function fetchInformationMarcheToEdit(idMarcher) {
+	const url = `/api/marche/json_details/${idMarcher}?realData=edit`;
+	// const url = `/api/marche/json_details/114?realData=edit`;
+	const request = new Request(url, {
+		method: "GET",
+		headers: {
+			Accept: "application/json",
+			"Content-Type": "application/json",
+		},
+	});
+
+	fetch(request)
+		.then((response) => {
+			if (response.status === 401) {
+				location.reload();
+			}
+			return response.json();
+		})
+		.then((response) => {
+			const { data } = response;
+			console.log(data);
+
+			if (document.querySelector(".marche_user_modified_jheo_js")) {
+				document.querySelector(".marche_user_modified_jheo_js").remove();
+			}
+
+			if (document.querySelector(".form_edit_poi_marche_jheo_js")) {
+				document.querySelector(".form_edit_poi_marche_jheo_js").classList.remove("d-none");
+			}
+
+			setFormEdit(data);
+		});
+}
+
+function setFormEdit(data) {
+	if (!document.querySelector(".content_edit_jour_de_marche_jheo_js")) {
+		console.log("Selector not found: content_edit_jour_de_marche_jheo_js");
+		return false;
+	}
+
+	const content_edit_jour_de_marche = document.querySelector(".content_edit_jour_de_marche_jheo_js");
+
+	document.querySelector("#edit_marche_denomination_f").value = data.denominationF;
+	document.querySelector("#edit_marche_specificite").value = data.specificite;
+	document.querySelector("#edit_marche_jour_de_marche_1").value = data.jour_de_marche_1;
+
+	if (data.jour_de_marche_2 != "") {
+		const input_jour_de_marche = generateEditJourDeMarche(data.jour_de_marche_2);
+		content_edit_jour_de_marche.appendChild(input_jour_de_marche);
+	}
+
+	if (data.jour_de_marche_3 != "") {
+		const input_jour_de_marche = generateEditJourDeMarche(data.jour_de_marche_3);
+		content_edit_jour_de_marche.appendChild(input_jour_de_marche);
+	}
+
+	if (data.jour_de_marche_4 != "") {
+		const input_jour_de_marche = generateEditJourDeMarche(data.jour_de_marche_4);
+		content_edit_jour_de_marche.appendChild(input_jour_de_marche);
+	}
+
+	if (data.jour_de_marche_5 != "") {
+		const input_jour_de_marche = generateEditJourDeMarche(data.jour_de_marche_5);
+		content_edit_jour_de_marche.appendChild(input_jour_de_marche);
+	}
+
+	if (data.jour_de_marche_6 != "") {
+		const input_jour_de_marche = generateEditJourDeMarche(data.jour_de_marche_6);
+		content_edit_jour_de_marche.appendChild(input_jour_de_marche);
+	}
+
+	if (data.jour_de_marche_7 != "") {
+		const input_jour_de_marche = generateEditJourDeMarche(data.jour_de_marche_7);
+		content_edit_jour_de_marche.appendChild(input_jour_de_marche);
+	}
+
+	document.querySelector("#edit_marche_address").value = data.adresse;
+	document.querySelector("#edit_marche_code_postal").value = data.codpost;
+	document.querySelector("#edit_marche_commune").value = data.commune;
+	document.querySelector("#edit_marche_departement").value = data.dep;
+}
+
+function generateEditJourDeMarche(value = "") {
+	const unique_id = Date.now();
+
+	const input_jour_de_marche = document.querySelectorAll(".content_edit_jdm_jheo_js");
+	const numero = input_jour_de_marche.length + 2;
+
+	const div_container = document.createElement("div");
+	div_container.className = `input-group mb-1 content_edit_jdm_jheo_js content_input_jdm_${unique_id}_jheo_js`;
+
+	const inputJourDeMarche = `
+		<input type="text" class="form-control" name="jour_de_marche_${numero}" id="new_marche_jour_de_marche_${unique_id}" value="${value}">
+		<span class="input-group-text pe-auto cta_remove_input_jour_de_marche_jheo_js" onclick="removeInputJourDeMarche('${unique_id}')">
+			<i class="fa-solid fa-trash text-danger"></i>
+		</span>
+	`;
+
+	div_container.innerHTML = inputJourDeMarche;
+
+	return div_container;
+}
+
+function cancelEditPoiMarche(rubrique_id) {
+	/// this function is in functin_instance.
+	cancelEditMarkerMarche("marche", rubrique_id);
+}
+
+function handleSubmitEditPOIMarche(idMarche) {
+	const data = {};
+
+	const form = document.querySelector(".form_edit_poi_marche_jheo_js");
+	all_input = Array.from(form.querySelectorAll("input"));
+
+	all_input.forEach((input) => {
+		data[input.name] = input.value;
+	});
+
+	let object_keys = Object.keys(data);
+	let isDataIncomplet = false;
+
+	let keyNotRequired = ["specificite", "address"];
+	object_keys = object_keys.filter((item) => !keyNotRequired.includes(item));
+
+	object_keys.forEach((key) => {
+		if (data[key] === "") {
+			const object = form.querySelector(`#edit_marche_${key}`);
+			const key_html = object ? object : null;
+
+			if (!key_html) return false;
+
+			const id_key_html = key_html.getAttribute("id");
+			form.querySelector(`.${id_key_html}_error_jheo_js`).classList.add("d-block");
+
+			key_html.addEventListener("input", () => {
+				form.querySelector(`.${id_key_html}_error_jheo_js`).classList.remove("d-block");
+			});
+
+			isDataIncomplet = true;
+		}
+	});
+
+	// if (Object.values(data).every((item) => item != "")) {
+	if (!isDataIncomplet) {
+		const btn_submit = document.querySelector(".submit_edit_poi_marche_jheo_js");
+
+		btn_submit.innerHTML = `
+			<i class="fa-solid fa-spinner fa-spin"></i>
+			En cours d'envoi...
+		`;
+
+		btn_submit.setAttribute("disabled", true);
+
+		document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js").setAttribute("disabled", true);
+		document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js").setAttribute("onclick", () => {});
+
+		document.querySelector(".add_edit_jour_de_marche_jheo_js").setAttribute("onclick", () => {});
+
+		const content_edit_jour_de_marche = document.querySelector(".content_edit_jour_de_marche_jheo_js");
+		Array.from(content_edit_jour_de_marche.querySelectorAll(".cta_remove_input_jour_de_marche_jheo_js")).forEach(
+			(item) => item.setAttribute("onclick", () => {})
+		);
+
+		document.querySelector(".cancel_edit_poi_marche_jheo_js").setAttribute("disabled", true);
+		document.querySelector(".cancel_edit_poi_marche_jheo_js").setAttribute("onclick", () => {});
+
+		all_input.forEach((input) => {
+			input.setAttribute("readonly", true);
+		});
+
+		const url = `/marche/add_edit_element/${idMarche}`;
+		const request = new Request(url, {
+			method: "POST",
+			headers: {
+				Accept: "application/json",
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(data),
+		});
+
+		fetch(request)
+			.then((response) => {
+				if (response.status === 401) {
+					location.reload();
+				}
+				return response.json();
+			})
+			.then((response) => {
+				const data = response.data;
+				$("#modal_edit_poi_marche").modal("hide");
+				new swal(
+					"Succès !",
+					"Votre modification a bien été reçue. Nous vous notifierons si elle a été prise en compte ou non",
+					"success"
+				)
+					.then((response) => {
+						//// function need instance of MAP
+						addPendingDataMarche(data);
+					})
+					.finally(() => {
+						////////////////////////////////////////////////////////////////////////////////////////////
+						document.querySelector(".btn_close_modal_edit_poi_marche_jheo_js").removeAttribute("disabled");
+						document
+							.querySelector(".add_edit_jour_de_marche_jheo_js")
+							.setAttribute("onclick", "addInputEditJourDeMarche()");
+
+						all_input.forEach((input) => {
+							input.removeAttribute("readonly");
+						});
+
+						document.querySelector(".cancel_edit_poi_marche_jheo_js").removeAttribute("disabled");
+
+						const content_edit_jour_de_marche = document.querySelector(
+							".content_edit_jour_de_marche_jheo_js"
+						);
+						Array.from(content_edit_jour_de_marche.querySelectorAll(".content_edit_jdm_jheo_js")).forEach(
+							(item) => item.remove()
+						);
+
+						btn_submit.removeAttribute("disabled");
+						btn_submit.setAttribute("onclick", "handleSubmitEditPOIMarche()");
 						btn_submit.innerText = "Envoyer";
 						btn_submit.removeAttribute("disabled");
 					});

@@ -3,36 +3,42 @@
 namespace App\Controller;
 
 use Exception;
-use App\Service\Status;
-use App\Entity\Codinsee;
-use App\Service\UserService;
-use App\Entity\AvisRestaurant;
-use App\Service\MessageService;
-use App\Service\TributGService;
-use App\Service\Tribu_T_Service;
-use App\Entity\BddRestoUserModif;
-use App\Repository\UserRepository;
-use App\Repository\CodeapeRepository;
-use App\Repository\BddRestoRepository;
-use App\Repository\CodeinseeRepository;
-use Doctrine\ORM\EntityManagerInterface;
-use App\Repository\DepartementRepository;
-use App\Repository\AvisRestaurantRepository;
-use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use App\Repository\BddRestoUserModifRepository;
-use App\Service\MailService;
+
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\Encoder\JsonDecode;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Component\BrowserKit\HttpBrowser;
 use Symfony\Component\HttpClient\HttpClient;
-
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Constraints\DateTime;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
+use Doctrine\ORM\EntityManagerInterface;
+
+use App\Entity\Codinsee;
+use App\Entity\AvisRestaurant;
+use App\Entity\BddRestoUserModif;
+
+use App\Service\Status;
+use App\Service\UserService;
+use App\Service\MessageService;
+use App\Service\TributGService;
+use App\Service\Tribu_T_Service;
+use App\Service\MailService;
+
+use App\Repository\UserRepository;
+use App\Repository\CodeapeRepository;
+use App\Repository\BddRestoRepository;
+use App\Repository\CodeinseeRepository;
+use App\Repository\DepartementRepository;
+use App\Repository\AvisRestaurantRepository;
+use App\Repository\BddRestoUserModifRepository;
+
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class RestaurantController extends AbstractController
 {
@@ -336,8 +342,6 @@ class RestaurantController extends AbstractController
        return $noteExist;
         
     }
-
-   
 
     #[Route("/test/get/avis", name:"find_all_avis", methods:["GET"])]
     public function getAllAvis(AvisRestaurantRepository $avisRestaurantRepository)
@@ -664,6 +668,7 @@ class RestaurantController extends AbstractController
             // "codinsee" => $codinsee
         ],);
     }
+    
     #[Route("/restaurant-mobile/specific/{nom_dep}/{id_dep}/{limit}/{offset}", name: "app_specific_dep_restaurant_mobile", methods: ["GET"])]
     public function getSpecificRestaurantMobile(
         BddRestoRepository $bddResto,
