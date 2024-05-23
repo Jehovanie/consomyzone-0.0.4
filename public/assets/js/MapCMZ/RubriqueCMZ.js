@@ -2169,11 +2169,13 @@ class RubriqueCMZ extends MapCMZ {
 				const rubrique_clicked = this.allRubriques.find((item) => item.api_name === rubrique_api_name);
 
 				if (rubrique_clicked.is_active === true) {
+					//// disable rubrique...
 					this.disableRubrique(rubrique_api_name);
 
 					btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js").remove();
 					btn_rubrique.querySelector(".tooltip_rubrique_filter_jheo_js").remove();
 				} else {
+					//// active rubrique...
 					this.activeRubrique(rubrique_api_name);
 
 					if (!btn_rubrique.querySelector(".fa_solide_open_rubrique_jheo_js")) {
@@ -2199,15 +2201,16 @@ class RubriqueCMZ extends MapCMZ {
 						item.classList.remove("btn-primary");
 						item.classList.add("btn-light");
 
-						const rubrique_type = item.getAttribute("data-type");
-						const rubrique_not_clicked = this.allRubriques.find((item) => item.name === rubrique_type);
-
 						const rubrique_api_name = item.getAttribute("data-api_name");
+
+						const rubrique_not_clicked = this.allRubriques.find(
+							(item) => item.api_name === rubrique_api_name
+						);
 
 						if (rubrique_not_clicked.is_active === true) {
 							this.allRubriques = [
 								...this.allRubriques.map((item) => {
-									if (item.name === rubrique_type) {
+									if (item.api_name === rubrique_api_name) {
 										item.is_active = false;
 									}
 									return item;
@@ -2215,13 +2218,14 @@ class RubriqueCMZ extends MapCMZ {
 							];
 
 							///remove rubrique active on the nav bar (in map_cmz_fonction.js)
-							removeRubriqueActivNavbar(rubrique_type);
+							removeRubriqueActivNavbar(rubrique_api_name);
 
 							this.removeRubriqueMarker(rubrique_api_name);
 
 							item.querySelector(".fa_solide_open_rubrique_jheo_js").remove();
 							item.querySelector(".tooltip_rubrique_filter_jheo_js").remove();
 
+							//// remove rubrique in list on navleft ( in lib.js [datatables])
 							removeListNavLeftRubriqueType(rubrique_api_name);
 						}
 					}
@@ -3444,10 +3448,10 @@ class RubriqueCMZ extends MapCMZ {
 		`;
 	}
 
-	cardItemRubriqueImage() {
+	cardItemRubriqueImage(image_a_la_une) {
 		return `
-			<img class="img-fluid rounded" alt="image"
-				src="https://images.unsplash.com/photo-1592861956120-e524fc739696?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D">
+			<img class="img-fluid rounded" alt="image" style="width:150px; height:150px"
+				src="${image_a_la_une}">
 		`;
 	}
 
@@ -3459,6 +3463,9 @@ class RubriqueCMZ extends MapCMZ {
 		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
+
+		const image_a_la_une =
+			"https://images.unsplash.com/photo-1592861956120-e524fc739696?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
 		const item_rubrique = `
 			<div class="card restaurant_${id}_jheo_js" style="max-width: 540px;">
@@ -3473,7 +3480,7 @@ class RubriqueCMZ extends MapCMZ {
 							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "restaurant" })}
 						</div>
 						<div class="col-md-4">
-							${this.cardItemRubriqueImage()}
+							${this.cardItemRubriqueImage(image_a_la_une)}
 						</div>
 					</div>
 				</div>
@@ -3492,6 +3499,9 @@ class RubriqueCMZ extends MapCMZ {
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
 
+		const image_a_la_une =
+			"https://images.unsplash.com/photo-1674543548022-66a05fd5057e?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
 		const item_rubrique = `
 			<div class="card resto_${id}_jheo_js" style="max-width: 540px;">
 				<div class="card-body">
@@ -3505,7 +3515,7 @@ class RubriqueCMZ extends MapCMZ {
 							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "ferme" })}
 						</div>
 						<div class="col-md-4">
-							${this.cardItemRubriqueImage()}
+							${this.cardItemRubriqueImage(image_a_la_une)}
 						</div>
 					</div>
 				</div>
@@ -3522,6 +3532,9 @@ class RubriqueCMZ extends MapCMZ {
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
 
+		const image_a_la_une =
+			"https://images.unsplash.com/photo-1611159964154-831c28aa83bd?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
 		const item_rubrique = `
 			<div class="card" style="max-width: 540px;">
 				<div class="card-body">
@@ -3535,7 +3548,7 @@ class RubriqueCMZ extends MapCMZ {
 							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "station" })}
 						</div>
 						<div class="col-md-4">
-							${this.cardItemRubriqueImage()}
+							${this.cardItemRubriqueImage(image_a_la_une)}
 						</div>
 					</div>
 				</div>
@@ -3552,6 +3565,9 @@ class RubriqueCMZ extends MapCMZ {
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
 
+		const image_a_la_une =
+			"https://images.unsplash.com/photo-1632946269126-0f8edbe8b068?q=80&w=1662&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
 		const item_rubrique = `
 			<div class="card" style="max-width: 540px;">
 				<div class="card-body">
@@ -3565,7 +3581,7 @@ class RubriqueCMZ extends MapCMZ {
 							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "golf" })}
 						</div>
 						<div class="col-md-4">
-							${this.cardItemRubriqueImage()}
+							${this.cardItemRubriqueImage(image_a_la_une)}
 						</div>
 					</div>
 				</div>
@@ -3582,6 +3598,9 @@ class RubriqueCMZ extends MapCMZ {
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
 
+		const image_a_la_une =
+			"https://images.unsplash.com/photo-1601598851547-4302969d0614?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
 		const item_rubrique = `
 			<div class="card" style="max-width: 540px;">
 				<div class="card-body">
@@ -3595,7 +3614,7 @@ class RubriqueCMZ extends MapCMZ {
 							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "marche" })}
 						</div>
 						<div class="col-md-4">
-							${this.cardItemRubriqueImage()}
+							${this.cardItemRubriqueImage(image_a_la_une)}
 						</div>
 					</div>
 				</div>
@@ -3622,6 +3641,9 @@ class RubriqueCMZ extends MapCMZ {
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
 
+		const image_a_la_une =
+			"https://images.unsplash.com/photo-1546484750-259a1104b00c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
 		const item_rubrique = `
 			<div class="card" style="max-width: 540px;">
 				<div class="card-body">
@@ -3635,7 +3657,7 @@ class RubriqueCMZ extends MapCMZ {
 							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, type: "tabac" })}
 						</div>
 						<div class="col-md-4">
-							${this.cardItemRubriqueImage()}
+							${this.cardItemRubriqueImage(image_a_la_une)}
 						</div>
 					</div>
 				</div>
@@ -5272,23 +5294,67 @@ class RubriqueCMZ extends MapCMZ {
 			return false;
 		}
 
-		document.querySelector(".title_right_side_jheo_js").innerText = `
-			Liste de mes favoris ${rubrique_type_object.name}:
-		`;
+		if (!rubrique_type_object.is_active) {
+			swal(
+				`
+				Cette section '${rubrique_type_object.name}' n'est pas active. Souhaitez-vous l'activer ?
+			`,
+				{
+					buttons: {
+						cancel: "Annuler",
+						ok: {
+							text: "Active",
+							value: "ok",
+							className: "swal-button swal-button--info",
+						},
+					},
+				}
+			).then((value) => {
+				if (value === "ok") {
+					///active rubrique
+					this.activeRubrique(rubrique_type_object.api_name);
 
-		const parent_content = document.querySelector(".favory_list_jheo_js");
+					//// update history rubrique active
+					this.updateRubriqueActiveHistory();
 
-		parent_content.innerHTML = `
-			<div class="card_mini_chargement card_mini_chargement_jheo_js">
-				<div class="containt">
-					<div class="word word-1">C</div>
-					<div class="word word-2">M</div>
-					<div class="word word-3">Z</div>
+					document.querySelector(".title_right_side_jheo_js").innerText = `
+						Liste de mes favoris ${rubrique_type_object.name}:
+					`;
+
+					const parent_content = document.querySelector(".favory_list_jheo_js");
+
+					parent_content.innerHTML = `
+						<div class="card_mini_chargement card_mini_chargement_jheo_js">
+							<div class="containt">
+								<div class="word word-1">C</div>
+								<div class="word word-2">M</div>
+								<div class="word word-3">Z</div>
+							</div>
+						</div>
+					`;
+
+					rubrique_type_object.injecteListFavory(parent_content);
+				}
+			});
+		} else {
+			document.querySelector(".title_right_side_jheo_js").innerText = `
+				Liste de mes favoris ${rubrique_type_object.name}:
+			`;
+
+			const parent_content = document.querySelector(".favory_list_jheo_js");
+
+			parent_content.innerHTML = `
+				<div class="card_mini_chargement card_mini_chargement_jheo_js">
+					<div class="containt">
+						<div class="word word-1">C</div>
+						<div class="word word-2">M</div>
+						<div class="word word-3">Z</div>
+					</div>
 				</div>
-			</div>
-		`;
+			`;
 
-		rubrique_type_object.injecteListFavory(parent_content);
+			rubrique_type_object.injecteListFavory(parent_content);
+		}
 	}
 
 	injectListRubriqueTypeForNewPOI() {
@@ -5322,17 +5388,47 @@ class RubriqueCMZ extends MapCMZ {
 	openModalAddNewPOI(rubrique_type) {
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 
+		/// check if this rubrique can be added.
 		if (!rubrique_type_object.is_can_add_new_poi) {
 			let message = `
-				Pour cette rubrique '${rubrique_type_object.name}', cette fonctionnalité n'est pas encore développée. Merci de votre compréhension.
+				Pour la section '${rubrique_type_object.name}', cette fonctionnalité n'est pas encore développée. Nous vous remercions de votre compréhension.
 			`;
 
 			this.alertSwalFunctionNoteImplement(message);
 			return false;
 		}
 
-		/// abstraction for function add New poi rubrique ---------
-		rubrique_type_object.addNewPOI();
+		if (!rubrique_type_object.is_active) {
+			swal(
+				`
+				Cette section '${rubrique_type_object.name}' n'est pas active. Souhaitez-vous l'activer ?
+			`,
+				{
+					buttons: {
+						cancel: "Annuler",
+						ok: {
+							text: "Active",
+							value: "ok",
+							className: "swal-button swal-button--info",
+						},
+					},
+				}
+			).then((value) => {
+				if (value === "ok") {
+					///active rubrique
+					this.activeRubrique(rubrique_type_object.api_name);
+
+					//// update history rubrique active
+					this.updateRubriqueActiveHistory();
+
+					/// abstraction for function add New poi rubrique ---------
+					rubrique_type_object.addNewPOI();
+				}
+			});
+		} else {
+			/// abstraction for function add New poi rubrique ---------
+			rubrique_type_object.addNewPOI();
+		}
 	}
 
 	addNewPOIMarche() {

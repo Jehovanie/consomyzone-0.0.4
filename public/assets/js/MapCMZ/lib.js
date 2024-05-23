@@ -247,4 +247,3 @@ function resetSliderCustomise(identifiant, { min, max }) {
 
 	slider_for_customise.noUiSlider.set(slider_value_customise);
 }
-

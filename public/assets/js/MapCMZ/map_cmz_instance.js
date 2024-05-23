@@ -579,8 +579,3 @@ function makeMarkerDraggablePOI(rubrique_type, rubrique_id) {
 function cancelEditMarkerMarche(rubrique_type, rubrique_id) {
 	MAP_CMZ.cancelEditMarkerMarche(rubrique_type, rubrique_id);
 }
-
-
-function addPendingDataMarche(data){
-	
-}

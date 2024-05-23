@@ -535,8 +535,6 @@ class MapCMZ {
 
 				let information_user_conected = document.querySelector(".information_user_conected_jheo_js");
 
-				information_user_conected = true;
-
 				const add_new_feature = information_user_conected
 					? ` <hr class="mt-2 mb-1">
 						Nouveau POI

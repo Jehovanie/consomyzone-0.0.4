@@ -792,8 +792,10 @@ function handleSubmitNewPOIMarche() {
 					"success"
 				)
 					.then((response) => {
-						//// from instance///
+						console.clear();
 						console.log(response);
+
+						//// function need instance of MAP
 						addPendingDataMarche(data);
 					})
 					.finally(() => {
