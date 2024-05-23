@@ -9,7 +9,7 @@ let AUDIO_FOR_MESSAGE = null;
 let Cookies2 = Cookies.noConflict();
 // cloneResultDepResto()
 
-if (!current_url.includes("/new_home") && document.querySelector(".form_content_search_navbar_js")) {
+if (current_url.includes("/old_home") && document.querySelector(".form_content_search_navbar_js")) {
 	const search_form = document.querySelector(".form_content_search_navbar_js");
 	if (getDataInLocalStorage("type")) {
 		const baseOne = getDataInLocalStorage("type");

@@ -16,10 +16,6 @@ if (!cta_show_list_nav_left) {
 
 if (document.querySelector(".form_content_search_navbar_js")) {
 	const search_form = document.querySelector(".form_content_search_navbar_js");
-	if (getDataInLocalStorage("type")) {
-		const baseOne = getDataInLocalStorage("type");
-		search_form.setAttribute("action", `${search_form.getAttribute("action")}/${baseOne}`);
-	}
 
 	search_form.addEventListener("submit", (e) => {
 		const cles0 = document.querySelector(".input_search_type_js").value.trim();
@@ -31,7 +27,6 @@ if (document.querySelector(".form_content_search_navbar_js")) {
 			new swal("Attention !", "Veuillez renseigner au moins l'adresse!", "error").then((value) => {
 				document.querySelector(".input_mots_cle_js").classList.add("border_red");
 			});
-			
 		} else if (cles1 === "") {
 			e.preventDefault();
 
@@ -39,7 +34,6 @@ if (document.querySelector(".form_content_search_navbar_js")) {
 				document.querySelector(".input_mots_cle_js").classList.add("border_red");
 			});
 		}
-
 	});
 
 	const inputs = [document.querySelector(".input_search_type_js"), document.querySelector(".input_mots_cle_js")];

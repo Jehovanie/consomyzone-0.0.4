@@ -878,18 +878,28 @@ class RubriqueCMZ extends MapCMZ {
 
 			this.allRubriques = this.allRubriques.map((item) => {
 				item.is_active = history[item.api_name]["is_active"];
-
-				if (this.is_search_mode) {
-					let tab = item.dico_name.map((i) => i.toLowerCase());
-					if (tab.includes(this.search_options["cles0"].toLowerCase())) {
-						item.is_active = true;
-					} else {
-						item.is_active = false;
-					}
-				}
-
 				return item;
 			});
+		}
+
+		if (this.is_search_mode) {
+			let is_have_rubrique_match = false;
+			let rubrique_match_type = "";
+
+			this.allRubriques.forEach((item_rubrique) => {
+				let tab_temp = item_rubrique.dico_name.map((i) => i.toLowerCase());
+				if (tab_temp.includes(this.search_options["cles0"].toLowerCase())) {
+					is_have_rubrique_match = true;
+					rubrique_match_type = item_rubrique.api_name;
+				}
+			});
+
+			if (is_have_rubrique_match) {
+				this.allRubriques = this.allRubriques.map((item) => {
+					item.is_active = item.api_name === rubrique_match_type;
+					return item;
+				});
+			}
 		}
 
 		this.updateRubriqueActiveHistory();

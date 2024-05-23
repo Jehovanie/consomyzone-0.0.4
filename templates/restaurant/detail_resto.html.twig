@@ -106,6 +106,7 @@
 									</a>
 								</div>
 							</div>
+
 							<div class="col-4 flex_content_end content_tribuG_pastille_jheo_js">
 								<div class="super_container_js_nantenaina">
 									<div class="mainContainerLogoTribu">
@@ -254,8 +255,17 @@
 			</div>
 
 			<div class="content_other_detail_rubrique p-2">
+
+				{% if app.user %}
+					<div class="mb-3 mt-3">
+						<label for="getTagsPOI" class="form-label">Taguer la photo</label>
+						<input type="text" class="form-control input_black" id="getTagsPOI" onchange="getTags(this)" placeholder="#tag1,#tag2,#tag3,...">
+					</div>
+				{% endif %}
+
 				{% set len = photos|length %}
 				{% set height = len > 0 ? "" : "h-40" %}
+				
 				<div class="content_images {{height}}">
 					{% if app.user %}
 						<label type="button" for="photo-upload-detail" class="add-photo-detail">
@@ -381,7 +391,8 @@
 						{% if details.cafe %}
 							<span class="badge bg-warning text-dark">
 								<i class="fa-solid fa-coffee-pot"></i>
-								café
+								café 
+							</span>
 						{% endif %}
 						{% if details.salonThe %}
 							<span class="badge bg-warning text-dark">
