@@ -954,6 +954,7 @@ class RubriqueCMZ extends MapCMZ {
 			}
 
 			const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
+			const data_options = response.hasOwnProperty("options") ? response.options : {};
 
 			this.defaultData[api_name] = {
 				data: response.data,
@@ -977,6 +978,7 @@ class RubriqueCMZ extends MapCMZ {
 					// }),
 					// ...this.defaultData[api_name]["pastille"],
 				],
+				options: { ...data_options },
 				...this.defaultData[api_name],
 			};
 
@@ -1845,6 +1847,8 @@ class RubriqueCMZ extends MapCMZ {
 		let style_marker_point = `width:${wh_m_point.toFixed(1)}px!important;`;
 		style_marker_point = `${style_marker_point}height:${wh_m_point.toFixed(1)}px!important;`;
 		style_marker_point = `${style_marker_point}bottom:-${pb_m_point.toFixed(1)}%!important;`;
+		style_marker_point = `${style_marker_point}border-top-color:white!important;`;
+		style_marker_point = `${style_marker_point}border-left-color:white!important;`;
 
 		single_marker_point.setAttribute("style", style_marker_point);
 
@@ -3466,6 +3470,8 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveResto(item_data) {
+		const rubrique_type = "restaurant";
+
 		const { id, denominationF, name_rubrique, numvoie, typevoie, nomvoie, codpost, villenorm, dep } = item_data;
 		const adresse = `${numvoie} ${typevoie} ${nomvoie} ${codpost} ${villenorm}`;
 		const nom = denominationF;
@@ -3473,6 +3479,55 @@ class RubriqueCMZ extends MapCMZ {
 		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
+
+		//// validation tribu-------
+		let badge_validation = ``; ////<span class="badge bg_dark_purple">n</span>
+		if (document.querySelector(".information_user_conected_jheo_js")) {
+			let validation_cmz = "";
+			let validation_manuelle = "";
+			let validation_partisant = "";
+
+			const data = this.defaultData[rubrique_type];
+
+			if (data.hasOwnProperty("options")) {
+				let options = data["options"];
+				if (options.hasOwnProperty("validation")) {
+					let validation = options["validation"];
+					if (
+						validation.hasOwnProperty("cmz") &&
+						validation.cmz.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
+					) {
+						validation_cmz = `<span class="badge bg_ligth_green">n</span>`;
+					}
+
+					if (
+						validation.hasOwnProperty("manuel") &&
+						validation.manuel.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
+					) {
+						validation_manuelle = `<span class="badge bg_ligth_purple">n</span>`;
+					}
+
+					if (
+						validation.hasOwnProperty("cmz_partisant") &&
+						validation.cmz_partisant.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
+					) {
+						validation_partisant = `<span class="badge bg_dark_green">n</span>`;
+					}
+				}
+			}
+
+			if (validation_cmz !== "" || validation_manuelle !== "" || validation_partisant !== "") {
+				badge_validation = `
+					<hr class="mt-3">
+					<div class="mt-2">
+						${validation_cmz}
+						${validation_manuelle}
+						${validation_partisant}
+					</div>
+				`;
+			}
+		}
+		//// end of the validation ----------
 
 		const image_a_la_une =
 			"https://images.unsplash.com/photo-1592861956120-e524fc739696?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
@@ -3488,6 +3543,7 @@ class RubriqueCMZ extends MapCMZ {
 					<div class="row g-0">
 						<div class="col-md-8">
 							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "restaurant" })}
+							${badge_validation}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage(image_a_la_une)}
@@ -3602,11 +3658,63 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveMarche(item_data) {
+		const rubrique_type = "marche";
+
 		const { id, denominationF, name_rubrique, adresse, dep } = item_data;
 		const nom = denominationF;
+
 		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
+
+		//// validation tribu-------
+		let badge_validation = ``; ////<span class="badge bg_dark_purple">n</span>
+		if (document.querySelector(".information_user_conected_jheo_js")) {
+			let validation_cmz = "";
+			let validation_manuelle = "";
+			let validation_partisant = "";
+
+			const data = this.defaultData[rubrique_type];
+
+			if (data.hasOwnProperty("options")) {
+				let options = data["options"];
+				if (options.hasOwnProperty("validation")) {
+					let validation = options["validation"];
+					if (
+						validation.hasOwnProperty("cmz") &&
+						validation.cmz.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
+					) {
+						validation_cmz = `<span class="badge bg_ligth_green">n</span>`;
+					}
+
+					if (
+						validation.hasOwnProperty("manuel") &&
+						validation.manuel.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
+					) {
+						validation_manuelle = `<span class="badge bg_ligth_purple">n</span>`;
+					}
+
+					if (
+						validation.hasOwnProperty("cmz_partisant") &&
+						validation.cmz_partisant.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
+					) {
+						validation_partisant = `<span class="badge bg_dark_green">n</span>`;
+					}
+				}
+			}
+
+			if (validation_cmz !== "" || validation_manuelle !== "" || validation_partisant !== "") {
+				badge_validation = `
+					<hr class="mt-3">
+					<div class="mt-2">
+						${validation_cmz}
+						${validation_manuelle}
+						${validation_partisant}
+					</div>
+				`;
+			}
+		}
+		//// end of the validation ----------
 
 		const image_a_la_une =
 			"https://images.unsplash.com/photo-1601598851547-4302969d0614?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
@@ -3622,6 +3730,7 @@ class RubriqueCMZ extends MapCMZ {
 					<div class="row g-0">
 						<div class="col-md-8">
 							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "marche" })}
+							${badge_validation}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage(image_a_la_une)}
@@ -4458,7 +4567,9 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setSingleMarkerMarche(item, options = {}) {
-		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "marche");
+		const rubrique_type = "marche";
+
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
 		let poi_options = rubrique_type_object.getOptionPastille(item);
@@ -4468,6 +4579,17 @@ class RubriqueCMZ extends MapCMZ {
 				...poi_options,
 				...options,
 			};
+		}
+
+		const data = this.defaultData[rubrique_type];
+		if (data.hasOwnProperty("options")) {
+			const data_options = data["options"];
+			if (data_options.hasOwnProperty("validation")) {
+				poi_options = {
+					...poi_options,
+					...data_options.validation,
+				};
+			}
 		}
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
@@ -4630,6 +4752,10 @@ class RubriqueCMZ extends MapCMZ {
 	setDivIconMarker(poi_icon, note, options = {}) {
 		const path_icon = IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`;
 
+		///-----
+		let class_indicator_poi = "dark_purple";
+		//// -------
+
 		const zoom_size = { min: this.zoom_min, max: this.zoom_max };
 		const zoom = this.map._zoom;
 
@@ -4661,6 +4787,8 @@ class RubriqueCMZ extends MapCMZ {
 		let style_marker_point = `width:${wh_m_point.toFixed(1)}px!important;`;
 		style_marker_point = `${style_marker_point}height:${wh_m_point.toFixed(1)}px!important;`;
 		style_marker_point = `${style_marker_point}bottom:-${pb_m_point.toFixed(1)}%!important;`;
+		style_marker_point = `${style_marker_point}border-top-color:white!important;`;
+		style_marker_point = `${style_marker_point}border-left-color:white!important;`;
 
 		let point_pastille = "";
 		if (options?.isPastille) {
@@ -4691,22 +4819,14 @@ class RubriqueCMZ extends MapCMZ {
 			point_pastille = `<div class="single_marker_point_pastille" data-pastille-type="${color_pastille}" style="background-color:${color_pastille};${style_m_poi_pas}"></div>`;
 		}
 
-		// let poi_options = {
-		// 	isPastille: false,
-		// 	is_pastille_vert: false,
-		// 	is_pastille_rouge: false,
-		// 	is_pastille_orange: false,
-		// 	is_pastille_blue: false,
-		// };
-
 		return new L.DivIcon({
 			className: "content_single_marker_poi",
 			html: ` 
-					<div class="single_marker_poi" style="${style_m_poi}">
+					<div class="single_marker_poi ${class_indicator_poi}" style="${style_m_poi}">
 						${point_pastille}
 						<img class="single_marker_image" style="${style_image}" src="${path_icon}"/>
 						<div class="single_marker_note">${note}</div>
-						<div class="single_marker_point" style="${style_marker_point}"></div>
+						<div class="single_marker_point ${class_indicator_poi} " style="${style_marker_point}"></div>
 					</div>
 				`,
 			iconAnchor: [11, 30],

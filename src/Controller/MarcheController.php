@@ -201,7 +201,16 @@ class MarcheController extends AbstractController
     ){
         $current_uri= $request->getUri();
         $pathname= parse_url($current_uri, PHP_URL_PATH);
-        // if( str_contains($pathname, "fetch_data")){}
+
+        ///validation -----------
+        $option_avance= [
+            "validation" => [
+                "cmz" => [],
+                "manuelle" => [],
+                "partisant" => []
+            ]
+        ];
+        /// ---------------------
         
         if($request->query->has("minx") && $request->query->has("miny") ){
 
@@ -213,7 +222,8 @@ class MarcheController extends AbstractController
             $datas = $marcheRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
 
             return $this->json([
-                "data" => $datas
+                "data" => $datas,
+                "options" => $option_avance
             ], 200);
         }
 
@@ -238,6 +248,7 @@ class MarcheController extends AbstractController
             return $this->json([
                 "data" => $datas,
                 "pastille" => [],
+                "options" => $option_avance,
                 "count" => $count
             ], 200);
         }

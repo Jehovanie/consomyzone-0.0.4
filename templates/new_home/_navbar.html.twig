@@ -18,10 +18,12 @@
                         </button>
                     </form>
 
-                    <button type="button" class="btn btn-outline-primary ms-2 cta_show_list_nav_left_jheo_js">
-                        <i class="fa-solid fa-spinner fa-spin"></i>
-                    </button>
-                    <div class="tooltip_show_rubrique_list tooltip_show_rubrique_list_jheo_js d-none">Cliquez ici pour voir ou fermer la liste déroulante.</div>
+                    <div class="content_relative">
+                        <button type="button" class="btn btn-outline-primary ms-2 cta_show_list_nav_left_jheo_js">
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                        </button>
+                        <div class="tooltip_show_rubrique_list tooltip_show_rubrique_list_jheo_js d-none">Cliquez ici pour voir ou fermer la liste déroulante.</div>
+                    </div>
                 </div>
             </div>
 		</div>
@@ -91,4 +93,17 @@
 			</div>
 		</div>
 	</div>
+    {% if app.user and userConnected is defined and app.user.type != 'Type' %}
+        <div class="d-none information_user_conected_jheo_js" 
+            data-profil="{{userConnected.photo_profil}}" 
+            data-userFullName="{{ userConnected.lastname ~ " " ~ " " ~ userConnected.firstname }}" 
+            data-toggle-user-id={{app.user.id}} 
+            data-toggle-notif={{app.user.tablenotification}} 
+            data-toggle-msg={{app.user.tablemessage}}
+            data-toggle-is-super-admin={{userConnected.isSuperAdmin ? "true" : "false" }}
+            data-toggle-is-validator={{userConnected.isValidator ? "true" : "false" }}
+        >
+        </div>
+    {% endif %}
+
 </header>

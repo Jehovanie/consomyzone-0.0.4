@@ -117,6 +117,16 @@ class RestaurantController extends AbstractController
         $current_uri= $request->getUri();
         $pathname= parse_url($current_uri, PHP_URL_PATH);
 
+        ///validation -----------
+        $option_avance= [
+            "validation" => [
+                "cmz" => [],
+                "manuelle" => [],
+                "partisant" => []
+            ]
+        ];
+        /// ---------------------
+
         $arrayIdResto = [];
         if($request->getMethod() === "GET" && $request->query->has("minx") && $request->query->has("miny") ){
 
@@ -158,12 +168,14 @@ class RestaurantController extends AbstractController
                 return $this->json([
                     "data" => $data_resto,
                     "pastille" => $arrayIdResto,
+                    "options" => $option_avance
                 ], 200);
             }
 
             return $this->json([
                 "data" => $data_resto,
-                "allIdRestoPastille" => $arrayIdResto
+                "allIdRestoPastille" => $arrayIdResto,
+                "options" => $option_avance
             ], 200);
         }
 
@@ -235,13 +247,12 @@ class RestaurantController extends AbstractController
 
             $data_resto= self::mergeDatasAndAvis($datas,$moyenneNote);
 
-            if( str_contains($pathname, "fetch_data")){
-                return $this->json([
-                    "data" => $data_resto,
-                    "pastille" => $arrayIdResto,
-                    "count" => $count
-                ], 200);
-            }
+            return $this->json([
+                "data" => $data_resto,
+                "pastille" => $arrayIdResto,
+                "count" => $count,
+                "options" => $option_avance
+            ], 200);
         }
 
         //// data resto all departement

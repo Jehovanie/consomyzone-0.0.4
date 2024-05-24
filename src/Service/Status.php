@@ -54,8 +54,10 @@ $this->confidentialityService = $confidentialityService;
         if (!$user || $user->getType() === "Type" ) {
             return ["profil" => "", "statusTribut" => "", "userType" => "Type" ];
         }
+
         $userType = $user->getType();
         $userId = $user->getId();
+
         $profil = "";
         $tribuAvatar="";
         if ($userType == "consumer") {
@@ -63,20 +65,22 @@ $this->confidentialityService = $confidentialityService;
         } else {
             $profil = $this->entityManager->getRepository(Supplier::class)->findOneBy(['userId' => intval($userId)]);
         }
+
         $currentTribug=$profil ? $profil->getTributG() : "";
+
         if($currentTribug!=""){
-            
             $tribuAvatar=$this->tributGService->getAvatar($currentTribug)[0]["avatar"];
             $profilTribuG= $this->tributGService->getProfilTributG( $currentTribug , intval($userId ) );
         }
-$pseudo = $profil ?  $this->confidentialityService->getConfFullname($userId, $userId):"";
+
+        $pseudo = $profil ?  $this->confidentialityService->getConfFullname($userId, $userId):"";
         return [
             "id" => $user->getId(),
             "email" => $user->getEmail(),
             "pseudo" => $user->getPseudo(),
             "firstname" =>$profil ?  $profil->getFirstname() : "",
             "lastname" => $profil ? $profil->getLastname() : "",
-"fullname" => $pseudo,
+            "fullname" => $pseudo,
             "photo_profil" => $profil ? $profil->getPhotoProfil() : "",
             "userType" => $userType,
             "tableTribuG" => $profil ? $profil->getTributG() : "",
@@ -84,6 +88,7 @@ $pseudo = $profil ?  $this->confidentialityService->getConfFullname($userId, $us
             "tableNotification" => $user->getTablenotification(),
             "tableMessage" => $user->getTablemessage(),
             "isSuperAdmin" => in_array("ROLE_GODMODE",$user->getRoles()),
+            "isValidator" => in_array("ROLE_VALIDATOR",$user->getRoles()),
             "commune"=>  $profil ? $profil->getCommune():"",
             "quartier"=>$profil ? $profil->getQuartier() :"",
             "code_postal" =>$profil ?  $profil->getCodePostal() :"",
