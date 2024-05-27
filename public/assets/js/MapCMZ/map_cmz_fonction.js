@@ -1135,3 +1135,13 @@ function handleSubmitEditPOIMarche(idMarche) {
 			});
 	}
 }
+
+function showMsgTooltipValidation(element) {
+	const parent = element.parentElement;
+	parent?.querySelector(".validation_tooltip_jheo_js")?.classList?.remove("d-none");
+}
+
+function hideMsgTooltipValidation(element) {
+	const parent = element.parentElement;
+	parent?.querySelector(".validation_tooltip_jheo_js")?.classList?.add("d-none");
+}

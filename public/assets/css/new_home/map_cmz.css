@@ -513,7 +513,7 @@
 }
 .bg_ligth_green {
 	background-color: #a8fcae !important;
-	color: #a8fcae !important;
+	color: #9feca4 !important;
 }
 
 .ligth_purple {
@@ -537,3 +537,37 @@
 }
 
 /* end idenfitication */
+
+.validation_check {
+	font-weight: bold;
+	cursor: pointer !important;
+}
+
+.validation_tooltip {
+	display: block;
+	position: absolute;
+	top: 4px;
+	left: 113px;
+	color: black;
+	padding: 6px;
+	border-radius: 5px;
+	font-size: 0.8rem;
+	cursor: pointer !important;
+	user-select: none !important;
+	/* border: 0.5px solid #302d2d; */
+}
+
+.validation_tooltip:after {
+	position: absolute;
+	content: "";
+	top: 55%;
+	left: -7px;
+	border-top: 4px solid transparent;
+	border-right: 5px solid #302d2d;
+	border-bottom: 4px solid transparent;
+	border-left: 4px solid transparent;
+}
+
+.color {
+	color: #ffa500;
+}

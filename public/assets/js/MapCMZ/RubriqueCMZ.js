@@ -776,6 +776,25 @@ class RubriqueCMZ extends MapCMZ {
 			is_pastille_orange: false,
 			is_pastille_blue: false,
 		};
+
+		this.validation_color = {
+			admin_cmz: {
+				color: "#85dc14",
+				text: "Cette rubrique est vérifiée par l'administrateur.",
+			},
+			validator_cmz: {
+				color: "#27affe",
+				text: "Cette rubrique est vérifiée manuellement par nos validateurs.",
+			},
+			partisant_cmz: {
+				color: "#3af5e2",
+				text: "Cette rubrique est modifiée par un partisan.",
+			},
+			en_cours: {
+				color: "#ffa500",
+				text: "Cette rubrique est en cours de validation.",
+			},
+		};
 	}
 
 	getNumberMarkerDefault() {
@@ -870,6 +889,7 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	async addRubriqueActiveByDefault() {
+		/// check history for the rubrique active. ------
 		//// get last last rubrique active in history.
 		const rubrique_active_history = getDataInSessionStorage("rubrique_active_history");
 
@@ -882,6 +902,9 @@ class RubriqueCMZ extends MapCMZ {
 			});
 		}
 
+		/// end of the check history for the rubrique active.....
+
+		//// special state for the search mode ...
 		if (this.is_search_mode) {
 			let is_have_rubrique_match = false;
 			let rubrique_match_type = "";
@@ -902,6 +925,7 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		}
 
+		//// save current state rubrique active...
 		this.updateRubriqueActiveHistory();
 
 		///add rubrique active on the nav bar (in map_cmz_fonction.js)
@@ -930,9 +954,13 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	async fetchDataIterator() {
+		///filter all rubrique active ...
 		const default_rubrique_active = this.allRubriques.filter((item) => item.is_active === true);
+
+		/// make it to iterator...
 		const rubrique_iterator = default_rubrique_active[Symbol.iterator]();
 
+		//// fetch data rubrique....
 		await this.fetchOriginDataItem(rubrique_iterator);
 	}
 
@@ -3433,6 +3461,67 @@ class RubriqueCMZ extends MapCMZ {
 		activeDataTableOnList("#list_item_rubrique_active_nav_left");
 	}
 
+	stateValidationTooltip(rubrique_type, rubrique_id) {
+		let result_validation_state = "";
+
+		const tab_rand = Object.keys(this.validation_color);
+		const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+
+		let validation_color = this.validation_color[validation_key]["color"]; ////<span class="badge bg_dark_purple">n</span>
+		let validation_text = this.validation_color[validation_key]["text"];
+
+		const data = this.defaultData[rubrique_type];
+
+		if (data.hasOwnProperty("options")) {
+			let options = data["options"];
+
+			if (options.hasOwnProperty("validation")) {
+				let validation = options["validation"];
+
+				if (
+					validation.hasOwnProperty("admin_cmz") &&
+					validation.cmz.some(({ id }) => parseInt(rubrique_id) === parseInt(id))
+				) {
+					validation_color = this.validation_color["admin_cmz"]["color"];
+					validation_text = this.validation_text["admin_cmz"]["text"];
+				} else if (
+					validation.hasOwnProperty("validator_cmz") &&
+					validation.validator_cmz.some(({ id }) => parseInt(rubrique_id) === parseInt(id))
+				) {
+					validation_color = this.validation_color["validator_cmz"]["color"];
+					validation_text = this.validation_text["validator_cmz"]["text"];
+				} else if (
+					validation.hasOwnProperty("partisant_cmz") &&
+					validation.partisant_cmz.some(({ id }) => parseInt(rubrique_id) === parseInt(id))
+				) {
+					validation_color = this.validation_color["partisant_cmz"]["color"];
+					validation_color = this.validation_color["validator_cmz"]["text"];
+				} else if (
+					validation.hasOwnProperty("partisant_cmz") &&
+					validation.partisant_cmz.some(({ id }) => parseInt(rubrique_id) === parseInt(id))
+				) {
+					validation_color = this.validation_color["en_cours"]["color"];
+					validation_text = this.validation_color["en_cours"]["text"];
+				}
+
+				result_validation_state = `
+					<div class="ms-1 mb-2 relative">
+						<i class="fa-regular fa-circle-check validation_check validation_check_jheo_js" 
+							style="color:${validation_color}"
+							onmouseover="showMsgTooltipValidation(this)"
+							onmouseout="hideMsgTooltipValidation(this)"
+						></i>
+						<div class="validation_tooltip validation_tooltip_jheo_js d-none" style="background-color:${validation_color}">
+							${validation_text}
+						</div>
+					</div>
+				`;
+			}
+		}
+
+		return result_validation_state;
+	}
+
 	createItemRubriqueActive(item_data) {
 		const rubrique_active = this.allRubriques.find((item) => item.api_name === item_data.rubrique_type);
 
@@ -3481,52 +3570,12 @@ class RubriqueCMZ extends MapCMZ {
 			: 0;
 
 		//// validation tribu-------
-		let badge_validation = ``; ////<span class="badge bg_dark_purple">n</span>
+		let state_validation_tooltip = "";
 		if (document.querySelector(".information_user_conected_jheo_js")) {
-			let validation_cmz = "";
-			let validation_manuelle = "";
-			let validation_partisant = "";
-
-			const data = this.defaultData[rubrique_type];
-
-			if (data.hasOwnProperty("options")) {
-				let options = data["options"];
-				if (options.hasOwnProperty("validation")) {
-					let validation = options["validation"];
-					if (
-						validation.hasOwnProperty("cmz") &&
-						validation.cmz.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
-					) {
-						validation_cmz = `<span class="badge bg_ligth_green">n</span>`;
-					}
-
-					if (
-						validation.hasOwnProperty("manuel") &&
-						validation.manuel.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
-					) {
-						validation_manuelle = `<span class="badge bg_ligth_purple">n</span>`;
-					}
-
-					if (
-						validation.hasOwnProperty("cmz_partisant") &&
-						validation.cmz_partisant.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
-					) {
-						validation_partisant = `<span class="badge bg_dark_green">n</span>`;
-					}
-				}
-			}
-
-			if (validation_cmz !== "" || validation_manuelle !== "" || validation_partisant !== "") {
-				badge_validation = `
-					<hr class="mt-3">
-					<div class="mt-2">
-						${validation_cmz}
-						${validation_manuelle}
-						${validation_partisant}
-					</div>
-				`;
-			}
+			state_validation_tooltip = this.stateValidationTooltip(rubrique_type, id);
 		}
+		state_validation_tooltip = this.stateValidationTooltip(rubrique_type, id);
+
 		//// end of the validation ----------
 
 		const image_a_la_une =
@@ -3537,13 +3586,15 @@ class RubriqueCMZ extends MapCMZ {
 				<div class="card-body">
 					<div class="row g-0">
 						<div class="col-12">
-							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+							<div class="d-flex align-items-center">
+								<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+								${state_validation_tooltip}
+							</div>
 						</div>
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
 							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "restaurant" })}
-							${badge_validation}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage(image_a_la_une)}
@@ -3668,52 +3719,12 @@ class RubriqueCMZ extends MapCMZ {
 			: 0;
 
 		//// validation tribu-------
-		let badge_validation = ``; ////<span class="badge bg_dark_purple">n</span>
+		let state_validation_tooltip = "";
 		if (document.querySelector(".information_user_conected_jheo_js")) {
-			let validation_cmz = "";
-			let validation_manuelle = "";
-			let validation_partisant = "";
-
-			const data = this.defaultData[rubrique_type];
-
-			if (data.hasOwnProperty("options")) {
-				let options = data["options"];
-				if (options.hasOwnProperty("validation")) {
-					let validation = options["validation"];
-					if (
-						validation.hasOwnProperty("cmz") &&
-						validation.cmz.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
-					) {
-						validation_cmz = `<span class="badge bg_ligth_green">n</span>`;
-					}
-
-					if (
-						validation.hasOwnProperty("manuel") &&
-						validation.manuel.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
-					) {
-						validation_manuelle = `<span class="badge bg_ligth_purple">n</span>`;
-					}
-
-					if (
-						validation.hasOwnProperty("cmz_partisant") &&
-						validation.cmz_partisant.some(({ id: rubrique_id }) => parseInt(rubrique_id) === parseInt(id))
-					) {
-						validation_partisant = `<span class="badge bg_dark_green">n</span>`;
-					}
-				}
-			}
-
-			if (validation_cmz !== "" || validation_manuelle !== "" || validation_partisant !== "") {
-				badge_validation = `
-					<hr class="mt-3">
-					<div class="mt-2">
-						${validation_cmz}
-						${validation_manuelle}
-						${validation_partisant}
-					</div>
-				`;
-			}
+			state_validation_tooltip = this.stateValidationTooltip(rubrique_type, id);
 		}
+		state_validation_tooltip = this.stateValidationTooltip(rubrique_type, id);
+
 		//// end of the validation ----------
 
 		const image_a_la_une =
@@ -3724,13 +3735,17 @@ class RubriqueCMZ extends MapCMZ {
 				<div class="card-body">
 					<div class="row g-0">
 						<div class="col-12">
-							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+							<div class="d-flex align-items-center">
+								<h5 class="card-title">
+									${name_rubrique.toUpperCase()}
+								</h5>
+								${state_validation_tooltip}
+							</div>
 						</div>
 					</div>
 					<div class="row g-0">
 						<div class="col-md-8">
 							${this.cardItemRubriqueNameNoteAddress(nom, moyenne_note, adresse, { id, dep, type: "marche" })}
-							${badge_validation}
 						</div>
 						<div class="col-md-4">
 							${this.cardItemRubriqueImage(image_a_la_une)}

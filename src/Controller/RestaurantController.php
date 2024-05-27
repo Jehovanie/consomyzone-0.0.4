@@ -164,6 +164,11 @@ class RestaurantController extends AbstractController
 
             $data_resto= self::mergeDatasAndAvis($datas,$moyenneNote);
 
+            //// get options for all -----------------------------
+            $ids=array_map('self::getIdAvisResto', $data_resto);
+
+            //// end get options---------------------
+            
             if( str_contains($pathname, "fetch_data")){
                 return $this->json([
                     "data" => $data_resto,

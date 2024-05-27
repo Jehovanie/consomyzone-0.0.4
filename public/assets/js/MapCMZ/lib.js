@@ -153,7 +153,7 @@ function injectSlider(start_min_max = { min: 0, max: 5 }) {
 	noUiSlider.create(skipSlider, {
 		start: [start_min_max.min, start_min_max.max],
 		connect: true,
-		behaviour: "drag",
+		// behaviour: "drag",
 		step: 0.1,
 		range: {
 			min: 0,
@@ -189,7 +189,7 @@ function injectSliderStation(identifiant, start_min_max) {
 	noUiSlider.create(slider_for_price_station, {
 		start: [start_min_max.min, start_min_max.max],
 		connect: true,
-		behaviour: "drag",
+		// behaviour: "drag",
 		step: 0.01,
 		range: {
 			min: start_min_max.min_default,
@@ -221,6 +221,7 @@ function injectSliderCustomise(identifiant, start_min_max) {
 		start: [start_min_max.min, start_min_max.max],
 		connect: true,
 		behaviour: "drag",
+
 		step: 2,
 		range: {
 			min: start_min_max.min_default,
@@ -234,6 +235,7 @@ function injectSliderCustomise(identifiant, start_min_max) {
 				return parseInt(value);
 			},
 		},
+		draggable: false, // Disable dragging initially
 	});
 
 	slider_for_price_station.noUiSlider.on("update", function (values, handle) {
