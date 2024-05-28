@@ -120,9 +120,10 @@ class RestaurantController extends AbstractController
         ///validation -----------
         $option_avance= [
             "validation" => [
-                "cmz" => [],
-                "manuelle" => [],
-                "partisant" => []
+                "admin_cmz" => [],
+                "validator_cmz" => [],
+                "partisant_cmz" => [],
+                "en_cours" => [],
             ]
         ];
         /// ---------------------

@@ -791,12 +791,12 @@ class RubriqueCMZ extends MapCMZ {
 			partisant_cmz: {
 				color: "#3af5e2",
 				className: "partisant_cmz",
-				text: "Cette rubrique est modifiée par un partisan.",
+				text: "Cette rubrique est modifiée par un partisan et en cours de validation.",
 			},
-			en_cours: {
+			source_info: {
 				color: "#ffa500",
-				className: "en_cours",
-				text: "Cette rubrique est en cours de validation.",
+				className: "source_info",
+				text: "Cette rubrique est obtenue par notre source informatique.",
 			},
 		};
 	}
@@ -1228,9 +1228,15 @@ class RubriqueCMZ extends MapCMZ {
 				}
 
 				const response = await this.fetchDataRubrique(api_name.toLowerCase(), { data_max: data_max_fetching });
+
 				if (response.data.length > 0) {
-					///add data peripherique
+					///update defaultData
+
+					/// end of the update default data ---------------
+
+					///add data peripherique ------
 					this.addMarkerPeripherique(response.data, api_name);
+					//// end action add data peripherique---
 				}
 
 				this.fetchDataOnPeripherique(rubrique_iterator);
@@ -3378,6 +3384,7 @@ class RubriqueCMZ extends MapCMZ {
 		cta_show_list_nav_left.innerHTML = `
 			<i class="fa-solid fa-xmark fa_solid_icon_nav_left_jheo_js" data-type="show"></i>
 		`;
+
 		this.bindListItemRubriqueActive();
 
 		cta_show_list_nav_left.addEventListener("click", () => {
@@ -3465,15 +3472,7 @@ class RubriqueCMZ extends MapCMZ {
 		activeDataTableOnList("#list_item_rubrique_active_nav_left");
 	}
 
-	stateValidationTooltip(rubrique_type, rubrique_id) {
-		let result_validation_state = "";
-
-		const tab_rand = Object.keys(this.validation_color);
-		const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
-
-		let validation_color = this.validation_color[validation_key]["color"]; ////<span class="badge bg_dark_purple">n</span>
-		let validation_text = this.validation_color[validation_key]["text"];
-
+	getStateValidationTooltip(rubrique_type, rubrique_id) {
 		const data = this.defaultData[rubrique_type];
 
 		if (data.hasOwnProperty("options")) {
@@ -3484,29 +3483,57 @@ class RubriqueCMZ extends MapCMZ {
 
 				if (
 					validation.hasOwnProperty("admin_cmz") &&
-					validation.cmz.some(({ id }) => parseInt(rubrique_id) === parseInt(id))
+					validation.admin_cmz.some(({ rubriqueId: id }) => parseInt(rubrique_id) === parseInt(id))
 				) {
-					validation_color = this.validation_color["admin_cmz"]["color"];
-					validation_text = this.validation_text["admin_cmz"]["text"];
+					return this.validation_color["admin_cmz"];
 				} else if (
 					validation.hasOwnProperty("validator_cmz") &&
-					validation.validator_cmz.some(({ id }) => parseInt(rubrique_id) === parseInt(id))
+					validation.validator_cmz.some(({ rubriqueId: id }) => parseInt(rubrique_id) === parseInt(id))
 				) {
-					validation_color = this.validation_color["validator_cmz"]["color"];
-					validation_text = this.validation_text["validator_cmz"]["text"];
+					return this.validation_color["validator_cmz"];
 				} else if (
 					validation.hasOwnProperty("partisant_cmz") &&
-					validation.partisant_cmz.some(({ id }) => parseInt(rubrique_id) === parseInt(id))
+					validation.partisant_cmz.some(({ rubriqueId: id }) => parseInt(rubrique_id) === parseInt(id))
 				) {
-					validation_color = this.validation_color["partisant_cmz"]["color"];
-					validation_color = this.validation_color["validator_cmz"]["text"];
+					return this.validation_color["partisant_cmz"];
 				} else if (
-					validation.hasOwnProperty("partisant_cmz") &&
-					validation.partisant_cmz.some(({ id }) => parseInt(rubrique_id) === parseInt(id))
+					validation.hasOwnProperty("source_info") &&
+					validation.source_info.some(({ rubriqueId: id }) => parseInt(rubrique_id) === parseInt(id))
 				) {
-					validation_color = this.validation_color["en_cours"]["color"];
-					validation_text = this.validation_color["en_cours"]["text"];
+					return this.validation_color["source_info"];
 				}
+			}
+		}
+
+		return null;
+	}
+
+	stateValidationTooltipOnList(rubrique_type, rubrique_id) {
+		let result_validation_state = "";
+
+		// const tab_rand = Object.keys(this.validation_color);
+		// const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+
+		// let validation_color = this.validation_color[validation_key]["color"]; ////<span class="badge bg_dark_purple">n</span>
+		// let validation_text = this.validation_color[validation_key]["text"];
+
+		let validation_color = "";
+		let validation_text = "";
+
+		const data = this.defaultData[rubrique_type];
+
+		if (data.hasOwnProperty("options")) {
+			let options = data["options"];
+
+			if (options.hasOwnProperty("validation")) {
+				let validation = this.getStateValidationTooltip(rubrique_type, rubrique_id);
+
+				if (validation === null) {
+					return "";
+				}
+
+				validation_color = validation["color"];
+				validation_text = validation["text"];
 
 				result_validation_state = `
 					<div class="ms-1 mb-2 position-relative">
@@ -3576,9 +3603,9 @@ class RubriqueCMZ extends MapCMZ {
 		//// validation tribu-------
 		let state_validation_tooltip = "";
 		if (document.querySelector(".information_user_conected_jheo_js")) {
-			state_validation_tooltip = this.stateValidationTooltip(rubrique_type, id);
+			state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
 		}
-		state_validation_tooltip = this.stateValidationTooltip(rubrique_type, id);
+		state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
 
 		//// end of the validation ----------
 
@@ -3725,9 +3752,9 @@ class RubriqueCMZ extends MapCMZ {
 		//// validation tribu-------
 		let state_validation_tooltip = "";
 		if (document.querySelector(".information_user_conected_jheo_js")) {
-			state_validation_tooltip = this.stateValidationTooltip(rubrique_type, id);
+			state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
 		}
-		state_validation_tooltip = this.stateValidationTooltip(rubrique_type, id);
+		state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
 
 		//// end of the validation ----------
 
@@ -3971,17 +3998,20 @@ class RubriqueCMZ extends MapCMZ {
 		let poi_options = rubrique_type_object.getOptionPastille(item);
 
 		//// Validation state ----------------------
-		const tab_rand = Object.keys(this.validation_color);
-		const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+		// const tab_rand = Object.keys(this.validation_color);
+		// const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
 
-		let validation_color = this.validation_color[validation_key]["className"];
+		// let validation_color = this.validation_color[validation_key]["className"];
 
-		poi_options = {
-			...poi_options,
-			validation: {
-				className: validation_color,
-			},
-		};
+		let validation = this.getStateValidationTooltip(rubrique_type, item.id);
+		if (validation !== null) {
+			poi_options = {
+				...poi_options,
+				validation: {
+					className: validation["className"],
+				},
+			};
+		}
 		//// -----------------------
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
@@ -4628,17 +4658,19 @@ class RubriqueCMZ extends MapCMZ {
 		}
 
 		//// Validation state ----------------------
-		const tab_rand = Object.keys(this.validation_color);
-		const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+		// const tab_rand = Object.keys(this.validation_color);
+		// const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
 
-		let validation_color = this.validation_color[validation_key]["className"];
-
-		poi_options = {
-			...poi_options,
-			validation: {
-				className: validation_color,
-			},
-		};
+		// let validation_color = this.validation_color[validation_key]["className"];
+		let validation = this.getStateValidationTooltip(rubrique_type, item.id);
+		if (validation !== null) {
+			poi_options = {
+				...poi_options,
+				validation: {
+					className: validation["className"],
+				},
+			};
+		}
 		//// -----------------------
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
@@ -4902,17 +4934,15 @@ class RubriqueCMZ extends MapCMZ {
 			let poi_options = rubrique_type_object.getOptionPastille(item);
 
 			//// Validation state ----------------------
-			const tab_rand = Object.keys(this.validation_color);
-			const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
-
-			let validation_color = this.validation_color[validation_key]["className"];
-
-			poi_options = {
-				...poi_options,
-				validation: {
-					className: validation_color,
-				},
-			};
+			let validation = this.getStateValidationTooltip(rubrique_type, item.id);
+			if (validation !== null) {
+				poi_options = {
+					...poi_options,
+					validation: {
+						className: validation["className"],
+					},
+				};
+			}
 			//// -----------------------
 
 			const note = item.hasOwnProperty("moyenne_note") ? parseFloat(item.moyenne_note).toFixed(1) : "0.0";
@@ -4945,17 +4975,15 @@ class RubriqueCMZ extends MapCMZ {
 			let poi_options = rubrique_type_object.getOptionPastille(last_rubrique_item);
 
 			//// Validation state ----------------------
-			const tab_rand = Object.keys(this.validation_color);
-			const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
-
-			let validation_color = this.validation_color[validation_key]["className"];
-
-			poi_options = {
-				...poi_options,
-				validation: {
-					className: validation_color,
-				},
-			};
+			let validation = this.getStateValidationTooltip(rubrique_type, last_rubrique_item.id);
+			if (validation !== null) {
+				poi_options = {
+					...poi_options,
+					validation: {
+						className: validation["className"],
+					},
+				};
+			}
 			//// -----------------------
 
 			markerLastClicked.setIcon(this.setDivIconMarker(icon_not_selected, note, poi_options));

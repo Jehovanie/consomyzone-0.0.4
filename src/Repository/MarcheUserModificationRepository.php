@@ -526,4 +526,27 @@ class MarcheUserModificationRepository extends ServiceEntityRepository
 
         return $marche;
     }
+
+    public function getStatesDataMarche($ids){
+        $data= $this->createQueryBuilder("r")
+                    ->select("r.id,r.action,r.status")
+                    ->leftJoin('r.userId', 'u')
+                    ->addSelect('u.id AS userId')
+                    ->addSelect('u.email AS email')
+
+                    ->leftJoin('r.marche', 'm')
+                    ->addSelect('m.id AS rubriqueId')
+
+                    ->leftJoin('r.validateurId', 'v')
+                    ->addSelect('v.id AS validatorId')
+
+                    ->where("r.marche IN (:u)")
+                    ->setParameter("u",$ids)
+                    ->getQuery()
+                    ->getResult()
+        ;
+        
+
+        return $data;
+    }
 }

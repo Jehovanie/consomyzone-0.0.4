@@ -11,13 +11,13 @@ use App\Service\ConfidentialityService;
 class Status {
     private $entityManager;
     private $tributGService;
-private $confidentialityService;
+    private $confidentialityService;
 
     public function __construct(EntityManagerInterface $entityManager, TributGService $tributGService, ConfidentialityService $confidentialityService)
     {
         $this->entityManager = $entityManager;
         $this->tributGService = $tributGService;
-$this->confidentialityService = $confidentialityService;
+        $this->confidentialityService = $confidentialityService;
     }
 
     public function statusFondateur($user){

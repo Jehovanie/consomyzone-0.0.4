@@ -13,6 +13,7 @@ use App\Service\MailService;
 use App\Service\TributGService;
 use App\Service\PDOConnexionService;
 use App\Service\Status;
+use App\Service\StringTraitementService;
 
 use App\Entity\MarcheUserModification;
 
@@ -197,17 +198,20 @@ class MarcheController extends AbstractController
     #[Route("/api/marche", name: "app_api_marche", methods: ["GET"])]
     public function apiGetMarche(
         MarcheRepository $marcheRepository,
+        MarcheUserModificationRepository $marcheUserModificationRepository,
+        UserRepository $userRepository,
         Request $request,
     ){
         $current_uri= $request->getUri();
         $pathname= parse_url($current_uri, PHP_URL_PATH);
 
         ///validation -----------
-        $option_avance= [
+        $options_validations= [
             "validation" => [
-                "cmz" => [],
-                "manuelle" => [],
-                "partisant" => []
+                "admin_cmz" => [],
+                "validator_cmz" => [],
+                "partisant_cmz" => [],
+                "source_info" => [],
             ]
         ];
         /// ---------------------
@@ -221,9 +225,49 @@ class MarcheController extends AbstractController
 
             $datas = $marcheRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
 
+            /// get all id from the datas
+            $datasId = array_map('self::getAttributeId', $datas);
+
+            $states_marche= $marcheUserModificationRepository->getStatesDataMarche($datasId);
+
+            foreach($datas as $items){
+                if( in_array($items["id"], array_column($states_marche, "rubriqueId"))){
+                    ///find 
+                    $key= array_search($items["id"], array_column($states_marche, "rubriqueId"));
+                    $temp_data= $states_marche[$key];
+                    
+                    //// check the user validator, [user_validator, user_admin,]
+                    if( $temp_data["validatorId"] === null ){
+                        array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                    }else if( $temp_data["validatorId"] !== null){
+                        $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                        if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                            array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                        }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                           if( strtolower($temp_data["action"]) === "modifier" ){
+                                array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                           }
+                        }
+                    }
+                }else{
+                    array_push($options_validations["validation"]["source_info"], [
+                        "id" => -1,
+                        "action" => "source_info",
+                        "userId" => null,
+                        "email" => null,
+                        "rubriqueId" => $items["id"],
+                        "validatortId" => null
+                    ]);
+                }
+            }
+
+            //// end state data validation------------
+
             return $this->json([
                 "data" => $datas,
-                "options" => $option_avance
+                "options" => $options_validations
             ], 200);
         }
 
@@ -244,11 +288,46 @@ class MarcheController extends AbstractController
 
             $datas = $marcheRepository->getDataByFilterOptions($filter_options, $data_max);
 
+            /// get all id from the datas
+            $datasId = array_map('self::getAttributeId', $datas);
+
+            $states_marche= $marcheUserModificationRepository->getStatesDataMarche($datasId);
+
+            foreach($datas as $items){
+                if( in_array($items["id"], array_column($states_marche, "marcheId"))){
+                    ///find 
+                    $key= array_search($items["id"], array_column($states_marche, "marcheId"));
+                    $temp_data= $states_marche[$key];
+                    
+                    //// check the user validator, [user_validator, user_admin,]
+                    if( $temp_data["validatorId"] === null ){
+                        array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                    }else if( $temp_data["validatorId"] !== null){
+                        $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                        if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                            array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                        }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                           if( strtolower($temp_data["action"]) === "modifier" ){
+                                array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                           }else{
+                           }
+                        }
+                    }
+                }else{
+                    array_push($options_validations["validation"]["source_info"], $temp_data);
+                }
+            }
+
+            //// end state data validation------------
+
             $count = $marcheRepository->getDataByFilterOptionsCount($filter_options);
+
             return $this->json([
                 "data" => $datas,
                 "pastille" => [],
-                "options" => $option_avance,
+                "options" => $options_validations,
                 "count" => $count
             ], 200);
         }
@@ -290,6 +369,11 @@ class MarcheController extends AbstractController
             "data" => $datas
         ], 200);
     }
+
+    static function getAttributeId($data){
+        return $data["id"];
+    } 
+
 
     #[Route("/marche/add_new_element", name: "app_add_new_element", methods: ["POST"])]
     public function apiAddNewMarche(

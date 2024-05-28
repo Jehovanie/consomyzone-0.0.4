@@ -545,23 +545,24 @@
 }
 
 .validation_tooltip {
-	display: block;
-	position: absolute;
-	top: -10px;
-	left: 20px;
-	color: black;
-	padding: 6px;
-	border-radius: 5px;
-	font-size: 0.8rem;
-	cursor: pointer !important;
-	user-select: none !important;
-	width: 300px !important;
+    display: block;
+    position: absolute;
+    top: -10px;
+    left: 20px;
+    color: black;
+    padding: 6px;
+    border-radius: 5px;
+    font-size: 0.6rem;
+    cursor: pointer !important;
+    user-select: none !important;
+    width: 300px !important;
+    font-weight: bold;
 }
 
 .validation_tooltip:after {
 	position: absolute;
 	content: "";
-	top: 55%;
+	top: 45%;
 	left: -7px;
 	border-top: 4px solid transparent;
 	border-right: 5px solid #302d2d;
@@ -587,7 +588,7 @@
 	color: white !important;
 }
 
-.en_cours {
+.source_info {
 	border-color: #ffa500 !important;
 	color: white !important;
 }

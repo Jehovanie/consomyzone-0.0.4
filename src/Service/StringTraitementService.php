@@ -38,7 +38,7 @@ class StringTraitementService{
      */
     public function normalizedString($str){
         // $str=preg_replace('/[^a-zàâçéèêëîïôûùüÿñæœ0-9 ]/i',' ',$str);
-$str=preg_replace('/[^a-zàâçéèêëîïôûùüÿ#$-@&|+*\/.,;?!\'":`()[]{}=~_«»<>ñæœ0-9 ]/i',' ',$str);
+        $str=preg_replace('/[^a-zàâçéèêëîïôûùüÿ#$-@&|+*\/.,;?!\'":`()[]{}=~_«»<>ñæœ0-9 ]/i',' ',$str);
         $tmp=\Normalizer::normalize($str,\Normalizer::NFD);
         $str = iconv('UTF-8','ASCII//TRANSLIT//IGNORE',$tmp);
         $str = preg_replace('/[^a-z0-9 ]/i', '', $str);
