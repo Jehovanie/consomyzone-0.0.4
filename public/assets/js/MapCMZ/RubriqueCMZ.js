@@ -1230,9 +1230,9 @@ class RubriqueCMZ extends MapCMZ {
 				const response = await this.fetchDataRubrique(api_name.toLowerCase(), { data_max: data_max_fetching });
 
 				if (response.data.length > 0) {
-					///update defaultData
-
-					/// end of the update default data ---------------
+					//// updata default data
+					this.updateDefaultData(response, api_name);
+					//// end of updata data---------
 
 					///add data peripherique ------
 					this.addMarkerPeripherique(response.data, api_name);
@@ -1252,6 +1252,83 @@ class RubriqueCMZ extends MapCMZ {
 			};
 			return false;
 		}
+	}
+
+	updateDefaultData(dataObject, rubrique_type) {
+		const data = dataObject["data"];
+
+		const rubrique_object = this.defaultData[rubrique_type];
+
+		////save all data
+		const new_data_rubrique = data.filter(
+			(item) => !this.defaultData[rubrique_type].data.some((jtem) => parseInt(jtem.id) === parseInt(item.id))
+		);
+
+		this.defaultData[rubrique_type]["data"] = [...new_data_rubrique, ...this.defaultData[rubrique_type]["data"]];
+
+		console.clear();
+		console.log(new_data_rubrique);
+		console.log(dataObject);
+
+		if (dataObject.hasOwnProperty("options")) {
+			const dataObject_options = dataObject.options;
+
+			if (!rubrique_object.hasOwnProperty("options")) {
+				this.defaultData[rubrique_type]["options"] = dataObject["options"];
+			} else {
+				const ro_options = rubrique_object.options;
+
+				if (dataObject_options.hasOwnProperty("validation")) {
+					const dataObject_options_validation = dataObject_options.validation;
+
+					if (!ro_options.hasOwnProperty("validation")) {
+						this.defaultData[rubrique_type]["options"]["validation"] = dataObject_options_validation;
+					} else {
+						this.defaultData[rubrique_type]["options"]["validation"] = {
+							...this.defaultData[rubrique_type]["options"]["validation"],
+							admin_cmz: [
+								...dataObject_options_validation["admin_cmz"].filter(
+									(item) =>
+										!this.defaultData[rubrique_type]["options"]["validation"]["admin_cmz"].some(
+											(jtem) => parseInt(item.rubriqueId) === parseInt(jtem.rubriqueId)
+										)
+								),
+								...this.defaultData[rubrique_type]["options"]["validation"]["admin_cmz"],
+							],
+							partisant_cmz: [
+								...dataObject_options_validation["partisant_cmz"].filter(
+									(item) =>
+										!this.defaultData[rubrique_type]["options"]["validation"]["partisant_cmz"].some(
+											(jtem) => parseInt(item.rubriqueId) === parseInt(jtem.rubriqueId)
+										)
+								),
+								...this.defaultData[rubrique_type]["options"]["validation"]["partisant_cmz"],
+							],
+							source_info: [
+								...dataObject_options_validation["source_info"].filter(
+									(item) =>
+										!this.defaultData[rubrique_type]["options"]["validation"]["source_info"].some(
+											(jtem) => parseInt(item.rubriqueId) === parseInt(jtem.rubriqueId)
+										)
+								),
+								...this.defaultData[rubrique_type]["options"]["validation"]["source_info"],
+							],
+							validator_cmz: [
+								...dataObject_options_validation["validator_cmz"].filter(
+									(item) =>
+										!this.defaultData[rubrique_type]["options"]["validation"]["validator_cmz"].some(
+											(jtem) => parseInt(item.rubriqueId) === parseInt(jtem.rubriqueId)
+										)
+								),
+								...this.defaultData[rubrique_type]["options"]["validation"]["validator_cmz"],
+							],
+						};
+					}
+				}
+			}
+		}
+
+		console.log(this.defaultData[rubrique_type]);
 	}
 
 	addMarkerPeripherique(data, rubrique_type) {
