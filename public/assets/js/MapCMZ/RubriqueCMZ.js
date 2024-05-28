@@ -1264,11 +1264,19 @@ class RubriqueCMZ extends MapCMZ {
 			(item) => !this.defaultData[rubrique_type].data.some((jtem) => parseInt(jtem.id) === parseInt(item.id))
 		);
 
-		this.defaultData[rubrique_type]["data"] = [...new_data_rubrique, ...this.defaultData[rubrique_type]["data"]];
+		//// show data much only requirement.
+		const rubrique_type_object = this.allRubriques.find(
+			(item) => item.is_active === true && item.api_name === rubrique_type
+		);
 
-		console.clear();
-		console.log(new_data_rubrique);
-		console.log(dataObject);
+		const new_data_rubrique_show = new_data_rubrique.filter((ktem) =>
+			rubrique_type_object.checkIsMuchOnFilter(ktem)
+		);
+
+		this.addDataToTableListLeft(new_data_rubrique_show, rubrique_type);
+		//// end of add list lef------------------------
+
+		this.defaultData[rubrique_type]["data"] = [...new_data_rubrique, ...this.defaultData[rubrique_type]["data"]];
 
 		if (dataObject.hasOwnProperty("options")) {
 			const dataObject_options = dataObject.options;
@@ -1327,8 +1335,6 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			}
 		}
-
-		console.log(this.defaultData[rubrique_type]);
 	}
 
 	addMarkerPeripherique(data, rubrique_type) {
@@ -1442,19 +1448,6 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			}
 		});
-
-		////save all data
-		const new_data_rubrique = data.filter(
-			(item) => !this.defaultData[rubrique_type].data.some((jtem) => parseInt(jtem.id) === parseInt(item.id))
-		);
-
-		this.defaultData[rubrique_type]["data"] = [...new_data_rubrique, ...this.defaultData[rubrique_type]["data"]];
-
-		//// show data much only requirement.
-		const new_data_rubrique_show = new_data_rubrique.filter((ktem) =>
-			rubrique_type_object.checkIsMuchOnFilter(ktem)
-		);
-		this.addDataToTableListLeft(new_data_rubrique_show, rubrique_type);
 	}
 
 	addDataToTableListLeft(new_data_rubrique, rubrique_type) {
@@ -2961,12 +2954,15 @@ class RubriqueCMZ extends MapCMZ {
 		let spec_data_by_filter = null;
 		if (this.is_search_mode === false) {
 			spec_data_by_filter = await this.fetchSpecifiDataByFilterOptions(rubrique_type);
+			console.log(spec_data_by_filter);
 
-			this.defaultData[rubrique_type]["data"] = mergeArraysUnique(
-				this.defaultData[rubrique_type]["data"],
-				spec_data_by_filter["data"],
-				"id"
-			);
+			// this.defaultData[rubrique_type]["data"] = mergeArraysUnique(
+			// 	this.defaultData[rubrique_type]["data"],
+			// 	spec_data_by_filter["data"],
+			// 	"id"
+			// );
+
+			this.updateDefaultData(spec_data_by_filter, rubrique_type);
 		} else {
 			spec_data_by_filter = {
 				data: this.defaultData[rubrique_type]["data"].filter((i) =>

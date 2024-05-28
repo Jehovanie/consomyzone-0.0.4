@@ -226,40 +226,40 @@ class MarcheController extends AbstractController
             $datas = $marcheRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy);
 
             /// get all id from the datas
-            $datasId = array_map('self::getAttributeId', $datas);
+            if( $this->getUser()){
+                $datasId = array_map('self::getAttributeId', $datas);
 
-            $states_marche= $marcheUserModificationRepository->getStatesDataMarche($datasId);
+                $states_marche= $marcheUserModificationRepository->getStatesDataMarche($datasId);
 
-            foreach($datas as $items){
-                if( in_array($items["id"], array_column($states_marche, "rubriqueId"))){
-                    ///find 
-                    $key= array_search($items["id"], array_column($states_marche, "rubriqueId"));
-                    $temp_data= $states_marche[$key];
-                    
-                    //// check the user validator, [user_validator, user_admin,]
-                    if( $temp_data["validatorId"] === null ){
-                        array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
-                    }else if( $temp_data["validatorId"] !== null){
-                        $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+                foreach($datas as $items){
+                    if( in_array($items["id"], array_column($states_marche, "rubriqueId"))){
+                        ///find 
+                        $key= array_search($items["id"], array_column($states_marche, "rubriqueId"));
+                        $temp_data= $states_marche[$key];
+                        
+                        //// check the user validator, [user_validator, user_admin,]
+                        if( $temp_data["validatorId"] === null ){
+                            array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                        }else if( $temp_data["validatorId"] !== null){
+                            $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
 
-                        if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
-                            array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+                            if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["admin_cmz"], $temp_data);
 
-                        }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
-                           if( strtolower($temp_data["action"]) === "modifier" ){
-                                array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
-                           }
+                            }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                            }
                         }
+                    }else{
+                        array_push($options_validations["validation"]["source_info"], [
+                            "id" => -1,
+                            "action" => "source_info",
+                            "userId" => null,
+                            "email" => null,
+                            "rubriqueId" => $items["id"],
+                            "validatortId" => null
+                        ]);
                     }
-                }else{
-                    array_push($options_validations["validation"]["source_info"], [
-                        "id" => -1,
-                        "action" => "source_info",
-                        "userId" => null,
-                        "email" => null,
-                        "rubriqueId" => $items["id"],
-                        "validatortId" => null
-                    ]);
                 }
             }
 
@@ -289,34 +289,43 @@ class MarcheController extends AbstractController
             $datas = $marcheRepository->getDataByFilterOptions($filter_options, $data_max);
 
             /// get all id from the datas
-            $datasId = array_map('self::getAttributeId', $datas);
+            if( $this->getUser()){
+                $datasId = array_map('self::getAttributeId', $datas);
 
-            $states_marche= $marcheUserModificationRepository->getStatesDataMarche($datasId);
+                $states_marche= $marcheUserModificationRepository->getStatesDataMarche($datasId);
 
-            foreach($datas as $items){
-                if( in_array($items["id"], array_column($states_marche, "marcheId"))){
-                    ///find 
-                    $key= array_search($items["id"], array_column($states_marche, "marcheId"));
-                    $temp_data= $states_marche[$key];
-                    
-                    //// check the user validator, [user_validator, user_admin,]
-                    if( $temp_data["validatorId"] === null ){
-                        array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
-                    }else if( $temp_data["validatorId"] !== null){
-                        $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+                foreach($datas as $items){
+                    if( in_array($items["id"], array_column($states_marche, "marcheId"))){
+                        ///find 
+                        $key= array_search($items["id"], array_column($states_marche, "marcheId"));
+                        $temp_data= $states_marche[$key];
+                        
+                        //// check the user validator, [user_validator, user_admin,]
+                        if( $temp_data["validatorId"] === null ){
+                            array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                        }else if( $temp_data["validatorId"] !== null){
+                            $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
 
-                        if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
-                            array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+                            if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["admin_cmz"], $temp_data);
 
-                        }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
-                           if( strtolower($temp_data["action"]) === "modifier" ){
-                                array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
-                           }else{
-                           }
+                            }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                            if( strtolower($temp_data["action"]) === "modifier" ){
+                                    array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                            }else{
+                            }
+                            }
                         }
+                    }else{
+                        array_push($options_validations["validation"]["source_info"], [
+                            "id" => -1,
+                            "action" => "source_info",
+                            "userId" => null,
+                            "email" => null,
+                            "rubriqueId" => $items["id"],
+                            "validatortId" => null
+                        ]);
                     }
-                }else{
-                    array_push($options_validations["validation"]["source_info"], $temp_data);
                 }
             }
 

@@ -111,19 +111,20 @@ class RestaurantController extends AbstractController
         UserRepository $userRepository,
         Tribu_T_Service $tribu_T_Service,
         TributGService $tributGService,
-        AvisRestaurantRepository $avisRestaurantRepository
+        AvisRestaurantRepository $avisRestaurantRepository,
+        BddRestoUserModifRepository $bddRestoUserModifRepository
     ) {
 
         $current_uri= $request->getUri();
         $pathname= parse_url($current_uri, PHP_URL_PATH);
 
         ///validation -----------
-        $option_avance= [
+        $options_validations= [
             "validation" => [
                 "admin_cmz" => [],
                 "validator_cmz" => [],
                 "partisant_cmz" => [],
-                "en_cours" => [],
+                "source_info" => [],
             ]
         ];
         /// ---------------------
@@ -166,7 +167,41 @@ class RestaurantController extends AbstractController
             $data_resto= self::mergeDatasAndAvis($datas,$moyenneNote);
 
             //// get options for all -----------------------------
-            $ids=array_map('self::getIdAvisResto', $data_resto);
+            if( $this->getUser()){
+                $ids=array_map('self::getIdAvisResto', $data_resto);
+                $states_resto= $bddRestoUserModifRepository->getStatesDataResto($ids);
+
+                foreach($data_resto as $items){
+                    if( in_array($items["id"], array_column($states_resto, "rubriqueId"))){
+                        ///find 
+                        $key= array_search($items["id"], array_column($states_resto, "rubriqueId"));
+                        $temp_data= $states_resto[$key];
+                        
+                        //// check the user validator, [user_validator, user_admin,]
+                        if( $temp_data["validatorId"] === null ){
+                            array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                        }else if( $temp_data["validatorId"] !== null){
+                            $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                            if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                            }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                            }
+                        }
+                    }else{
+                        array_push($options_validations["validation"]["validator_cmz"], [
+                            "id" => -1,
+                            "action" => "validator_cmz",
+                            "userId" => null,
+                            "email" => null,
+                            "rubriqueId" => $items["id"],
+                            "validatortId" => null
+                        ]);
+                    }
+                }
+            }
 
             //// end get options---------------------
             
@@ -174,14 +209,14 @@ class RestaurantController extends AbstractController
                 return $this->json([
                     "data" => $data_resto,
                     "pastille" => $arrayIdResto,
-                    "options" => $option_avance
+                    "options" => $options_validations
                 ], 200);
             }
 
             return $this->json([
                 "data" => $data_resto,
                 "allIdRestoPastille" => $arrayIdResto,
-                "options" => $option_avance
+                "options" => $options_validations
             ], 200);
         }
 
@@ -253,11 +288,50 @@ class RestaurantController extends AbstractController
 
             $data_resto= self::mergeDatasAndAvis($datas,$moyenneNote);
 
+            //// get options for all -----------------------------
+            if( $this->getUser()){
+                $ids=array_map('self::getIdAvisResto', $data_resto);
+                $states_resto= $bddRestoUserModifRepository->getStatesDataResto($ids);
+
+                foreach($data_resto as $items){
+                    if( in_array($items["id"], array_column($states_resto, "rubriqueId"))){
+                        ///find 
+                        $key= array_search($items["id"], array_column($states_resto, "rubriqueId"));
+                        $temp_data= $states_resto[$key];
+                        
+                        //// check the user validator, [user_validator, user_admin,]
+                        if( $temp_data["validatorId"] === null ){
+                            array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                        }else if( $temp_data["validatorId"] !== null){
+                            $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                            if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                            }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                            }
+                        }
+                    }else{
+                        array_push($options_validations["validation"]["validator_cmz"], [
+                            "id" => -1,
+                            "action" => "validator_cmz",
+                            "userId" => null,
+                            "email" => null,
+                            "rubriqueId" => $items["id"],
+                            "validatortId" => null
+                        ]);
+                    }
+                }
+            }
+
+            //// end get options---------------------
+
             return $this->json([
                 "data" => $data_resto,
                 "pastille" => $arrayIdResto,
                 "count" => $count,
-                "options" => $option_avance
+                "options" => $options_validations
             ], 200);
         }
 
@@ -273,13 +347,16 @@ class RestaurantController extends AbstractController
 
         if( str_contains($pathname, "fetch_data")){
             return $this->json([
-                "data" =>self::mergeDatasAndAvis($datas,$moyenneNote)
+                "data" =>self::mergeDatasAndAvis($datas,$moyenneNote),
+                "options" => $options_validations
             ], 200);
         }
 
         return $this->json([
             "data" =>self::mergeDatasAndAvis($datas,$moyenneNote),
             "allIdRestoPastille" => $arrayIdResto,
+            "options" => $options_validations
+            
         ], 200);
     }
 

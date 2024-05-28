@@ -192,6 +192,19 @@ class BddRestoUserModif
      */
     private $status;
 
+
+    /**
+     * @ORM\Column(name="validateur_id", type="integer")
+     * 
+     */
+    private $validateurId;
+
+    /**
+     * @ORM\Column(type="string", length=255, name="action")
+     * 
+     */
+    private string $action;
+
   
 
     public function getId(): ?int
@@ -509,6 +522,46 @@ class BddRestoUserModif
     public function setStatus($status)
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of validateurId
+     */ 
+    public function getValidateurId()
+    {
+        return $this->validateurId;
+    }
+
+    /**
+     * Set the value of validateurId
+     *
+     * @return  self
+     */ 
+    public function setValidateurId($validateurId)
+    {
+        $this->validateurId = $validateurId;
+
+        return $this;
+    }
+
+    /**
+     * Get the value of action
+     */ 
+    public function getAction()
+    {
+        return $this->action;
+    }
+
+    /**
+     * Set the value of action
+     *
+     * @return  self
+     */ 
+    public function setAction($action)
+    {
+        $this->action = $action;
 
         return $this;
     }

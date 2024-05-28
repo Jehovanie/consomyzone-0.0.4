@@ -34,4 +34,17 @@ class BddRestoUserModifRepository extends ServiceEntityRepository
 
         return $this->getEntityManager()->contains($entity);
     }
+
+    public function getStatesDataResto($ids){
+        $data= $this->createQueryBuilder("r")
+                    ->select("r.id, r.userId, r.status, r.restoId as rubriqueId, r.validateurId as validatorId")
+                    ->where("r.restoId IN (:u)")
+                    ->setParameter("u",$ids)
+                    ->getQuery()
+                    ->getResult()
+        ;
+        
+
+        return $data;
+    }
 }
