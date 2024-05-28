@@ -232,6 +232,7 @@
 	border-radius: 10px;
 	box-shadow: 0px 2px 7px 0px black;
 	border-radius: 10px;
+	user-select: none !important;
 }
 
 .details_rubrique {
@@ -546,15 +547,15 @@
 .validation_tooltip {
 	display: block;
 	position: absolute;
-	top: 4px;
-	left: 113px;
+	top: -10px;
+	left: 20px;
 	color: black;
 	padding: 6px;
 	border-radius: 5px;
 	font-size: 0.8rem;
 	cursor: pointer !important;
 	user-select: none !important;
-	/* border: 0.5px solid #302d2d; */
+	width: 300px !important;
 }
 
 .validation_tooltip:after {
@@ -570,4 +571,23 @@
 
 .color {
 	color: #ffa500;
+}
+.admin_cmz {
+	border-color: #85dc14 !important;
+	color: white !important;
+}
+
+.validator_cmz {
+	border-color: #27affe !important;
+	color: white !important;
+}
+
+.partisant_cmz {
+	border-color: #3af5e2 !important;
+	color: white !important;
+}
+
+.en_cours {
+	border-color: #ffa500 !important;
+	color: white !important;
 }

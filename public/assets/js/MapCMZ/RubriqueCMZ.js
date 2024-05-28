@@ -780,18 +780,22 @@ class RubriqueCMZ extends MapCMZ {
 		this.validation_color = {
 			admin_cmz: {
 				color: "#85dc14",
+				className: "admin_cmz",
 				text: "Cette rubrique est vérifiée par l'administrateur.",
 			},
 			validator_cmz: {
 				color: "#27affe",
+				className: "validator_cmz",
 				text: "Cette rubrique est vérifiée manuellement par nos validateurs.",
 			},
 			partisant_cmz: {
 				color: "#3af5e2",
+				className: "partisant_cmz",
 				text: "Cette rubrique est modifiée par un partisan.",
 			},
 			en_cours: {
 				color: "#ffa500",
+				className: "en_cours",
 				text: "Cette rubrique est en cours de validation.",
 			},
 		};
@@ -3505,7 +3509,7 @@ class RubriqueCMZ extends MapCMZ {
 				}
 
 				result_validation_state = `
-					<div class="ms-1 mb-2 relative">
+					<div class="ms-1 mb-2 position-relative">
 						<i class="fa-regular fa-circle-check validation_check validation_check_jheo_js" 
 							style="color:${validation_color}"
 							onmouseover="showMsgTooltipValidation(this)"
@@ -3728,7 +3732,7 @@ class RubriqueCMZ extends MapCMZ {
 		//// end of the validation ----------
 
 		const image_a_la_une =
-			"https://images.unsplash.com/photo-1601598851547-4302969d0614?q=80&w=1528&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+			"https://media.sudouest.fr/8063523/1000x500/so-57ebc25866a4bd6726a44e7a-ph0.jpg?v=1408955534";
 
 		const item_rubrique = `
 			<div class="card" style="max-width: 540px;">
@@ -3959,10 +3963,26 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setSingleMarkerResto(item, options = {}) {
-		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "restaurant");
+		const rubrique_type = "restaurant";
+
+		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
 		let poi_options = rubrique_type_object.getOptionPastille(item);
+
+		//// Validation state ----------------------
+		const tab_rand = Object.keys(this.validation_color);
+		const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+
+		let validation_color = this.validation_color[validation_key]["className"];
+
+		poi_options = {
+			...poi_options,
+			validation: {
+				className: validation_color,
+			},
+		};
+		//// -----------------------
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
@@ -4607,6 +4627,20 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		}
 
+		//// Validation state ----------------------
+		const tab_rand = Object.keys(this.validation_color);
+		const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+
+		let validation_color = this.validation_color[validation_key]["className"];
+
+		poi_options = {
+			...poi_options,
+			validation: {
+				className: validation_color,
+			},
+		};
+		//// -----------------------
+
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
 		const miniFiche = rubrique_type_object.setMiniFiche(item.denominationF, item.dep, item.adresse);
@@ -4768,7 +4802,10 @@ class RubriqueCMZ extends MapCMZ {
 		const path_icon = IS_DEV_MODE ? `/${poi_icon}` : `/public/${poi_icon}`;
 
 		///-----
-		let class_indicator_poi = "dark_purple";
+		let class_indicator_poi = "";
+		if (options && options.hasOwnProperty("validation")) {
+			class_indicator_poi = options["validation"]["className"];
+		}
 		//// -------
 
 		const zoom_size = { min: this.zoom_min, max: this.zoom_max };
@@ -4864,6 +4901,20 @@ class RubriqueCMZ extends MapCMZ {
 
 			let poi_options = rubrique_type_object.getOptionPastille(item);
 
+			//// Validation state ----------------------
+			const tab_rand = Object.keys(this.validation_color);
+			const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+
+			let validation_color = this.validation_color[validation_key]["className"];
+
+			poi_options = {
+				...poi_options,
+				validation: {
+					className: validation_color,
+				},
+			};
+			//// -----------------------
+
 			const note = item.hasOwnProperty("moyenne_note") ? parseFloat(item.moyenne_note).toFixed(1) : "0.0";
 
 			markerRubrique.setIcon(this.setDivIconMarker(icon_selected, note, poi_options));
@@ -4891,23 +4942,21 @@ class RubriqueCMZ extends MapCMZ {
 				? parseFloat(last_rubrique_item.moyenne_note).toFixed(1)
 				: "0.0";
 
-			const data_resto_pastille = this.defaultData[type]["pastille"];
+			let poi_options = rubrique_type_object.getOptionPastille(last_rubrique_item);
 
-			const count_pastille = data_resto_pastille.reduce((sum, item_resto_pastille) => {
-				if (parseInt(item_resto_pastille.id_resto) === parseInt(id)) {
-					sum = sum + 1;
-				}
-				return sum;
-			}, 0);
+			//// Validation state ----------------------
+			const tab_rand = Object.keys(this.validation_color);
+			const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
 
-			let poi_options =
-				count_pastille > 0
-					? {
-							isPastille: true,
-							is_pastille_vert: count_pastille === 1 ? true : false,
-							is_pastille_rouge: count_pastille === 2 ? true : false,
-					  }
-					: {};
+			let validation_color = this.validation_color[validation_key]["className"];
+
+			poi_options = {
+				...poi_options,
+				validation: {
+					className: validation_color,
+				},
+			};
+			//// -----------------------
 
 			markerLastClicked.setIcon(this.setDivIconMarker(icon_not_selected, note, poi_options));
 		}
