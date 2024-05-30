@@ -1257,6 +1257,13 @@ class RubriqueCMZ extends MapCMZ {
 	updateDefaultData(dataObject, rubrique_type) {
 		const data = dataObject["data"];
 
+		if (!this.defaultData.hasOwnProperty(rubrique_type)) {
+			this.defaultData[rubrique_type] = {
+				data: [],
+				pastille: [],
+			};
+		}
+
 		const rubrique_object = this.defaultData[rubrique_type];
 
 		////save all data
@@ -1274,9 +1281,25 @@ class RubriqueCMZ extends MapCMZ {
 		);
 
 		this.addDataToTableListLeft(new_data_rubrique_show, rubrique_type);
-		//// end of add list lef------------------------
+		//// end of add list left------------------------
 
 		this.defaultData[rubrique_type]["data"] = [...new_data_rubrique, ...this.defaultData[rubrique_type]["data"]];
+
+		///data pastille
+		const data_pastille = dataObject.hasOwnProperty("pastille") ? dataObject.pastille : [];
+
+		if (
+			!this.defaultData[rubrique_type].hasOwnProperty("pastille") ||
+			this.defaultData[rubrique_type]["pastille"] === undefined
+		) {
+			this.defaultData[rubrique_type]["pastille"] = [];
+		}
+
+		this.defaultData[rubrique_type]["pastille"] = mergeArraysUnique(
+			this.defaultData[rubrique_type]["pastille"],
+			data_pastille,
+			"id"
+		);
 
 		if (dataObject.hasOwnProperty("options")) {
 			const dataObject_options = dataObject.options;
@@ -1335,6 +1358,9 @@ class RubriqueCMZ extends MapCMZ {
 				}
 			}
 		}
+
+		this.addDataToTableListLeft(new_data_rubrique_show, rubrique_type);
+		//// end of add list left------------------------
 	}
 
 	addMarkerPeripherique(data, rubrique_type) {
@@ -3410,41 +3436,12 @@ class RubriqueCMZ extends MapCMZ {
 			response = await this.fetchDataRubriqueOnSearch(rubrique_api_name, this.search_options);
 		}
 
-		const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
-
-		if (!this.defaultData.hasOwnProperty(rubrique_api_name)) {
-			this.defaultData[rubrique_api_name] = {
-				data: [],
-				pastille: [],
-			};
-		}
-
-		if (
-			!this.defaultData[rubrique_api_name].hasOwnProperty("pastille") ||
-			this.defaultData[rubrique_api_name]["pastille"] === undefined
-		) {
-			this.defaultData[rubrique_api_name] = {
-				pastille: [],
-				...this.defaultData[rubrique_api_name],
-			};
-		}
-
-		this.defaultData[rubrique_api_name]["data"] = mergeArraysUnique(
-			this.defaultData[rubrique_api_name]["data"],
-			response["data"],
-			"id"
-		);
-
-		this.defaultData[rubrique_api_name]["pastille"] = mergeArraysUnique(
-			this.defaultData[rubrique_api_name]["pastille"],
-			data_pastille,
-			"id"
-		);
+		this.updateDefaultData(response, rubrique_api_name);
 
 		this.updateMapAddRubrique(rubrique_api_name);
 
 		//// add card list on the left.
-		this.addDataToTableListLeft(this.defaultData[rubrique_api_name]["data"], rubrique_api_name);
+		// this.addDataToTableListLeft(this.defaultData[rubrique_api_name]["data"], rubrique_api_name);
 	}
 
 	bindActionToShowNavLeft() {
@@ -3712,6 +3709,8 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveFerme(item_data) {
+		const rubrique_type = "ferme";
+
 		const { id, name_rubrique, adresseFerme, nomFerme, dep } = item_data;
 		const adresse = `${adresseFerme}`;
 		const nom = nomFerme;
@@ -3719,6 +3718,15 @@ class RubriqueCMZ extends MapCMZ {
 		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
+
+		//// validation tribu-------
+		let state_validation_tooltip = "";
+		if (document.querySelector(".information_user_conected_jheo_js")) {
+			state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
+		}
+		state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
+
+		//// end of the validation ----------
 
 		const image_a_la_une =
 			"https://images.unsplash.com/photo-1674543548022-66a05fd5057e?q=80&w=1548&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
@@ -3728,7 +3736,10 @@ class RubriqueCMZ extends MapCMZ {
 				<div class="card-body">
 					<div class="row g-0">
 						<div class="col-12">
-							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+							<div class="d-flex align-items-center">
+								<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+								${state_validation_tooltip}
+							</div>
 						</div>
 					</div>
 					<div class="row g-0">
@@ -3747,11 +3758,22 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveStation(item_data) {
+		const rubrique_type = "station";
+
 		const { id, name_rubrique, adresse, nom, dep } = item_data;
 
 		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
+
+		//// validation tribu-------
+		let state_validation_tooltip = "";
+		if (document.querySelector(".information_user_conected_jheo_js")) {
+			state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
+		}
+		state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
+
+		//// end of the validation ----------
 
 		const image_a_la_une =
 			"https://images.unsplash.com/photo-1611159964154-831c28aa83bd?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
@@ -3761,7 +3783,10 @@ class RubriqueCMZ extends MapCMZ {
 				<div class="card-body">
 					<div class="row g-0">
 						<div class="col-12">
-							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+							<div class="d-flex align-items-center">
+								<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+								${state_validation_tooltip}
+							</div>
 						</div>
 					</div>
 					<div class="row g-0">
@@ -3780,11 +3805,22 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveGolf(item_data) {
+		const rubrique_type = "golf";
+
 		const { id, name: nom, name_rubrique, adress: adresse, dep } = item_data;
 
 		const moyenne_note = item_data.hasOwnProperty("moyenne_note")
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
+
+		//// validation tribu-------
+		let state_validation_tooltip = "";
+		if (document.querySelector(".information_user_conected_jheo_js")) {
+			state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
+		}
+		state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
+
+		//// end of the validation ----------
 
 		const image_a_la_une =
 			"https://images.unsplash.com/photo-1632946269126-0f8edbe8b068?q=80&w=1662&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
@@ -3794,7 +3830,10 @@ class RubriqueCMZ extends MapCMZ {
 				<div class="card-body">
 					<div class="row g-0">
 						<div class="col-12">
-							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+							<div class="d-flex align-items-center">
+								<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+								${state_validation_tooltip}
+							</div>
 						</div>
 					</div>
 					<div class="row g-0">
@@ -3863,6 +3902,8 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setListItemRubriqueActiveTabac(item_data) {
+		const rubrique_type = "tabac";
+
 		const {
 			id,
 			denomination_f: denominationF,
@@ -3879,6 +3920,15 @@ class RubriqueCMZ extends MapCMZ {
 			? parseFloat(parseFloat(item_data.moyenne_note).toFixed(2))
 			: 0;
 
+		//// validation tribu-------
+		let state_validation_tooltip = "";
+		if (document.querySelector(".information_user_conected_jheo_js")) {
+			state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
+		}
+		state_validation_tooltip = this.stateValidationTooltipOnList(rubrique_type, id);
+
+		//// end of the validation ----------
+
 		const image_a_la_une =
 			"https://images.unsplash.com/photo-1546484750-259a1104b00c?q=80&w=1470&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
@@ -3887,7 +3937,10 @@ class RubriqueCMZ extends MapCMZ {
 				<div class="card-body">
 					<div class="row g-0">
 						<div class="col-12">
-							<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+							<div class="d-flex align-items-center">
+								<h5 class="card-title">${name_rubrique.toUpperCase()}</h5>
+								${state_validation_tooltip}
+							</div>
 						</div>
 					</div>
 					<div class="row g-0">
@@ -4381,10 +4434,28 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setSingleMarkerFerme(item, options = {}) {
+		const rubrique_type = "ferme";
+
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "ferme");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		const poi_options = rubrique_type_object.getOptionPastille();
+		let poi_options = rubrique_type_object.getOptionPastille();
+
+		//// Validation state ----------------------
+		// const tab_rand = Object.keys(this.validation_color);
+		// const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+
+		// let validation_color = this.validation_color[validation_key]["className"];
+		let validation = this.getStateValidationTooltip(rubrique_type, item.id);
+		if (validation !== null) {
+			poi_options = {
+				...poi_options,
+				validation: {
+					className: validation["className"],
+				},
+			};
+		}
+		//// -----------------------
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
@@ -4502,10 +4573,28 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setSingleMarkerStation(item, options = {}) {
+		const rubrique_type = "station";
+
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "station");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
-		const poi_options = rubrique_type_object.getOptionPastille(item);
+		let poi_options = rubrique_type_object.getOptionPastille(item);
+
+		//// Validation state ----------------------
+		// const tab_rand = Object.keys(this.validation_color);
+		// const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+
+		// let validation_color = this.validation_color[validation_key]["className"];
+		let validation = this.getStateValidationTooltip(rubrique_type, item.id);
+		if (validation !== null) {
+			poi_options = {
+				...poi_options,
+				validation: {
+					className: validation["className"],
+				},
+			};
+		}
+		//// -----------------------
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
@@ -4599,10 +4688,28 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	setSingleMarkerTabac(item, options = {}) {
+		const rubrique_type = "tabac";
+
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "tabac");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
 		let poi_options = rubrique_type_object.getOptionPastille(item);
+
+		//// Validation state ----------------------
+		// const tab_rand = Object.keys(this.validation_color);
+		// const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+
+		// let validation_color = this.validation_color[validation_key]["className"];
+		let validation = this.getStateValidationTooltip(rubrique_type, item.id);
+		if (validation !== null) {
+			poi_options = {
+				...poi_options,
+				validation: {
+					className: validation["className"],
+				},
+			};
+		}
+		//// -----------------------
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
@@ -4847,10 +4954,28 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	settingSingleMarkerGolf(item, options = {}) {
+		const rubrique_type = "golf";
+
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === "golf");
 		const icon = rubrique_type_object.poi_icon.not_selected;
 
 		let poi_options = rubrique_type_object.getOptionPastille(item);
+
+		//// Validation state ----------------------
+		// const tab_rand = Object.keys(this.validation_color);
+		// const validation_key = tab_rand[Math.floor(Math.random() * tab_rand.length)];
+
+		// let validation_color = this.validation_color[validation_key]["className"];
+		let validation = this.getStateValidationTooltip(rubrique_type, item.id);
+		if (validation !== null) {
+			poi_options = {
+				...poi_options,
+				validation: {
+					className: validation["className"],
+				},
+			};
+		}
+		//// -----------------------
 
 		let marker = this.newMarkerPOI(rubrique_type_object.api_name, item, icon, poi_options);
 
@@ -5048,7 +5173,7 @@ class RubriqueCMZ extends MapCMZ {
 			let poi_options = rubrique_type_object.getOptionPastille(last_rubrique_item);
 
 			//// Validation state ----------------------
-			let validation = this.getStateValidationTooltip(rubrique_type, last_rubrique_item.id);
+			let validation = this.getStateValidationTooltip(type, last_rubrique_item.id);
 			if (validation !== null) {
 				poi_options = {
 					...poi_options,

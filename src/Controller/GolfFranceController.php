@@ -123,10 +123,20 @@ class GolfFranceController extends AbstractController
     ) {
         $current_uri= $request->getUri();
         $pathname= parse_url($current_uri, PHP_URL_PATH);
-        // if( str_contains($pathname, "fetch_data")){}
 
         $golfs = [];
         $userID = ($this->getUser()) ? $this->getUser()->getId() : null;
+        
+        ///validation -----------
+        $options_validations= [
+            "validation" => [
+                "admin_cmz" => [],
+                "validator_cmz" => [],
+                "partisant_cmz" => [],
+                "source_info" => [],
+            ]
+        ];
+        /// ---------------------
 
         if($request->query->has("minx") && $request->query->has("miny") ){
 
@@ -141,6 +151,47 @@ class GolfFranceController extends AbstractController
 
             $datas = $golfFranceRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, null, null, $data_max);
             
+            /// get all id from the datas
+            if( $this->getUser()){
+                $datasId = array_map('self::getAttributeId', $datas);
+
+                /// when the modification is yet fonction change this;
+                $states_data= [];
+
+                foreach($datas as $items){
+                    if( in_array($items["id"], array_column($states_data, "rubriqueId"))){
+                        ///find 
+                        $key= array_search($items["id"], array_column($states_data, "rubriqueId"));
+                        $temp_data= $states_data[$key];
+                        
+                        //// check the user validator, [user_validator, user_admin,]
+                        if( $temp_data["validatorId"] === null ){
+                            array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                        }else if( $temp_data["validatorId"] !== null){
+                            $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                            if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                            }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                            }
+                        }
+                    }else{
+                        array_push($options_validations["validation"]["source_info"], [
+                            "id" => -1,
+                            "action" => "source_info",
+                            "userId" => null,
+                            "email" => null,
+                            "rubriqueId" => $items["id"],
+                            "validatortId" => null
+                        ]);
+                    }
+                }
+            }
+            //// end state data validation------------
+
+
             $ids=array_map('App\Service\SortResultService::getIdFromData', $datas);
             $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
 
@@ -149,6 +200,7 @@ class GolfFranceController extends AbstractController
             if( str_contains($pathname, "fetch_data")){
                 return $this->json([
                     "data" => $golfs,
+                    "options" => $options_validations
                 ], 200);
             }
 
@@ -175,12 +227,54 @@ class GolfFranceController extends AbstractController
             $ids=array_map('App\Service\SortResultService::getIdFromData', $datas);
             $moyenneNote = $avisGolfRepository->getAllNoteById($ids);
             
-            $golfs= $golfFranceService->mergeDatasAndAvis($datas, $moyenneNote);
+            $datas= $golfFranceService->mergeDatasAndAvis($datas, $moyenneNote);
+
+
+            /// get all id from the datas
+            if( $this->getUser()){
+                $datasId = array_map('self::getAttributeId', $datas);
+
+                /// when the modification is yet fonction change this;
+                $states_data= [];
+
+                foreach($datas as $items){
+                    if( in_array($items["id"], array_column($states_data, "rubriqueId"))){
+                        ///find 
+                        $key= array_search($items["id"], array_column($states_data, "rubriqueId"));
+                        $temp_data= $states_data[$key];
+                        
+                        //// check the user validator, [user_validator, user_admin,]
+                        if( $temp_data["validatorId"] === null ){
+                            array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                        }else if( $temp_data["validatorId"] !== null){
+                            $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                            if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                            }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                            }
+                        }
+                    }else{
+                        array_push($options_validations["validation"]["source_info"], [
+                            "id" => -1,
+                            "action" => "source_info",
+                            "userId" => null,
+                            "email" => null,
+                            "rubriqueId" => $items["id"],
+                            "validatortId" => null
+                        ]);
+                    }
+                }
+            }
+            //// end state data validation------------
 
             return $this->json([
-                "data" => $golfs,
+                "data" => $datas,
                 "pastille" => [],
-                "count" => $count
+                "count" => $count,
+                "options" => $options_validations
             ], 200);
         }
 
@@ -202,6 +296,10 @@ class GolfFranceController extends AbstractController
             "success" => true,
             "data" => $golfs,
         ], 200);
+    }
+
+    static function getAttributeId($data){
+        return $data["id"];
     }
 
 

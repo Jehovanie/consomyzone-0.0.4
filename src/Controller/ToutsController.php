@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 use Doctrine\ORM\EntityManagerInterface;
@@ -58,14 +59,8 @@ class ToutsController extends AbstractController
     }
 
 
-
-    
-
-    /**
-     * @Route("/" , name="all_departement_touts" , methods={"GET", "POST"})
-     * @Route("/" , name="app_home" , methods={"GET", "POST"})
-     */
-
+    #[Route("/" , name:"all_departement_touts", methods: [ "GET", "POST"])]
+    #[Route("/" , name:"app_home", methods: [ "GET", "POST"])]
     public function getAllDepartementTouts(
         CodeapeRepository $codeApeRep,
         Status $status,
@@ -77,7 +72,6 @@ class ToutsController extends AbstractController
         MessageService $messageService
     ): Response
     {
-        
         ///current user connected
         $user = $this->getUser();
         $userConnected = $status->userProfilService($this->getUser());

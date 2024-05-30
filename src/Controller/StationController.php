@@ -466,6 +466,17 @@ class StationController extends AbstractController
         Request $request,
         StationServiceFrGeomRepository $stationServiceFrGeomRepository, 
     ){
+        
+        ///validation -----------
+        $options_validations= [
+            "validation" => [
+                "admin_cmz" => [],
+                "validator_cmz" => [],
+                "partisant_cmz" => [],
+                "source_info" => [],
+            ]
+        ];
+        /// ---------------------
 
         if($request->getMethod() === "GET" && $request->query->has("minx") && $request->query->has("miny") ){
 
@@ -479,9 +490,49 @@ class StationController extends AbstractController
 
             $datas= $stationServiceFrGeomRepository->getDataBetweenAnd($minx, $miny, $maxx, $maxy, $data_max);
 
+            /// get all id from the datas
+            if( $this->getUser()){
+                $datasId = array_map('self::getAttributeId', $datas);
+
+                /// when the modification is yet fonction change this;
+                $states_data= [];
+
+                foreach($datas as $items){
+                    if( in_array($items["id"], array_column($states_data, "rubriqueId"))){
+                        ///find 
+                        $key= array_search($items["id"], array_column($states_data, "rubriqueId"));
+                        $temp_data= $states_data[$key];
+                        
+                        //// check the user validator, [user_validator, user_admin,]
+                        if( $temp_data["validatorId"] === null ){
+                            array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                        }else if( $temp_data["validatorId"] !== null){
+                            $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                            if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                            }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                            }
+                        }
+                    }else{
+                        array_push($options_validations["validation"]["source_info"], [
+                            "id" => -1,
+                            "action" => "source_info",
+                            "userId" => null,
+                            "email" => null,
+                            "rubriqueId" => $items["id"],
+                            "validatortId" => null
+                        ]);
+                    }
+                }
+            }
+            //// end state data validation------------
             
             return $this->json([
-                "data" => $datas
+                "data" => $datas,
+                "options" => $options_validations
             ], 200);
         }
 
@@ -526,11 +577,52 @@ class StationController extends AbstractController
             $datas = $stationServiceFrGeomRepository->getDataByFilterOptions($filter_options, $data_max);
             
             $count = $stationServiceFrGeomRepository->getDataByFilterOptionsCount($filter_options);
+
+            /// get all id from the datas------------
+            if( $this->getUser()){
+                $datasId = array_map('self::getAttributeId', $datas);
+
+                /// when the modification is yet fonction change this;
+                $states_data= [];
+
+                foreach($datas as $items){
+                    if( in_array($items["id"], array_column($states_data, "rubriqueId"))){
+                        ///find 
+                        $key= array_search($items["id"], array_column($states_data, "rubriqueId"));
+                        $temp_data= $states_data[$key];
+                        
+                        //// check the user validator, [user_validator, user_admin,]
+                        if( $temp_data["validatorId"] === null ){
+                            array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                        }else if( $temp_data["validatorId"] !== null){
+                            $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                            if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                            }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                            }
+                        }
+                    }else{
+                        array_push($options_validations["validation"]["source_info"], [
+                            "id" => -1,
+                            "action" => "source_info",
+                            "userId" => null,
+                            "email" => null,
+                            "rubriqueId" => $items["id"],
+                            "validatortId" => null
+                        ]);
+                    }
+                }
+            }
+            //// end state data validation------------
             
             return $this->json([
                 "data" => $datas,
                 "pastille" => [],
-                "count" => $count
+                "count" => $count,
+                "options" => $options_validations
             ], 200);
         }
 
@@ -539,6 +631,10 @@ class StationController extends AbstractController
         return $this->json([
             "data" => $datas
         ]);
+    }
+
+    static function getAttributeId($data){
+        return $data["id"];
     }
 
 
