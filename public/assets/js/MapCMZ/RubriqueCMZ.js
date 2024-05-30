@@ -5912,6 +5912,28 @@ class RubriqueCMZ extends MapCMZ {
 			}
 		});
 
+		const old_opt_val_source_info = this.defaultData[rubrique_type]["options"]["validation"]["source_info"];
+
+		const new_opt_val_source_info = old_opt_val_source_info.filter((item) => {
+			return parseInt(item.rubriqueId) !== parseInt(item.id);
+		});
+
+		this.defaultData[rubrique_type]["options"]["validation"]["source_info"] = new_opt_val_source_info;
+
+		const old_opt_val_partisant_cmz = this.defaultData[rubrique_type]["options"]["validation"]["partisant_cmz"];
+		const user_id= document.querySelector(".information_user_conected_jheo_js")?.getAttribute("data-toggle-user-id")
+
+		this.defaultData[rubrique_type]["options"]["validation"]["partisant_cmz"] = [
+			...old_opt_val_partisant_cmz,
+			{
+				validatortId: null,
+				rubriqueId: item.id,
+				userId: user_id,
+				action: "Modifier",
+				id: null,
+			},
+		];
+
 		if (!already_exist) {
 			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 
