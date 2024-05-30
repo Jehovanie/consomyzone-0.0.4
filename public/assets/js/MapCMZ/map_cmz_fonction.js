@@ -610,7 +610,7 @@ function injectFilterProduitResto(identifiant_slyder, produit) {
 function htmlSlidePriceCarburantResto(identifiant) {
 	const html_filter_by_note = `
 			<div class="content mt-2 mb-3 p-1">
-				<h2 class="text-black">Faurchette de prix:</h2>
+				<h2 class="text-black">Fourchette de prix:</h2>
 				<div class="slider-area mt-1">
 					<div class="slider-area-wrapper">
 						<span id="${identifiant}_lower_jheo_js"></span>

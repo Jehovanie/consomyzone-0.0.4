@@ -220,7 +220,7 @@ function injectSliderCustomise(identifiant, start_min_max) {
 	noUiSlider.create(slider_for_price_station, {
 		start: [start_min_max.min, start_min_max.max],
 		connect: true,
-		behaviour: "drag",
+		// behaviour: "drag",
 
 		step: 2,
 		range: {

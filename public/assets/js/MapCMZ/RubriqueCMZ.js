@@ -989,6 +989,7 @@ class RubriqueCMZ extends MapCMZ {
 			const data_options = response.hasOwnProperty("options") ? response.options : {};
 
 			this.defaultData[api_name] = {
+				...this.defaultData[api_name],
 				data: response.data,
 				pastille: [
 					...data_pastille,
@@ -1011,7 +1012,6 @@ class RubriqueCMZ extends MapCMZ {
 					// ...this.defaultData[api_name]["pastille"],
 				],
 				options: { ...data_options },
-				...this.defaultData[api_name],
 			};
 
 			this.updateMapAddRubrique(api_name);
@@ -2979,8 +2979,12 @@ class RubriqueCMZ extends MapCMZ {
 		//// fetch new data and update the data global
 		let spec_data_by_filter = null;
 		if (this.is_search_mode === false) {
-			spec_data_by_filter = await this.fetchSpecifiDataByFilterOptions(rubrique_type);
-			console.log(spec_data_by_filter);
+			try {
+				spec_data_by_filter = await this.fetchSpecifiDataByFilterOptions(rubrique_type);
+			} catch (e) {
+				console.log(e);
+				spec_data_by_filter = { data: [] };
+			}
 
 			// this.defaultData[rubrique_type]["data"] = mergeArraysUnique(
 			// 	this.defaultData[rubrique_type]["data"],
@@ -3491,7 +3495,7 @@ class RubriqueCMZ extends MapCMZ {
 			const { api_name, name: name_rubrique } = rubrique;
 
 			const data_rubrique = this.defaultData[api_name];
-			const data_rubrique_data_default = data_rubrique["data"];
+			const data_rubrique_data_default = data_rubrique.hasOwnProperty("data") ? data_rubrique["data"] : [];
 
 			let data_rubrique_data = data_rubrique_data_default.filter((item_data) => {
 				if (rubrique.checkIsMuchOnFilter(item_data)) {
