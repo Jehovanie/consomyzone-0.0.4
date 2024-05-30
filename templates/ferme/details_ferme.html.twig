@@ -15,17 +15,22 @@
             </figure>
 
             <div class="d-flex justify-content-center align-items-stretch flex-gap-2 content_btn_avis mb-2">
-                <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary">
-                    0 avis
-                </button>
-               
-                {% if (app.user and app.user.type!='Type') %}
-                    <button class="btn btn-primary" id="givs-avis-ferme-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button>
-                {% else %}
-                    <button style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()">
+                <span>
+                    <a style="font-size:smaller" class="btn btn-sm btn-secondary">
+                        <span class="nbr_avis_resto_jheo_js">0</span>
+                        avis
+                    </a>
+                    <a style="font-size:smaller" type="button" class="mx-2 btn btn-sm btn-secondary btn_grise_non_actif_js_Elie" onclick="openSwalNonActif()">
                         Donner votre avis
-                    </button>
-                {% endif %}    
+                    </a>
+                    <a style="font-size:smaller" type="button" class="mx-2  btn btn-sm btn-secondary" onclick="openSwalNonActif()">Pastiller</a>
+                    <a type="button" class="btn btn-secondary btn-sm" title="Modifier votre établissement" onclick="openSwalNonActif()">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <a type="button" class="btn btn-secondary btn-sm ms-2" onclick="openSwalNonActif()">
+                        <i class="fa-regular fa-star"></i>
+                    </a>
+                </span>    
             </div>
         </div>
     </div>
@@ -197,11 +202,11 @@
             </div>
         {% endif %}
 
-        {% if (app.user and app.user.type!='Type') %}
+        {# {% if (app.user and app.user.type!='Type') %}
             <div class="content_one_cta mt-2">
                 <button class="btn btn-primary" id="givs-avis-ferme-tom-js" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal" data-bs-whatever="@getbootstrap">Donné votre avis</button>
             </div>
-        {% endif %}    
+        {% endif %}     #}
 
     </div>
 

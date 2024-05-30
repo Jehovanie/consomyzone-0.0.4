@@ -3875,7 +3875,7 @@ class RubriqueCMZ extends MapCMZ {
 		//// end of the validation ----------
 
 		const image_a_la_une =
-			"https://media.sudouest.fr/8063523/1000x500/so-57ebc25866a4bd6726a44e7a-ph0.jpg?v=1408955534";
+			"https://a.cdn-hotels.com/gdcs/production129/d1852/0f3085b0-68ce-11e8-bbf2-0242ac110009.jpg";
 
 		const item_rubrique = `
 			<div class="card" style="max-width: 540px;">
