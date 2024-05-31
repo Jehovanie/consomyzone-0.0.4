@@ -249,3 +249,18 @@ function resetSliderCustomise(identifiant, { min, max }) {
 
 	slider_for_customise.noUiSlider.set(slider_value_customise);
 }
+
+//// for driver js ////
+const driver = window.driver.js.driver;
+
+const driverObj = driver();
+
+driverObj.highlight({
+	element: "#id_content_list_rubrique_active_jheo_js",
+	popover: {
+		title: "Title",
+		description: "Description",
+	},
+});
+
+////

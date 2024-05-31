@@ -3593,6 +3593,7 @@ class RubriqueCMZ extends MapCMZ {
 
 		let validation_color = "";
 		let validation_text = "";
+		let validation_className = "";
 
 		const data = this.defaultData[rubrique_type];
 
@@ -3608,14 +3609,23 @@ class RubriqueCMZ extends MapCMZ {
 
 				validation_color = validation["color"];
 				validation_text = validation["text"];
+				validation_className = validation["className"];
+
+				/*
+					<i class="fa-regular fa-circle-check validation_check validation_check_jheo_js" 
+						style="color:${validation_color}"
+						onmouseover="showMsgTooltipValidation(this)"
+						onmouseout="hideMsgTooltipValidation(this)"
+					></i>
+				*/
 
 				result_validation_state = `
 					<div class="ms-1 mb-2 position-relative">
-						<i class="fa-regular fa-circle-check validation_check validation_check_jheo_js" 
-							style="color:${validation_color}"
-							onmouseover="showMsgTooltipValidation(this)"
-							onmouseout="hideMsgTooltipValidation(this)"
-						></i>
+						<img class="svg_badge_check ${validation_className}_bg validation_check_jheo_js" 
+							 src="/assets/icon/NewIcons/badge_check.svg" alt="badge_check"
+							 onmouseover="showMsgTooltipValidation(this)"
+							 onmouseout="hideMsgTooltipValidation(this)"
+						>
 						<div class="validation_tooltip validation_tooltip_jheo_js d-none" style="background-color:${validation_color}">
 							${validation_text}
 						</div>
@@ -5921,7 +5931,9 @@ class RubriqueCMZ extends MapCMZ {
 		this.defaultData[rubrique_type]["options"]["validation"]["source_info"] = new_opt_val_source_info;
 
 		const old_opt_val_partisant_cmz = this.defaultData[rubrique_type]["options"]["validation"]["partisant_cmz"];
-		const user_id= document.querySelector(".information_user_conected_jheo_js")?.getAttribute("data-toggle-user-id")
+		const user_id = document
+			.querySelector(".information_user_conected_jheo_js")
+			?.getAttribute("data-toggle-user-id");
 
 		this.defaultData[rubrique_type]["options"]["validation"]["partisant_cmz"] = [
 			...old_opt_val_partisant_cmz,
