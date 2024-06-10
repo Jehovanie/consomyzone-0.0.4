@@ -247,24 +247,35 @@
                 </div>
                 <!-- ====== Chart pub One End -->
             </div>
-
-              
             <div class="lc kg hg vg au 2xl:ud-gap-7.5 yb ot 2xl:ud-mt-7.5 ">
-                <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr" >
-                    <div class="head-pub content_header_pub">
-                            <div class="card">
-                                <h6  class="text-center alert alert-info"> Information </h6>
-                                <div class="card-body">
-                                    <p class="mx-auto">
-                                        Veuilliez clique sur le lien suivant pour compléter votre profil.  <br>
-                                        <a class="text-info" style="text-decoration: underline" href="{{path('verification_email', { 'id' : app.user.id })}}">Complétez votre profil.</a>
-                                        Cordialement, <br><br><br>
-                                        CMZ <br>
-                                    </p>
-                                </div>
+                <div class="yd uf 2xl:ud-max-w-230 rh ni bj wr nj xr" > 
+                    {% for key, messages  in app.flashes %}
+                        {% for message in messages %}
+                            <div class="alert alert-{{key}}" role="alert">
+                                {{message}}
+                            </div>
+                        {% endfor %}
+                    {% endfor %}
+
+                    <div class="content_header_pub">
+                        <div class="card" style="width: 100%;">
+                            <h6  class="text-center alert alert-info"> Information </h6>
+                            <div class="card-body">
+                                <p class="mx-auto">
+                                    Veuilliez clique sur le lien suivant pour compléter votre profil.  <br>
+
+                                    <a class="text-info" style="text-decoration: underline" 
+                                        href="{{path('app_resend_emmail_profil_incomplet', { 'user_id' : app.user.id })}}">
+                                        Complétez votre profil.
+                                    </a>
+                                    
+                                    Cordialement, <br><br><br>
+                                    CMZ <br>
+                                </p>
                             </div>
                         </div>
                     </div>
+                </div>
             </div>
              
             <!-- ====== Chart Two Start -->

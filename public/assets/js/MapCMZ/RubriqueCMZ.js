@@ -149,6 +149,10 @@ class RubriqueCMZ extends MapCMZ {
 				addNewPOI: () => {
 					this.addNewPOIResto();
 				},
+				fetchOneData: async (rubrique_id, options = {}) => {
+					const response = await this.fetchOneDataResto(rubrique_id, options);
+					return response;
+				},
 			},
 			{
 				name: "Ferme",
@@ -210,6 +214,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				addNewPOI: () => {
 					this.addNewPOIFerme();
+				},
+				fetchOneData: (rubrique_id, options = {}) => {
+					this.fetchOneDataFerme(rubrique_id, options);
 				},
 			},
 			{
@@ -288,6 +295,9 @@ class RubriqueCMZ extends MapCMZ {
 				},
 				addNewPOI: () => {
 					this.addNewPOIStation();
+				},
+				fetchOneData: (rubrique_id, options = {}) => {
+					this.fetchOneDataStation(rubrique_id, options);
 				},
 			},
 			{
@@ -1255,6 +1265,37 @@ class RubriqueCMZ extends MapCMZ {
 	}
 
 	updateDefaultData(dataObject, rubrique_type) {
+		if (!this.defaultData.hasOwnProperty(rubrique_type)) {
+			this.defaultData[rubrique_type] = {
+				data: [],
+				pastille: [],
+			};
+		}
+
+		const data = dataObject["data"];
+		const new_data_rubrique = data.filter(
+			(item) => !this.defaultData[rubrique_type].data.some((jtem) => parseInt(jtem.id) === parseInt(item.id))
+		);
+
+		//// show data much only requirement.
+		const rubrique_type_object = this.allRubriques.find(
+			(item) => item.is_active === true && item.api_name === rubrique_type
+		);
+
+		const new_data_rubrique_show = new_data_rubrique.filter((ktem) =>
+			rubrique_type_object.checkIsMuchOnFilter(ktem)
+		);
+
+		console.log("new_data_rubrique_show");
+		console.log(new_data_rubrique_show);
+
+		this.updateDefaultDataUpdate(rubrique_type, dataObject);
+
+		this.addDataToTableListLeft(new_data_rubrique_show, rubrique_type);
+		//// end of add list left------------------------
+	}
+
+	updateDefaultDataOld(dataObject, rubrique_type) {
 		const data = dataObject["data"];
 
 		if (!this.defaultData.hasOwnProperty(rubrique_type)) {
@@ -2673,10 +2714,19 @@ class RubriqueCMZ extends MapCMZ {
 
 		const is_match_filter_notation = moyenne_note >= filter.notation.min && moyenne_note <= filter.notation.max;
 
-		const is_match_filter_departement =
-			filter.departement === "tous" || parseInt(filter.departement) === parseInt(rubrique_item.dep)
-				? true
-				: false;
+		let is_match_filter_departement = filter.departement === "tous" ? true : false;
+
+		if (parseInt(filter.departement) === 20) {
+			if (
+				parseInt(rubrique_item.dep) === 20 ||
+				rubrique_item.dep.trim() === "2A" ||
+				rubrique_item.dep.trim() === "2B"
+			) {
+				is_match_filter_departement = true;
+			}
+		} else if (parseInt(filter.departement) === parseInt(rubrique_item.dep)) {
+			is_match_filter_departement = true;
+		}
 
 		return is_match_filter_departement && is_match_filter_notation;
 	}
@@ -4194,7 +4244,8 @@ class RubriqueCMZ extends MapCMZ {
 		let resulthtml = "";
 
 		object_icon.forEach((item_object_icon) => {
-			const path_icon = IS_DEV_MODE ? `/${item_object_icon.icon}` : `/public/${item_object_icon.icon}`;
+			// const path_icon = IS_DEV_MODE ? `/${item_object_icon.icon}` : `/public/${item_object_icon.icon}`;
+			const path_icon = `/${item_object_icon.icon}`;
 
 			let style_image = `width:12pxpx;height:15px;`;
 
@@ -5424,28 +5475,139 @@ class RubriqueCMZ extends MapCMZ {
 		}
 	}
 
-	displayFicheRubrique(id_rubrique, type_rubrique) {
+	async displayFicheRubrique(id_rubrique, rubrique_type) {
 		let is_clicked = false;
 		this.markers.eachLayer((marker) => {
-			if (parseInt(marker.options.id) === parseInt(id_rubrique) && marker.options.type === type_rubrique) {
+			if (parseInt(marker.options.id) === parseInt(id_rubrique) && marker.options.type === rubrique_type) {
 				is_clicked = true;
 				marker.fire("click");
 			}
 		});
 
 		if (!is_clicked) {
-			const data_rubrique = this.defaultData[type_rubrique];
-			const data_item = data_rubrique.data.find((item) => item.id === parseInt(id_rubrique));
+			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
 
-			const rubrique_type_object = this.allRubriques.find((item) => item.api_name === type_rubrique);
+			const data_rubrique = this.defaultData[rubrique_type];
+
+			let data_item = data_rubrique.data.find((item) => item.id === parseInt(id_rubrique));
+			if (!data_item) {
+				const options = {};
+				const response = await rubrique_type_object.fetchOneData(id_rubrique, options);
+
+				if (!this.defaultData.hasOwnProperty(rubrique_type)) {
+					this.defaultData[rubrique_type] = {
+						data: [],
+						pastille: [],
+					};
+				}
+
+				this.defaultData[rubrique_type]["data"] = [
+					...response.data,
+					...this.defaultData[rubrique_type]["data"],
+				];
+
+				const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
+
+				this.defaultData[rubrique_type]["pastille"] = mergeArraysUnique(
+					this.defaultData[rubrique_type]["pastille"],
+					data_pastille,
+					"id"
+				);
+
+				const rubrique_object = this.defaultData[rubrique_type];
+				const dataObject = response;
+
+				if (dataObject.hasOwnProperty("options")) {
+					const dataObject_options = dataObject.options;
+
+					if (!rubrique_object.hasOwnProperty("options")) {
+						this.defaultData[rubrique_type]["options"] = dataObject["options"];
+					} else {
+						const ro_options = rubrique_object.options;
+
+						if (dataObject_options.hasOwnProperty("validation")) {
+							const dataObject_options_validation = dataObject_options.validation;
+
+							if (!ro_options.hasOwnProperty("validation")) {
+								this.defaultData[rubrique_type]["options"]["validation"] =
+									dataObject_options_validation;
+							} else {
+								this.defaultData[rubrique_type]["options"]["validation"] = {
+									...this.defaultData[rubrique_type]["options"]["validation"],
+									admin_cmz: [
+										...dataObject_options_validation["admin_cmz"].filter(
+											(item) =>
+												!this.defaultData[rubrique_type]["options"]["validation"][
+													"admin_cmz"
+												].some(
+													(jtem) => parseInt(item.rubriqueId) === parseInt(jtem.rubriqueId)
+												)
+										),
+										...this.defaultData[rubrique_type]["options"]["validation"]["admin_cmz"],
+									],
+									partisant_cmz: [
+										...dataObject_options_validation["partisant_cmz"].filter(
+											(item) =>
+												!this.defaultData[rubrique_type]["options"]["validation"][
+													"partisant_cmz"
+												].some(
+													(jtem) => parseInt(item.rubriqueId) === parseInt(jtem.rubriqueId)
+												)
+										),
+										...this.defaultData[rubrique_type]["options"]["validation"]["partisant_cmz"],
+									],
+									source_info: [
+										...dataObject_options_validation["source_info"].filter(
+											(item) =>
+												!this.defaultData[rubrique_type]["options"]["validation"][
+													"source_info"
+												].some(
+													(jtem) => parseInt(item.rubriqueId) === parseInt(jtem.rubriqueId)
+												)
+										),
+										...this.defaultData[rubrique_type]["options"]["validation"]["source_info"],
+									],
+									validator_cmz: [
+										...dataObject_options_validation["validator_cmz"].filter(
+											(item) =>
+												!this.defaultData[rubrique_type]["options"]["validation"][
+													"validator_cmz"
+												].some(
+													(jtem) => parseInt(item.rubriqueId) === parseInt(jtem.rubriqueId)
+												)
+										),
+										...this.defaultData[rubrique_type]["options"]["validation"]["validator_cmz"],
+									],
+								};
+							}
+						}
+					}
+				}
+
+				data_item = this.defaultData[rubrique_type]["data"].find((item) => item.id === parseInt(id_rubrique));
+			}
 
 			rubrique_type_object.setSingleMarker(data_item);
-
 			this.markers.eachLayer((marker) => {
-				if (parseInt(marker.options.id) === parseInt(id_rubrique) && marker.options.type === type_rubrique) {
+				if (parseInt(marker.options.id) === parseInt(id_rubrique) && marker.options.type === rubrique_type) {
 					marker.fire("click");
 				}
 			});
+		}
+	}
+
+	async fetchOneDataResto(id_rubrique, options = {}) {
+		let result = null;
+
+		try {
+			const api_data = `/fetch_data/restaurant/${id_rubrique}`;
+			const response = await fetch(api_data);
+			result = await response.json();
+		} catch (e) {
+			console.log("ERROR: base de donnée erreur.");
+			result = {};
+		} finally {
+			return result;
 		}
 	}
 
@@ -5573,7 +5735,7 @@ class RubriqueCMZ extends MapCMZ {
 		this.defaultData[type]["data"] = [
 			...this.defaultData[type]["data"].map((item) => {
 				if (parseInt(item.id) === parseInt(idResto)) {
-					item["moyenne_note"] = global_note;
+					item["moyenne_note"] = global_note.toFixed(1);
 				}
 				return item;
 			}),
@@ -6094,5 +6256,95 @@ class RubriqueCMZ extends MapCMZ {
 				});
 			}
 		});
+	}
+
+	updateDefaultDataUpdate(rubrique_type, new_data_object) {
+		if (!this.defaultData.hasOwnProperty(rubrique_type)) {
+			this.defaultData[rubrique_type] = {
+				data: [],
+				pastille: [],
+			};
+		}
+
+		////save all data
+		const new_data = new_data_object.hasOwnProperty("data") ? new_data_object["data"] : [];
+		this.updateDefaultDataData(rubrique_type, new_data);
+
+		const data_pastille = new_data_object.hasOwnProperty("pastille") ? new_data_object.pastille : [];
+		this.updateDefaultDataPastille(rubrique_type, data_pastille);
+
+		this.updateDefaultDataOption(rubrique_type, new_data_object["options"]);
+	}
+
+	updateDefaultDataData(rubrique_type, new_data) {
+		if (!this.defaultData.hasOwnProperty(rubrique_type)) {
+			this.defaultData[rubrique_type] = {
+				data: [],
+			};
+		}
+
+		////save all data
+		const new_data_rubrique = new_data.filter(
+			(item) => !this.defaultData[rubrique_type]["data"].some((jtem) => parseInt(jtem.id) === parseInt(item.id))
+		);
+
+		this.defaultData[rubrique_type]["data"] = [...new_data_rubrique, ...this.defaultData[rubrique_type]["data"]];
+	}
+
+	updateDefaultDataPastille(rubrique_type, new_data_pastille) {
+		if (!this.defaultData[rubrique_type].hasOwnProperty("pastille")) {
+			this.defaultData[rubrique_type]["pastille"] = [];
+		}
+
+		if (this.defaultData[rubrique_type]["pastille"] === undefined) {
+			this.defaultData[rubrique_type]["pastille"] = [];
+		}
+
+		this.defaultData[rubrique_type]["pastille"] = mergeArraysUnique(
+			this.defaultData[rubrique_type]["pastille"],
+			new_data_pastille,
+			"id"
+		);
+	}
+
+	updateDefaultDataOption(rubrique_type, new_data_option) {
+		if (!this.defaultData[rubrique_type].hasOwnProperty("options")) {
+			this.defaultData[rubrique_type]["options"] = {};
+		}
+
+		if (new_data_option.hasOwnProperty("validation")) {
+			this.updateDefaultDataSingleOption(rubrique_type, "validation", new_data_option["validation"]);
+		}
+	}
+
+	updateDefaultDataSingleOption(rubrique_type, key, new_options) {
+		if (key === "validation") {
+			if (!this.defaultData[rubrique_type]["options"].hasOwnProperty(key)) {
+				this.defaultData[rubrique_type]["options"][key] = {};
+			}
+			const object_key = Object.keys(new_options);
+			object_key.forEach((item_key) => {
+				this.updateDefaultDataOptionsValidation(rubrique_type, item_key, new_options[item_key]);
+			});
+		}
+	}
+
+	updateDefaultDataOptionsValidation(rubrique_type, key, data_options) {
+		if (!this.defaultData[rubrique_type]["options"]["validation"].hasOwnProperty(key)) {
+			this.defaultData[rubrique_type]["options"]["validation"][key] = [];
+		}
+
+		////save all data
+		const new_data_options = data_options.filter(
+			(item) =>
+				!this.defaultData[rubrique_type]["options"]["validation"][key].some(
+					(jtem) => parseInt(jtem.rubriqueId) === parseInt(item.rubriqueId)
+				)
+		);
+
+		this.defaultData[rubrique_type]["options"]["validation"][key] = [
+			...new_data_options,
+			...this.defaultData[rubrique_type]["options"]["validation"][key],
+		];
 	}
 }

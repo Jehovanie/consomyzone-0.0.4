@@ -251,16 +251,180 @@ function resetSliderCustomise(identifiant, { min, max }) {
 }
 
 //// for driver js ////
-const driver = window.driver.js.driver;
-
-const driverObj = driver();
-
-driverObj.highlight({
-	element: "#id_content_list_rubrique_active_jheo_js",
-	popover: {
-		title: "Title",
-		description: "Description",
-	},
+document.addEventListener("DOMContentLoaded", () => {
+	if (!getDataInLocalStorage("is_dacticiel_seen")) {
+		swal(
+			`Nous avons préparé un didacticiel pour les nouveaux utilisateurs de notre plateforme. Voulez-vous le voir ?`,
+			{
+				buttons: {
+					ok: {
+						text: "Oui, je veux.",
+						value: "ok",
+						className: "swal-button swal-button--info",
+					},
+					supprimer: {
+						text: "Non, merci.",
+						value: "no",
+						className: "swal-button swal-button--danger",
+					},
+				},
+			}
+		).then((value) => {
+			if (value === "ok") {
+				openDidacticiel();
+				setDataInLocalStorage("is_dacticiel_seen", true);
+			}
+		});
+	}
 });
 
-////
+function openDidacticiel() {
+	const driver = window.driver.js.driver;
+
+	const driverObj = driver({
+		showProgress: true,
+		steps: [
+			{
+				element: "#logo_cmz_jheo_js",
+				popover: {
+					title: "Bonjour,",
+					description:
+						"Voici un petit didacticiel pour vous aider à identifier les éléments pertinents de notre plateforme.",
+				},
+			},
+			{
+				element: "#navbar_recherche_jheo_js",
+				popover: {
+					title: "Recherche",
+					description: "Utilisez ce formulaire pour effectuer une recherche sur une ou plusieurs rubriques.",
+				},
+			},
+			{
+				element: "#cta_toggle_list_rubrique_jheo_js",
+				popover: {
+					title: "Pour la liste déroulante,",
+					description: "Cliquez sur ce bouton pour l'afficher ou le fermer.",
+				},
+			},
+			{
+				element: "#id_content_list_rubrique_active_jheo_js",
+				popover: {
+					title: "Dans ce carrousel,",
+					description: "Vous trouvez la liste des rubriques actives.",
+				},
+			},
+			{
+				element: ".rubrique_element_jheo_js",
+				popover: {
+					title: "Pour une rubrique,",
+					description: "Vous pouvez cliquer pour afficher le filtre spécifique associé.",
+				},
+			},
+			{
+				element: "#content_cta_signup_sigin_jheo_js",
+				popover: {
+					title: "Connexion",
+					description: "Cliquez sur ce bouton pour vous connecter.",
+				},
+			},
+			{
+				element: ".content_list_nav_left_jheo_js",
+				popover: {
+					title: "Version de la liste des marqueurs POI.",
+					description: "Cette section contient la liste des marqueurs POI sur la carte.",
+				},
+			},
+			{
+				element: ".item_list_rubrique_nav_left_jheo_js",
+				popover: {
+					title: "Un marqueur POI",
+					description: "Dans cette section, vous trouverez la decription de base d'un marqueur POI.",
+				},
+			},
+			{
+				element: "#id_rubrique_type_jheo_js",
+				popover: {
+					title: "Liste de tous les rubriques.",
+					description:
+						"Cliquez sur cette icône pour afficher la liste de toutes les rubriques existantes dans CMZ.",
+				},
+			},
+			{
+				element: "#id_favoris_elie_js",
+				popover: {
+					title: "Favoris dans les rubriques.",
+					description:
+						"Cliquez sur cette icône pour voir mes favoris dans les différents types de rubriques.",
+				},
+			},
+			{
+				element: "#id_resto_pastille_jheo_js",
+				popover: {
+					title: "Liste des restaurants pastillées.",
+					description: "Cliquez sur cette icône pour voir la liste des restaurants pastillées.",
+				},
+			},
+			{
+				element: "#id_info_rubrique_icon_jheo_js",
+				popover: {
+					title: "Légende des icônes sur la carte.",
+					description: "Cliquez sur cette icône pour voir la légende des icônes sur la carte.",
+				},
+			},
+			{
+				element: "#id_couche_tabac_jheo_js",
+				popover: {
+					title: "Listes des contours géographiques.",
+					description: "Pour voir la listes des contours géographiques, cliquez sur cette icône.",
+				},
+			},
+			{
+				element: "#id_reset_zoom_jheo_js",
+				popover: {
+					title: "Réinitialisation du niveau de zoom.",
+					description:
+						"Pour réinitialiser le niveau de zoom à la position initiale, cliquez sur cette icône.",
+				},
+			},
+			{
+				element: "#id_tiles_type_jheo_js",
+				popover: {
+					title: "Sélectionner un type de carte.",
+					description:
+						"Pour changer le type de carte et afficher une vue différente, cliquez sur cette icône..",
+				},
+			},
+			{
+				element: "#first_take",
+				popover: {
+					title: "Prise en main de ConsoMyZone",
+					description:
+						"Si vous êtes nouveaux ici, en cliquant ici, vous trouverez un guide pour prendre en main CMZ.",
+				},
+			},
+			{
+				element: "#openChat",
+				popover: {
+					title: "Assistant virtuel de CMZ.",
+					description: "Si vous avez besoin d'aide, votre assistant virtuel CMZ est là. Cliquez ici.",
+				},
+			},
+			{
+				element: "#id_reopen_didacticiel_jheo_js",
+				popover: {
+					title: "Didacticiel",
+					description: "Vous pouvez aussi revoir ce didacticiel en cliquant ici.",
+				},
+			},
+			// { element: ".footer", popover: { title: "Title", description: "Description" } },
+		],
+	});
+
+	driverObj.drive();
+}
+
+function reopenDidacticiel() {
+	openDidacticiel();
+}
+
+/// end of the driver.

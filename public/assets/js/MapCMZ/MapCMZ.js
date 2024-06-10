@@ -276,6 +276,12 @@ class MapCMZ {
 			await this.getRelatedLatitudeAndLongitude();
 		}
 
+		if (typeof this.map !== "undefined" && this.map !== null) {
+			// Remove the map container from the DOM
+			this.map.remove();
+			this.map = null;
+		}
+
 		this.map = L.map("map", {
 			zoomControl: false,
 			center:
@@ -600,7 +606,7 @@ class MapCMZ {
 
 		const msg_tooltip_pos = position === "topright" ? "message_tooltip" : "message_tooltip_bottom_right";
 		return `
-            <div class="content_message_tooltip content_message_tooltip_jheo_js ${isHidden}" data-type="${dataType}">
+            <div id="id_${dataType}" class="content_message_tooltip content_message_tooltip_jheo_js ${isHidden}" data-type="${dataType}">
                 <div class="${msg_tooltip_pos} d-none message_tooltip_jheo_js">${messageTooltip}</div>
                 <button class="${classBtn} right_control_jheo_js" data-type="${dataType}"  style="font-size: ${fontSize};">
                     <i class="${faSolidIcon}" data-type="${dataType}"></i>
@@ -856,6 +862,8 @@ class MapCMZ {
 			this.goBackOrAfterPosition("back");
 		} else if (rightSideContentType === "cart_after_jheo_js") {
 			this.goBackOrAfterPosition("after");
+		} else if (rightSideContentType === "reopen_didacticiel_jheo_js") {
+			this.reopenDidacticiel();
 		} else {
 			if (document.querySelector(".close_details_jheo_js")) {
 				document.querySelector(".close_details_jheo_js").click();
@@ -991,6 +999,11 @@ class MapCMZ {
 				parentIconControlAfter.classList.remove("d-none");
 			}
 		}
+	}
+
+	reopenDidacticiel() {
+		///this function is in the lib.js
+		reopenDidacticiel();
 	}
 
 	openBottomSide(bottomSideContentType) {
@@ -1242,6 +1255,8 @@ class MapCMZ {
 		// 	"bootomright"
 		// )}
 
+		// <i class="fa-solid fa-question"></i>;
+
 		let htmlControlRubrique = `
 			${this.createBtnControl(
 				"rubrique_type_jheo_js",
@@ -1279,6 +1294,12 @@ class MapCMZ {
 				"fa-solid fa-arrows-rotate",
 				"btn btn-dark me-2 mb-2",
 				"Réstaure le niveau de zoom en position initiale."
+			)}
+			${this.createBtnControl(
+				"reopen_didacticiel_jheo_js",
+				"fa-solid fa-question",
+				"btn btn-danger me-2 mb-3 pl-2 pe-3",
+				"Consultez le didacticiel de notre plateforme."
 			)}
 			${this.createBtnControl(
 				"cart_after_jheo_js",
@@ -1528,6 +1549,9 @@ class MapCMZ {
 		///init map
 		await this.createMap();
 
+		/// bind controller in the right
+		this.bindOtherControles();
+
 		// create MarkerClusterGroup form POI and
 		// for count marker per dep, fetch data,
 		// add event on map
@@ -1544,9 +1568,6 @@ class MapCMZ {
 
 		///inject event to save memoir zoom
 		this.settingMemoryCenter();
-
-		/// bind controller in the right
-		this.bindOtherControles();
 
 		//// prepare right container
 		this.createRightSideControl();

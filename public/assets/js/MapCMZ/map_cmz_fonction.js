@@ -108,7 +108,7 @@ function addRubriqueActivNavbar(object_rubrique) {
 	const { name, icon, api_name } = object_rubrique;
 	const rubrique = `
 		<button id="ID_nav_${api_name}_jheo_js" type="button" 
-			class="position-relative btn btn-light btn-sm me-1 rounded-pill d-flex justify-content-center align-items-center"
+			class="rubrique_element_jheo_js position-relative btn btn-light btn-sm me-1 rounded-pill d-flex justify-content-center align-items-center"
 			onclick="openRubriqueFilter('${api_name}')"
 		>
 			<span class="badge_position_filter_navbar d-none badge_navbar_${api_name}_jheo_js cursor_pointer translate-middle badge rounded-pill bg-danger"
@@ -713,7 +713,12 @@ function handleSubmitNewPOIMarche() {
 	const data = {};
 
 	const form = document.querySelector(".form_new_poi_marche_jheo_js");
-	all_input = Array.from(form.querySelectorAll("input"));
+	console.log("form");
+	console.log(form);
+
+	const all_input = form.querySelectorAll("input");
+	console.log("all_input");
+	console.log(all_input);
 
 	all_input.forEach((input) => {
 		data[input.name] = input.value;

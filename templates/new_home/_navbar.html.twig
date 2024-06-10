@@ -5,11 +5,11 @@
         {# =================== CONTENT LOGO AND FORM SEARCH =================== #}
 		<div class="j tc wf yf">
 			<div class="content-logo-shearch row">
-                <div class="col-3">
+                <div id="logo_cmz_jheo_js" class="col-3">
                     <a class="navbar-brand" href="{{path("app_home")}}"><img src="{{asset('assets/image/logo.png')}}" alt="logo"></a>
                 </div>
                 <div class="recherche-navbar col-9">
-                    <form action="/new_home" method="get" class="bar-de-recherche form_content_search_navbar_js">
+                    <form id="navbar_recherche_jheo_js" action="/new_home" method="get" class="bar-de-recherche form_content_search_navbar_js">
                         <input type="text" name="cles0" class="form-control input-recherche-navbar input_search_type_js" placeholder="Quoi ?" >
                         <input type="text" name="cles1" list="datalistOptions" class="form-control input-recherche-navbar mx-3 input_mots_cle_js" placeholder="Où ?">
                         {# <button type="submit" class="hidden"></button> #}
@@ -18,7 +18,7 @@
                         </button>
                     </form>
 
-                    <div class="content_relative">
+                    <div id="cta_toggle_list_rubrique_jheo_js" class="content_relative">
                         <button type="button" class="btn btn-outline-primary ms-2 cta_show_list_nav_left_jheo_js">
                             <i class="fa-solid fa-spinner fa-spin"></i>
                         </button>
@@ -35,7 +35,7 @@
         <div class="sd qo f ho oo wf yf" :class="{ 'd hh rm sr td ud qg ug jc yh': navigationOpen }">
 			<div class="tc wf ig pb no">
                 {# ======================== CONTENT CONNEXION/ACTUALITY =========================== #}
-				<div class="d-flex justify-content-center align-items-center icon-connexion">
+				<div id="content_cta_signup_sigin_jheo_js" class="d-flex justify-content-center align-items-center icon-connexion">
                     {% if app.user and app.user.type != "Type" and userConnected is defined and userConnected is not null %}
 
                         <a class="cta_connexion_navbar cta_to_actualite_jheo_js" href="{{path('app_account')}}">
@@ -88,7 +88,6 @@
                         </a>
                     {% endif %}
                 </div>
-                
                 {# ======================== END CONTENT CONNEXION/ACTUALITY =========================== #}
 			</div>
 		</div>

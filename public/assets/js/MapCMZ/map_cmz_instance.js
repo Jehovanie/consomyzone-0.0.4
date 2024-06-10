@@ -357,7 +357,7 @@ function closeRightSide() {
 //// function  DOCKABLE Fiche rubrique Natenaina ///////
 function dockFicheRubrique(nombre = 10) {
 	// let markerInfo = MAP_CMZ.marker_last_selected.options;
-	let markerInfo = MAP_CMZ.marker_last_selected.marker.options;
+	let markerInfo = MAP_CMZ.marker_last_selected;
 
 	let idRubrique = markerInfo.id;
 	let typeRubrique = markerInfo.type ? markerInfo.type : "none";
