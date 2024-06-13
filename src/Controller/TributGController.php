@@ -1138,10 +1138,14 @@ $user = $this->getUser();
         extract($data); /// $object, $description, $piece_joint
 
         $piece_with_path = [];
+        $piece_with_path_for_history= [];
+
         if (count($piece_joint) > 0) {
             // $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/photos/';
             $path = $this->getParameter('kernel.project_dir') . '/public/uploads/users/piece_joint/user_' . $user_connnected_id . "/";
             
+            $path_for_history= '/uploads/users/piece_joint/user_' . $user_connnected_id . "/";
+
             $dir_exist = $filesyst->exists($path);
             if ($dir_exist === false) {
                 $filesyst->mkdir($path, 0777);
@@ -1149,6 +1153,7 @@ $user = $this->getUser();
 
             foreach ($piece_joint as $item) {
                 $name = $item["name"];
+                $name_for_history= $name;
 
                 $char_spec = ["-", " "];
                 $name = str_replace($char_spec, "_", $name);
@@ -1160,6 +1165,11 @@ $user = $this->getUser();
                 $item["path"] = $path . $name;
 
                 array_push($piece_with_path, $item);
+
+                array_push($piece_with_path_for_history,[
+                    "name" => $name_for_history,
+                    "path" => $path_for_history . $name
+                ]);
             }
         }
 
@@ -1190,7 +1200,9 @@ $user = $this->getUser();
 
         foreach ($destinations as $destination) {
             $temp = [
+                "id" => null,
                 "email" => $destination,
+                "fullName" => null,
             ];
             array_push($user_destination_plus, $temp);
         }
@@ -1200,25 +1212,47 @@ $user = $this->getUser();
         foreach ($listUserForAll as $listUserFor) {
             if ($listUserFor["type"] == "Type") {
                 $temp = [
+                    "id" => $listUserFor["id"],
                     "email" => $listUserFor["email"],
                     "fullName" => $listUserFor["pseudo"]
                 ];
                 array_push($allPartisanType, $temp);
             }
         }
+
         $emailExist = [];
 
         $user_destinations = array_merge($all_user_receiver, $user_destination_plus, $allPartisanType);
+
         foreach ($user_destinations as $user_destination) {
-            $Responsecode = $mailService->sendEmailNewsLetter($user_connected->getEmail(), $full_name_user_connected, [$user_destination], $context);
+            $Responsecode = $mailService->sendEmailNewsLetter(
+                $user_connected->getEmail(), 
+                $full_name_user_connected, 
+                [$user_destination], 
+                $context
+            );
+
             if ($Responsecode == 550) {
                 array_push($emailNotExist, $user_destination);
             } else {
                 array_push($emailExist, $user_destination);
+                
+                ///// save for the history -----
+                $userService->addIntoMailSendHistory(
+                    $user_connnected_id,
+                    [
+                        "id_user_receiver" => $user_destination["id"],
+                        "email_user_receiver" => $user_destination["email"],
+                        "object" => $context["object_mail"],
+                        "description" => $context["content_mail"],
+                        "piece_joint" => $piece_with_path_for_history,
+                    ]
+                );
             }
+
         }
 
-        $mailService->sendEmailNewsLetter($user_connected->getEmail(), $full_name_user_connected, $all_user_receiver, $context);
+        // $mailService->sendEmailNewsLetter($user_connected->getEmail(), $full_name_user_connected, $all_user_receiver, $context);
 
         foreach($all_user_receiver as $user_receiver ){
 
@@ -1235,7 +1269,7 @@ $user = $this->getUser();
         ]);
     }
 
-/**
+    /**
      * @author Tomm
      * Get liste user all
      */

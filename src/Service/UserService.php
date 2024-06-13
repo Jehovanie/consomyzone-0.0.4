@@ -2321,4 +2321,76 @@ $publication_user_id = $key["user_id"];
         $statement->execute();
 
     }
+
+    public function createTableMailSendHistory($userID){
+        $mail_send_history= "mail_send_history_" . $userID;
+
+        //// create table favori folder.
+        $sql_mail_send_history = "CREATE TABLE IF NOT EXISTS " . $mail_send_history . " ( 
+            id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+            id_user_receiver INT(11) NULL,
+            email_user_receiver VARCHAR(150) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
+            object VARCHAR(300) CHARACTER SET utf8 COLLATE utf8_unicode_ci NOT NULL,
+            description longtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
+            piece_joint longtext CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL,
+            date_envoye timestamp NOT NULL DEFAULT current_timestamp(),
+            is_harchived int(11) NOT NULL DEFAULT 0
+        )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+
+        $create_table_mail_send_history = $this->getPDO()->prepare($sql_mail_send_history);
+        $create_table_mail_send_history->execute();
+
+        // ------------------------------------------
+
+        $mail_send_archived = "mail_send_archived_" . $userID;
+        //// create table favori folder.
+        $sql_mail_send_archive = "CREATE TABLE IF NOT EXISTS " . $mail_send_archived . " ( 
+            id INT(11) NOT NULL PRIMARY KEY AUTO_INCREMENT, 
+            id_mailSendHistory INT(11) NOT NULL, 
+            date_archived timestamp NOT NULL DEFAULT current_timestamp()
+        )ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci";
+
+
+        $create_table_mail_send_archived = $this->getPDO()->prepare($sql_mail_send_archive);
+        $create_table_mail_send_archived->execute();
+
+    }
+
+    public function addIntoMailSendHistory($userID, $mail_send ){
+        $mail_send_history= "mail_send_history_" . $userID;
+        $mail_send_archived = "mail_send_archived_" . $userID;
+
+        if(!$this->isTableExist($mail_send_history) || !$this->isTableExist($mail_send_archived)){
+            $this->createTableMailSendHistory($userID);
+        }
+
+        $insert_mail_send_history = $this->getPDO()->prepare(
+            "INSERT INTO $mail_send_history (id_user_receiver, email_user_receiver, object, description, piece_joint, date_envoye, is_harchived) 
+            VALUES (:id_user_receiver, :email_user_receiver, :object, :description, :piece_joint, :date_envoye, :is_harchived)"
+        );
+
+        $object= $mail_send["object"];
+        $description= $mail_send["description"];
+        $id_user_receiver= $mail_send["id_user_receiver"];
+        $email_user_receiver= $mail_send["email_user_receiver"];
+
+        $piece_joint = json_encode($mail_send["piece_joint"], true);
+
+        $date_envoye = new \DateTime();
+        $date_envoye = $date_envoye->format('Y-m-d H:i:s');
+
+        $is_harchived= 0;
+
+        $insert_mail_send_history->bindParam(':id_user_receiver', $id_user_receiver);
+        $insert_mail_send_history->bindParam(':email_user_receiver', $email_user_receiver);
+        $insert_mail_send_history->bindParam(':object', $object);
+        $insert_mail_send_history->bindParam(':description', $description);
+        $insert_mail_send_history->bindParam(':piece_joint', $piece_joint);
+        $insert_mail_send_history->bindParam(':date_envoye', $date_envoye);
+        $insert_mail_send_history->bindParam(':is_harchived', $is_harchived);
+
+
+        $ex_insert_mail_send_history = $insert_mail_send_history->execute();
+    }
 }
