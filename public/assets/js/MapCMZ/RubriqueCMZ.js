@@ -3485,9 +3485,13 @@ class RubriqueCMZ extends MapCMZ {
 	async addRubriqueMarker(rubrique_api_name) {
 		let response = null;
 		if (!this.is_search_mode) {
-			response = await this.fetchDataRubrique(rubrique_api_name.toLowerCase());
+			response = await this.fetchDataRubrique(rubrique_api_name.toLowerCase(), { data_max: 100 });
 		} else {
 			response = await this.fetchDataRubriqueOnSearch(rubrique_api_name, this.search_options);
+		}
+
+		if( this.defaultData.hasOwnProperty(rubrique_api_name) && this.defaultData[rubrique_api_name]["data"].length > 0 ){
+			this.addDataToTableListLeft(this.defaultData[rubrique_api_name]["data"], rubrique_api_name);
 		}
 
 		this.updateDefaultData(response, rubrique_api_name);
