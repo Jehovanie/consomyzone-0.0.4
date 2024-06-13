@@ -1435,7 +1435,7 @@ class BddRestoRepository extends ServiceEntityRepository
         
         $query = $this->createQueryBuilder("r");
         $query = $query->select(
-                "r.id,
+                        "r.id,
                         r.denominationF,
                         r.denominationF as nameFilter,
                         r.numvoie,

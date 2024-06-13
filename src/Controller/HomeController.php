@@ -17,6 +17,9 @@ use App\Repository\AvisGolfRepository;
 use App\Repository\BddRestoRepository;
 use App\Repository\FermeGeomRepository;
 use App\Repository\GolfFranceRepository;
+use App\Repository\BddRestoUserModifRepository;
+use App\Repository\MarcheUserModificationRepository;
+
 use App\Service\StringTraitementService;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
@@ -804,6 +807,8 @@ class HomeController extends AbstractController
         MarcheRepository $marcheRepository,
         RestaurantController $restaurantController,
         AvisRestaurantRepository $avisRestaurantRepository,
+        BddRestoUserModifRepository $bddRestoUserModifRepository,
+        MarcheUserModificationRepository $marcheUserModificationRepository,
     ){
         $origin_cles1= $request->query->get("cles1"); //// use for searching geojson API OpenStreetMap
 
@@ -820,6 +825,18 @@ class HomeController extends AbstractController
         $userId= $this->getUser() ? $this->getUser()->getId() : null;
 
         $otherResult = false;
+
+        ///validation -----------
+        $options_validations= [
+            "validation" => [
+                "admin_cmz" => [],
+                "validator_cmz" => [],
+                "partisant_cmz" => [],
+                "source_info" => [],
+            ]
+        ];
+        /// ---------------------
+
         switch (strtolower($type)){
             case "ferme":
                 $ferme = $fermeGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
@@ -836,6 +853,47 @@ class HomeController extends AbstractController
                 }
                 
                 $results = $ferme;
+                /// get all id from the datas
+                $datas= $ferme[0];
+                if( $this->getUser()){
+                    $datasId = array_map('self::getAllIdData', $datas);
+
+                    /// when the modification is yet fonction change this;
+                    $states_data= [];
+
+                    foreach($datas as $items){
+                        if( in_array($items["id"], array_column($states_data, "rubriqueId"))){
+                            ///find 
+                            $key= array_search($items["id"], array_column($states_data, "rubriqueId"));
+                            $temp_data= $states_data[$key];
+                            
+                            //// check the user validator, [user_validator, user_admin,]
+                            if( $temp_data["validatorId"] === null ){
+                                array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                            }else if( $temp_data["validatorId"] !== null){
+                                $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                                if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                                }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                                }
+                            }
+                        }else{
+                            array_push($options_validations["validation"]["source_info"], [
+                                "id" => -1,
+                                "action" => "source_info",
+                                "userId" => null,
+                                "email" => null,
+                                "rubriqueId" => $items["id"],
+                                "validatortId" => null
+                            ]);
+                        }
+                    }
+                }
+                //// end state data validation------------
+
                 break;
 
             case "restaurant":
@@ -863,6 +921,44 @@ class HomeController extends AbstractController
 
                 $results = $resto;
 
+                //// get options for all -----------------------------
+                $data_resto= $resto[0];
+                if( $this->getUser()){
+                    $ids=array_map('self::getAllIdData', $data_resto);
+                    $states_resto= $bddRestoUserModifRepository->getStatesDataResto($ids);
+
+                    foreach($data_resto as $items){
+                        if( in_array($items["id"], array_column($states_resto, "rubriqueId"))){
+                            ///find 
+                            $key= array_search($items["id"], array_column($states_resto, "rubriqueId"));
+                            $temp_data= $states_resto[$key];
+                            
+                            //// check the user validator, [user_validator, user_admin,]
+                            if( $temp_data["validatorId"] === null ){
+                                array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                            }else if( $temp_data["validatorId"] !== null){
+                                $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                                if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                                }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                                }
+                            }
+                        }else{
+                            array_push($options_validations["validation"]["validator_cmz"], [
+                                "id" => -1,
+                                "action" => "validator_cmz",
+                                "userId" => null,
+                                "email" => null,
+                                "rubriqueId" => $items["id"],
+                                "validatortId" => null
+                            ]);
+                        }
+                    }
+                }
+                //// end get options---------------------
                 break;
 
             case "marche":
@@ -884,6 +980,46 @@ class HomeController extends AbstractController
                 
                 }
                 $results = $marche;
+
+                /// get all id from the datas
+                $datas= $marche[0];
+                if( $this->getUser()){
+                    $datasId = array_map('self::getAllIdData', $datas);
+
+                    $states_marche= $marcheUserModificationRepository->getStatesDataMarche($datasId);
+
+                    foreach($datas as $items){
+                        if( in_array($items["id"], array_column($states_marche, "rubriqueId"))){
+                            ///find 
+                            $key= array_search($items["id"], array_column($states_marche, "rubriqueId"));
+                            $temp_data= $states_marche[$key];
+                            
+                            //// check the user validator, [user_validator, user_admin,]
+                            if( $temp_data["validatorId"] === null ){
+                                array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                            }else if( $temp_data["validatorId"] !== null){
+                                $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                                if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                                }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                                }
+                            }
+                        }else{
+                            array_push($options_validations["validation"]["source_info"], [
+                                "id" => -1,
+                                "action" => "source_info",
+                                "userId" => null,
+                                "email" => null,
+                                "rubriqueId" => $items["id"],
+                                "validatortId" => null
+                            ]);
+                        }
+                    }
+                }
+                //// end state data validation------------
                 break;
 
             case "golf":
@@ -906,6 +1042,47 @@ class HomeController extends AbstractController
 
                 $results = $golf;
 
+                /// get all id from the datas
+                $datas= $golf[0];
+                if( $this->getUser()){
+                    $datasId = array_map('self::getAllIdData', $datas);
+
+                    /// when the modification is yet fonction change this;
+                    $states_data= [];
+
+                    foreach($datas as $items){
+                        if( in_array($items["id"], array_column($states_data, "rubriqueId"))){
+                            ///find 
+                            $key= array_search($items["id"], array_column($states_data, "rubriqueId"));
+                            $temp_data= $states_data[$key];
+                            
+                            //// check the user validator, [user_validator, user_admin,]
+                            if( $temp_data["validatorId"] === null ){
+                                array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                            }else if( $temp_data["validatorId"] !== null){
+                                $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                                if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                                }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                                }
+                            }
+                        }else{
+                            array_push($options_validations["validation"]["source_info"], [
+                                "id" => -1,
+                                "action" => "source_info",
+                                "userId" => null,
+                                "email" => null,
+                                "rubriqueId" => $items["id"],
+                                "validatortId" => null
+                            ]);
+                        }
+                    }
+                }
+                //// end state data validation------------
+
                 break;
 
             case "tabac":
@@ -922,23 +1099,50 @@ class HomeController extends AbstractController
                     }
                 }
                 $results = $tabac;
+
+                /// get all id from the datas
+                $datas= $tabac[0];
+                if( $this->getUser()){
+                    $datasId = array_map('self::getAllIdData', $datas);
+
+                    /// when the modification is yet fonction change this;
+                    $states_data= [];
+
+                    foreach($datas as $items){
+                        if( in_array($items["id"], array_column($states_data, "rubriqueId"))){
+                            ///find 
+                            $key= array_search($items["id"], array_column($states_data, "rubriqueId"));
+                            $temp_data= $states_data[$key];
+                            
+                            //// check the user validator, [user_validator, user_admin,]
+                            if( $temp_data["validatorId"] === null ){
+                                array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                            }else if( $temp_data["validatorId"] !== null){
+                                $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                                if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                                }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                                }
+                            }
+                        }else{
+                            array_push($options_validations["validation"]["source_info"], [
+                                "id" => -1,
+                                "action" => "source_info",
+                                "userId" => null,
+                                "email" => null,
+                                "rubriqueId" => $items["id"],
+                                "validatortId" => null
+                            ]);
+                        }
+                    }
+                }
+                //// end state data validation------------
                 break;
 
             case "station":
-                $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
-                if(!count($station[0])>0){
-                    $station = $stationServiceFrGeomRepository->getBySpecificClefOther($cles0, $cles1, $page, $size);
-                    $station0 = $sortResultService->getDataByCommune($station, $cles1, "station", $cles0);
-                    if(count($station0["data"])>0){
-                        $station[0] = $station0["data"];
-                        $station[1] = $station0["nombre"];
-                    }else{
-                        $otherResult = true;
-                    }
-                }
-                $results = $station;
-                break;
-
             case "station service":
                 $station = $stationServiceFrGeomRepository->getBySpecificClef($cles0, $cles1, $page, $size);
                 if(!count($station[0])>0){
@@ -952,8 +1156,48 @@ class HomeController extends AbstractController
                     }
                 }
                 $results = $station;
-                break;
 
+                /// get all id from the datas
+                $datas= $station[0];
+                if( $this->getUser()){
+                    $datasId = array_map('self::getAllIdData', $datas);
+
+                    /// when the modification is yet fonction change this;
+                    $states_data= [];
+
+                    foreach($datas as $items){
+                        if( in_array($items["id"], array_column($states_data, "rubriqueId"))){
+                            ///find 
+                            $key= array_search($items["id"], array_column($states_data, "rubriqueId"));
+                            $temp_data= $states_data[$key];
+                            
+                            //// check the user validator, [user_validator, user_admin,]
+                            if( $temp_data["validatorId"] === null ){
+                                array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                            }else if( $temp_data["validatorId"] !== null){
+                                $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                                if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                                }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                                    array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                                }
+                            }
+                        }else{
+                            array_push($options_validations["validation"]["source_info"], [
+                                "id" => -1,
+                                "action" => "source_info",
+                                "userId" => null,
+                                "email" => null,
+                                "rubriqueId" => $items["id"],
+                                "validatortId" => null
+                            ]);
+                        }
+                    }
+                }
+                //// end state data validation------------
+                break;
             default:
                 //dd($cles0);
                 $otherResto = false;
@@ -1260,9 +1504,21 @@ class HomeController extends AbstractController
             "type" => $type,
             "cles0" => $cles0,
             "cles1" => $cles1,
-            "origin_cles1" => $origin_cles1
+            "origin_cles1" => $origin_cles1,
+            "options" => $options_validations
         ], 200);
     }
+
+    /**
+     * @author Nantenaina <email>
+     * où= dans la fonction getAllRestCoor
+     * location=RestaurantController.phpo
+     * je veux avoir les id des  resto recupéré apres  appel de la fonction getDataBetweenAnd()
+     * pour avoir les notes
+     */
+    static function getAllIdData($data){
+        return $data["id"];
+    } 
 
     #[Route("/api/get_one/{type}/{id}", name: "api_get_one_item", methods: "GET")]
     public function getOneItem(

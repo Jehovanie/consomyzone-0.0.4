@@ -4,28 +4,32 @@ namespace App\Controller;
 
 
 
-use App\Service\Status;
 
 use App\Entity\Consumer;
 use App\Entity\Supplier;
+use App\Entity\User;
+use App\Entity\GolfFinished;
+
+use App\Service\Status;
 use App\Service\FilesUtils;
 use App\Service\MailService;
 use App\Service\UserService;
 use App\Service\AgendaService;
 use App\Service\TributGService;
 use App\Service\Tribu_T_Service;
-use App\Repository\UserRepository;
-
 use App\Service\NotificationService;
-use App\Repository\BddRestoRepository;
-
 use App\Service\ConfidentialityService;
+
+use App\Repository\UserRepository;
+use App\Repository\BddRestoRepository;
 use App\Repository\CodeinseeRepository;
 use App\Repository\ConsumerRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\DepartementRepository;
 use App\Repository\GolfFranceRepository;
 use App\Repository\SupplierRepository;
+
+use Doctrine\ORM\EntityManagerInterface;
+
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -33,9 +37,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use App\Entity\GolfFinished;
-use App\Entity\User;
+
 
 ini_set('max_execution_time', '600');
 
@@ -80,6 +84,7 @@ class AgendaController extends AbstractController
             $email_user_to_send_email= $userRepository->find(intval($userID))->getEmail();
 
             ///send email de confirmation s'il est va accepter ou refuser.
+
             $mailService->sendLinkToInviteOnAgenda(
                 $email_user_to_send_email,
                 $fullName,
@@ -91,7 +96,7 @@ class AgendaController extends AbstractController
                     // "fullname" => $tributGService->getFullName(intval($this->getUser()->getId())),
                     "fullname" => $fullNameConf,
                     "userToID" => $userID
-                ]
+                ],
             );
 
 
@@ -183,7 +188,12 @@ class AgendaController extends AbstractController
                         "time_end" => $event_time_end,
                         "date" => $event_date
                     ]
+                ],
+                [
+                    "email" => $user_sender->getEmail(),
+                    "fullname" => $user_sender->getPseudo()
                 ]
+
             );
         }
         //// email remerciement: Terminer ////
@@ -1505,7 +1515,11 @@ class AgendaController extends AbstractController
                         // $tributGService->getFullName($id),
                         $user_fullname_two,
                         $object,
-                        $description . "\nVeuillez cliquer le lien ci-dessous pour valider votre présence.\n" . $link
+                        $description . "\nVeuillez cliquer le lien ci-dessous pour valider votre présence.\n" . $link,
+                        [
+                            "email" => $this->getUser()->getEmail(),
+                            "fullname" => $this->getUser()->getPseudo()
+                        ]
                     );
     
                     $agendaService->setTimeOut("partage_agenda_".$userId, $id, $agenda_id, 15, "M");
@@ -1562,7 +1576,11 @@ class AgendaController extends AbstractController
                 $email_to_creator,
                 $creator_name,
                 "Présence pour l'agenda numéro " . $agenda_id,
-                $body
+                $body,
+                [
+                    "email" => $this->getUser()->getEmail(),
+                    "fullname" => $this->getUser()->getPseudo()
+                ]
             );
 
             $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_creator, "/user/tribu/agenda", $body, null);
@@ -2041,7 +2059,18 @@ class AgendaController extends AbstractController
     
                 $context["piece_joint"] = $piece_with_path;
                 // $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context);
-                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullNameUserTo, $context, $fullNameSender);
+                $mailService->sendLinkOnEmailAboutAgendaSharing(
+                    $email_to, 
+                    $fullNameUserTo, 
+                    $context, 
+                    $fullNameSender,
+                    [],
+                    [],
+                    [
+                        "email" => $this->getUser()->getEmail(),
+                        "fullname" => $this->getUser()->getPseudo()
+                    ]
+                );
 
                 /// add by Jehovanie RAMANDRIJOEL : email copy 21022024
                 if( $is_already_send_mail_copy === false ){
@@ -2056,8 +2085,8 @@ class AgendaController extends AbstractController
                     $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
                         $current_user_email, 
                         $current_user_fullname, 
-                        $context, 
-                        "ConsoMyZone"
+                        $context,
+                        "ConsoMyZone",
                     );
                     
                     $is_already_send_mail_copy= true;
@@ -2086,7 +2115,18 @@ class AgendaController extends AbstractController
     
                 // $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context);
     
-                $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, "ConsoMyZone", $context, $fullNameSender);
+                $mailService->sendLinkOnEmailAboutAgendaSharing(
+                    $email_to, 
+                    "ConsoMyZone", 
+                    $context, 
+                    $fullNameSender,
+                    [],
+                    [],
+                    [
+                        "email" => $this->getUser()->getEmail(),
+                        "fullname" => $this->getUser()->getPseudo()
+                    ]
+                );
                 
                 if( $is_already_send_mail_copy === false ){
                     $current_user= $this->getUser();
@@ -2101,7 +2141,7 @@ class AgendaController extends AbstractController
                         $current_user_email, 
                         $current_user_fullname, 
                         $context, 
-                        "ConsoMyZone"
+                        "ConsoMyZone",
                     );
                     
                     $is_already_send_mail_copy= true;

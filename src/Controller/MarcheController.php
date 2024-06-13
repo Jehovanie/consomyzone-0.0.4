@@ -262,7 +262,6 @@ class MarcheController extends AbstractController
                     }
                 }
             }
-
             //// end state data validation------------
 
             return $this->json([

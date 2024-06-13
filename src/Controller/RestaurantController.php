@@ -360,6 +360,79 @@ class RestaurantController extends AbstractController
         ], 200);
     }
 
+    #[Route("/fetch_data/restaurant/{id_resto}", name: "fetch_one_data_restaurant" , methods: [ "GET" ] )]
+    public function getOneDataRestoUpdate(
+        BddRestoRepository $bddResto,
+        UserRepository $userRepository,
+        AvisRestaurantRepository $avisRestaurantRepository,
+        BddRestoUserModifRepository $bddRestoUserModifRepository,
+        $id_resto
+    ) {
+        ///validation -----------
+        $options_validations= [
+            "validation" => [
+                "admin_cmz" => [],
+                "validator_cmz" => [],
+                "partisant_cmz" => [],
+                "source_info" => [],
+            ]
+        ];
+        /// ---------------------
+
+        $arrayIdResto = [];
+
+        $datas = $bddResto->getOneRestaurant(null, $id_resto);
+
+        $ids=array_map('self::getIdAvisResto', $datas);
+        $moyenneNote = $avisRestaurantRepository->getAllNoteById($ids);
+
+        $data_resto= self::mergeDatasAndAvis($datas,$moyenneNote);
+
+        //// get options for all -----------------------------
+        if( $this->getUser()){
+            $ids=array_map('self::getIdAvisResto', $data_resto);
+            $states_resto= $bddRestoUserModifRepository->getStatesDataResto($ids);
+
+            foreach($data_resto as $items){
+                if( in_array($items["id"], array_column($states_resto, "rubriqueId"))){
+                    ///find 
+                    $key= array_search($items["id"], array_column($states_resto, "rubriqueId"));
+                    $temp_data= $states_resto[$key];
+                    
+                    //// check the user validator, [user_validator, user_admin,]
+                    if( $temp_data["validatorId"] === null ){
+                        array_push($options_validations["validation"]["partisant_cmz"], $temp_data);
+                    }else if( $temp_data["validatorId"] !== null){
+                        $user_validator= $userRepository->findOneBy(["id" => intval($temp_data["validatorId"])]);
+
+                        if( in_array('ROLE_GODMODE', $user_validator->getRoles())){
+                            array_push($options_validations["validation"]["admin_cmz"], $temp_data);
+
+                        }else if( in_array('ROLE_VALIDATOR', $user_validator->getRoles())){
+                            array_push($options_validations["validation"]["validator_cmz"], $temp_data);
+                        }
+                    }
+                }else{
+                    array_push($options_validations["validation"]["validator_cmz"], [
+                        "id" => -1,
+                        "action" => "validator_cmz",
+                        "userId" => null,
+                        "email" => null,
+                        "rubriqueId" => $items["id"],
+                        "validatortId" => null
+                    ]);
+                }
+            }
+        }
+
+        //// end get options---------------------
+        return $this->json([
+            "data" => $data_resto,
+            "pastille" => $arrayIdResto,
+            "options" => $options_validations
+        ], 200);
+    }
+
 
     #[Route("/fetch_data/resto_pastille", name: "fetch_data_resto_pastille" , methods: [ "GET"])]
     public function getAllRestoPastille(

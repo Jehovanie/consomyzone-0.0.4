@@ -398,7 +398,7 @@ class SecurityController extends AbstractController
 
 
         ///check the email if already exist
-// if ($userRepository->findOneBy(['email' => $data['email']])) {
+        // if ($userRepository->findOneBy(['email' => $data['email']])) {
         //     $result = false;
         //     $type = "email-ae"; /// email already exist
 
@@ -418,7 +418,7 @@ class SecurityController extends AbstractController
         }
 
 
-// Check if old user
+        // Check if old user
            
 
         ////valid password
@@ -504,7 +504,7 @@ class SecurityController extends AbstractController
         $userNew->setNomTableAgenda("agenda_" . $numero_table);
         $userNew->setNomTablePartageAgenda("partage_agenda_" . $numero_table);
 
-///keep the change in the user information
+        ///keep the change in the user information
         $entityManager->flush();
 
 
@@ -587,6 +587,47 @@ class SecurityController extends AbstractController
         // ]);
     }
 
+    #[Route(path: '/resend_email/profil_incomplet/{user_id}', name: 'app_resend_emmail_profil_incomplet')]
+    public function resendEmailProfilIncomplete(
+        $user_id,
+        VerifyEmailHelperInterface $verifyEmailHelper,
+        MailService $mailService,
+        UserRepository $userRepository
+    ){
+        $user= $userRepository->findOneBy(['id' => $user_id]);
+
+        if(!$user){
+            $type= "danger";
+            $message= "Nous n'avons pas trouvé vos informations. Veuillez contacter notre administrateur.";
+            $this->addFlash($type, $message);
+            return $this->redirectToRoute("app_actu_non_active");
+        }
+
+        //// prepare email which we wish send
+        $signatureComponents = $verifyEmailHelper->generateSignature(
+            "verification_email", /// lien de revenir
+            $user->getId(), /// id for user
+            $user->getEmail(), /// email destionation use for verifier
+            ['id' => $user->getId()] /// param id
+        );
+
+        $mailService->sendLinkOnEmailAboutAuthenticator(
+            $user->getEmail(), /// mail destination
+            trim($user->getPseudo()), /// name destination
+            [
+                "object" => "Confirmation d'inscription sur ConsoMyZone", //// object of the email
+                "link" => $signatureComponents->getSignedUrl(), /// link
+                "template" => "emails/mail_confirm_inscription.html.twig"
+            ]
+        );
+        $type= "primary";
+        $message= "Un lien pour compléter votre inscription a été envoyé à votre adresse e-mail. 
+        Merci de vérifier votre boîte de réception pour finaliser votre inscription.";
+
+        $this->addFlash($type, $message);
+
+        return $this->redirectToRoute("app_actu_non_active", ["id" => $user_id]);
+    }
 
 
     #[Route(path: '/inscription/resend-email', name: 'app_inscription-resend-email', methods: "POST")]
@@ -623,7 +664,11 @@ class SecurityController extends AbstractController
             $user->getEmail(), /// mail destionation
             trim($user->getPseudo()), /// name destionation
             "EMAIL CONFIRMATION", //// title of email
-            "Pour confirmer votre inscription. Clickez-ici: " . $signatureComponents->getSignedUrl() /// content: link
+            "Pour confirmer votre inscription. Clickez-ici: " . $signatureComponents->getSignedUrl(), /// content: link
+            [
+                "email" => $this->getUser()->getEmail(),
+                "fullname" => $this->getUse()->getPseudo(),
+            ]
         );
 
 
@@ -1537,7 +1582,18 @@ class SecurityController extends AbstractController
                 if(!is_null($to_id)){
                 $fullNameSender = $confidentialityService->getConfFullname($userId, intval($to_id));
 
-                $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullName,$context, $fullNameSender);
+                $mailService->sendLinkOnEmailAboutAgendaSharing( 
+                    $email_to,
+                    $fullName,
+                    $context, 
+                    $fullNameSender,
+                    [],
+                    [],
+                    [
+                        "email" => $this->getUser()->getEmail(),
+                        "fullname" => $this->getUser()->getPseudo()
+                    ]
+                );
 
                 if( $is_already_send_mail_copy === false ){
                     $current_user= $this->getUser();
@@ -1552,7 +1608,13 @@ class SecurityController extends AbstractController
                         $current_user_email, 
                         $current_user_fullname, 
                         $context, 
-                        "ConsoMyZone"
+                        "ConsoMyZone",
+                        [],
+                        [],
+                        [
+                            "email" => $this->getUser()->getEmail(),
+                            "fullname" => $this->getUser()->getPseudo()
+                        ]
                     );
                     
                     $is_already_send_mail_copy= true;
@@ -1574,7 +1636,18 @@ class SecurityController extends AbstractController
                         // http://localhost:8000/agenda/confirmation/4
                         $description_copie_for_myself = str_replace("/agenda/confirmation/".$agendaID, "#", $content);
 
-                        $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullName,$context, $fullNameSender);
+                        $mailService->sendLinkOnEmailAboutAgendaSharing(
+                            $email_to,
+                            $fullName,
+                            $context, 
+                            $fullNameSender,
+                            [],
+                            [],
+                            [
+                                "email" => $this->getUser()->getEmail(),
+                                "fullname" => $this->getUser()->getPseudo()
+                            ]
+                        );
 
                         if( $is_already_send_mail_copy === false ){
                             $current_user= $this->getUser();
@@ -1589,7 +1662,13 @@ class SecurityController extends AbstractController
                                 $current_user_email, 
                                 $current_user_fullname, 
                                 $context, 
-                                "ConsoMyZone"
+                                "ConsoMyZone",
+                                [],
+                                [],
+                                [
+                                    "email" => $this->getUser()->getEmail(),
+                                    "fullname" => $this->getUser()->getPseudo()
+                                ]
                             );
                             
                             $is_already_send_mail_copy= true;
@@ -1611,7 +1690,20 @@ class SecurityController extends AbstractController
                         // http://localhost:8000/agenda/confirmation/4
                         $description_copie_for_myself = str_replace("/agenda/confirmation/".$agendaID, "#", $content);
 
-                        $mailService->sendLinkOnEmailAboutAgendaSharing( $email_to,$fullName,$context, $fullNameSender);
+                        $mailService->sendLinkOnEmailAboutAgendaSharing( 
+                            $email_to,
+                            $fullName,
+                            $context, 
+                            $fullNameSender,
+                            [],
+                            [],
+                            [
+                                "email" => $this->getUser()->getEmail(),
+                                "fullname" => $this->getUser()->getPseudo()
+                            ]
+                        );
+                        
+                        
                         if( $is_already_send_mail_copy === false ){
                             $current_user= $this->getUser();
                             $current_user_id= $current_user->getId();
@@ -1625,7 +1717,13 @@ class SecurityController extends AbstractController
                                 $current_user_email, 
                                 $current_user_fullname, 
                                 $context, 
-                                "ConsoMyZone"
+                                "ConsoMyZone",
+                                [],
+                                [],
+                                [
+                                    "email" => $this->getUser()->getEmail(),
+                                    "fullname" => $this->getUser()->getPseudo()
+                                ]
                             );
                             
                             $is_already_send_mail_copy= true;
@@ -1736,7 +1834,21 @@ class SecurityController extends AbstractController
                 $context["content_mail"] = $contenu;
                 $emailAdmin = $_ENV["SUPER_ADMIN_MAIL"];
                 $nomComplet = $_ENV["FULLNAME"];
-                $mailService->sendLinkOnEmailAboutAgendaSharing($emailAdmin, $nomComplet, $context);
+
+                $mailService->sendLinkOnEmailAboutAgendaSharing(
+                    $emailAdmin,
+                    $nomComplet, 
+                    $context,
+                    "ConsoMyZone",
+                    [],
+                    [],
+                    [
+                        "email" => $this->getUser()->getEmail(),
+                        "fullname" => $this->getUser()->getPseudo()
+                    ]
+                );
+                
+                
                 return $this->redirectToRoute('app_login');
 
             }
@@ -1780,7 +1892,19 @@ class SecurityController extends AbstractController
             $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
             $context["link_confirm"] = "" ;
             $context["content_mail"] = $requestContent["emailCore"];
-            $mailService->sendLinkOnEmailAboutAgendaSharing($emailAdmin, $nomComplet, $context);
+
+            $mailService->sendLinkOnEmailAboutAgendaSharing(
+                $emailAdmin, 
+                $nomComplet, 
+                $context,
+                "ConsoMyZone",
+                [],
+                [],
+                [
+                    "email" => $this->getUser()->getEmail(),
+                    "fullname" => $this->getUser()->getPseudo()
+                ]
+            );
     
         }else{
             $content=$requestContent["emailCore"]; 
@@ -1796,7 +1920,18 @@ class SecurityController extends AbstractController
             $context["link_confirm"] = "" ;
             $context["content_mail"] = $content;
 
-            $mailService->sendLinkOnEmailAboutAgendaSharing($email_to, $fullname, $context);
+            $mailService->sendLinkOnEmailAboutAgendaSharing(
+                $email_to, 
+                $fullname, 
+                $context,
+                "ConsoMyZone",
+                [],
+                [],
+                [
+                    "email" => $this->getUser()->getEmail(),
+                    "fullname" => $this->getUser()->getPseudo()
+                ]
+            );
 
             if(isset($requestContent["proposition"]) && $requestContent["proposition"] == true)
                 $userRepository->updateByNameWhereIdis("statusDemandePartenariat",1,$this->getUser()->getId());

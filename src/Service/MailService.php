@@ -67,8 +67,7 @@ class MailService extends AbstractController {
     /**
      * just send simple plain text
      */
-    public function sendEmail($email_to,$fullName_to,$objet,$message):void
-
+    public function sendEmail($email_to, $fullName_to, $objet, $message, $user_sender= null):void
     {
         $customMailer =  $this->configSendEmail();
 
@@ -78,6 +77,12 @@ class MailService extends AbstractController {
                 ->to(new Address($email_to, $fullName_to ))
                 ->subject($objet)
                 ->text($message);
+
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from, $fullName_from));
+        }
 
         $customMailer->send($email);
     }
@@ -91,7 +96,7 @@ class MailService extends AbstractController {
      * 
      * @return void
      */
-    public function sendLinkOnEmailAboutAuthenticator($email_to,$fullName_to,$context):void
+    public function sendLinkOnEmailAboutAuthenticator($email_to,$fullName_to,$context, $user_sender= null):void
     {
         $customMailer =  $this->configSendEmail();
 
@@ -100,6 +105,12 @@ class MailService extends AbstractController {
                 ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
                 ->to(new Address($email_to, $fullName_to ))
                 ->subject($context["object"]);
+
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from ,$fullName_from));
+        }
 
         $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
         $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
@@ -118,13 +129,14 @@ class MailService extends AbstractController {
 
 
     public function sendLinkOnEmailAboutAgendaSharing(
-        $email_to, 
+        $email_to,
         $fullName_to, 
         $context, 
         $sender="ConsoMyZone", 
         $cc= [], 
-        $cci= [] )
-    {
+        $cci= [],
+        $user_sender= null
+    ){
         $customMailer =  $this->configSendEmail();
 
         // Generates the email
@@ -132,6 +144,12 @@ class MailService extends AbstractController {
                 ->from(new Address($this->defaultEmailSender ,$sender)) 
                 ->to(new Address($email_to, $fullName_to ))
                 ->subject($context["object_mail"]);
+
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from ,$fullName_from));
+        }
         
         if( count( $cc ) > 0 ){
             $email = $email->cc(new Address($cc[0], "Future Fans"));
@@ -174,19 +192,19 @@ class MailService extends AbstractController {
             'link' => $context["link_confirm"],
             'content' => $context["content_mail"],
         ]));
-try{
-        $customMailer->send($email);
-    return 250; 
+
+        try{
+            $customMailer->send($email);
+            return 250; 
         }catch(Exception $e){
             if($e->getCode()== 550){
                 return 550;
-
             }
         }
        
     }
     
-    public function sendEmailWithCc($to,$fullName_to,$cc,$objet,$message):void
+    public function sendEmailWithCc($to, $fullName_to, $cc, $objet, $message, $user_sender=null):void
     {
          
         // Generate connection configuration
@@ -199,6 +217,12 @@ try{
                 ->from(new Address(ProdData::EMAIL_PROD, ProdData::NOM_SENDER)) 
                 ->to(new Address($to, $fullName_to ))
                 ->cc($cc[0]);
+
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from, $fullName_from));
+        }
 
         for ( $i = 1; $i< count($cc); $i++){
             $email->addCc($cc[$i]);
@@ -217,10 +241,14 @@ try{
 
         $customMailer = $this->configSendEmail();
 
+        $email_from= $user_sender["email"];
+        $fullName_from= $user_sender["fullname"];
+
         ///// Generates the email
         $email = (new TemplatedEmail())
                     ->from(new Address($userSendingEmail ,"ConsoMyZone")) 
                     ->to(new Address($to, $fullName_to ))
+                    ->replyTo(new Address($email_from, $fullName_from))
                     ->subject($object);
 
         $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
@@ -254,6 +282,12 @@ try{
                     ->from(new Address($userSendingEmail ,"ConsoMyZone")) 
                     ->to(new Address($to, $fullName_to ))
                     ->subject($object);
+
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from, $fullName_from));
+        }
         
         $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
         $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
@@ -271,7 +305,7 @@ try{
     }
 
     
-    public function sendEmailWithExpirationDate($to,$objet,$message,$cc, $bcc):void
+    public function sendEmailWithExpirationDate($to,$objet,$message,$cc, $bcc, $user_sender= null):void
 
     {
 
@@ -305,11 +339,17 @@ try{
                     $email = $email->addBcc($bcc[$i]);
                 }
 
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from, $fullName_from));
+        }
+
         $customMailer->send($email);
 
     }
 
-    public function sendLinkOnEmailAboutTribuTInvitation($email_to=[], $fullName_to, $context, $sender="ConsoMyZone", $cc= [], $cci= [] ):void
+    public function sendLinkOnEmailAboutTribuTInvitation($email_to=[], $fullName_to= null, $context= null, $sender="ConsoMyZone", $cc= [], $cci= [], $user_sender= null):void
     {
         $customMailer =  $this->configSendEmail();
 
@@ -317,6 +357,13 @@ try{
         $email = (new TemplatedEmail())
                 ->from(new Address($this->defaultEmailSender ,$sender)) 
                 ->subject($context["object_mail"]);
+
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from, $fullName_from));
+        }
+
         if( count( $email_to ) > 0 ){
             $email = $email->to(new Address($email_to[0], "Future Fans"));
 
@@ -395,18 +442,18 @@ try{
         // Generates the email
         $email = (new TemplatedEmail())
                 ->from(new Address($this->defaultEmailSender, $fullName_from)) 
-                // ->from(new Address($email_from ,$fullName_from)) 
+                ->replyTo(new Address($email_from ,$fullName_from)) 
                 ->subject($context["object_mail"]);
 
         if (count($all_user_receiver) > 0) {
             $first_receiver = $all_user_receiver[0];
             // $email = $email->to(new Address($first_receiver["email"], $first_receiver["fullName"]));
-$email = $email->to(new Address($first_receiver["email"]));
+            $email = $email->to(new Address($first_receiver["email"]));
 
             for ($i = 1; $i < count($all_user_receiver); $i++) {
                 $other_receiver = $all_user_receiver[$i];
                 // $email = $email->addTo(new Address($other_receiver["email"], $other_receiver["fullName"]));
-            $email = $email->addTo(new Address($other_receiver["email"]));
+                $email = $email->addTo(new Address($other_receiver["email"]));
             }
         }
 
@@ -433,10 +480,10 @@ $email = $email->to(new Address($first_receiver["email"]));
             'content' => $context["content_mail"],
         ]));
 
-// $customMailer->send($email);
+        // $customMailer->send($email);
         try {
-        $customMailer->send($email);
-return 250;
+            $customMailer->send($email);
+            return 250;
         } catch (Exception $e) {
             if ($e->getCode() == 550) {
                 return 550;
@@ -446,13 +493,16 @@ return 250;
 
     /**
      * @author faniry
-* 
+     * 
      * envoie les emails de partage de fichier provenant du drop box
      */
     public function sendEmailSharingFileFromDropBox(
         $fullName_from,
         $emailAddressReceiver,
-        $context){
+        $context,
+        $bcc=[],
+        $user_sender= null
+    ){
         $customMailer= $this->configSendEmail();
 
         $email=  (new TemplatedEmail())
@@ -460,11 +510,22 @@ return 250;
                 ->subject($context["object_mail"])
                 ->to(new Address($emailAddressReceiver["email"], $emailAddressReceiver["fullName"]));
 
-         //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
-         $email =  $email->html($this->renderView($context["template_path"],[
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from ,$fullName_from));
+        }
+        
+        if(count($bcc) > 0){
+            $email = $email->bcc(new Address($bcc["email"], "Super Admin"));
+        }
+
+        //// Generate email with the contents html : 'emails/mail_confirm_inscription.html.twig'
+        $email =  $email->html($this->renderView($context["template_path"],[
             'email' => new WrappedTemplatedEmail($this->twig, $email),
             'content' => $context["content_mail"],
         ]));
+
         try{
             $customMailer->send($email);
             return 250;
@@ -479,11 +540,8 @@ return 250;
      * 
      * envoie les email de relance pour confirmé l'inscription et terminé adhésion dans un tribu t
      */
-    public function sendEmailRelancePostulant($fullName_from, $emailAddressReceiver, $context):void
+    public function sendEmailRelancePostulant($fullName_from, $emailAddressReceiver, $context, $user_sender= null):void
     {
-
-        
-
         $customMailer =  $this->configSendEmail();
 
         // Generates the email
@@ -493,6 +551,12 @@ return 250;
                 ->subject($context["object_mail"]);
 
         $email = $email->to(new Address($emailAddressReceiver["email"], $emailAddressReceiver["fullName"]));
+
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullname_form= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from ,$fullname_form));
+        }
 
         if(isset($context["piece_joint"])){
             $all_pieces_joint= $context["piece_joint"];
@@ -519,6 +583,8 @@ return 250;
 
         $customMailer->send($email);
     }
+
+
     /**
      * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
      * 
@@ -540,7 +606,7 @@ return 250;
         // Generates the email
         $email = (new TemplatedEmail())
                 ->from(new Address($this->defaultEmailSender, $fullName_from))
-                // ->from(new Address($email_from ,$fullName_from)) 
+                ->replyTo(new Address($email_from, $fullName_from)) 
                 ->subject($context["object_mail"]);
 
         if( count( $all_user_receiver ) > 0 ){
@@ -585,8 +651,7 @@ return 250;
      * Send email to user not connected or out of activity
      * just send simple template to user
      */
-    public function sendEmailForMessage($email_to, $fullName_to, $objet, $user_sender, $url):void
-
+    public function sendEmailForMessage($email_to, $fullName_to, $objet, $user_sender, $url, $user_sender_ob= null):void
     {
         $customMailer =  $this->configSendEmail();
 
@@ -596,6 +661,12 @@ return 250;
                 ->to(new Address($email_to, $fullName_to ))
                 ->subject($objet);
                 // ->text($message);
+
+        if( $user_sender_ob != null ){
+            $email_from= $user_sender_ob["email"];
+            $fullName_from= $user_sender_ob["fullname"];
+            $email = $email->replyTo(new Address($email_from ,$fullName_from));
+        }
         
         $date = date('Y-m-d H:i:s'); // Date actuelle au format YYYY-MM-DD
         // $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
@@ -627,7 +698,7 @@ return 250;
      * 
      * @return void
      */
-    public function sendEmailWithTemplatedEmail($email_to, $fullName_to, $context)
+    public function sendEmailWithTemplatedEmail($email_to, $fullName_to, $context, $user_sender= null)
     {
         $customMailer =  $this->configSendEmail();
 
@@ -636,6 +707,12 @@ return 250;
                 ->from(new Address($this->defaultEmailSender ,"ConsoMyZone")) 
                 ->to(new Address($email_to, $fullName_to ))
                 ->subject($context["object"]);
+
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from, $fullName_from));
+        }
 
         $date = date('Y-m-d'); // Date actuelle au format YYYY-MM-DD
         $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
@@ -682,8 +759,7 @@ return 250;
      * Envoi de mail pour la validation de la demande d'adhésion de partisan dans une tribu 
      * just send simple template to user
      */
-    public function sendEmailForValidationTribu($email_to, $fullName_to, $objet, $url, $type_tribu, $tribu_name, $verbe, $txt):void
-
+    public function sendEmailForValidationTribu($email_to, $fullName_to, $objet, $url, $type_tribu, $tribu_name, $verbe, $txt, $user_sender= null):void
     {
         $customMailer =  $this->configSendEmail();
 
@@ -693,6 +769,12 @@ return 250;
                 ->to(new Address($email_to, $fullName_to ))
                 ->subject($objet);
                 // ->text($message);
+        
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from ,$fullName_from));
+        }
         
         $date = date('Y-m-d H:i:s'); // Date actuelle au format YYYY-MM-DD
         // $date_fr = strftime('%d %B %Y', strtotime($date)); // Formatage de la date en jour mois année
@@ -719,8 +801,7 @@ return 250;
      * relence email pour l'abonnement
      * userController
      */
-    public function sendEmailRelanceAbonnement($email_to,$objet,$message):void
-
+    public function sendEmailRelanceAbonnement($email_to, $objet, $message, $user_sender= null):void
     {
         $customMailer =  $this->configSendEmail();
 
@@ -730,6 +811,12 @@ return 250;
             ->to(new Address($email_to))
             ->subject($objet)
             ->text($message);
+
+        if( $user_sender != null ){
+            $email_from= $user_sender["email"];
+            $fullName_from= $user_sender["fullname"];
+            $email = $email->replyTo(new Address($email_from ,$fullName_from));
+        }
 
         $customMailer->send($email);
     }
@@ -749,12 +836,15 @@ return 250;
      */
     public function sendEmailCancelAgendaEvent($email_from, $fullName_from, $user_recevieur, $context){
         
+        $email_from = $email_from !== null ? $email_from : $this->defaultEmailSender;
+
+
         $customMailer =  $this->configSendEmail();
 
         // Generates the email
         $email = (new TemplatedEmail())
                 ->from(new Address($this->defaultEmailSender ,$fullName_from))
-
+                ->replyTo(new Address($email_from ,$fullName_from))
                 ->subject($context["object_mail"])
                 ->to(new Address($user_recevieur["email"], $user_recevieur["fullName"]));
 
@@ -806,6 +896,7 @@ return 250;
         // Generates the email
         $email = (new TemplatedEmail())
                 ->from(new Address($this->defaultEmailSender, $fullName_from))
+                ->replyTo(new Address($email_from, $fullName_from))
                 ->subject($context["object_mail"]);
 
         if( count( $all_user_receiver ) > 0 ){

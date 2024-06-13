@@ -1131,6 +1131,7 @@ class StationServiceFrGeomRepository extends ServiceEntityRepository
                 $query= $query->where("(r.departementCode = :a OR r.departementCode = :b )")
                         ->setParameter('a',  "2A" )
                         ->setParameter('b',  "2B");
+                dd("dfqsdf");
             }else{
                 $query= $query->where("(r.departementCode = :idDep)")
                         ->setParameter("idDep", $idDep);

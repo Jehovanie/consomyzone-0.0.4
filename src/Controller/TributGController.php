@@ -1186,7 +1186,7 @@ $user = $this->getUser();
                 array_push($all_user_receiver, $temp);
             }
         }
-$user_destination_plus = [];
+        $user_destination_plus = [];
 
         foreach ($destinations as $destination) {
             $temp = [
