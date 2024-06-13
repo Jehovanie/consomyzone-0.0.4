@@ -9,9 +9,14 @@
 	<link rel="stylesheet" href="{{asset('assets/css/account/style.css')}}">
 	<link rel="stylesheet" href="{{asset('assets/css/account/actualite.css')}}">
 	<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.css">
+	
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.css"/>
 {% endblock %}
 
 {% block javascripts %}
+	<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.js" defer></script>
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/slick-carousel@1.8.1/slick/slick.min.js" defer></script>
+
 	<script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
 	<script src="{{ asset('assets/js/account/account.js') }}" defer></script>
 		{# <script  src="{{ asset('assets/js/account/account_mobile.js') }}" defer></script> #}
@@ -63,69 +68,58 @@
 							{% endif %}
 						</div>
 					</div>
-</div>
-						<div class="col-10">
-									<div class="-ud-ml-5 -ud-mb-9 mt-5">
-							<div class="mb-5 text-center">
-								<h4 class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name={{tributG.profil.name}}>{{tributG.profil.name}}</h4>
-								<label class="d-none" id="my_tribu_g">{{tributG.table}}</label>
-                                <small>
-									<i>{{tributG.profil.description }}</i>
-								</small>
-							</div>
+				</div>
+				<div class="col-10">
+					<div class="-ud-ml-5 -ud-mb-9 mt-5">
+						<div class="mb-5 text-center">
+							<h4 class="tributG_profile_name" data-toggle-tribug-table={{tributG.table}} data-toggle-tribut-profil-name={{tributG.profil.name}}>{{tributG.profil.name}}</h4>
+							<label class="d-none" id="my_tribu_g">{{tributG.table}}</label>
+							<small>
+								<i>{{tributG.profil.description }}</i>
+							</small>
 						</div>
+					</div>
+					</div>
 						</div>
-							</div>
-						<nav class="nav-tribu-g d-flex">
-							<ul id="navBarTribu">
-								<li class="listNavBarTribu tribu_active">
-									<a href="#" id="fetch_actialite_tribug_jheo_js" class="active text-white" lng-tag="actualite">Actualité</a>
-								</li>
-
-								<li class="listNavBarTribu">
-									<a style="cursor:pointer;" href="#" id="fetch_resto_tribug_jheo_js">Restaurants</a>
-								</li>
-
-								<li class="listNavBarTribu">
-									<a style="cursor:pointer;" href="#" id="fetch_golf_tribug_jheo_js">Golfs</a>
-								</li>
-
-								
-									<li class="listNavBarTribu">
-										<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_member_tribug_jheo_js">Partisans</a>
+							<nav class="nav-tribu-g d-flex">
+								<ul id="navBarTribu" class="link_navbar_tribug_jheo_js d-flex justify-content-between align-items-center">
+									<li class="listNavBarTribu tribu_active">
+										<a href="#" id="fetch_actialite_tribug_jheo_js" class="active text-white" lng-tag="actualite">Actualité</a>
 									</li>
+
 									<li class="listNavBarTribu">
-										<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_photo_tribug_jheo_js">Photos</a>
+										<a style="cursor:pointer;" href="#" id="fetch_resto_tribug_jheo_js">Restaurants</a>
 									</li>
+
 									<li class="listNavBarTribu">
-										<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_invitation_tribug_nanta_js" onclick="showInvitationsG()">Invitations</a>
+										<a style="cursor:pointer;" href="#" id="fetch_golf_tribug_jheo_js">Golfs</a>
 									</li>
-									{% if tributG.profil.roles is same as("fondateur") %}
+
+									
 										<li class="listNavBarTribu">
-											<a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Communiquer</a>
+											<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_member_tribug_jheo_js">Partisans</a>
 										</li>
-									{% endif %}
-									{% if tributG.profil.roles is same as("fondateur") %}
 										<li class="listNavBarTribu">
-											<a style="cursor:pointer;" href="#" id="fetch_adhesion_tribug_elie_js">Adhésions
-											{% if len_adhesion_tribug > 0  %}
-												<span class="badge rounded-pill text-bg-danger" id="nb_adhesion_tg">{{len_adhesion_tribug}}</span>
-											{% endif %}
-											</a>
+											<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_photo_tribug_jheo_js">Photos</a>
 										</li>
-									{% endif %}
+										<li class="listNavBarTribu">
+											<a style="cursor:pointer;" class="dropdown-item" href="#" id="fetch_invitation_tribug_nanta_js" onclick="showInvitationsG()">Invitations</a>
+										</li>
+										{% if tributG.profil.roles is same as("fondateur") %}
+											<li class="listNavBarTribu">
+												<a style="cursor:pointer;" href="#" id="fetch_new_letter_fans_tribug_jheo_js">Communiquer</a>
+											</li>
+										{% endif %}
+										{% if tributG.profil.roles is same as("fondateur") %}
+											<li class="listNavBarTribu">
+												<a style="cursor:pointer;" href="#" id="fetch_adhesion_tribug_elie_js">Adhésions
+												{% if len_adhesion_tribug > 0  %}
+													<span class="badge rounded-pill text-bg-danger" id="nb_adhesion_tg">{{len_adhesion_tribug}}</span>
+												{% endif %}
+												</a>
+											</li>
+										{% endif %}
 								</ul>
-								{# <div class="dropdown setting-nav-tribu-g">
-									<a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-bs-toggle="dropdown" aria-expanded="false">
-										<i class="fa-solid fa-bars"></i>
-									</a>
-
-									<ul class="dropdown-menu" aria-labelledby="dropdownMenuLink">
-										
-
-										
-									</ul>
-								</div> #}
 							</nav>
 						</div>
 					</div>

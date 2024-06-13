@@ -444,6 +444,23 @@ if (document.querySelectorAll(".radio-publi").length > 0) {
 }
 
 
+if (document.querySelector(".link_navbar_tribug_jheo_js")) {
+	var slickConfig = {
+		slidesToShow: 5,
+		slidesToScroll: 1,
+		speed: 500,
+		infinite: true,
+		arrows: true,
+		autoplay: true,
+		autoplaySpeed: 1000,
+		prevArrow: `<i class="fa-solid fa-circle-chevron-left fs-3 cursor-pointer color_blue"></i>`,
+		nextArrow: `<i class="fa-solid fa-circle-chevron-right fs-3 cursor-pointer color_blue"></i>`,
+	};
+
+	$(".link_navbar_tribug_jheo_js").slick(slickConfig);
+}
+
+
 function isBanished(event) {
   let idUser = parseInt(
             event.target.dataset.token
