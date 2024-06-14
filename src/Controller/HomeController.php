@@ -1505,7 +1505,8 @@ class HomeController extends AbstractController
             "cles0" => $cles0,
             "cles1" => $cles1,
             "origin_cles1" => $origin_cles1,
-            "options" => $options_validations
+            "options" => $options_validations,
+            "otherResult" => $otherResult
         ], 200);
     }
 
