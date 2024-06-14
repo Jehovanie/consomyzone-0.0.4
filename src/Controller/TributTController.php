@@ -2060,6 +2060,8 @@ $pdo=new PDOConnexionService();
         // $context["piece_joint"] = $piece_with_path;
         // $mailService->sendLinkOnEmailAboutTribuTInvitation($principal, $from_fullname, $context, "ConsoMyZone", $cc, $cci);
         //foltrer les cc et les cci (bcc)
+
+
         $mailInscritNonMembre = [];
         $mailNonInscrit = [];
         $mailInscriteDejaMembre = [];
@@ -2083,23 +2085,128 @@ $pdo=new PDOConnexionService();
             if ($user_receiver && $user_receiver->getType() !== "Type") {
 
                 $isTribuG = explode("_",$table)[0] === "tribug";
+
                 if(!$isTribuG){
-                  //verifier si dèjà memebre de la tribu T;
-                $id_receiver = $user_receiver->getId();
-                $isMembre = $tribuTService->testSiMembre($table, $id_receiver, $principal_item);
-                
-                if ($isMembre != "accepted") {
-                    //pas encore membre de la tribu T
-                    $url_name = "app_confirm_invitation_tribu";
+                    //verifier si dèjà memebre de la tribu T;
+                    $id_receiver = $user_receiver->getId();
+                    $isMembre = $tribuTService->testSiMembre($table, $id_receiver, $principal_item);
                     
-                    /** url pour les non membre de la tribu T mais inscrit dans cmz
-                     * EDITED By Nantenaina , re edited by Jehovanie, Faniry, Elie
-                     * ft Ratom
-                     */
+                    if ($isMembre != "accepted") {
+                        //pas encore membre de la tribu T
+                        $url_name = "app_confirm_invitation_tribu";
+                        
+                        /** url pour les non membre de la tribu T mais inscrit dans cmz
+                         * EDITED By Nantenaina , re edited by Jehovanie, Faniry, Elie
+                         * ft Ratom
+                         */
+                        $url = $router->generate(
+                            $url_name, 
+                            [
+                                'email' => $principal_item,
+                                'tribu' => $table, 
+                                'prtid' => $userId, 
+                                'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"
+                            ], 
+                            UrlGeneratorInterface::ABSOLUTE_URL
+                        );
+            
+                        $context["object_mail"] = $object;
+                        $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+
+                        $context["link_confirm"] = $url;
+                        $conserve_link= $context["link_confirm"];
+
+                        $context["content_mail"] = $description . 
+                        " <a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+            
+                        $context["piece_joint"] = $piece_with_path;
+            
+                        //TODO verifier si membre envoyer email si et seulemnt si non membre
+                        
+                        /// send for her
+                        $responsecode=$mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
+                
+                        $contentForSender = "Vous avez envoyé une invitation à " . $tribuTService->getFullName($id_receiver) . " de rejoindre la tribu " . $table;
+                        
+                        $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
+
+                        if( $is_already_send_mail_copy === false ){
+                            $current_user= $this->getUser();
+                            $current_user_id= $current_user->getId();
+                            $current_user_email= $current_user->getEmail();
+                            $current_user_fullname= $userService->getFullName($current_user_id);
+
+                            $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+                            ///remove link
+                            $context["link_confirm"]= "#";
+                            $context["content_mail"] = $description . 
+                                " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>" . $user_list;
+                
+
+                            $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                                    $current_user_email, 
+                                    $current_user_fullname, 
+                                    $context, 
+                                    "ConsoMyZone"
+                                );
+                        
+                            $is_already_send_mail_copy= true;
+
+                            if( $responsecode_mycopy == 550 ){
+                                return $this->json(["result" =>"failed"],400);
+                            }
+                        }
+                        ///reset link
+                        $context["link_confirm"]= $conserve_link;
+                        $context["content_mail"] = $description .
+                                "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+                    
+                        if($responsecode == 550){
+                            if(count($principal) == 1){
+                                return $this->json(["result" =>"failed"],400);
+                            }else{
+                                array_push($emailNotExist,$principal_item);
+                            }
+                            
+                        }else{
+                            if ($isMembre == "refuse")
+                            $tribuTService->updateMember($table, $id_receiver, 0);
+
+                        if ($isMembre == "not_invited")
+                            $tribuTService->addMember($table, $id_receiver);
+
+                        array_push($mailInscritNonMembre,$principal_item);
+                            $tribuTService->saveInvitationStory($table."_invitation", $id_receiver, $principal_item, 0 ,$userId);
+                            // if($isMembre == "not_invited")
+                            //     $tribuTService->addMemberTemp($table, $principal_item);
+                        }
+                        // Sauvegarder l'historique d'invitation
+                        
+                        // $this->requesting->setRequestingTribut("tablerequesting_" . $id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
+                        // $this->requesting->setRequestingTribut("tablerequesting_" . $userId, $userId, $id_receiver, "demande", $contentForSender, $table);
+                        //array_push($mailInscritNonMembre, $principal_item);
+                    } else {
+                        //deja membre on fait rien juste là pour la déco
+                        array_push($mailInscriteDejaMembre, $principal_item);
+                        // Sauvegarder l'historique d'invitation
+                        $tribuTService->saveInvitationStory($table."_invitation", $id_receiver, $principal_item, 1 ,$userId);
+                    }
+                }else{
+                    array_push($mailInscriteDejaMembre, $principal_item);
+                }
+            }else{
+                $isTribuG = explode("_",$table)[0] === "tribug";
+                if(!$isTribuG){
+                    //envoyé invitation pour les non inscrit dans cmz
+                    $isMembre = $tribuTService->testSiMembre($table, null, $principal_item);
+                    
+                    $url_name = "app_email_link_inscription";
+
+                    //// prepare email which we wish send
                     $url = $router->generate(
                         $url_name, 
                         [
-                            'email' => $principal_item,
+                            'email' => $principal_item, 
                             'tribu' => $table, 
                             'prtid' => $userId, 
                             'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"
@@ -2107,25 +2214,26 @@ $pdo=new PDOConnexionService();
                         UrlGeneratorInterface::ABSOLUTE_URL
                     );
         
+                    
+        
                     $context["object_mail"] = $object;
                     $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
 
                     $context["link_confirm"] = $url;
                     $conserve_link= $context["link_confirm"];
 
-                    $context["content_mail"] = $description . 
-                    " <a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+                    $context["content_mail"] = $description .
+                        "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
         
                     $context["piece_joint"] = $piece_with_path;
         
-                    //TODO verifier si membre envoyer email si et seulemnt si non membre
-                    
-                    /// send for her
+                    // $mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
+
+                    // if ($isMembre == "not_invited")
+                    //     $tribuTService->addMemberTemp($table, $principal_item);
+
+                    // array_push($mailNonInscrit,$principal_item);
                     $responsecode=$mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
-               
-                    $contentForSender = "Vous avez envoyé une invitation à " . $tribuTService->getFullName($id_receiver) . " de rejoindre la tribu " . $table;
-                    
-                    $notification->sendNotificationForTribuGmemberOrOneUser($userId, $id_receiver, $type, $contentForDestinator . $invitLink, $table);
 
                     if( $is_already_send_mail_copy === false ){
                         $current_user= $this->getUser();
@@ -2134,11 +2242,12 @@ $pdo=new PDOConnexionService();
                         $current_user_fullname= $userService->getFullName($current_user_id);
 
                         $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+
                         ///remove link
                         $context["link_confirm"]= "#";
                         $context["content_mail"] = $description . 
-                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>" . $user_list;
-            
+                                " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"  . $user_list;
+                
 
                         $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
                                 $current_user_email, 
@@ -2146,18 +2255,19 @@ $pdo=new PDOConnexionService();
                                 $context, 
                                 "ConsoMyZone"
                             );
-                    
+                        
                         $is_already_send_mail_copy= true;
 
                         if( $responsecode_mycopy == 550 ){
                             return $this->json(["result" =>"failed"],400);
                         }
                     }
+
                     ///reset link
                     $context["link_confirm"]= $conserve_link;
                     $context["content_mail"] = $description .
                             "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
-                   
+
                     if($responsecode == 550){
                         if(count($principal) == 1){
                             return $this->json(["result" =>"failed"],400);
@@ -2166,202 +2276,96 @@ $pdo=new PDOConnexionService();
                         }
                         
                     }else{
-                        if ($isMembre == "refuse")
-                        $tribuTService->updateMember($table, $id_receiver, 0);
-
-                    if ($isMembre == "not_invited")
-                        $tribuTService->addMember($table, $id_receiver);
-
-                    array_push($mailInscritNonMembre,$principal_item);
-                        $tribuTService->saveInvitationStory($table."_invitation", $id_receiver, $principal_item, 0 ,$userId);
-                        // if($isMembre == "not_invited")
-                        //     $tribuTService->addMemberTemp($table, $principal_item);
-                    }
-                    // Sauvegarder l'historique d'invitation
-                    
-                    // $this->requesting->setRequestingTribut("tablerequesting_" . $id_receiver, $userId, $id_receiver, "invitation", $contentForDestinator, $table);
-                    // $this->requesting->setRequestingTribut("tablerequesting_" . $userId, $userId, $id_receiver, "demande", $contentForSender, $table);
-                    //array_push($mailInscritNonMembre, $principal_item);
-                } else {
-                    //deja membre on fait rien juste là pour la déco
-                    array_push($mailInscriteDejaMembre, $principal_item);
-                    // Sauvegarder l'historique d'invitation
-                    $tribuTService->saveInvitationStory($table."_invitation", $id_receiver, $principal_item, 1 ,$userId);
-                }
-}else{
-                array_push($mailInscriteDejaMembre,$principal_item);
-            }
-            }else{
-                $isTribuG = explode("_",$table)[0] === "tribug";
-                if(!$isTribuG){
-                //envoyé invitation pour les non inscrit dans cmz
-                $isMembre = $tribuTService->testSiMembre($table, null, $principal_item);
-                
-                $url_name = "app_email_link_inscription";
-
-                //// prepare email which we wish send
-                $url = $router->generate(
-                    $url_name, 
-                    [
-                        'email' => $principal_item, 
-                        'tribu' => $table, 
-                        'prtid' => $userId, 
-                        'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"
-                    ], 
-                    UrlGeneratorInterface::ABSOLUTE_URL
-                );
-    
-                
-    
-                $context["object_mail"] = $object;
-                $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-
-                $context["link_confirm"] = $url;
-$conserve_link= $context["link_confirm"];
-
-                $context["content_mail"] = $description .
-                    "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
-    
-                $context["piece_joint"] = $piece_with_path;
-    
-                // $mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
-
-                // if ($isMembre == "not_invited")
-                //     $tribuTService->addMemberTemp($table, $principal_item);
-
-                // array_push($mailNonInscrit,$principal_item);
-                $responsecode=$mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
-
-                if( $is_already_send_mail_copy === false ){
-                    $current_user= $this->getUser();
-                    $current_user_id= $current_user->getId();
-                    $current_user_email= $current_user->getEmail();
-                    $current_user_fullname= $userService->getFullName($current_user_id);
-
-                    $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
-
-                    ///remove link
-                    $context["link_confirm"]= "#";
-                    $context["content_mail"] = $description . 
-                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"  . $user_list;
-            
-
-                    $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
-                            $current_user_email, 
-                            $current_user_fullname, 
-                            $context, 
-                            "ConsoMyZone"
-                        );
-                    
-                    $is_already_send_mail_copy= true;
-
-                    if( $responsecode_mycopy == 550 ){
-                        return $this->json(["result" =>"failed"],400);
-                    }
-                }
-
-                ///reset link
-                $context["link_confirm"]= $conserve_link;
-                $context["content_mail"] = $description .
-                        "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
-
-                if($responsecode == 550){
-                    if(count($principal) == 1){
-                        return $this->json(["result" =>"failed"],400);
-                    }else{
-                        array_push($emailNotExist,$principal_item);
-                    }
-                    
-                }else{
-                    array_push($mailNonInscrit,$principal_item);
-                if($isMembre == "not_invited")
-                    $tribuTService->addMemberTemp($table, $principal_item);
-
-$tribuTService->saveInvitationStory($table."_invitation", null, $principal_item, 0 ,$userId);
-                }
-
-                                // Sauvegarder l'historique d'invitation
-                            }else{
-                if(!$user_receiver){
-                    //envoyé invitation pour les non inscrit dans cmz
-                    
-                    $url_name= "app_email_link_inscription";
-    
-                    //// prepare email which we wish send
-                    $url = $router->generate(
-                        $url_name, 
-                        [
-                            'email' => $principal_item , 
-                            'tribu' => $table, 
-                            'prtid' => $userId,
-                            'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"
-                        ], 
-                        UrlGeneratorInterface::ABSOLUTE_URL
-                    );
-        
-                    $context["object_mail"] = $object;
-                    $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
-
-                    $context["link_confirm"] = $url ;
-                    $conserve_link= $context["link_confirm"];
-
-                    $context["content_mail"] = $description .
-                        "<a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
-        
-                    $context["piece_joint"] = $piece_with_path;
-                    
-                    $responsecode=$mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
-                    if( $is_already_send_mail_copy === false ){
-                        $current_user= $this->getUser();
-                        $current_user_id= $current_user->getId();
-                        $current_user_email= $current_user->getEmail();
-                        $current_user_fullname= $userService->getFullName($current_user_id);
-
-                        $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
-
-                        ///remove link
-                        $context["link_confirm"]= "#";
-                        $context["content_mail"] = $description . 
-                            " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"  . $user_list;
-        
-                        $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
-                                $current_user_email, 
-                                $current_user_fullname, 
-                                $context, 
-                                "ConsoMyZone"
-                            );
-                        
-                        $is_already_send_mail_copy= true;
-
-                        if( $responsecode_mycopy == 550 ){
-                            return $this->json(["result" =>"failed"],400);
-                        }
-                    }
-                    ///reset link
-                    $context["link_confirm"]= $conserve_link;
-                    $context["content_mail"] = $description .
-                        "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
-
-// $userService->saveInvitationStoryG($table . "_invitation", $userId, $principal_item);
-    
-                    // array_push($mailNonInscrit,$principal_item);
-                    if($responsecode == 550){
-                        if(count($principal) == 1){
-                            return $this->json(["result" =>"failed"],400);
-                        }else{
-                            array_push($emailNotExist,$principal_item);
-                        }
-                        
-                    }else{
-                       // if($isMembre == "not_invited")
-                        // $tribuTService->addMemberTemp($table, $principal_item);
-                    $userService->saveInvitationStoryG($table . "_invitation", $userId, $principal_item);
                         array_push($mailNonInscrit,$principal_item);
+                        if($isMembre == "not_invited"){
+                            $tribuTService->addMemberTemp($table, $principal_item);
+                        }
+
+                        $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item, 0 ,$userId);
+                    }
+
+                    // Sauvegarder l'historique d'invitation
+                }else{
+                    if(!$user_receiver){
+                        //envoyé invitation pour les non inscrit dans cmz
+                        
+                        $url_name= "app_email_link_inscription";
+        
+                        //// prepare email which we wish send
+                        $url = $router->generate(
+                            $url_name, 
+                            [
+                                'email' => $principal_item , 
+                                'tribu' => $table, 
+                                'prtid' => $userId,
+                                'signature' => "%2BqdqU93wfkSf5w%2F1sni7ISdnS12WgNAZDyWZ0kjzREg%3D&token=3c9NYQN05XAdV%2Fbc8xcM5eRQOmvi%2BiiSS3v7KDSKvdI%3D"
+                            ], 
+                            UrlGeneratorInterface::ABSOLUTE_URL
+                        );
+            
+                        $context["object_mail"] = $object;
+                        $context["template_path"] = "emails/mail_invitation_agenda.html.twig";
+
+                        $context["link_confirm"] = $url ;
+                        $conserve_link= $context["link_confirm"];
+
+                        $context["content_mail"] = $description .
+                            "<a href='" . $url ."' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+            
+                        $context["piece_joint"] = $piece_with_path;
+                        
+                        $responsecode=$mailService->sendLinkOnEmailAboutAgendaSharing($principal_item, $from_fullname, $context, "ConsoMyZone");
+                        if( $is_already_send_mail_copy === false ){
+                            $current_user= $this->getUser();
+                            $current_user_id= $current_user->getId();
+                            $current_user_email= $current_user->getEmail();
+                            $current_user_fullname= $userService->getFullName($current_user_id);
+
+                            $context["object_mail"] =  $context["object_mail"] . " (copie mail envoyer)";
+
+                            ///remove link
+                            $context["link_confirm"]= "#";
+                            $context["content_mail"] = $description . 
+                                " <a href='#' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>"  . $user_list;
+            
+                            $responsecode_mycopy=$mailService->sendLinkOnEmailAboutAgendaSharing(
+                                    $current_user_email, 
+                                    $current_user_fullname, 
+                                    $context, 
+                                    "ConsoMyZone"
+                                );
+                            
+                            $is_already_send_mail_copy= true;
+
+                            if( $responsecode_mycopy == 550 ){
+                                return $this->json(["result" =>"failed"],400);
+                            }
+                        }
+                        ///reset link
+                        $context["link_confirm"]= $conserve_link;
+                        $context["content_mail"] = $description .
+                            "<a href='" . $url . "' style=\"color:blue; text-decoration:underline\">Veuillez cliquer içi pour confirmer. </a>";
+
+                        // $userService->saveInvitationStoryG($table . "_invitation", $userId, $principal_item);
+        
+                        // array_push($mailNonInscrit,$principal_item);
+                        if($responsecode == 550){
+                            if(count($principal) == 1){
+                                return $this->json(["result" =>"failed"],400);
+                            }else{
+                                array_push($emailNotExist,$principal_item);
+                            }
+                            
+                        }else{
+                            // if($isMembre == "not_invited")
+                            // $tribuTService->addMemberTemp($table, $principal_item);
+                            $userService->saveInvitationStoryG($table . "_invitation", $userId, $principal_item);
+                            array_push($mailNonInscrit,$principal_item);
+                        }
+                    }
                 }
-            }
             }
         }
-}
 
         /// TODO foreach for cc and cci
         // foreach( $cc as $single_cc ){
@@ -2404,12 +2408,13 @@ $tribuTService->saveInvitationStory($table."_invitation", null, $principal_item,
 
         return $this->json([
             "result" => "success",
-            "data" =>[
+            "data" => [
                 0 => $mailInscritNonMembre,
-                1=> $mailNonInscrit,
+                1 => $mailNonInscrit,
                 2 =>$mailInscriteDejaMembre,
                 3 => $totalEmail,
-                "email_not_exist"=> $emailNotExist]
+                "email_not_exist"=> $emailNotExist
+            ]
         ], 200);
     }
 
@@ -3525,7 +3530,7 @@ $emailNotExist = [];
         }
 
         // $listUserForAll = $userService->getListUserAll();
-$listUserForAll = $tribuTService->getPostulant($table_name);
+        $listUserForAll = $tribuTService->getPostulant($table_name);
         $allPartisanType = [];
         foreach ($listUserForAll as $listUserFor) {
             if ($listUserFor["type"] == "Type") {

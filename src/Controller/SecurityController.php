@@ -2538,4 +2538,40 @@ class SecurityController extends AbstractController
         ]);
     }
 
+    #[Route(path: "/nous-rejoindre", name:"app_join_us_from_email", methods: ["GET"])]
+    public function rejoindreFromEmail(
+        Request $request,
+        UserRepository $userRepository,
+    ){
+
+        $all_query= $request->query->all();
+        extract($all_query);
+
+        if( isset($id)){
+            $user_find= $userRepository->findOneBy(["id" => intval($id)]);
+            
+            if( $user_find->getEmail() !== $email ){
+                dd("Error");
+            }
+
+            if( $user_find->getType() != "Type"){
+                return $this->redirectToRoute("app_account");
+            }else{
+                dd("User postulant...");
+            }
+        }
+
+        $user_find= $userRepository->findOneBy(["email" => $email]);
+
+        if($user_find){
+            if( $user_find->getType() != "Type"){
+                return $this->redirectToRoute("app_account");
+            }
+        }else{
+            return $this->redirectToRoute("app_login");
+        }
+        
+        
+    }
+
 }

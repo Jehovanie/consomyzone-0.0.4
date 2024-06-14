@@ -1177,9 +1177,21 @@ $user = $this->getUser();
         $context["template_path"] = "emails/mail_news_letter.html.twig";
         $context["content_mail"] = $description;
         $context["piece_joint"] = $piece_with_path;
+
+
+        
+        $user_destination_plus = [];
+        foreach ($destinations as $destination) {
+            $temp = [
+                "id" => null,
+                "email" => $destination,
+                "fullName" => null,
+            ];
+            array_push($user_destination_plus, $temp);
+        }
         
 
-        $all_fans_tribuG= $tributGService->getFullNameForAllMembers($user_profil->getTributG()); /// userID, fullName
+        $all_fans_tribuG= $tributGService->getFullNameForAllMembers($user_profil->getTributG()); /// [ [ "userID" => ... , "fullName" => ... ], ... ] 
         $all_user_receiver= [];
         foreach($all_fans_tribuG as $fans_tribuG){
             $user_id_fans= $fans_tribuG["userID"];
@@ -1196,18 +1208,9 @@ $user = $this->getUser();
                 array_push($all_user_receiver, $temp);
             }
         }
-        $user_destination_plus = [];
 
-        foreach ($destinations as $destination) {
-            $temp = [
-                "id" => null,
-                "email" => $destination,
-                "fullName" => null,
-            ];
-            array_push($user_destination_plus, $temp);
-        }
-
-        $listUserForAll = $userService->getListUserAll();
+        /*
+        $listUserForAll = $userService->getListUserAll(); ///  [ "id" => ..., 'email' => ..., 'pseudo' => ..., 'type' => ...]
         $allPartisanType = [];
         foreach ($listUserForAll as $listUserFor) {
             if ($listUserFor["type"] == "Type") {
@@ -1219,12 +1222,36 @@ $user = $this->getUser();
                 array_push($allPartisanType, $temp);
             }
         }
+        */
 
         $emailExist = [];
 
-        $user_destinations = array_merge($all_user_receiver, $user_destination_plus, $allPartisanType);
+        // $user_destinations = array_merge($all_user_receiver, $user_destination_plus, $allPartisanType);
+        $user_destinations = array_merge($all_user_receiver, $user_destination_plus);
 
         foreach ($user_destinations as $user_destination) {
+
+            $path_join_us_from_email= $this->generateUrl(
+                'app_join_us_from_email', 
+                [
+                    "id" => $user_destination["id"], 
+                    'email' => $user_destination["email"],
+                ], 
+                UrlGeneratorInterface::ABSOLUTE_URL
+            );
+
+            $link= "
+                <div class='ligne_droite'></div>
+                <a  class='btn btn-primary'
+                    href='" . $path_join_us_from_email . "'
+                    targer='_blank'
+                >
+                Rejoignez-nous
+                </a>
+            ";
+
+            $context["content_mail"]=   $description . $link;
+            
             $Responsecode = $mailService->sendEmailNewsLetter(
                 $user_connected->getEmail(), 
                 $full_name_user_connected, 
@@ -1249,7 +1276,6 @@ $user = $this->getUser();
                     ]
                 );
             }
-
         }
 
         // $mailService->sendEmailNewsLetter($user_connected->getEmail(), $full_name_user_connected, $all_user_receiver, $context);
