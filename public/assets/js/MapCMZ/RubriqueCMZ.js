@@ -741,6 +741,8 @@ class RubriqueCMZ extends MapCMZ {
 		});
 
 		this.defaultData = {}; /// { 'ferme' : [ ], 'restaurant' : [ ] , ... } ///original data
+		this.defaultDataTempSearch = {}; /// { 'ferme' : [ ], 'restaurant' : [ ] , ... } ///original data
+
 		this.data = {}; /// { 'ferme' : [ ], 'restaurant' : [ ] , ... }        ///data filtered.
 
 		// this is the base of filter data in map based on the user zooming.
@@ -936,6 +938,11 @@ class RubriqueCMZ extends MapCMZ {
 					item.is_active = item.api_name === rubrique_match_type;
 					return item;
 				});
+			} else {
+				this.allRubriques = this.allRubriques.map((item) => {
+					item.is_active = true;
+					return item;
+				});
 			}
 		}
 
@@ -991,45 +998,73 @@ class RubriqueCMZ extends MapCMZ {
 					isFirstResquest,
 					data_max: 50,
 				});
+
+				const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
+				const data_options = response.hasOwnProperty("options") ? response.options : {};
+
+				this.defaultData[api_name] = {
+					...this.defaultData[api_name],
+					data: response.data,
+					pastille: [...data_pastille],
+					options: { ...data_options },
+				};
+
+				this.updateMapAddRubrique(api_name);
 			} else {
 				response = await this.fetchDataRubriqueOnSearch(api_name.toLowerCase(), this.search_options);
+
+				const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
+				const data_options = response.hasOwnProperty("options") ? response.options : {};
+
+				this.defaultDataTempSearch[api_name] = {
+					...this.defaultDataTempSearch[api_name],
+					data: response.data,
+					pastille: [...data_pastille],
+					options: { ...data_options },
+					otherResult: response.otherResult,
+				};
 			}
-
-			const data_pastille = response.hasOwnProperty("pastille") ? response.pastille : [];
-			const data_options = response.hasOwnProperty("options") ? response.options : {};
-
-			this.defaultData[api_name] = {
-				...this.defaultData[api_name],
-				data: response.data,
-				pastille: [
-					...data_pastille,
-					// ...response.pastille?.filter((item) => {
-					// 	const object_api_name = this.defaultData[api_name];
-					// 	if (object_api_name.hasOwnProperty("pastille")) {
-					// 		const data_pastille = this.defaultData[api_name]["pastille"];
-					// 		return !data_pastille.some((item_data_pastille) => {
-					// 			if (
-					// 				item_data_pastille.id_resto === item.id_resto &&
-					// 				item_data_pastille.tableName === item_data_pastille.tableName
-					// 			) {
-					// 				return false;
-					// 			}
-					// 			return true;
-					// 		});
-					// 	}
-					// 	return true;
-					// }),
-					// ...this.defaultData[api_name]["pastille"],
-				],
-				options: { ...data_options },
-			};
-
-			this.updateMapAddRubrique(api_name);
 
 			await this.fetchOriginDataItem(rubrique_iterator);
 		} else {
-			this.bindActionToShowNavLeft();
-			this.countMarkerInCart();
+			if (!this.is_search_mode) {
+				this.bindActionToShowNavLeft();
+				this.countMarkerInCart();
+			} else {
+				let is_have_exact_result = false;
+
+				for (let rubrique_type in this.defaultDataTempSearch) {
+					if (this.defaultDataTempSearch[rubrique_type]["otherResult"] === false) {
+						is_have_exact_result = true;
+						this.defaultData[rubrique_type] = this.defaultDataTempSearch[rubrique_type];
+					} else {
+						this.defaultData[rubrique_type] = {
+							data: [],
+							options: {
+								admin_cmz: [],
+								partisant_cmz: [],
+								source_info: [],
+								validator_cmz: [],
+							},
+							pastille: [],
+							otherResult: true,
+						};
+					}
+				}
+
+				if (!is_have_exact_result) {
+					this.defaultData = { ...this.defaultDataTempSearch };
+				}
+
+				this.allRubriques.forEach((item_rubrique) => {
+					if (item_rubrique.is_active) {
+						this.updateMapAddRubrique(item_rubrique.api_name);
+					}
+				});
+
+				this.bindActionToShowNavLeft();
+				this.countMarkerInCart();
+			}
 
 			return false;
 		}
@@ -3220,7 +3255,18 @@ class RubriqueCMZ extends MapCMZ {
 			return data_response;
 		} catch (e) {
 			console.log("ERROR : Data not fecting...");
-			return [];
+			return {
+				data: [],
+				options: {
+					validation: {
+						admin_cmz: [],
+						partisant_cmz: [],
+						source_info: [],
+						validator_cmz: [],
+					},
+				},
+				pastille: [],
+			};
 		}
 	}
 
@@ -3448,7 +3494,18 @@ class RubriqueCMZ extends MapCMZ {
 			return data_response;
 		} catch (e) {
 			console.log("ERROR : Data not fecting...");
-			return [];
+			return {
+				data: [],
+				options: {
+					validation: {
+						admin_cmz: [],
+						partisant_cmz: [],
+						source_info: [],
+						validator_cmz: [],
+					},
+				},
+				pastille: [],
+			};
 		}
 	}
 
@@ -3490,7 +3547,10 @@ class RubriqueCMZ extends MapCMZ {
 			response = await this.fetchDataRubriqueOnSearch(rubrique_api_name, this.search_options);
 		}
 
-		if( this.defaultData.hasOwnProperty(rubrique_api_name) && this.defaultData[rubrique_api_name]["data"].length > 0 ){
+		if (
+			this.defaultData.hasOwnProperty(rubrique_api_name) &&
+			this.defaultData[rubrique_api_name]["data"].length > 0
+		) {
 			this.addDataToTableListLeft(this.defaultData[rubrique_api_name]["data"], rubrique_api_name);
 		}
 
@@ -4057,6 +4117,11 @@ class RubriqueCMZ extends MapCMZ {
 		return dataFiltered;
 	}
 
+	/**
+	 * @author Jehovanie RAMANDRIJOEL <jehovanieram@gmail.com>
+	 * @Goal Add all data POI for one rubrique in the MAP
+	 * @param {*} rubrique_type
+	 */
 	updateMapAddRubrique(rubrique_type) {
 		///get rubrique object.
 		const rubrique_type_object = this.allRubriques.find((item) => item.api_name === rubrique_type);
