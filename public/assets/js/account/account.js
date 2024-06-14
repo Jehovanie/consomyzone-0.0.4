@@ -448,11 +448,9 @@ if (document.querySelector(".link_navbar_tribug_jheo_js")) {
 	var slickConfig = {
 		slidesToShow: 5,
 		slidesToScroll: 1,
-		speed: 500,
-		infinite: true,
+		infinite: false,
 		arrows: true,
-		autoplay: true,
-		autoplaySpeed: 1000,
+		autoplay: false,
 		prevArrow: `<i class="fa-solid fa-circle-chevron-left fs-3 cursor-pointer color_blue"></i>`,
 		nextArrow: `<i class="fa-solid fa-circle-chevron-right fs-3 cursor-pointer color_blue"></i>`,
 	};
